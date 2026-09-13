@@ -75,6 +75,32 @@ if (product && pack) {
     if (!characterIds.has(required)) fail(`content pack missing character ${required}`);
   }
 
+  const expectedTechnoliaResources = {
+    ASTRAL_ENERGY: 240,
+    NEXUS_CRYSTAL: 100,
+    KNOWLEDGE: 450,
+    DATA: 140,
+    ALLOY: 150,
+    TRUST: 80,
+  };
+  for (const [resource, amount] of Object.entries(expectedTechnoliaResources)) {
+    if (pack.technolia?.starting_resources?.[resource] !== amount) {
+      fail(`content pack has stale Technolia starting resource ${resource}`);
+    }
+  }
+
+  const firstBuildings = pack.technolia?.first_buildings ?? [];
+  if (firstBuildings.some((building) => typeof building !== 'object' || !building?.id)) {
+    fail('Technolia first_buildings must contain generated building objects, not legacy IDs');
+  }
+  const firstTechnologies = pack.technolia?.first_technologies ?? [];
+  if (firstTechnologies.some((technology) => typeof technology !== 'object' || !technology?.id)) {
+    fail('Technolia first_technologies must contain generated technology objects');
+  }
+  if (!firstTechnologies.some((technology) => technology.id === 'structured-requests')) {
+    fail('Technolia pack must include structured-requests in first_technologies');
+  }
+
   const modes = new Set((pack.presentation_modes?.modes ?? []).map((mode) => mode.presentation));
   for (const mode of ['2D', '3D', 'HYBRID']) {
     if (!modes.has(mode)) fail(`content pack missing presentation mode ${mode}`);
