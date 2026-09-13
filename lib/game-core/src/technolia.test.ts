@@ -37,6 +37,35 @@ describe('Technolia progression', () => {
     expect(state.era).toBe('STELLAR_ERA');
   });
 
+  it('blocks cross-era building shortcuts', () => {
+    let state = createTechnoliaProgression();
+    state = constructBuilding(state, 'nexus-core');
+    state = constructBuilding(state, 'memory-vault');
+
+    expect(() => constructBuilding(state, 'backup-archive')).toThrow(
+      'ERA_LOCKED:backup-archive:AUTOMATION_ERA',
+    );
+
+    state = constructBuilding(state, 'portal-gateway');
+    expect(() => constructBuilding(state, 'identity-citadel')).toThrow(
+      'MISSING_ERA_REQUIREMENTS:structured-requests',
+    );
+  });
+
+  it('requires the canonical technology bridge before entering Automation Era', () => {
+    let state = createTechnoliaProgression();
+    state = constructBuilding(state, 'nexus-core');
+    state = constructBuilding(state, 'portal-gateway');
+    state = researchTechnology(state, 'structured-requests');
+    state = constructBuilding(state, 'identity-citadel');
+    state = constructBuilding(state, 'api-forge');
+    state = constructBuilding(state, 'dragon-queue');
+
+    expect(() => constructBuilding(state, 'nx-foundry')).toThrow(
+      'MISSING_ERA_REQUIREMENTS:event-driven-systems',
+    );
+  });
+
   it('enforces the explicit region adjacency graph', () => {
     const state = {
       ...createTechnoliaProgression(),
