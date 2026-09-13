@@ -13,18 +13,18 @@
     <div>
       <div class="eyebrow">ARENA + BRISSA</div>
       <h1>Games Lab</h1>
-      <p>Prueba juegos, descubre mecánicas y conviértelas en ideas Astral.</p>
+      <p>Prueba juegos, descubre mecánicas y convierte tus favoritos en ideas Astral.</p>
     </div>
   </header>
 
   <main>
     <section class="hero">
       <div>
-        <span class="pill">RETRO → PROTOTIPO → ASTRAL</span>
-        <h2>Jugar también es investigar.</h2>
+        <span class="pill">JUGAR → COMPARAR → CLONAR → ASTRAL</span>
+        <h2>Hoy jugamos. Después elegimos qué convertir en nuestro.</h2>
         <p>
-          Los prototipos de esta página usan código y arte propios. El Emulator Lab
-          solo carga archivos locales que tengas derecho a usar.
+          Aquí separamos prototipos Opsly, remixes Astral y juegos open source oficiales.
+          Cada fuente queda pinneada y con licencia/provenance verificable.
         </p>
       </div>
       <a class="primary-link" href="./emulator.html">Abrir Emulator Lab</a>
@@ -34,12 +34,29 @@
       <div class="section-title">
         <div>
           <div class="eyebrow">RETRO ORIGINALS</div>
-          <h2>Prototipos clonables</h2>
+          <h2>Prototipos Opsly</h2>
         </div>
-        <p>Inspirados en mecánicas clásicas, sin copiar personajes, música, nombres ni sprites.</p>
+        <p>Mecánicas clásicas con código, nombres y visuales propios.</p>
       </div>
+      <div class="game-grid" id="game-grid"></div>
 
-      <div class="game-grid" id="game-grid"></div>\n\n      <div class="section-title clone-title">\n        <div><div class="eyebrow">CLONE LAB</div><h2>Open-source → Astral original</h2></div>\n        <p>Código fuente pinneado y licencias verificadas. La expresión final, arte y personajes deben ser originales.</p>\n      </div>\n      <div class="game-grid" id="clone-game-grid"></div>
+      <div class="section-title clone-title">
+        <div>
+          <div class="eyebrow">CLONE LAB — ASTRAL REMIXES</div>
+          <h2>Open source → versión Astral original</h2>
+        </div>
+        <p>Estudiamos código permisivo; personajes, arte, niveles y expresión final son nuestros.</p>
+      </div>
+      <div class="game-grid" id="clone-game-grid"></div>
+
+      <div class="section-title clone-title">
+        <div>
+          <div class="eyebrow">OPEN-SOURCE ORIGINALS</div>
+          <h2>Juegos completos traídos directo del upstream</h2>
+        </div>
+        <p>CI descarga el commit exacto, compila el proyecto oficial y conserva licencia + README junto al build.</p>
+      </div>
+      <div class="game-grid" id="upstream-game-grid"></div>
     </section>
 
     <section class="playground" id="playground" hidden>
@@ -53,7 +70,7 @@
       </div>
 
       <div class="canvas-shell">
-        <canvas id="game-canvas" width="960" height="540" aria-label="Retro game canvas"></canvas>
+        <canvas id="game-canvas" width="960" height="540" aria-label="Game canvas"></canvas>
       </div>
 
       <div class="touch-row" id="touch-row">
@@ -95,20 +112,25 @@
     <section class="ideas">
       <div class="section-title">
         <div>
-          <div class="eyebrow">IDEAS GUARDADAS</div>
-          <h2>Clones conceptuales</h2>
+          <div class="eyebrow">EVIDENCIA</div>
+          <h2>Ideas + playtests</h2>
         </div>
-        <div class="feedback"><button class="ghost" id="export-playtests">Exportar playtests</button><button class="ghost" id="export-ideas">Exportar ideas</button></div>
+        <div class="feedback">
+          <button class="ghost" id="export-playtests">Exportar playtests</button>
+          <button class="ghost" id="export-ideas">Exportar ideas</button>
+        </div>
       </div>
       <div id="idea-list" class="idea-list"></div>
     </section>
   </main>
 
   <footer>
-    <p>Astral Games Lab · mecánicas propias + software open source con licencias verificadas.</p>
+    <p>Astral Games Lab · original expression + open source con provenance verificable.</p>
   </footer>
 
-  <script src="./originals.js"></script>\n  <script src="./clone-lab/catalog.js"></script>
+  <script src="./originals.js"></script>
+  <script src="./clone-lab/catalog.js"></script>
+  <script src="./clone-lab/upstream-catalog.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
