@@ -97,7 +97,26 @@ jobs:
           grep -q '"game_slug": "guardian-lab"' /tmp/guardian-lab-blueprint.txt
           ! grep -Eiq 'Arena Botero|Brissa Botero|Señor Sombra' /tmp/guardian-lab-blueprint.txt
 
+  clone-lab-fast:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Clone Lab provenance
+        run: node scripts/games/validate-clone-lab-sources.mjs
+      - name: Syntax-check Clone Lab browser runtimes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check apps/game-astral-arena/web/games/app.js
+          node --check apps/game-astral-arena/web/games/clone-lab/catalog.js
+          while IFS= read -r file; do
+            node --check "$file"
+          done < <(find apps/game-astral-arena/web/games/clone-lab -maxdepth 1 -type f -name '*.js' ! -name 'catalog.js' | sort)
+
   build-web:
+    if: github.event_name != 'pull_request' || github.event.pull_request.base.ref != 'feat/games-lab-clone-lab-foundation' || contains(github.event.pull_request.labels.*.name, 'staging-preview')
     runs-on: ubuntu-latest
     permissions:
       contents: read
