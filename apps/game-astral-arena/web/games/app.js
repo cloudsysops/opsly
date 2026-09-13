@@ -9,27 +9,63 @@ const ideasEl = document.querySelector('#idea-list');
 let runtime = null;
 let activeGame = null;
 
-function renderCards() {
-  grid.innerHTML = games.map(game => `
+function cardMarkup(game, cloneLab = false) {
+  const source = cloneLab ? `<div class="source">OPEN SOURCE STUDY · ${game.source.path}</div>` : '';
+  return `
     <article class="game-card">
       <div class="icon">${game.icon}</div>
       <h3>${game.title}</h3>
       <p>${game.description}</p>
+      ${source}
       <div class="tags">${game.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
       <button class="play-btn" data-game="${game.id}">Jugar</button>
     </article>
-  `).join('');
-  grid.querySelectorAll('[data-game]').forEach(btn => btn.addEventListener('click', () => openGame(btn.dataset.game)));
+  `;
 }
 
-function openGame(id) {
-  activeGame = games.find(g => g.id === id);
+function renderCards() {
+  grid.innerHTML = games.map(game => cardMarkup(game)).join('');
+  cloneGrid.innerHTML = cloneGames.map(game => cardMarkup(game, true)).join('');
+  document.querySelectorAll('[data-game]').forEach(btn =>
+    btn.addEventListener('click', () => openGame(btn.dataset.game))
+  );
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[data-runtime="${src}"]`);
+    if (existing) return resolve();
+    const script = document.createElement('script');
+    script.src = src;
+    script.dataset.runtime = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.body.appendChild(script);
+  });
+}
+
+async function openGame(id) {
+  activeGame = allGames.find(g => g.id === id);
   if (!activeGame) return;
   runtime?.stop();
+  runtime = null;
   title.textContent = activeGame.title;
   desc.textContent = activeGame.description;
   playground.hidden = false;
-  runtime = window.AstralRetroRuntime.create(canvas, id);
+
+  if (activeGame.runtimeScript) {
+    try {
+      await loadScript(activeGame.runtimeScript);
+      const factory = window.AstralCloneLabRuntimes?.[id];
+      if (!factory) throw new Error('runtime-not-registered');
+      runtime = factory.create(canvas);
+    } catch {
+      note.textContent = '🚧 Este experimento está en construcción en su carril paralelo.';
+    }
+  } else {
+    runtime = window.AstralRetroRuntime.create(canvas, id);
+  }
+
   playground.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
