@@ -5,9 +5,9 @@ const ingressUrl = process.env.HEALTH_TRAVEL_INGRESS_URL?.trim();
 const secret = process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET?.trim();
 const tenantId = process.env.HEALTH_TRAVEL_TENANT_ID?.trim();
 const providerId =
-  process.env.HT_SMOKE_PROVIDER_ID?.trim() || 'smoke-provider-001';
+  process.env.HT_SMOKE_PROVIDER_ID?.trim() || '11111111-1111-4111-8111-111111111111';
 const packageId =
-  process.env.HT_SMOKE_PACKAGE_ID?.trim() || 'smoke-package-001';
+  process.env.HT_SMOKE_PACKAGE_ID?.trim() || '22222222-2222-4222-8222-222222222222';
 const requireResolvedCatalog =
   process.env.HT_SMOKE_REQUIRE_RESOLVED_CATALOG === 'true';
 
