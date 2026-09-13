@@ -15,7 +15,8 @@ export async function parseBody(req: IncomingMessage, maxBytes = 1_048_576): Pro
       bytes += chunk.length;
       if (bytes > maxBytes) {
         settled = true;
-        req.pause();
+        // Keep consuming/discarding the remainder so keep-alive sockets cannot be pinned.
+        req.resume();
         reject(new Error('request body too large'));
         return;
       }
@@ -39,16 +40,19 @@ export async function parseBody(req: IncomingMessage, maxBytes = 1_048_576): Pro
   });
 }
 
+export function extractPlatformAdminBearerToken(req: IncomingMessage): string {
+  const auth = req.headers.authorization;
+  return typeof auth === 'string' && auth.startsWith('Bearer ')
+    ? auth.slice('Bearer '.length).trim()
+    : '';
+}
+
 export function verifyPlatformAdminToken(req: IncomingMessage): boolean {
   const expected = process.env.PLATFORM_ADMIN_TOKEN?.trim() ?? '';
   if (expected.length === 0) {
     return false;
   }
-  const auth = req.headers.authorization;
-  const bearer =
-    typeof auth === 'string' && auth.startsWith('Bearer ')
-      ? auth.slice('Bearer '.length).trim()
-      : '';
+  const bearer = extractPlatformAdminBearerToken(req);
   return bearer.length > 0 && bearer === expected;
 }
 
