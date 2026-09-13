@@ -115,6 +115,7 @@ Security posture before physical acceptance:
 - the external registry entry remains `enabled:false`;
 - the agent service remains disabled for worker routing;
 - the default Mac worker allowlist excludes `local_openclaw`;
+- physical acceptance may enable the disabled service only in a temporary worker process with `OPSLY_OPENCLAW_ACCEPTANCE_ENABLED=true`; this is not a persistent routing toggle;
 - the launchd bridge may be installed as infrastructure, but no AgentTask may be routed to it automatically;
 - OpenClaw is treated as write-capable/high-risk because its effective tool policy may allow filesystem mutation or host exec;
 - a read-only physical smoke requires an explicit restrictive OpenClaw tool policy.
