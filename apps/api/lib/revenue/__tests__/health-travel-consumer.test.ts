@@ -223,7 +223,7 @@ describe('Health Travel Revenue consumer policy', () => {
         { ...activeFlatOffer, status: 'paused' },
         '2026-09-12T12:00:00.000Z'
       )
-    ).toBe('offer_terms_history_unavailable');
+    ).toBe('offer_terms_validity_missing');
 
     expect(
       validateOfferAtEventTime(
@@ -231,5 +231,16 @@ describe('Health Travel Revenue consumer policy', () => {
         '2026-09-12T12:00:00.000Z'
       )
     ).toBe('offer_terms_validity_invalid');
+
+    expect(
+      validateOfferAtEventTime(
+        {
+          ...activeFlatOffer,
+          status: 'draft',
+          valid_from: '2026-09-01T00:00:00.000Z',
+        },
+        '2026-09-12T12:00:00.000Z'
+      )
+    ).toBe('offer_terms_not_activated');
   });
 });
