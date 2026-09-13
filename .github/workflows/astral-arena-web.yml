@@ -143,13 +143,13 @@ jobs:
           test -n "$(find "$target" -maxdepth 1 -type f -print -quit)"
 
       - name: Verify Godot version
-        run: .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --version
+        run: '".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64" --version'
 
       - name: Import project
         shell: bash
         run: |
           set -euo pipefail
-          .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64             --headless             --editor             --path apps/game-astral-arena             --quit
+          ".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"             --headless             --editor             --path apps/game-astral-arena             --quit
 
       - name: Verify Web export templates
         shell: bash
@@ -170,7 +170,7 @@ jobs:
           rm -rf dist/astral-arena-web
           mkdir -p dist/astral-arena-web
           output="$GITHUB_WORKSPACE/dist/astral-arena-web/index.html"
-          .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64             --headless             --verbose             --path apps/game-astral-arena             --export-release "Web" "$output"
+          ".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"             --headless             --verbose             --path apps/game-astral-arena             --export-release "Web" "$output"
           mkdir -p dist/astral-arena-web/games
           cp -a apps/game-astral-arena/web/games/. dist/astral-arena-web/games/
 
