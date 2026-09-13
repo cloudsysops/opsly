@@ -50,7 +50,7 @@ export default function MoonHealthPage(): React.ReactElement {
       const result = await syncHealthTravelCatalog();
       setCatalogSync({
         status: 'success',
-        message: `providers +${result.providers.created}/~${result.providers.updated} · offers +${result.offers.created}/~${result.offers.updated} · skipped ${result.offers.skipped_unassigned}`,
+        message: `providers +${result.providers.created}/~${result.providers.updated}/paused ${result.providers.paused} · offers +${result.offers.created}/~${result.offers.updated}/paused ${result.offers.paused} · skipped ${result.offers.skipped_unassigned}`,
       });
       await refreshHealthTravel();
     } catch (syncError) {
