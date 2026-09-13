@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import useSWR from 'swr';
 import {
   MoonCard,
@@ -10,7 +11,7 @@ import {
   MoonSkeleton,
   MoonStatusBadge,
 } from '@/components/moon/primitives';
-import { getHealthTravelRuntimeSummary, getSystemMetrics } from '@/lib/api-client';
+import { getHealthTravelRuntimeSummary, getSystemMetrics, syncHealthTravelCatalog } from '@/lib/api-client';
 import type { MoonHealthTone } from '@/lib/moon/tenant-card';
 
 const SERVICES = [
@@ -32,9 +33,33 @@ export default function MoonHealthPage(): React.ReactElement {
     data: healthTravel,
     error: healthTravelError,
     isLoading: healthTravelLoading,
+    mutate: refreshHealthTravel,
   } = useSWR('moon-health-health-travel', () => getHealthTravelRuntimeSummary(30), {
     revalidateOnFocus: false,
   });
+  const [catalogSync, setCatalogSync] = useState<
+    | { status: 'idle' }
+    | { status: 'running' }
+    | { status: 'success'; message: string }
+    | { status: 'error'; message: string }
+  >({ status: 'idle' });
+
+  async function handleCatalogSync(): Promise<void> {
+    setCatalogSync({ status: 'running' });
+    try {
+      const result = await syncHealthTravelCatalog();
+      setCatalogSync({
+        status: 'success',
+        message: `providers +${result.providers.created}/~${result.providers.updated} · offers +${result.offers.created}/~${result.offers.updated} · skipped ${result.offers.skipped_unassigned}`,
+      });
+      await refreshHealthTravel();
+    } catch (syncError) {
+      setCatalogSync({
+        status: 'error',
+        message: syncError instanceof Error ? syncError.message : String(syncError),
+      });
+    }
+  }
   const live = data?.mock !== true;
   const ramTone: MoonHealthTone =
     data && data.ram_total_gb > 0 && data.ram_used_gb / data.ram_total_gb > 0.85
@@ -85,10 +110,31 @@ export default function MoonHealthPage(): React.ReactElement {
               activity: {healthTravel.activity.status}
             </MoonStatusBadge>
           </div>
-          <p className="text-xs text-slate-400">
-            Runtime connectivity and business activity are separate signals. No patient PII or
-            clinical records are read by Moon.
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs text-slate-400">
+              Runtime connectivity and business activity are separate signals. No patient PII or
+              clinical records are read by Moon.
+            </p>
+            <button
+              type="button"
+              onClick={() => void handleCatalogSync()}
+              disabled={catalogSync.status === 'running'}
+              className="rounded-lg border border-white/15 px-3 py-1.5 text-xs disabled:opacity-50"
+            >
+              {catalogSync.status === 'running' ? 'Syncing catalog…' : 'Sync catalog'}
+            </button>
+          </div>
+          {catalogSync.status === 'success' || catalogSync.status === 'error' ? (
+            <p
+              className={
+                catalogSync.status === 'success'
+                  ? 'text-xs text-emerald-300'
+                  : 'text-xs text-red-300'
+              }
+            >
+              {catalogSync.message}
+            </p>
+          ) : null}
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
             {[
               ['Leads', healthTravel.counts.leads],
