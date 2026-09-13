@@ -1,71 +1,246 @@
-const games = window.ASTRAL_RETRO_GAMES || [];
+const retroGames = window.ASTRAL_RETRO_GAMES || [];
 const cloneGames = window.ASTRAL_CLONE_LAB_GAMES || [];
 const upstreamGames = window.ASTRAL_UPSTREAM_GAMES || [];
-const allGames = [...games, ...cloneGames];
 
-const grid = document.querySelector('#game-grid');
-const cloneGrid = document.querySelector('#clone-game-grid');
-const upstreamGrid = document.querySelector('#upstream-game-grid');
-const playground = document.querySelector('#playground');
-const canvas = document.querySelector('#game-canvas');
-const title = document.querySelector('#active-title');
-const desc = document.querySelector('#active-description');
-const note = document.querySelector('#feedback-note');
-const ideasEl = document.querySelector('#idea-list');
+const STORAGE = Object.freeze({
+  favorites: 'astral-games-lab-favorites-v1',
+  recent: 'astral-games-lab-recent-v1',
+  playtests: 'astral-games-lab-playtests',
+  ideas: 'astral-retro-ideas',
+});
+
+function normalizeGame(game, kind) {
+  const tags = Array.isArray(game.tags) ? game.tags : [];
+  const isUpstream = kind === 'upstream';
+  return {
+    ...game,
+    kind,
+    tags,
+    touchReady: !isUpstream || tags.includes('mobile') || tags.includes('touch'),
+    source: game.source || null,
+  };
+}
+
+const allGames = [
+  ...retroGames.map(game => normalizeGame(game, 'retro')),
+  ...cloneGames.map(game => normalizeGame(game, 'clone')),
+  ...upstreamGames.map(game => normalizeGame(game, 'upstream')),
+];
+
+const byId = new Map(allGames.map(game => [game.id, game]));
+
+const dom = {
+  catalog: document.querySelector('#catalog-shell'),
+  theater: document.querySelector('#game-theater'),
+  canvas: document.querySelector('#game-canvas'),
+  frame: document.querySelector('#upstream-frame'),
+  loading: document.querySelector('#stage-loading'),
+  stage: document.querySelector('#stage-shell'),
+  touch: document.querySelector('#touch-row'),
+  title: document.querySelector('#active-title'),
+  description: document.querySelector('#active-description'),
+  icon: document.querySelector('#active-icon'),
+  feedbackNote: document.querySelector('#feedback-note'),
+  activeFavorite: document.querySelector('#active-favorite'),
+  featured: document.querySelector('#featured-grid'),
+  retro: document.querySelector('#game-grid'),
+  clone: document.querySelector('#clone-game-grid'),
+  upstream: document.querySelector('#upstream-game-grid'),
+  recentSection: document.querySelector('#recent-section'),
+  recent: document.querySelector('#recent-grid'),
+  continueButton: document.querySelector('#continue-game'),
+  favoritesButton: document.querySelector('#favorites-filter'),
+  ideas: document.querySelector('#idea-list'),
+};
 
 let runtime = null;
 let activeGame = null;
 let activeSession = null;
+let currentFilter = 'all';
+let previousBodyOverflow = '';
 
-function cardMarkup(game, mode = 'opsly') {
-  const source = mode === 'opsly'
-    ? ''
-    : `<div class="source">${mode === 'upstream' ? 'OPEN-SOURCE ORIGINAL' : 'OPEN SOURCE STUDY'} · ${game.source.path}</div>`;
+function readJson(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || '');
+    return value ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
 
-  const action = game.playUrl
-    ? `<a class="play-btn play-link" data-upstream-game="${game.id}" href="${game.playUrl}">Jugar original</a>`
-    : `<button class="play-btn" data-game="${game.id}">Jugar</button>`;
+function writeJson(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function favorites() {
+  return new Set(readJson(STORAGE.favorites, []));
+}
+
+function recentIds() {
+  return readJson(STORAGE.recent, []).filter(id => byId.has(id));
+}
+
+function rememberRecent(id) {
+  const next = [id, ...recentIds().filter(item => item !== id)].slice(0, 8);
+  writeJson(STORAGE.recent, next);
+  renderRecent();
+  updateContinueButton();
+}
+
+function toggleFavorite(id) {
+  const items = favorites();
+  if (items.has(id)) items.delete(id);
+  else items.add(id);
+  writeJson(STORAGE.favorites, [...items]);
+  renderAll();
+  updateActiveFavorite();
+  return items.has(id);
+}
+
+function isFavorite(id) {
+  return favorites().has(id);
+}
+
+function categoryMatches(game, filter) {
+  if (filter === 'all') return true;
+  if (filter === 'favorite') return isFavorite(game.id);
+  if (filter === 'touch') return game.touchReady;
+  if (filter === '2P') return game.tags.some(tag => ['2P', 'co-op', 'multiplayer'].includes(tag));
+  if (filter === 'adventure') {
+    return game.tags.some(tag => ['platformer', 'RPG', 'dialogue', 'battle', 'explore', 'isometric'].includes(tag));
+  }
+  if (filter === 'arcade') {
+    return game.tags.some(tag => ['dodge', 'survival', 'arcade', 'score', 'paddle', 'breaker', 'reflex'].includes(tag));
+  }
+  if (filter === 'open-source') return game.kind === 'upstream';
+  return true;
+}
+
+function kindLabel(game) {
+  if (game.kind === 'upstream') return 'OPEN-SOURCE ORIGINAL';
+  if (game.kind === 'clone') return 'ASTRAL REMIX';
+  return 'OPSLY ORIGINAL';
+}
+
+function deviceLabel(game) {
+  if (game.touchReady) return '<span class="device-badge touch">📱 Touch</span>';
+  if (game.kind === 'upstream') return '<span class="device-badge">⌨️ PC / Gamepad</span>';
+  return '';
+}
+
+function gameCard(game, compact = false) {
+  const source = game.source?.path
+    ? `<div class="source">${kindLabel(game)} · ${game.source.path}</div>`
+    : `<div class="source">${kindLabel(game)}</div>`;
+
+  const tags = compact ? game.tags.slice(0, 2) : game.tags.slice(0, 4);
+  const favorite = isFavorite(game.id);
 
   return `
-    <article class="game-card">
-      <div class="icon">${game.icon}</div>
+    <article class="game-card" data-kind="${game.kind}" data-card-game="${game.id}">
+      <div class="card-top">
+        <div class="icon" aria-hidden="true">${game.icon || '🎮'}</div>
+        <button
+          class="favorite-button ${favorite ? 'active' : ''}"
+          data-favorite="${game.id}"
+          aria-label="${favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}"
+          aria-pressed="${favorite}"
+        >${favorite ? '♥' : '♡'}</button>
+      </div>
+
       <h3>${game.title}</h3>
       <p>${game.description}</p>
       ${source}
-      <div class="tags">${game.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-      ${action}
+
+      <div class="tags">
+        ${deviceLabel(game)}
+        ${tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+      </div>
+
+      <div class="card-actions">
+        <button class="play-btn" data-play="${game.id}">▶ Jugar</button>
+        <button class="info-button" data-info="${game.id}" aria-label="Información">ⓘ</button>
+      </div>
     </article>
   `;
 }
 
-function renderCards() {
-  grid.innerHTML = games.map(game => cardMarkup(game)).join('');
-  cloneGrid.innerHTML = cloneGames.map(game => cardMarkup(game, 'clone')).join('');
-  upstreamGrid.innerHTML = upstreamGames.map(game => cardMarkup(game, 'upstream')).join('');
+function bindCards(root = document) {
+  root.querySelectorAll('[data-play]').forEach(button => {
+    button.addEventListener('click', () => launchGame(button.dataset.play));
+  });
 
-  document.querySelectorAll('[data-game]').forEach(btn =>
-    btn.addEventListener('click', () => openGame(btn.dataset.game))
-  );
+  root.querySelectorAll('[data-favorite]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      toggleFavorite(button.dataset.favorite);
+    });
+  });
 
-  document.querySelectorAll('[data-upstream-game]').forEach(link =>
-    link.addEventListener('click', () => {
-      const game = upstreamGames.find(item => item.id === link.dataset.upstreamGame);
+  root.querySelectorAll('[data-info]').forEach(button => {
+    button.addEventListener('click', () => {
+      const game = byId.get(button.dataset.info);
       if (!game) return;
-      const items = loadPlaytests();
-      items.unshift({
-        gameId: game.id,
-        title: game.title,
-        startedAt: new Date().toISOString(),
-        endedAt: null,
-        durationSeconds: null,
-        score: null,
-        feedback: null,
-        reason: 'opened-upstream-original',
-        source: game.source.path
-      });
-      savePlaytests(items.slice(0, 200));
-    })
-  );
+      const source = game.source?.path ? ` · ${game.source.path}` : '';
+      const license = game.source?.license ? ` · ${game.source.license}` : '';
+      showToast(`${kindLabel(game)}${source}${license}`);
+    });
+  });
+}
+
+function renderCollection(target, games, compact = false) {
+  const filtered = games.filter(game => categoryMatches(game, currentFilter));
+  target.innerHTML = filtered.length
+    ? filtered.map(game => gameCard(game, compact)).join('')
+    : '<div class="empty-state">No hay juegos en este filtro todavía. Prueba otra categoría ✨</div>';
+  bindCards(target);
+}
+
+function featuredGames() {
+  const preferred = [
+    'aurora-sky-islands',
+    'michelle-butterfly-quest',
+    'sisters-crystal-arena',
+    'meteor-dodge-godot',
+    'godot-rpg-original',
+    'godot-isometric-original',
+    'star-paddle',
+    'crystal-breaker',
+  ];
+  return preferred.map(id => byId.get(id)).filter(Boolean);
+}
+
+function renderAll() {
+  renderCollection(dom.featured, featuredGames());
+  renderCollection(dom.clone, cloneGames.map(game => byId.get(game.id)).filter(Boolean));
+  renderCollection(dom.upstream, upstreamGames.map(game => byId.get(game.id)).filter(Boolean));
+  renderCollection(dom.retro, retroGames.map(game => byId.get(game.id)).filter(Boolean));
+
+  document.querySelectorAll('.filter-chip').forEach(button => {
+    button.classList.toggle('active', button.dataset.filter === currentFilter);
+  });
+
+  dom.favoritesButton.setAttribute('aria-pressed', String(currentFilter === 'favorite'));
+  dom.favoritesButton.textContent = currentFilter === 'favorite' ? '♥' : '♡';
+  renderRecent();
+}
+
+function renderRecent() {
+  const games = recentIds().map(id => byId.get(id)).filter(Boolean).slice(0, 6);
+  dom.recentSection.hidden = games.length === 0;
+  if (!games.length) {
+    dom.recent.innerHTML = '';
+    return;
+  }
+  dom.recent.innerHTML = games.map(game => gameCard(game, true)).join('');
+  bindCards(dom.recent);
+}
+
+function updateContinueButton() {
+  const id = recentIds()[0];
+  const game = id ? byId.get(id) : null;
+  dom.continueButton.hidden = !game;
+  if (game) dom.continueButton.textContent = `▶ Continuar ${game.title}`;
 }
 
 function loadScript(src) {
@@ -81,21 +256,27 @@ function loadScript(src) {
   });
 }
 
-function loadPlaytests() {
-  try { return JSON.parse(localStorage.getItem('astral-games-lab-playtests') || '[]'); }
-  catch { return []; }
-}
-
-function savePlaytests(items) {
-  localStorage.setItem('astral-games-lab-playtests', JSON.stringify(items));
+function startSession(game) {
+  activeSession = {
+    gameId: game.id,
+    title: game.title,
+    startedAt: new Date().toISOString(),
+    feedback: null,
+    source: game.source?.path || 'opsly-original',
+    kind: game.kind,
+  };
 }
 
 function finishSession(reason) {
   if (!activeSession) return;
+
   let score = null;
-  try { score = runtime?.getScore?.() ?? null; } catch {}
+  try {
+    score = runtime?.getScore?.() ?? null;
+  } catch {}
+
   const endedAt = new Date();
-  const items = loadPlaytests();
+  const items = readJson(STORAGE.playtests, []);
   items.unshift({
     ...activeSession,
     endedAt: endedAt.toISOString(),
@@ -104,146 +285,291 @@ function finishSession(reason) {
       Math.round((endedAt.getTime() - new Date(activeSession.startedAt).getTime()) / 1000)
     ),
     score,
-    reason
+    reason,
   });
-  savePlaytests(items.slice(0, 200));
+  writeJson(STORAGE.playtests, items.slice(0, 200));
   activeSession = null;
 }
 
-async function openGame(id) {
-  finishSession('switched');
-  activeGame = allGames.find(game => game.id === id);
-  if (!activeGame) return;
-
-  runtime?.stop();
-  runtime = null;
-  note.textContent = '';
-  activeSession = {
-    gameId: activeGame.id,
-    title: activeGame.title,
-    startedAt: new Date().toISOString(),
-    feedback: null,
-    source: activeGame.source?.path || 'opsly-original'
-  };
-
-  title.textContent = activeGame.title;
-  desc.textContent = activeGame.description;
-  playground.hidden = false;
-
-  if (activeGame.runtimeScript) {
-    try {
-      await loadScript(activeGame.runtimeScript);
-      const factory = window.AstralCloneLabRuntimes?.[id];
-      if (!factory) throw new Error('runtime-not-registered');
-      runtime = factory.create(canvas);
-    } catch {
-      note.textContent = '🚧 Este experimento todavía no cargó correctamente.';
-    }
+function setTheaterVisible(visible) {
+  if (visible) {
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    dom.catalog.setAttribute('aria-hidden', 'true');
+    dom.theater.hidden = false;
   } else {
-    runtime = window.AstralRetroRuntime.create(canvas, id);
+    document.body.style.overflow = previousBodyOverflow;
+    dom.catalog.removeAttribute('aria-hidden');
+    dom.theater.hidden = true;
   }
-
-  playground.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-document.querySelector('#close-game').addEventListener('click', () => {
-  finishSession('closed');
-  runtime?.stop();
+function updateActiveFavorite() {
+  if (!activeGame) return;
+  const favorite = isFavorite(activeGame.id);
+  dom.activeFavorite.textContent = favorite ? '♥' : '♡';
+  dom.activeFavorite.classList.toggle('active', favorite);
+  dom.activeFavorite.setAttribute('aria-pressed', String(favorite));
+}
+
+async function launchGame(id) {
+  const game = byId.get(id);
+  if (!game) return;
+
+  if (activeGame) finishSession('switched');
+
+  runtime?.stop?.();
   runtime = null;
-  playground.hidden = true;
-});
+  dom.frame.src = 'about:blank';
+  dom.frame.hidden = true;
+  dom.canvas.hidden = true;
+  dom.touch.hidden = true;
+  dom.loading.hidden = false;
+  dom.feedbackNote.textContent = '';
 
-function setControl(control, value) {
-  runtime?.setControl(control, value);
+  activeGame = game;
+  startSession(game);
+  rememberRecent(game.id);
+
+  dom.title.textContent = game.title;
+  dom.description.textContent = game.description;
+  dom.icon.textContent = game.icon || '🎮';
+  updateActiveFavorite();
+  setTheaterVisible(true);
+
+  if (game.kind === 'upstream') {
+    dom.frame.hidden = false;
+    dom.touch.hidden = true;
+
+    const onLoad = () => {
+      dom.loading.hidden = true;
+      dom.frame.removeEventListener('load', onLoad);
+    };
+    dom.frame.addEventListener('load', onLoad);
+    dom.frame.src = game.playUrl;
+    setTimeout(() => {
+      if (!dom.frame.hidden) dom.loading.hidden = true;
+    }, 8000);
+    return;
+  }
+
+  dom.canvas.hidden = false;
+  dom.touch.hidden = false;
+
+  try {
+    if (game.runtimeScript) {
+      await loadScript(game.runtimeScript);
+      const factory = window.AstralCloneLabRuntimes?.[game.id];
+      if (!factory) throw new Error('runtime-not-registered');
+      runtime = factory.create(dom.canvas);
+    } else {
+      runtime = window.AstralRetroRuntime.create(dom.canvas, game.id);
+    }
+    dom.loading.hidden = true;
+  } catch (error) {
+    dom.loading.hidden = true;
+    dom.feedbackNote.textContent = '🚧 Este juego no cargó. Volvamos y probemos otro.';
+    console.error(error);
+  }
 }
 
-document.querySelectorAll('[data-control]').forEach(btn => {
-  const control = btn.dataset.control;
-  for (const eventName of ['pointerdown', 'touchstart']) {
-    btn.addEventListener(eventName, event => {
-      event.preventDefault();
-      setControl(control, true);
-    }, { passive: false });
-  }
-  for (const eventName of ['pointerup', 'pointercancel', 'pointerleave', 'touchend']) {
-    btn.addEventListener(eventName, event => {
-      event.preventDefault();
-      setControl(control, false);
-    }, { passive: false });
-  }
-});
+function closeGame(reason = 'closed') {
+  finishSession(reason);
+  runtime?.stop?.();
+  runtime = null;
+  dom.frame.src = 'about:blank';
+  dom.frame.hidden = true;
+  dom.canvas.hidden = false;
+  activeGame = null;
+  setTheaterVisible(false);
+  renderRecent();
+}
 
-window.addEventListener('keydown', event => {
-  if (event.key === 'ArrowLeft' || event.key === 'a') setControl('left', true);
-  if (event.key === 'ArrowRight' || event.key === 'd') setControl('right', true);
-  if (event.key === ' ' || event.key === 'ArrowUp') setControl('action', true);
-});
+function randomGame() {
+  const candidates = allGames.filter(game => categoryMatches(game, currentFilter));
+  const pool = candidates.length ? candidates : allGames;
+  if (!pool.length) return;
+  const game = pool[Math.floor(Math.random() * pool.length)];
+  launchGame(game.id);
+}
 
-window.addEventListener('keyup', event => {
-  if (event.key === 'ArrowLeft' || event.key === 'a') setControl('left', false);
-  if (event.key === 'ArrowRight' || event.key === 'd') setControl('right', false);
-  if (event.key === ' ' || event.key === 'ArrowUp') setControl('action', false);
-});
+function setControl(name, value) {
+  runtime?.setControl?.(name, value);
+}
 
 function loadIdeas() {
-  try { return JSON.parse(localStorage.getItem('astral-retro-ideas') || '[]'); }
-  catch { return []; }
+  return readJson(STORAGE.ideas, []);
 }
 
 function saveIdeas(items) {
-  localStorage.setItem('astral-retro-ideas', JSON.stringify(items));
+  writeJson(STORAGE.ideas, items);
   renderIdeas();
 }
 
 function renderIdeas() {
-  const ideas = loadIdeas();
-  ideasEl.innerHTML = ideas.length
-    ? ideas.map(idea => `
+  const items = loadIdeas();
+  dom.ideas.innerHTML = items.length
+    ? items.slice(0, 12).map(item => `
       <div class="idea">
         <div>
-          <strong>${idea.title}</strong><br>
-          <small>Base: ${idea.sourceTitle} · ${new Date(idea.createdAt).toLocaleDateString()}</small>
+          <strong>${item.title}</strong><br>
+          <small>Base: ${item.sourceTitle} · ${new Date(item.createdAt).toLocaleDateString()}</small>
         </div>
-        <small>${idea.status}</small>
+        <small>${item.status}</small>
       </div>
     `).join('')
-    : '<p class="note">Todavía no hay clones conceptuales. Prueba un juego y toca “Clonar mecánica”.</p>';
+    : '<div class="idea"><small>Las ideas que creen mientras juegan aparecerán aquí ✨</small></div>';
 }
 
-document.querySelectorAll('[data-feedback]').forEach(btn =>
-  btn.addEventListener('click', () => {
+let toastTimer = null;
+function showToast(message) {
+  let toast = document.querySelector('#games-lab-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'games-lab-toast';
+    toast.style.cssText = [
+      'position:fixed',
+      'left:50%',
+      'bottom:max(24px, env(safe-area-inset-bottom))',
+      'transform:translateX(-50%)',
+      'z-index:200',
+      'max-width:min(92vw,760px)',
+      'padding:12px 16px',
+      'border-radius:14px',
+      'background:rgba(14,18,38,.96)',
+      'border:1px solid rgba(180,190,255,.2)',
+      'box-shadow:0 18px 55px rgba(0,0,0,.35)',
+      'color:#e8ecff',
+      'font-size:12px',
+      'text-align:center',
+      'backdrop-filter:blur(16px)',
+    ].join(';');
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.hidden = true; }, 3200);
+}
+
+document.querySelectorAll('.filter-chip').forEach(button => {
+  button.addEventListener('click', () => {
+    currentFilter = button.dataset.filter || 'all';
+    renderAll();
+  });
+});
+
+dom.favoritesButton.addEventListener('click', () => {
+  currentFilter = currentFilter === 'favorite' ? 'all' : 'favorite';
+  renderAll();
+});
+
+document.querySelector('#surprise-game').addEventListener('click', randomGame);
+document.querySelector('#surprise-top').addEventListener('click', randomGame);
+
+dom.continueButton.addEventListener('click', () => {
+  const id = recentIds()[0];
+  if (id) launchGame(id);
+});
+
+document.querySelector('#close-game').addEventListener('click', () => closeGame('closed'));
+
+dom.activeFavorite.addEventListener('click', () => {
+  if (!activeGame) return;
+  const nowFavorite = toggleFavorite(activeGame.id);
+  showToast(nowFavorite ? '❤️ Guardado en favoritos' : 'Quitado de favoritos');
+});
+
+document.querySelector('#fullscreen-game').addEventListener('click', async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await dom.stage.requestFullscreen();
+  } catch {
+    showToast('Pantalla completa no está disponible en este dispositivo.');
+  }
+});
+
+document.querySelectorAll('[data-control]').forEach(button => {
+  const control = button.dataset.control;
+
+  button.addEventListener('pointerdown', event => {
+    event.preventDefault();
+    button.setPointerCapture?.(event.pointerId);
+    setControl(control, true);
+  });
+
+  const release = event => {
+    event.preventDefault();
+    setControl(control, false);
+  };
+
+  button.addEventListener('pointerup', release);
+  button.addEventListener('pointercancel', release);
+  button.addEventListener('pointerleave', release);
+});
+
+window.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !dom.theater.hidden) {
+    closeGame('escape');
+    return;
+  }
+  if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') setControl('left', true);
+  if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') setControl('right', true);
+  if (event.key === ' ' || event.key === 'ArrowUp' || event.key.toLowerCase() === 'w') {
+    setControl('action', true);
+  }
+});
+
+window.addEventListener('keyup', event => {
+  if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') setControl('left', false);
+  if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') setControl('right', false);
+  if (event.key === ' ' || event.key === 'ArrowUp' || event.key.toLowerCase() === 'w') {
+    setControl('action', false);
+  }
+});
+
+document.querySelectorAll('[data-feedback]').forEach(button => {
+  button.addEventListener('click', () => {
     if (!activeGame) return;
-    const type = btn.dataset.feedback;
+    const type = button.dataset.feedback;
     if (activeSession) activeSession.feedback = type;
 
-    if (type === 'clone') {
-      const name = window.prompt('Nombre para tu versión Astral:', activeGame.title + ' · Astral Remix');
-      if (!name) return;
-      const ideas = loadIdeas();
-      ideas.unshift({
-        id: 'idea-' + Date.now(),
-        title: name,
-        sourceMechanic: activeGame.id,
-        sourceTitle: activeGame.title,
-        createdAt: new Date().toISOString(),
-        status: 'idea',
-        license: activeGame.source?.license || 'original-mechanic-template',
-        copyPolicy: 'mechanic-only-original-expression-required'
-      });
-      saveIdeas(ideas);
-      note.textContent = '✨ Idea guardada. Podemos graduar este patrón a un juego Astral.';
+    if (type === 'love') {
+      toggleFavorite(activeGame.id);
+      dom.feedbackNote.textContent = '❤️ Guardado. Este sube en la lista.';
       return;
     }
 
-    note.textContent = type === 'love'
-      ? '❤️ Guardado: esta mecánica gustó.'
-      : '🤔 Guardado: esta mecánica necesita cambios.';
-    localStorage.setItem('astral-feedback-' + activeGame.id, type);
-  })
-);
+    if (type === 'meh') {
+      dom.feedbackNote.textContent = '🤔 Guardado. Después vemos qué cambiar.';
+      return;
+    }
+
+    const defaultName = activeGame.title + ' · Astral Remix';
+    const name = window.prompt('¿Cómo llamarían su versión?', defaultName);
+    if (!name) return;
+
+    const ideas = loadIdeas();
+    ideas.unshift({
+      id: 'idea-' + Date.now(),
+      title: name,
+      sourceMechanic: activeGame.id,
+      sourceTitle: activeGame.title,
+      createdAt: new Date().toISOString(),
+      status: 'idea',
+      license: activeGame.source?.license || 'original-mechanic-template',
+      copyPolicy: 'mechanic-only-original-expression-required',
+    });
+    saveIdeas(ideas);
+    dom.feedbackNote.textContent = '✨ Idea guardada. Después podemos convertirla en prototipo.';
+  });
+});
 
 document.querySelector('#export-playtests').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(loadPlaytests(), null, 2)], { type: 'application/json' });
+  const blob = new Blob(
+    [JSON.stringify(readJson(STORAGE.playtests, []), null, 2)],
+    { type: 'application/json' }
+  );
   const anchor = document.createElement('a');
   anchor.href = URL.createObjectURL(blob);
   anchor.download = 'astral-games-lab-playtests.json';
@@ -260,5 +586,10 @@ document.querySelector('#export-ideas').addEventListener('click', () => {
   setTimeout(() => URL.revokeObjectURL(anchor.href), 500);
 });
 
-renderCards();
+window.addEventListener('pagehide', () => {
+  if (activeSession) finishSession('pagehide');
+});
+
+renderAll();
 renderIdeas();
+updateContinueButton();
