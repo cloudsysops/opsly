@@ -74,6 +74,7 @@ let activeSession = null;
 let currentFilter = 'all';
 let previousBodyOverflow = '';
 let lastLauncher = null;
+let deferredInstallPrompt = null;
 
 function readJson(key, fallback) {
   try {
@@ -689,3 +690,33 @@ if ('serviceWorker' in navigator && window.isSecureContext) {
     });
   });
 }
+
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  const installButton = document.querySelector('#install-games');
+  if (installButton) installButton.hidden = false;
+});
+
+document.querySelector('#install-games')?.addEventListener('click', async () => {
+  const installButton = document.querySelector('#install-games');
+  if (!deferredInstallPrompt) {
+    showToast('En iPhone: Compartir → Agregar a pantalla de inicio.');
+    return;
+  }
+
+  deferredInstallPrompt.prompt();
+  try {
+    await deferredInstallPrompt.userChoice;
+  } finally {
+    deferredInstallPrompt = null;
+    if (installButton) installButton.hidden = true;
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  const installButton = document.querySelector('#install-games');
+  if (installButton) installButton.hidden = true;
+  showToast('✨ Opsly Games quedó instalado.');
+});
