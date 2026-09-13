@@ -62,7 +62,8 @@ function storyboard(input: AstralArenaProjectInput, projectId: string): ContentS
             ['TAKEAWAY', 'Si se rompe, se cose.', 'Resolve with restoration and a cliffhanger.'],
           ];
 
-  const durationMs = Math.max(12000, (input.durationSec ?? 45) * 1000);
+  // Astral channel scenes are capped at 7s; six beats therefore cap at 42s.
+  const durationMs = Math.max(12000, Math.min((input.durationSec ?? 42) * 1000, 42000));
   const perScene = Math.floor(durationMs / beats.length);
 
   return beats.map(([beat, caption, narration], index) => ({

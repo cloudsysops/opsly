@@ -79,6 +79,7 @@ export const MissionResultSchema = z.object({
   missionId: NonEmpty,
   status: z.enum(['in-progress', 'completed']),
   attempts: z.number().int().min(0),
+  completedStepIds: z.array(NonEmpty).default([]),
   completedAt: z.string().min(1).optional(),
 });
 

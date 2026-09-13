@@ -82,12 +82,14 @@ export interface TechnoliaProgressionState {
 }
 
 export const TECHNOLIA_STARTING_RESOURCES: Record<TechnoliaResource, number> = {
-  ASTRAL_ENERGY: 120,
-  NEXUS_CRYSTAL: 80,
-  KNOWLEDGE: 40,
-  DATA: 20,
-  ALLOY: 60,
-  TRUST: 10,
+  // Vertical-slice economy: enough to complete the canonical progression when
+  // combined with region rewards. Balance can tighten after playtesting.
+  ASTRAL_ENERGY: 240,
+  NEXUS_CRYSTAL: 100,
+  KNOWLEDGE: 450,
+  DATA: 140,
+  ALLOY: 150,
+  TRUST: 80,
 };
 
 export const TECHNOLIA_BUILDINGS: TechnoliaBuilding[] = [
@@ -632,6 +634,10 @@ export function discoverTechnoliaRegion(
   if (state.discoveredRegions.includes(regionId)) return state;
   const region = TECHNOLIA_MAP.find((item) => item.id === regionId);
   if (!region) throw new Error(`Unknown Technolia region: ${regionId}`);
+  const reachable = state.discoveredRegions.some((sourceId) =>
+    TECHNOLIA_MAP.find((candidate) => candidate.id === sourceId)?.unlocks?.includes(regionId),
+  );
+  if (!reachable) throw new Error(`REGION_LOCKED:${regionId}`);
   const missing = region.requiredTechnology.filter((id) => !state.technologies.includes(id));
   if (missing.length > 0) throw new Error(`MISSING_TECHNOLOGY:${missing.join(',')}`);
   const resources = { ...state.resources };

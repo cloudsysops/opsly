@@ -7,8 +7,10 @@ import {
   IPO_PROCESS_NODE,
   KNOWLEDGE_FRAGMENT_IPO_ID,
   MAP_FRAGMENT_FIRST_PORTAL_ID,
+  ASTRAL_ARENA_PORTAL_ID,
   createGameRuntime,
   getFirstPortalMission,
+  resolveAstralAffinity,
 } from './index.js';
 
 describe('game-core First Portal loop', () => {
@@ -37,6 +39,22 @@ describe('game-core First Portal loop', () => {
     expect(types).toContain('mission.completed');
     expect(types).toContain('collectible.earned');
     expect(types.every((type) => !/^(diagnosis|iq|destiny)\./.test(type))).toBe(true);
+  });
+
+  it('runs an Astral mission through the public runtime', () => {
+    const game = createGameRuntime({ now: () => new Date('2026-09-12T00:00:00.000Z') });
+    const session = game.startSession({ tenantSlug: 'astral-arena' });
+    game.chooseExplorer(session.id, {
+      displayName: 'Guardian',
+      astralAffinity: resolveAstralAffinity('2017-03-30'),
+    });
+    const world = game.enterPortal(session.id, ASTRAL_ARENA_PORTAL_ID);
+    expect(world.universeWorldId).toBe('astral-arena');
+    const mission = game.startMission(session.id, 'awakening-sisters-001');
+    for (const step of mission.steps) {
+      game.completeMissionStep(session.id, step.id);
+    }
+    expect(game.getState(session.id).mission?.status).toBe('completed');
   });
 
   it('rejects contact identity as playerId', () => {

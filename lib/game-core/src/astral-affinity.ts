@@ -30,6 +30,7 @@ export interface AstralAffinity {
   title: string;
   baseTechniques: AstralTechnique[];
   signatureTechnique: AstralTechnique;
+  unlockedTechniqueIds: string[];
   visualLanguage: string;
 }
 
@@ -142,6 +143,10 @@ export function resolveAstralAffinity(birthDate: string | Date): AstralAffinity 
     title: meta.title,
     baseTechniques: ELEMENT_TECHNIQUES[element],
     signatureTechnique: SIGNATURE_TECHNIQUES[sign],
+    unlockedTechniqueIds: [
+      ...ELEMENT_TECHNIQUES[element].map((technique) => technique.id),
+      SIGNATURE_TECHNIQUES[sign].id,
+    ],
     visualLanguage: meta.visual,
   };
 }
