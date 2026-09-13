@@ -17,7 +17,7 @@ test('OpenClaw policy doctor is inspection-only and fail-closed', async () => {
   assert.match(source, /tools\.exec\.mode must be deny/);
   assert.match(source, /tools\.elevated\.enabled must not be true/);
   assert.match(source, /tools\.allow must be exactly \[read\]/);
-  assert.match(source, /local ollama\/\<model\> primary with no fallbacks/);
+  assert.ok(source.includes('local ollama/<model> primary with no fallbacks'));
   assert.match(source, /OPENCLAW_CONFIG_READONLY=1 is required/);
   assert.match(source, /sessions_spawn/);
   assert.match(source, /OPENCLAW_READONLY_POLICY_READY/);
