@@ -325,6 +325,7 @@ jobs:
   # --- Staging: imágenes etiqueta :staging (solo rama staging) ---
   build-and-push-staging:
     needs: release-gate
+    environment: staging
     if: |
       always() &&
       (needs.release-gate.result == 'success' || needs.release-gate.result == 'skipped') &&
@@ -465,6 +466,7 @@ jobs:
 
   build-mcp-staging:
     needs: release-gate
+    environment: staging
     if: |
       always() &&
       (needs.release-gate.result == 'success' || needs.release-gate.result == 'skipped') &&
