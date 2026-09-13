@@ -8,13 +8,53 @@ const migration = readFileSync(
 );
 
 describe('0102 Health Travel revenue receipts migration', () => {
-  it('provides tenant-scoped event idempotency', () => {
+  it('provides tenant-scoped delivery and business idempotency', () => {
     expect(migration).toContain('platform.revenue_event_receipts');
     expect(migration).toContain('UNIQUE (tenant_id, source_system, external_event_id)');
+    expect(migration).toContain('uq_revenue_event_receipts_business_dedupe');
+    expect(migration).toContain(
+      'ON platform.revenue_event_receipts(tenant_id, source_system, business_dedupe_key)'
+    );
+    expect(migration).toContain('WHERE business_dedupe_key IS NOT NULL');
+    expect(migration).toContain("CHECK (btrim(lead_ref) <> '')");
     expect(migration).toContain('ENABLE ROW LEVEL SECURITY');
   });
 
-  it('prevents duplicate commission estimates for the same external Health Travel event', () => {
+  it('supports exclusive receipt processing with a recoverable lease', () => {
+    expect(migration).toContain("'received','processing','applied'");
+    expect(migration).toContain('claim_token uuid');
+    expect(migration).toContain('processing_started_at timestamptz');
+    expect(migration).toContain('idx_revenue_event_receipts_processing_lease');
+  });
+
+  it('enforces tenant matching for every referenced ledger row', () => {
+    for (const constraint of [
+      'revenue_attributions_tenant_id_id_key',
+      'revenue_referrals_tenant_id_id_key',
+      'revenue_commission_events_tenant_id_id_key',
+      'revenue_event_receipts_attribution_tenant_fk',
+      'revenue_event_receipts_referral_tenant_fk',
+      'revenue_event_receipts_commission_tenant_fk',
+    ]) {
+      expect(migration).toContain(constraint);
+    }
+    expect(migration).toContain(
+      'FOREIGN KEY (tenant_id, attribution_id)'
+    );
+    expect(migration).toContain(
+      'REFERENCES platform.revenue_attributions(tenant_id, id)'
+    );
+    expect(migration).toContain('FOREIGN KEY (tenant_id, referral_id)');
+    expect(migration).toContain(
+      'REFERENCES platform.revenue_referrals(tenant_id, id)'
+    );
+    expect(migration).toContain('FOREIGN KEY (tenant_id, commission_event_id)');
+    expect(migration).toContain(
+      'REFERENCES platform.revenue_commission_events(tenant_id, id)'
+    );
+  });
+
+  it('prevents duplicate SmileTripCare commission estimates by business key', () => {
     expect(migration).toContain('uq_revenue_commission_event_external_source');
     expect(migration).toContain(
       'ON platform.revenue_commission_events(tenant_id, referral_id, source, external_ref)'
