@@ -812,3 +812,19 @@ a { color: inherit; }
     max-height: calc(100vh - 76px);
   }
 }
+
+@media (max-width: 520px) {
+  .theater-actions {
+    gap: 5px;
+  }
+  .theater-actions .icon-button {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 17px;
+  }
+  .theater-back {
+    min-height: 40px;
+    padding: 0 11px;
+  }
+}
