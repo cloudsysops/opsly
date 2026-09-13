@@ -77,6 +77,28 @@ for (const control of ['left', 'action', 'right']) {
   if (!html.includes(`data-control="${control}"`)) errors.push(`missing-control:${control}`);
 }
 
+const buttonTags = [...html.matchAll(/<button\b([^>]*)>/g)].map(match => match[1]);
+for (const attrs of buttonTags) {
+  const hasId = /\bid=["'][^"']+["']/.test(attrs);
+  const hasDeclarativeAction =
+    /\bdata-control=["'][^"']+["']/.test(attrs) ||
+    /\bdata-feedback=["'][^"']+["']/.test(attrs) ||
+    /\bdata-filter=["'][^"']+["']/.test(attrs);
+
+  if (!hasId && !hasDeclarativeAction) {
+    errors.push(`dead-static-button:<button${attrs}>`);
+  }
+}
+
+for (const dynamicAction of [
+  "root.querySelectorAll('[data-play]')",
+  "root.querySelectorAll('[data-favorite]')",
+  "root.querySelectorAll('[data-info]')",
+  "root.querySelectorAll('[data-card-game]')",
+]) {
+  if (!app.includes(dynamicAction)) errors.push(`missing-dynamic-action:${dynamicAction}`);
+}
+
 if (errors.length) {
   console.error('GAMES_LAB_UI_CONTRACT=FAIL');
   for (const error of errors) console.error(error);
