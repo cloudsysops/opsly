@@ -61,10 +61,17 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('job did not reach a terminal state');
   });
 
-  it('propagates workstream metadata for conflict/dependency scheduling', () => {
-    expect(source).toContain('workstream: meta.workstream || null');
-    expect(source).toContain('conflict_key: meta.conflict_key || null');
-    expect(source).toContain('depends_on: meta.depends_on || null');
+  it('requires an ownership scope before dispatch and propagates it canonically', () => {
+    expect(source).toContain("'workstream'");
+    expect(source).toContain("'conflict_key'");
+    expect(source).toContain("dispatch_contract_version: 'dispatch-claim-v1'");
+    expect(source).toContain('workstream: String(meta.workstream)');
+    expect(source).toContain('conflict_key: String(meta.conflict_key)');
+    expect(source).toContain('semantic_scope: String(meta.semantic_scope || meta.conflict_key)');
+    expect(source).toContain('affected_paths: listField(meta.affected_paths)');
+    expect(source).toContain('depends_on: listField(meta.depends_on)');
+    expect(source).toContain('DISPATCH_SCOPE_ALREADY_OWNED');
+    expect(source).toContain('submit.body.dispatch_decision');
   });
 
   it('can require an exact terminal acceptance marker', () => {
