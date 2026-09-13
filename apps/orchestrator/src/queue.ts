@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { Queue } from 'bullmq';
 import { logJobEnqueue } from './observability/job-log.js';
-import { buildQueueAddOptions } from './queue-opts.js';
+import { buildQueueAddOptions, sanitizeQueueJobId } from './queue-opts.js';
 import { getJobTenantSlug } from './lib/tenant-context.js';
 import type { OrchestratorJob } from './types.js';
 
@@ -94,10 +94,14 @@ export async function enqueueLocalAgentJob(
 ) {
   if (typeof jobOrName === 'object' && jobOrName !== null && 'type' in jobOrName) {
     const job = jobOrName as OrchestratorJob;
-    const jobId =
+    const rawJobId =
       typeof job.idempotency_key === 'string' && job.idempotency_key.trim().length > 0
         ? job.idempotency_key.trim()
         : job.request_id;
+    const jobId =
+      typeof rawJobId === 'string' && rawJobId.trim().length > 0
+        ? sanitizeQueueJobId(`${job.type}-${rawJobId.trim()}`)
+        : undefined;
     const bull = await localAgentQueue.add(job.type, job, {
       jobId,
       priority: 40000,
@@ -127,7 +131,8 @@ export async function enqueueLocalAgentJob(
   }
 
   const jobName = jobOrName as string;
-  const rid = typeof requestId === 'string' && requestId.length > 0 ? requestId : randomUUID();
+  const ridRaw = typeof requestId === 'string' && requestId.length > 0 ? requestId : randomUUID();
+  const rid = sanitizeQueueJobId(`${jobName}-${ridRaw}`);
   const legacyPayload = payload ?? {};
   const legacyTenant =
     typeof legacyPayload.tenant_slug === 'string' && legacyPayload.tenant_slug.trim().length > 0
