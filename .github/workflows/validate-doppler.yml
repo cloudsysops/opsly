@@ -1,21 +1,17 @@
 # Opsly — workflow catalog: docs/ops/workflows-index.md
-# Valida acceso a Doppler y presencia de variables listadas en config/doppler-ci-required*.txt
-# Requiere en GitHub → Settings → Secrets → Actions:
-#   DOPPLER_TOKEN_PRD — token con acceso de lectura al proyecto ops-intcloudsysops (config prd)
-#   DOPPLER_TOKEN_STG — token con acceso de lectura (config stg)
+# Validates Doppler access and presence of variables listed in config/doppler-ci-required*.txt.
+# Security invariant: secret-bearing PR validation executes only trusted base-revision code.
 name: Validate Doppler Config
 
 on:
   push:
-  # This job requires repository secrets. Use pull_request_target so the workflow
-  # executes trusted base-revision code instead of code controlled by the PR.
+    branches: [main]
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   validate-doppler:
     runs-on: ubuntu-latest
-    # Run for PR activity or pushes to main. Never execute PR-head code with Doppler secrets.
     if: github.event_name == 'pull_request_target' || github.ref == 'refs/heads/main'
     permissions:
       contents: read
@@ -34,26 +30,22 @@ jobs:
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}
         run: |
+          set -euo pipefail
           if [ -z "${DOPPLER_TOKEN:-}" ]; then
-            echo "Skipping Doppler prd: secret DOPPLER_TOKEN_PRD is not configured."
-            exit 0
+            echo "::error::DOPPLER_TOKEN_PRD is not configured."
+            exit 1
           fi
           chmod +x scripts/ci/validate-doppler-vars.sh
-          if ! ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops prd; then
-            echo "::warning::Skipping Doppler prd validation: token invalid or missing project access."
-            exit 0
-          fi
+          ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops prd
 
       - name: Validate Doppler stg
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_STG }}
         run: |
+          set -euo pipefail
           if [ -z "${DOPPLER_TOKEN:-}" ]; then
-            echo "Skipping Doppler stg: secret DOPPLER_TOKEN_STG is not configured."
-            exit 0
+            echo "::error::DOPPLER_TOKEN_STG is not configured."
+            exit 1
           fi
           chmod +x scripts/ci/validate-doppler-vars.sh
-          if ! ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops stg; then
-            echo "::warning::Skipping Doppler stg validation: token invalid or missing project access."
-            exit 0
-          fi
+          ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops stg
