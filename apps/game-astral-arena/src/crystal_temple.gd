@@ -10,6 +10,8 @@ var content_pack: Dictionary = {}
 var mission: Dictionary = {}
 var current_step := 0
 var nearby_crystal := ""
+var arena_crystal_activated := false
+var brissa_crystal_activated := false
 
 func _ready() -> void:
     content_pack = ProjectSettings.get_setting("astral_arena/runtime/content_pack", {})
@@ -48,11 +50,15 @@ func _activate_crystal(crystal_id: String) -> void:
         return
 
     if crystal_id == "arena":
+        arena_crystal_activated = true
         current_step = max(current_step, 2)
         $Temple/CrystalOne/Glow.visible = true
     elif crystal_id == "brissa":
-        current_step = max(current_step, 3)
+        brissa_crystal_activated = true
         $Temple/CrystalTwo/Glow.visible = true
+
+    if arena_crystal_activated and brissa_crystal_activated:
+        current_step = max(current_step, 3)
 
     _refresh_ui()
 
