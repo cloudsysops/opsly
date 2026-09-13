@@ -192,10 +192,12 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
   const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
   const maxSteps = typeof b.max_steps === 'number' && Number.isFinite(b.max_steps) ? Math.floor(b.max_steps) : 10;
   const context =
-    typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
+    typeof b.context === 'object' && b.context !== null ? { ...(b.context as Record<string, unknown>) } : {};
+  // Claim leases are server-owned capabilities. Never trust caller-supplied release metadata.
+  delete context.dispatch_claim;
   const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
 
-  let dispatchClaimRequest = null;
+  let dispatchClaimRequest: ReturnType<typeof dispatchClaimRequestFromContext> = null;
   try {
     dispatchClaimRequest = dispatchClaimRequestFromContext({
       context,
