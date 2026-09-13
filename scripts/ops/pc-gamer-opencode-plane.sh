@@ -134,6 +134,24 @@ doctor() {
     echo "[FAIL] worker env missing: $ENV_WORKER"
     failures=$((failures+1))
   fi
+  if command -v systemctl >/dev/null 2>&1 && systemctl --user is-active --quiet opsly-pc-gamer-opencode.service; then
+    echo "[PASS] managed OpenCode bridge service active"
+  else
+    echo "[FAIL] managed OpenCode bridge service inactive"
+    failures=$((failures+1))
+  fi
+
+  local bridge_health=""
+  bridge_health="$(curl -sf --max-time 5 "http://${OPENCODE_BIND}:${OPENCODE_PORT}/health" 2>/dev/null || true)"
+  if [[ -n "$bridge_health" ]] && BRIDGE_HEALTH="$bridge_health" node -e '
+    const body=JSON.parse(process.env.BRIDGE_HEALTH||"{}");
+    process.exit(body.auth_configured===true && body.execution_model==="ephemeral-tmux-session" ? 0 : 1);
+  ' >/dev/null 2>&1; then
+    echo "[PASS] bridge auth configured + ephemeral-tmux-session"
+  else
+    echo "[FAIL] bridge health/auth/execution model not ready"
+    failures=$((failures+1))
+  fi
 
   if [[ "$failures" -eq 0 ]]; then
     echo "LOCAL_FIRST_READY"
@@ -388,7 +406,9 @@ fi
 
 [[ "$DO_UP" == "true" ]] && compose_up
 [[ "$DO_DOWN" == "true" ]] && compose_down
-[[ "$INSTALL_AUTOSTART" == "true" ]] && install_autostart
+if [[ "$INSTALL_AUTOSTART" == "true" && "$DO_UP" != "true" ]]; then
+  install_autostart
+fi
 [[ "$DO_STATUS" == "true" ]] && show_status
 [[ "$DOCTOR" == "true" ]] && doctor
 
