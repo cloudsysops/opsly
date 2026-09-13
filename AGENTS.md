@@ -44,6 +44,8 @@ Aplica a **todos** los agentes (Cursor, Claude, OpenCode, Copilot, Jules, worker
 
 **Runtime canónico de agentes:** [`docs/00-architecture/AGENT-RUNTIME-ARCHITECTURE.md`](docs/00-architecture/AGENT-RUNTIME-ARCHITECTURE.md). Antes de modificar workers, bridges, scheduler, Mac/Gamer o GitHub Agent Queue: leer ese documento. `AgentTaskEnvelopeV1` + BullMQ + `external-agent-registry` + Session Manager + sesiones efímeras son el boundary actual. Roles/personas antiguas no implican procesos AI persistentes.
 
+**Ownership gate obligatorio para trabajo autónomo:** antes de crear rama, worktree o ejecutar una tarea gobernada desde GitHub Agent Queue, el task debe tener un `DispatchClaimV1` adquirido por el Orchestrator. Invariante: **NO CLAIM → NO BRANCH → NO WORKTREE → NO EXECUTION**. Cada workpack debe declarar `workstream` + `conflict_key`; `semantic_scope` y `affected_paths` refinan detección. Si el Orchestrator responde `JOIN_EXISTING` o `CONFLICT_BLOCKED`, el agente no inicia implementación paralela: reutiliza/revisa/espera el trabajo dueño. Nunca crear un segundo task store u otro scheduler para resolver esto.
+
 **Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
 ## ⚠️ Control de costos
