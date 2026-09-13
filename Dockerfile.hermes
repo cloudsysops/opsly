@@ -26,6 +26,7 @@ RUN npm run build -w @intcloudsysops/types \
   && npm run build -w @intcloudsysops/agent-task-core \
   && npm run build -w @intcloudsysops/git-branch-orchestrator \
   && npm run build -w @intcloudsysops/session-manager \
+  && npm run build -w @intcloudsysops/ai-board \
   && npm run build -w @intcloudsysops/runtime \
   && npm run build -w @intcloudsysops/voice-messaging \
   && npm run build -w @intcloudsysops/notebooklm-agent \
@@ -71,6 +72,8 @@ COPY --from=builder /app/lib/external-agent-registry ./lib/external-agent-regist
 COPY --from=builder /app/lib/agent-task-core ./lib/agent-task-core
 COPY --from=builder /app/lib/session-manager ./lib/session-manager
 COPY --from=builder /app/lib/git-branch-orchestrator ./lib/git-branch-orchestrator
+COPY --from=builder /app/lib/ai-board/dist ./lib/ai-board/dist
+COPY --from=builder /app/lib/ai-board/package.json ./lib/ai-board/package.json
 COPY --from=builder /app/lib/runtime ./lib/runtime
 COPY --from=builder /app/lib/content-studio ./lib/content-studio
 COPY --from=builder /app/lib/voice-messaging ./lib/voice-messaging
