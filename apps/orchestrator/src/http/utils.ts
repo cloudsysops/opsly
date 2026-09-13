@@ -5,20 +5,37 @@ import type { OrchestratorJob } from '../types.js';
 
 export const TENANT_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
 
-export async function parseBody(req: IncomingMessage): Promise<unknown> {
+export async function parseBody(req: IncomingMessage, maxBytes = 1_048_576): Promise<unknown> {
   return new Promise((resolve, reject) => {
     let data = '';
+    let bytes = 0;
+    let settled = false;
     req.on('data', (chunk: Buffer) => {
+      if (settled) return;
+      bytes += chunk.length;
+      if (bytes > maxBytes) {
+        settled = true;
+        req.pause();
+        reject(new Error('request body too large'));
+        return;
+      }
       data += chunk.toString();
     });
     req.on('end', () => {
+      if (settled) return;
       try {
+        settled = true;
         resolve(JSON.parse(data));
       } catch {
+        settled = true;
         reject(new Error('Invalid JSON'));
       }
     });
-    req.on('error', reject);
+    req.on('error', (error) => {
+      if (settled) return;
+      settled = true;
+      reject(error);
+    });
   });
 }
 
