@@ -33,7 +33,20 @@ If any precondition is missing, return `BLOCKED` with the exact missing item and
 - OpenCode bridge is healthy;
 - Ollama is healthy and has an already-installed compatible model;
 - governed task contains `AgentTaskEnvelopeV1`;
+- `npm run pc-gamer:opencode:remote-doctor` returns `GAMER_OPENCODE_REMOTE_READY`;
 - no paid provider fallback is enabled.
+
+## Readiness command
+
+From the Mac/VPS control node:
+
+```bash
+npm run pc-gamer:opencode:remote-doctor
+```
+
+Do not dispatch the physical E2E unless it returns exactly:
+
+`GAMER_OPENCODE_REMOTE_READY`
 
 ## Task
 
@@ -47,9 +60,10 @@ Then verify:
 
 1. job terminal state is success;
 2. evidence identifies the Gamer node/runtime;
-3. no paid API was used;
-4. ephemeral task session is gone;
-5. healthy idle returns to zero `opsly-task-*` sessions.
+3. the Gamer OpenCode bridge is managed by the canonical user systemd service and reports `auth_configured=true` + `ephemeral-tmux-session`;
+4. no paid API was used;
+5. ephemeral task session is gone;
+6. healthy idle returns to zero `opsly-task-*` sessions.
 
 ## Hard boundaries
 
