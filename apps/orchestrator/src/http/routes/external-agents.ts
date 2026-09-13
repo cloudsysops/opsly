@@ -45,6 +45,15 @@ export function resolveExternalAgentHealthUrl(entry: ExternalWorkerEntry): strin
   return joinHealthUrl(base, entry.health_endpoint);
 }
 
+function dispatchAdmissionBlocker(entry: ExternalWorkerEntry): string | null {
+  if (entry.enabled !== true) return 'registry_disabled';
+  if (entry.local !== true) return 'runtime_not_local';
+  if (entry.kind !== 'external-binary') return 'unsupported_runtime_kind';
+  if (entry.adapter !== 'agent-binary-http-bridge') return 'unsupported_adapter';
+  if (!/^local_[a-z0-9_]+$/i.test(entry.opsly_job_type)) return 'invalid_job_type';
+  return null;
+}
+
 async function requestHealth(url: string, fetchImpl: FetchLike): Promise<Response> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 2500);
@@ -89,11 +98,10 @@ export async function buildExternalAgentFleetSnapshot(
       .sort(([a], [b]) => a.localeCompare(b))
       .map(async ([workerId, entry]) => {
         const runtime = await probeExternalAgentRuntime(entry, fetchImpl);
-        const dispatchEligible = entry.enabled === true && runtime.state === 'LIVE';
-
-        let blocker: string | null = null;
-        if (entry.enabled !== true) blocker = 'registry_disabled';
-        else if (runtime.state !== 'LIVE') blocker = `runtime_${runtime.state.toLowerCase()}`;
+        const policyBlocker = dispatchAdmissionBlocker(entry);
+        const runtimeBlocker = runtime.state === 'LIVE' ? null : `runtime_${runtime.state.toLowerCase()}`;
+        const blocker = policyBlocker ?? runtimeBlocker;
+        const dispatchEligible = blocker === null;
 
         return {
           worker_id: workerId,
@@ -132,7 +140,7 @@ export async function handleExternalAgentsRegistry(ctx: RouteContext): Promise<v
         runtime_live: agents.filter((agent) => agent.runtime_state === 'LIVE').length,
         dispatch_eligible: agents.filter((agent) => agent.dispatch_eligible).length,
         policy_locked: agents.filter(
-          (agent) => agent.runtime_state === 'LIVE' && !agent.registry_enabled
+          (agent) => agent.runtime_state === 'LIVE' && !agent.dispatch_eligible
         ).length,
       },
     });
