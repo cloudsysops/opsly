@@ -21,7 +21,10 @@ import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
 import { jsonResponse, errorResponse } from '../router.js';
 import { agentTaskEnvelopeV1Schema } from '@intcloudsysops/types/agent-task';
 import { buildAgentTaskEnvelope, inferTaskType } from '@intcloudsysops/agent-task-core';
-import { checkLocalPromptAdmission } from '../local-prompt-admission.js';
+import {
+  checkLocalPromptAdmission,
+  releaseLocalPromptAdmissionReservation,
+} from '../local-prompt-admission.js';
 
 const MAX_RECENT_LOCAL_JOBS = 25;
 const MAX_LOCAL_PROMPT_BODY_BYTES = 65_536;
@@ -189,24 +192,6 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     return;
   }
 
-  try {
-    const admission = await checkLocalPromptAdmission(ctx.req, tenantSlug);
-    if (!admission.ok) {
-      jsonResponse(ctx.res, 429, {
-        error: admission.reason,
-        retry_after_seconds: admission.retryAfterSeconds,
-        ...(admission.queueDepth === undefined ? {} : { queue_depth: admission.queueDepth }),
-      });
-      return;
-    }
-  } catch (err) {
-    jsonResponse(ctx.res, 503, {
-      error: 'admission_control_unavailable',
-      detail: err instanceof Error ? err.message : String(err),
-    });
-    return;
-  }
-
   const agentRole = (typeof b.agent_role === 'string' ? b.agent_role : 'executor').trim();
   const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
   const maxSteps = typeof b.max_steps === 'number' && Number.isFinite(b.max_steps) ? Math.floor(b.max_steps) : 10;
@@ -306,6 +291,7 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     metadata: { labels: ['local_prompt'] },
   };
   const controlMode = getLocalControlMode();
+  let queueReservationHeld = false;
 
   try {
     const policyCheck = enrichAutonomyMetadata(ctx.req, job);
@@ -313,6 +299,31 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       jsonResponse(ctx.res, policyCheck.status, policyCheck.payload);
       return;
     }
+
+    let admission;
+    try {
+      admission = await checkLocalPromptAdmission(
+        ctx.req,
+        tenantSlug,
+        undefined,
+        { skipQueueCapacity: controlMode === 'ide_fallback' }
+      );
+    } catch (err) {
+      jsonResponse(ctx.res, 503, {
+        error: 'admission_control_unavailable',
+        detail: err instanceof Error ? err.message : String(err),
+      });
+      return;
+    }
+    if (!admission.ok) {
+      jsonResponse(ctx.res, 429, {
+        error: admission.reason,
+        retry_after_seconds: admission.retryAfterSeconds,
+        ...(admission.queueDepth === undefined ? {} : { queue_depth: admission.queueDepth }),
+      });
+      return;
+    }
+    queueReservationHeld = admission.queueReservation === true;
 
     if (controlMode === 'ide_fallback') {
       console.log(`[LocalPromptSubmit] Prepared ${job.type} job ${requestId} (${agentKind}) for manual IDE fallback`);
@@ -362,5 +373,16 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
+  } finally {
+    if (queueReservationHeld) {
+      try {
+        await releaseLocalPromptAdmissionReservation();
+      } catch (err) {
+        console.error(
+          '[LocalPromptSubmit] Failed to release admission reservation; TTL fail-safe will expire it',
+          err
+        );
+      }
+    }
   }
 }
