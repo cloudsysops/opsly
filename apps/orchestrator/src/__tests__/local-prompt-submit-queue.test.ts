@@ -282,7 +282,7 @@ describe('local prompt-submit → local-agents queue', () => {
     const queued = enqueueLocalAgentJob.mock.calls[0]![0] as {
       taskId?: string;
       idempotency_key?: string;
-      payload: { context?: Record<string, unknown> };
+      payload: { context?: Record<string, unknown>; prompt_content?: string };
       metadata?: Record<string, unknown>;
     };
     expect(queued.taskId).toBe('workpack-001');
@@ -292,7 +292,44 @@ describe('local prompt-submit → local-agents queue', () => {
       claimId: 'ghq-owned-001',
       taskId: 'workpack-001',
     });
+    expect(queued.payload.prompt_content).toContain(
+      '[OPSLY DISPATCH OWNERSHIP — TRUSTED CONTROL METADATA]'
+    );
+    expect(queued.payload.prompt_content).toContain('claim_id=ghq-owned-001');
+    expect(queued.payload.prompt_content).toContain(
+      'conflict_key=orchestrator/local-dispatch'
+    );
     expect(queued.metadata?.dispatch_claim_id).toBe('ghq-owned-001');
+  });
+
+  it('releases an acquired claim when BullMQ does not return a durable job id', async () => {
+    queueMocks.enqueueLocalAgentJob.mockResolvedValueOnce({ id: null } as never);
+
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'ghq-no-job-id-001',
+        agent: 'local_opencode',
+        agent_role: 'review',
+        prompt_body: 'claimed work',
+        context: {
+          source: 'github-agent-queue',
+          workpack_id: 'workpack-001',
+          workstream: 'orchestrator',
+          conflict_key: 'orchestrator/local-dispatch',
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(500);
+    expect(raw).toMatch(/BULLMQ_JOB_ID_REQUIRED/);
+    expect(claimMocks.releaseTaskDispatchClaim).toHaveBeenCalledTimes(1);
   });
 
   it('discards caller-supplied dispatch leases on unclaimed manual requests', async () => {
