@@ -1,6 +1,11 @@
 import type { RouteContext } from '../router.js';
 import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, randomUUID } from '../utils.js';
-import { enqueueLocalAgentJob, probeLocalAgentQueue } from '../../queue.js';
+import {
+  enqueueLocalAgentJob,
+  getLocalAgentJobById,
+  localAgentJobIdFor,
+  probeLocalAgentQueue,
+} from '../../queue.js';
 import type { OrchestratorJob } from '../../types.js';
 import {
   getLocalControlMode,
@@ -274,6 +279,15 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
         },
       });
 
+  if (taskEnvelopeResult?.success && taskEnvelope.task.trim() !== promptForWorker.trim()) {
+    errorResponse(
+      ctx.res,
+      400,
+      'AgentTaskEnvelopeV1 task must exactly match the prompt that will be executed'
+    );
+    return;
+  }
+
   if (
     taskEnvelope.tenant_slug !== tenantSlug ||
     taskEnvelope.request_id !== requestId ||
@@ -355,6 +369,34 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
         prepared_only: true,
       });
       return;
+    }
+
+    if (dispatchClaimRequest) {
+      const intendedJobId = localAgentJobIdFor(job);
+      if (intendedJobId) {
+        const existingJob = await getLocalAgentJobById(intendedJobId);
+        if (existingJob) {
+          const existingState = await existingJob.getState();
+          if (existingState === 'failed') {
+            await existingJob.remove();
+          } else {
+            const decision =
+              existingState === 'completed' ? 'ALREADY_DONE' : 'JOIN_EXISTING';
+            jsonResponse(ctx.res, 409, {
+              success: false,
+              ok: false,
+              error: 'DISPATCH_JOB_ALREADY_EXISTS',
+              dispatch_decision: decision,
+              existing_job_id: intendedJobId,
+              existing_task_id: dispatchClaimRequest.taskId,
+              existing_workstream: dispatchClaimRequest.workstream,
+              request_id: requestId,
+              existing_state: existingState,
+            });
+            return;
+          }
+        }
+      }
     }
 
     let dispatchClaimLease: DispatchClaimLease | null = null;
