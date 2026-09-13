@@ -42,16 +42,17 @@ horizontal_alignment = 1
 
 [node name="Help" type="Label" parent="Center/VBox"]
 layout_mode = 2
-text = "Escoge Guardián, compañero y aura."
+text = "Toca cada opción para cambiarla."
 horizontal_alignment = 1
 
 [node name="ModeLabel" type="Label" parent="Center/VBox"]
 layout_mode = 2
 text = "Modo"
 
-[node name="Mode" type="OptionButton" parent="Center/VBox"]
+[node name="Mode" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(720, 52)
+custom_minimum_size = Vector2(720, 56)
+theme_override_font_sizes/font_size = 18
 
 [node name="NicknameLabel" type="Label" parent="Center/VBox"]
 layout_mode = 2
@@ -65,17 +66,19 @@ placeholder_text = "Tu nombre o alias"
 layout_mode = 2
 text = "Guardián"
 
-[node name="Guardian" type="OptionButton" parent="Center/VBox"]
+[node name="Guardian" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(720, 52)
+custom_minimum_size = Vector2(720, 56)
+theme_override_font_sizes/font_size = 18
 
 [node name="CompanionLabel" type="Label" parent="Center/VBox"]
 layout_mode = 2
 text = "Compañero Astral"
 
-[node name="Companion" type="OptionButton" parent="Center/VBox"]
+[node name="Companion" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(720, 52)
+custom_minimum_size = Vector2(720, 56)
+theme_override_font_sizes/font_size = 18
 
 [node name="CompanionNameLabel" type="Label" parent="Center/VBox"]
 layout_mode = 2
@@ -89,9 +92,10 @@ placeholder_text = "Ej. Orion, Nova, Rayo..."
 layout_mode = 2
 text = "Color / Aura"
 
-[node name="Aura" type="OptionButton" parent="Center/VBox"]
+[node name="Aura" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(720, 52)
+custom_minimum_size = Vector2(720, 56)
+theme_override_font_sizes/font_size = 18
 
 [node name="Summary" type="Label" parent="Center/VBox"]
 layout_mode = 2
