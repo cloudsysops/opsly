@@ -34,7 +34,7 @@
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "test": "tsx --test src/creator-os.test.ts"
+    "test": "tsx --test __tests__/creator-os.test.ts"
   },
   "dependencies": {
     "zod": "^3.25.76"
