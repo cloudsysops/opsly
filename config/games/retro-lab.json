@@ -45,7 +45,6 @@
   },
   "enabledSystems": [
     "nes",
-    "snes",
     "gb",
     "gba",
     "atari2600"
