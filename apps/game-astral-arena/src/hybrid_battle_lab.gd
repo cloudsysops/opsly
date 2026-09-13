@@ -91,6 +91,8 @@ func _append_fighter_buttons(fighter: Dictionary, prefix: String) -> void:
     for index in range(max_buttons):
         var ability: Dictionary = abilities[index]
         var button := Button.new()
+        button.custom_minimum_size = Vector2(250, 48)
+        button.add_theme_font_size_override("font_size", 16)
         button.text = "%s · %s · %d⚡" % [
             prefix,
             str(ability.get("name", ability.get("id", "?"))),
