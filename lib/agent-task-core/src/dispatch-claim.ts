@@ -20,6 +20,7 @@ export interface DispatchClaimDescriptor {
 
 export type DispatchConflictDecision =
   | 'JOIN_EXISTING'
+  | 'ALREADY_DONE'
   | 'CONFLICT_BLOCKED';
 
 function normalizeText(value: string): string {
@@ -80,7 +81,11 @@ export function buildDispatchClaimDescriptors(
 }
 
 export function classifyDispatchConflict(
-  descriptor: DispatchClaimDescriptor
+  descriptor: DispatchClaimDescriptor,
+  existingState: 'active' | 'completed' = 'active'
 ): DispatchConflictDecision {
-  return descriptor.dimension === 'task' ? 'JOIN_EXISTING' : 'CONFLICT_BLOCKED';
+  if (descriptor.dimension === 'task') {
+    return existingState === 'completed' ? 'ALREADY_DONE' : 'JOIN_EXISTING';
+  }
+  return 'CONFLICT_BLOCKED';
 }
