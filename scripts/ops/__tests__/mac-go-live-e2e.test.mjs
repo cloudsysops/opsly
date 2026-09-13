@@ -20,3 +20,20 @@ test('go-live smoke uses governed submit and verifies teardown', async () => {
   assert.match(source, /paid_infra:false/);
   assert.doesNotMatch(source, /git reset --hard|git push --force|terraform apply/);
 });
+
+
+test('OpenClaw physical smoke uses a bounded temporary worker without repo config mutation', async () => {
+  const source = await readFile(scriptFile, 'utf8');
+
+  assert.match(source, /opsly-acceptance-openclaw-worker/);
+  assert.match(source, /OPSLY_OPENCLAW_ACCEPTANCE_ENABLED=true/);
+  assert.match(source, /OPSLY_LOCAL_AGENT_KINDS=local_openclaw/);
+  assert.match(source, /ORCHESTRATOR_HEALTH_PORT=0/);
+  assert.match(source, /start-mac-local-agents-worker\.sh/);
+  assert.match(source, /tmux kill-session -t "\$OPENCLAW_ACCEPTANCE_WORKER_SESSION"/);
+  assert.match(source, /Unified worker ready on local-agents queue/);
+
+  assert.doesNotMatch(source, /config set .*openclaw/i);
+  assert.doesNotMatch(source, /sed .*agent-services/);
+  assert.doesNotMatch(source, /git (checkout|switch|reset|pull)/);
+});
