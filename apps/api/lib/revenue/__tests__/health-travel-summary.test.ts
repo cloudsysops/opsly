@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  resolveHealthTravelTenantSlug,
   summarizeHealthTravelReceipts,
 } from '../health-travel-summary';
+import { resolveHealthTravelTenantSlug } from '../health-travel-tenant';
 
 describe('summarizeHealthTravelReceipts', () => {
   it('resolves tenant slug param -> env -> safe sandbox default', () => {
@@ -13,9 +13,9 @@ describe('summarizeHealthTravelReceipts', () => {
 
     process.env.HEALTH_TRAVEL_TENANT_SLUG = 'env-health-demo';
     expect(resolveHealthTravelTenantSlug()).toBe('env-health-demo');
-    expect(
-      resolveHealthTravelTenantSlug({ tenantSlug: 'explicit-health-demo' })
-    ).toBe('explicit-health-demo');
+    expect(resolveHealthTravelTenantSlug('explicit-health-demo')).toBe(
+      'explicit-health-demo'
+    );
 
     if (previous === undefined) {
       delete process.env.HEALTH_TRAVEL_TENANT_SLUG;
