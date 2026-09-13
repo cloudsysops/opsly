@@ -64,15 +64,37 @@ test('feedback buttons persist the intended state', async ({ page }) => {
   expect(Array.isArray(playtests)).toBe(true);
 });
 
-test('surprise button opens a playable game and touch controls exist', async ({ page }) => {
+test('clone idea button stores a named remix', async ({ page }) => {
+  await page.locator('[data-play="aurora-sky-islands"]').first().click();
+
+  page.once('dialog', async dialog => {
+    expect(dialog.type()).toBe('prompt');
+    await dialog.accept('Aurora Rainbow Remix');
+  });
+
+  await page.getByRole('button', { name: '✨ Hagamos uno así' }).click();
+  await expect(page.locator('#feedback-note')).toContainText('Idea guardada');
+
+  const ideas = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem('astral-retro-ideas') || '[]')
+  );
+  expect(ideas[0]?.title).toBe('Aurora Rainbow Remix');
+  expect(ideas[0]?.sourceMechanic).toBe('aurora-sky-islands');
+});
+
+test('surprise button opens a touch-ready playable game and touch controls exist', async ({ page }) => {
+  await page.getByRole('button', { name: '📱 iPhone' }).click();
   await page.locator('#surprise-game').click();
   await expect(page.locator('#game-theater')).toBeVisible();
   await expect(page.locator('#active-title')).not.toHaveText('Juego');
 
-  const upstreamVisible = await page.locator('#upstream-frame').isVisible();
-  if (!upstreamVisible) {
-    await expect(page.locator('[data-control="left"]')).toBeVisible();
-    await expect(page.locator('[data-control="action"]')).toBeVisible();
-    await expect(page.locator('[data-control="right"]')).toBeVisible();
-  }
+  await expect(page.locator('#upstream-frame')).toBeHidden();
+  await expect(page.locator('[data-control="left"]')).toBeVisible();
+  await expect(page.locator('[data-control="action"]')).toBeVisible();
+  await expect(page.locator('[data-control="right"]')).toBeVisible();
+
+  await page.locator('[data-control="left"]').dispatchEvent('pointerdown', { pointerId: 1 });
+  await page.locator('[data-control="left"]').dispatchEvent('pointerup', { pointerId: 1 });
+  await page.locator('[data-control="action"]').dispatchEvent('pointerdown', { pointerId: 2 });
+  await page.locator('[data-control="action"]').dispatchEvent('pointerup', { pointerId: 2 });
 });
