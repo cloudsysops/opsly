@@ -102,6 +102,12 @@ run_deploy_on_host() {
   echo "Pulling ${image}..."
   docker pull "$image"
 
+  # Capture the currently-running image (if any) so we can roll back if the
+  # new container fails its health check — previously a failed health check
+  # left the broken new container running with no way back except a manual
+  # fix (see incident 2026-09-08: missing_supabase_url left peskids down ~6h).
+  PREV_IMAGE="$(docker inspect peskids --format '{{.Config.Image}}' 2>/dev/null || true)"
+
   docker stop peskids 2>/dev/null || true
   docker rm peskids 2>/dev/null || true
 
@@ -120,7 +126,42 @@ run_deploy_on_host() {
     -e "PESKIDS_IMAGE_TAG=${image}" \
     "$image"
 
-  wait_for_peskids_ready
+  if ! wait_for_peskids_ready; then
+    echo "ERROR: new peskids container failed health check" >&2
+    if [[ -n "$PREV_IMAGE" && "$PREV_IMAGE" != "$image" ]]; then
+      echo "Rolling back to previous image: ${PREV_IMAGE}" >&2
+      docker stop peskids 2>/dev/null || true
+      docker rm peskids 2>/dev/null || true
+      docker run -d --name peskids --restart unless-stopped \
+        --network traefik-public \
+        -p 127.0.0.1:3004:3004 \
+        --env-file "$ENV_FILE" \
+        -e "PESKIDS_IMAGE=${PREV_IMAGE}" \
+        -e "PESKIDS_IMAGE_TAG=${PREV_IMAGE}" \
+        "$PREV_IMAGE"
+      if wait_for_peskids_ready; then
+        echo "ok   rollback to ${PREV_IMAGE} healthy"
+        if [[ -x "${repo_path}/scripts/notify-discord.sh" ]]; then
+          "${repo_path}/scripts/notify-discord.sh" \
+            "🔙 Peskids auto-rollback" \
+            "Deploy of ${image} failed health check; rolled back to ${PREV_IMAGE} (healthy)." \
+            "warning" || true
+        fi
+      else
+        echo "FATAL: rollback to ${PREV_IMAGE} also failed health check — peskids is down" >&2
+        if [[ -x "${repo_path}/scripts/notify-discord.sh" ]]; then
+          "${repo_path}/scripts/notify-discord.sh" \
+            "🚨 Peskids DOWN — rollback failed" \
+            "Deploy of ${image} failed health check AND rollback to ${PREV_IMAGE} also failed. Manual intervention required." \
+            "error" || true
+        fi
+      fi
+    else
+      echo "No previous image to roll back to — peskids may be down." >&2
+    fi
+    exit 1
+  fi
+
   check_url "peskids local admin login" "http://127.0.0.1:3004/admin/login"
   check_url "peskids local teacher login" "http://127.0.0.1:3004/teacher/login"
   check_url "peskids local familias login" "http://127.0.0.1:3004/familias/login"
