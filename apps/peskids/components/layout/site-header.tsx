@@ -41,7 +41,7 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
               aria-label="Ver perfil de Peskids en Instagram"
             >
               <Instagram className="h-4 w-4 shrink-0 text-white" aria-hidden />
-              <span>Ver Instagram</span>
+              <span className="hidden sm:inline">Ver Instagram</span>
             </Link>
           </div>
         ) : null}
