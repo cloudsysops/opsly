@@ -1,0 +1,58 @@
+window.ASTRAL_CLONE_LAB_GAMES = [
+  {
+    id: 'meteor-dodge-godot',
+    title: 'Meteor Dodge+',
+    icon: '☄️',
+    description: 'Survival dodge original de Opsly, estudiando patrones del demo oficial Dodge the Creeps.',
+    tags: ['clone-lab', 'dodge', 'survival', 'mobile'],
+    source: {
+      repo: 'godotengine/godot-demo-projects',
+      commit: 'a3b5c113112f77291d5f3d1360f33a882fdc52f7',
+      path: '2d/dodge_the_creeps',
+      license: 'MIT-code / attributed-assets',
+    },
+    runtimeScript: './clone-lab/meteor-dodge-godot.js',
+  },
+  {
+    id: 'michelle-butterfly-quest',
+    title: 'Michelle Butterfly Quest',
+    icon: '🦋',
+    description: 'Plataformas 2D con mariposas, cristales y portales, expresión Astral original.',
+    tags: ['clone-lab', 'platformer', '2D', 'family'],
+    source: {
+      repo: 'godotengine/godot-demo-projects',
+      commit: 'a3b5c113112f77291d5f3d1360f33a882fdc52f7',
+      path: '2d/platformer',
+      license: 'MIT-code / asset-review-required',
+    },
+    runtimeScript: './clone-lab/michelle-butterfly-quest.js',
+  },
+  {
+    id: 'aurora-sky-islands',
+    title: 'Aurora Sky Islands',
+    icon: '🦄',
+    description: 'Movimiento 3D, islas flotantes y cristales. El arte final será 100% Astral.',
+    tags: ['clone-lab', 'platformer', '3D', 'touch'],
+    source: {
+      repo: 'godotengine/godot-demo-projects',
+      commit: 'a3b5c113112f77291d5f3d1360f33a882fdc52f7',
+      path: '3d/platformer',
+      license: 'MIT-code / addon-license-review',
+    },
+    runtimeScript: './clone-lab/aurora-sky-islands.js',
+  },
+  {
+    id: 'sisters-crystal-arena',
+    title: 'Sisters Crystal Arena',
+    icon: '👭',
+    description: 'Arena cooperativa local inspirada en patrones de multiplayer bomber, sin copiar su expresión.',
+    tags: ['clone-lab', 'co-op', 'arena', '2P'],
+    source: {
+      repo: 'godotengine/godot-demo-projects',
+      commit: 'a3b5c113112f77291d5f3d1360f33a882fdc52f7',
+      path: 'networking/multiplayer_bomber',
+      license: 'MIT-code',
+    },
+    runtimeScript: './clone-lab/sisters-crystal-arena.js',
+  },
+];
