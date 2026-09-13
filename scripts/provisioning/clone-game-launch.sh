@@ -101,11 +101,18 @@ rm -rf "$APP"
 cp -R "$TEMPLATE" "$APP"
 echo "$MERGED" | jq . > "$OUT"
 
+escape_sed_replacement() {
+  printf '%s' "$1" | sed 's/[\\&|]/\\&/g'
+}
+
+SLUG_SED="$(escape_sed_replacement "$SLUG")"
+TITLE_SED="$(escape_sed_replacement "$TITLE")"
+
 find "$APP" -type f -print0 | while IFS= read -r -d '' file; do
   sed -i.bak \
-    -e "s/{{GAME_SLUG}}/$SLUG/g" \
-    -e "s/{{GAME_TITLE}}/$TITLE/g" \
-    "$file" || true
+    -e "s|{{GAME_SLUG}}|$SLUG_SED|g" \
+    -e "s|{{GAME_TITLE}}|$TITLE_SED|g" \
+    "$file"
   rm -f "${file}.bak"
 done
 
