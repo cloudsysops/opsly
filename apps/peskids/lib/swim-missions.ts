@@ -69,6 +69,6 @@ export function assignmentSourceForStaffRole(
 export function automationInputIsGoverned(
   input: CreateSwimMissionAssignmentInput
 ): boolean {
-  if (input.assignment_mode === 'manual') return false;
+  if (input.assignment_mode !== 'auto_assign_safe') return false;
   return Boolean(input.rule_id && input.workflow_id && input.idempotency_key);
 }
