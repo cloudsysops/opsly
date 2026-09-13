@@ -68,6 +68,18 @@ AgentTaskEnvelopeV1
 → teardown
 ```
 
+## Execution command
+
+After the workpack is explicitly unheld and `local_openclaw` is enabled for the bounded acceptance window:
+
+```bash
+OPSLY_E2E_AGENT=openclaw \
+OPSLY_E2E_EXPECT_MARKER=OPENCLAW_OK \
+npm run opsly:mac:go-live
+```
+
+The strict runner must first obtain `OPENCLAW_READONLY_POLICY_READY` from the policy doctor.
+
 ## Task
 
 Run a bounded inspection that does not edit the repository and return exactly:
