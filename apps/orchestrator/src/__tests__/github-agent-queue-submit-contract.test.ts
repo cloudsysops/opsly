@@ -72,6 +72,8 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('depends_on: listField(meta.depends_on)');
     expect(source).toContain('DISPATCH_SCOPE_ALREADY_OWNED');
     expect(source).toContain('submit.body.dispatch_decision');
+    expect(source).toContain("submit.body.dispatch_decision === 'JOIN_EXISTING'");
+    expect(source).toContain("submit.body.dispatch_decision === 'ALREADY_DONE'");
   });
 
   it('can require an exact terminal acceptance marker', () => {
