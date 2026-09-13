@@ -62,3 +62,23 @@ The default smoke provider/package IDs come from:
 The fixture is intentionally fictional and contains only public commercial
 coordination fields. It contains no contact details, patient identity, clinical
 records, diagnosis, or treatment recommendations.
+
+
+## Sandbox bootstrap
+
+Dry-run is the default and safe path:
+
+```bash
+npm run health-travel:sandbox:bootstrap
+```
+
+Creating the synthetic `platform.tenants` row is a separate explicit action:
+
+```bash
+HEALTH_TRAVEL_ALLOW_SANDBOX_ONBOARD=true \
+PLATFORM_ADMIN_TOKEN="..." \
+npm run health-travel:sandbox:bootstrap -- --execute-onboard
+```
+
+The wrapper refuses any slug except `medical-tourism-demo` and never enables
+Doppler, Twenty, wacrm, external communications, or production deployment.
