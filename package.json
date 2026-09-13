@@ -209,7 +209,9 @@
     "pc-gamer:opencode:status": "bash scripts/ops/pc-gamer-opencode-plane.sh --status",
     "pc-gamer:opencode:up": "bash scripts/ops/pc-gamer-opencode-plane.sh --up",
     "pc-gamer:opencode:autostart": "bash scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart",
-    "test:pc-gamer-opencode": "node --test scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs"
+    "test:pc-gamer-opencode": "node --test scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs",
+    "creator:bridge": "node scripts/ops/creator-local-bridge.mjs",
+    "test:creator-local-bridge": "node --test scripts/ops/__tests__/creator-local-bridge.test.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
