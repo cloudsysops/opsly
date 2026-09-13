@@ -123,9 +123,10 @@ doctor() {
   fi
 
   if [[ "$OPENCODE_BIND" == "127.0.0.1" || "$OPENCODE_BIND" == "localhost" ]]; then
-    echo "[WARN] bridge is localhost-only; set OPSLY_OPENCODE_BIND to the Gamer Tailscale IP for remote Mac dispatch"
+    echo "[PASS] bridge is loopback-only: $OPENCODE_BIND:$OPENCODE_PORT"
   else
-    echo "[PASS] remote bridge bind: $OPENCODE_BIND:$OPENCODE_PORT"
+    echo "[FAIL] bridge must stay loopback-only; BullMQ worker uses host networking and does not need remote bridge ingress"
+    failures=$((failures+1))
   fi
 
   if [[ -f "$ENV_WORKER" ]]; then
