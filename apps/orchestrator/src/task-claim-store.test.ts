@@ -16,6 +16,7 @@ import {
   dispatchClaimRequestFromContext,
   parseDispatchClaimLease,
   releaseTaskDispatchClaim,
+  renewTaskDispatchClaim,
 } from './task-claim-store.js';
 
 describe('task dispatch claim store', () => {
@@ -63,7 +64,8 @@ describe('task dispatch claim store', () => {
     expect(result.acquired).toBe(true);
     expect(redis.eval).toHaveBeenCalledTimes(1);
     const args = redis.eval.mock.calls[0]!;
-    expect(args[1]).toBe(4);
+    expect(args[1]).toBe(5);
+    expect(String(args[6])).toContain(':repository:path-index');
     expect(args.join(' ')).toContain('claim-1|');
     if (result.acquired) {
       expect(result.lease.descriptors).toHaveLength(4);
@@ -148,6 +150,54 @@ describe('task dispatch claim store', () => {
       expect(result.conflict.decision).toBe('ALREADY_DONE');
       expect(result.conflict.existingTaskId).toBe('wp-done');
     }
+  });
+
+  it('uses a repository-wide atomic path index for ancestor/descendant overlap checks', async () => {
+    redis.eval.mockResolvedValueOnce([
+      0,
+      3,
+      'owner-claim|{"task_id":"wp-owner","workstream":"api"}',
+    ]);
+
+    const result = await acquireTaskDispatchClaim({
+      tenantSlug: 'local',
+      requestId: 'claim-path-child',
+      taskId: 'wp-child',
+      workstream: 'api',
+      conflictKey: 'api/child',
+      affectedPaths: ['apps/api/app/route.ts'],
+    });
+
+    expect(result.acquired).toBe(false);
+    if (!result.acquired) {
+      expect(result.conflict.descriptor.dimension).toBe('path');
+      expect(result.conflict.decision).toBe('CONFLICT_BLOCKED');
+    }
+    const script = String(redis.eval.mock.calls[0]?.[0] ?? '');
+    expect(script).toContain("HGETALL");
+    expect(script).toContain("overlaps(existingPath, requestedPath)");
+  });
+
+  it('renews a lease only when every Redis descriptor is still owned by the claim', async () => {
+    redis.eval.mockResolvedValueOnce(3);
+    const result = await renewTaskDispatchClaim({
+      version: 'dispatch-claim-v1',
+      claimId: 'claim-renew',
+      tenantSlug: 'local',
+      taskId: 'wp-renew',
+      workstream: 'orchestrator',
+      descriptors: [
+        { dimension: 'task', value: 'wp-renew' },
+        { dimension: 'conflict', value: 'orchestrator/renew' },
+        { dimension: 'path', value: 'apps/orchestrator' },
+      ],
+      acquiredAt: '2026-09-13T18:00:00.000Z',
+      expiresAt: '2026-09-13T22:00:00.000Z',
+    });
+
+    expect(result.renewed).toBe(true);
+    expect(result.renewedKeys).toBe(3);
+    expect(String(redis.eval.mock.calls[0]?.[0] ?? '')).toContain("PEXPIRE");
   });
 
   it('returns CONFLICT_BLOCKED for a semantic/conflict/path collision', async () => {
