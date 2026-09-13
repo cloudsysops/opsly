@@ -23,6 +23,10 @@ vi.mock('bullmq', () => {
 const queueMocks = vi.hoisted(() => ({
   enqueueJob: vi.fn((..._args: unknown[]) => Promise.resolve({ id: 'openclaw-job' })),
   enqueueLocalAgentJob: vi.fn((..._args: unknown[]) => Promise.resolve({ id: 'local-agents-job' })),
+  getLocalAgentJobById: vi.fn((..._args: unknown[]) => Promise.resolve(null)),
+  localAgentJobIdFor: vi.fn((job: { type?: string; request_id?: string }) =>
+    `${job.type || 'local'}-${job.request_id || 'request'}`
+  ),
 }));
 
 vi.mock('../queue.js', async (importOriginal) => {
@@ -31,6 +35,8 @@ vi.mock('../queue.js', async (importOriginal) => {
     ...actual,
     enqueueJob: queueMocks.enqueueJob,
     enqueueLocalAgentJob: queueMocks.enqueueLocalAgentJob,
+    getLocalAgentJobById: queueMocks.getLocalAgentJobById,
+    localAgentJobIdFor: queueMocks.localAgentJobIdFor,
   };
 });
 
@@ -563,6 +569,87 @@ describe('local prompt-submit → local-agents queue', () => {
 
     expect(status).toBe(400);
     expect(raw).toMatch(/mismatch/i);
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('rejects a read-only envelope when its task differs from the prompt actually executed', async () => {
+    const requestId = 'req-envelope-prompt-mismatch';
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'academy-demo',
+        request_id: requestId,
+        agent: 'local_opencode',
+        prompt_body: 'modify production code',
+        agent_task: {
+          schema_version: 'AgentTaskEnvelopeV1',
+          request_id: requestId,
+          correlation_id: requestId,
+          tenant_slug: 'academy-demo',
+          task_type: 'review',
+          task: 'inspect only',
+          selected_agent: 'local_opencode',
+          skills: [],
+          constraints: {
+            open_source_only: false,
+            local_only: true,
+            browser_allowed: false,
+            network_allowed: false,
+            write_allowed: false,
+            file_scope: [],
+            max_tokens: 1600,
+          },
+          execution_mode: 'enqueue',
+          source: 'opsly',
+          actor: 'system',
+          created_at: '2026-09-13T12:00:00.000Z',
+          timeout_ms: 120000,
+          max_attempts: 2,
+          budget: { max_tokens: 1600 },
+          metadata: {},
+          fallback_agents: [],
+        },
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(400);
+    expect(raw).toMatch(/task must exactly match/i);
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('returns JOIN_EXISTING before acquiring a new claim for a nonterminal duplicate BullMQ id', async () => {
+    queueMocks.getLocalAgentJobById.mockResolvedValueOnce({
+      getState: vi.fn(async () => 'waiting'),
+      remove: vi.fn(async () => undefined),
+    });
+
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'duplicate-001',
+        agent: 'local_opencode',
+        agent_role: 'implement',
+        prompt_body: 'Implement only the claimed module',
+        context: {
+          task_id: 'duplicate-task',
+          workstream: 'orchestrator',
+          conflict_key: 'orchestrator/duplicate',
+          affected_paths: ['apps/orchestrator/src'],
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(409);
+    expect(raw).toMatch(/JOIN_EXISTING/);
+    expect(claimMocks.acquireTaskDispatchClaim).not.toHaveBeenCalled();
     expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
   });
 
