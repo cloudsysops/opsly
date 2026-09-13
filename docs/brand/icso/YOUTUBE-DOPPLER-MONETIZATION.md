@@ -41,20 +41,30 @@ Queue: [`config/content-studio/youtube-publish-plan.json`](../../../config/conte
 ## 2. Setup OAuth (una vez)
 
 ```bash
-# Dry-run
-./scripts/youtube-oauth-doppler-setup.sh --dry-run
+# Dry-run (no browser, no secret write)
+npm run youtube:oauth:dry
 
 # Tras crear OAuth client en GCP (YouTube Data API v3 + redirect 127.0.0.1:8768):
+# --apply is mandatory before consent or Doppler mutation.
 ./scripts/youtube-oauth-doppler-setup.sh \
+  --apply \
   --client-json ~/Downloads/youtube-oauth-client.json
+
+# Optional: bind the verified channel id to an explicit metadata key only when known.
+# Example for Bitsitos:
+./scripts/youtube-oauth-doppler-setup.sh \
+  --apply \
+  --client-json ~/Downloads/youtube-oauth-client.json \
+  --channel-secret-name YOUTUBE_BITSITOS_CHANNEL_ID
 ```
 
 El script:
 
-1. Escribe metadatos de canal en Doppler.
-2. Abre consentimiento Google (scopes upload + readonly).
-3. Guarda `YOUTUBE_CLIENT_*` + `YOUTUBE_REFRESH_TOKEN` sin volcar valores.
-4. Verifica `channels?mine=true` y alinea `YOUTUBE_BITSITOS_CHANNEL_ID`.
+1. En dry-run no abre navegador ni toca Doppler.
+2. Con `--apply`, abre consentimiento Google (scopes upload + readonly) usando callback loopback `127.0.0.1`.
+3. Exige refresh token offline y verifica `channels?mine=true` antes de guardar.
+4. Guarda `YOUTUBE_CLIENT_*` + `YOUTUBE_REFRESH_TOKEN` por stdin con Doppler `--silent`, sin imprimir valores.
+5. Solo escribe un `YOUTUBE_*_CHANNEL_ID` cuando se pasa explícitamente `--channel-secret-name`; no asume Bitsitos.
 
 ## 3. Publicar
 
