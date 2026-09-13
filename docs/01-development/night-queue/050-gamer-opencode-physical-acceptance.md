@@ -63,7 +63,8 @@ Then verify:
 3. the Gamer OpenCode bridge is managed by the canonical user systemd service and reports `auth_configured=true` + `ephemeral-tmux-session`;
 4. no paid API was used;
 5. ephemeral task session is gone;
-6. healthy idle returns to zero `opsly-task-*` sessions.
+6. immediately after the turn, `bash scripts/ops/pc-gamer-opencode-plane.sh --gpu-proof` on the Gamer returns `GAMER_OLLAMA_GPU_ACTIVE` using Ollama `/api/ps` VRAM evidence;
+7. healthy idle returns to zero `opsly-task-*` sessions.
 
 ## Hard boundaries
 
@@ -74,3 +75,18 @@ Then verify:
 - No code changes.
 - No Mac fallback.
 - No paid API fallback.
+
+
+## Post-run GPU proof
+
+Immediately after `GAMER_OPENCODE_OK`, run on the Gamer:
+
+```bash
+bash scripts/ops/pc-gamer-opencode-plane.sh --gpu-proof
+```
+
+Required marker:
+
+`GAMER_OLLAMA_GPU_ACTIVE`
+
+This proves an Ollama model involved in the acceptance window has non-zero GPU VRAM allocation; host GPU presence alone is not sufficient.
