@@ -33,7 +33,7 @@ Do not unhold this workpack until all of the following are true:
 2. Doppler/bridge auth prerequisites are green;
 3. the installed OpenClaw version supports `openclaw agent exec`;
 4. `OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 bash scripts/ops/openclaw-readonly-policy-doctor.sh` returns `OPENCLAW_READONLY_POLICY_READY`;
-5. `local_openclaw` is enabled only for the bounded acceptance window;
+5. `local_openclaw` is enabled only inside the bounded temporary acceptance worker via `OPSLY_OPENCLAW_ACCEPTANCE_ENABLED=true`; the normal Mac worker remains unchanged;
 6. the effective primary model is an exact local `ollama/<model>` reference with no configured fallbacks;
 7. no production deploy or paid-provider fallback is required.
 
@@ -78,7 +78,7 @@ OPSLY_E2E_EXPECT_MARKER=OPENCLAW_OK \
 npm run opsly:mac:go-live
 ```
 
-The strict runner must first obtain `OPENCLAW_READONLY_POLICY_READY` from the policy doctor.
+The strict runner must first obtain `OPENCLAW_READONLY_POLICY_READY` from the policy doctor. It then starts a temporary `local_openclaw`-only worker and destroys it on exit; no YAML/registry mutation is allowed.
 
 ## Task
 
