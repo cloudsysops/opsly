@@ -82,6 +82,44 @@ describe('git-branch-orchestrator', () => {
     expect(entries.some((e) => e.id === result.entry.id)).toBe(true);
   });
 
+  it('refuses to materialize a real agent branch without dispatch claim evidence', async () => {
+    process.env.OPSLY_GIT_DRY_RUN = '1';
+
+    await expect(
+      assignWorkerToBranch({
+        tenant_slug: 'intcloudsysops',
+        initiative: 'ownership-gate',
+        task_slug: 'claimed-write',
+        task_type: 'implementation',
+        worker_id: 'opencode',
+        request_id: 'claim-required-001',
+        materialize_git: true,
+      })
+    ).rejects.toThrow(/DISPATCH_CLAIM_REQUIRED/);
+  });
+
+  it('materializes only when dispatch claim evidence is bound to the same request id', async () => {
+    process.env.OPSLY_GIT_DRY_RUN = '1';
+    const result = await assignWorkerToBranch({
+      tenant_slug: 'intcloudsysops',
+      initiative: 'ownership-gate',
+      task_slug: 'claimed-write',
+      task_type: 'implementation',
+      worker_id: 'opencode',
+      request_id: 'claim-ok-001',
+      dispatch_claim: {
+        version: 'dispatch-claim-v1',
+        claim_id: 'claim-ok-001',
+        task_id: 'claimed-write',
+        workstream: 'ownership-gate',
+      },
+      materialize_git: true,
+    });
+
+    expect(result.git?.dry_run).toBe(true);
+    expect(result.git?.branch_created).toBe(true);
+  });
+
   it('ChatOps dispatch plans MVP branches', async () => {
     const result = await dispatchChatOps({
       tenant_slug: 'intcloudsysops',
