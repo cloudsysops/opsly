@@ -9,7 +9,6 @@ import {
   CalendarClock,
   ClipboardList,
   GraduationCap,
-  Gamepad2,
   Home,
   Inbox,
   LayoutDashboard,
@@ -22,6 +21,7 @@ import {
   Sparkles,
   Users,
   UsersRound,
+  Waves,
   X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -66,7 +66,7 @@ const navOps = [
   { icon: LayoutGrid, label: 'Academia', href: '/admin#academy' },
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },
-  { icon: Gamepad2, label: 'Práctica', href: '/admin/swim-missions' },
+  { icon: Waves, label: 'Práctica', href: '/admin/swim-missions' },
   { icon: UsersRound, label: 'Familias', href: '/admin#families' },
   { icon: Users, label: 'Interesados', href: '/admin#leads' },
   { icon: BarChart3, label: 'Pipeline', href: '/admin/pipeline' },
