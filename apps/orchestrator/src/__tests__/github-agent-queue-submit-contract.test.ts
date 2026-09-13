@@ -39,8 +39,8 @@ describe('GitHub Agent Queue submitter contract', () => {
   });
 
   it('uses a BullMQ-safe idempotent request identity', () => {
-    expect(source).toContain("docs/01-development/github-agent-queue");
-    expect(source).toContain('workpack must live under docs/01-development/github-agent-queue');
+    expect(source).toContain("docs/01-development/night-queue");
+    expect(source).toContain('workpack must live under docs/01-development/night-queue');
     expect(source).toContain('const requestId = `ghq-${safeIdSegment(meta.id)}-${sha.slice(0, 12)}`');
     expect(source).toContain('idempotency_key: requestId');
     expect(source).toContain('request_id: requestId');
@@ -74,6 +74,8 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('submit.body.dispatch_decision');
     expect(source).toContain("submit.body.dispatch_decision === 'JOIN_EXISTING'");
     expect(source).toContain("submit.body.dispatch_decision === 'ALREADY_DONE'");
+    expect(source).toContain('JOIN_EXISTING_NONTERMINAL');
+    expect(source).toContain('this submitter must not report success');
   });
 
   it('can require an exact terminal acceptance marker', () => {
