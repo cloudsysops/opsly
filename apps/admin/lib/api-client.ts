@@ -19,6 +19,7 @@ import type {
   DefenseAuditDetail,
   DefenseAuditRow,
   DefensePricingResponse,
+  HealthTravelRuntimeSummaryResponse,
 } from './types';
 
 const REQUEST_TIMEOUT_MS = 2_000;
@@ -716,3 +717,13 @@ export async function executeAgentIdeMcpTool(
 }
 
 export type { OllamaDemoJobStatus } from './types';
+
+export async function getHealthTravelRuntimeSummary(
+  days = 30
+): Promise<HealthTravelRuntimeSummaryResponse> {
+  const search = new URLSearchParams();
+  search.set('days', String(days));
+  return request<HealthTravelRuntimeSummaryResponse>(
+    `/api/admin/health-travel/summary?${search.toString()}`
+  );
+}

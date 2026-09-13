@@ -369,3 +369,33 @@ export type DefensePricingResponse = {
     }
   >;
 };
+
+export type HealthTravelRuntimeSummaryResponse = {
+  tenant_slug: string;
+  tenant_configured: boolean;
+  generated_at: string;
+  connectivity: {
+    status: 'healthy' | 'unavailable' | 'not_configured';
+    url_configured: boolean;
+    checked_at: string;
+    http_status: number | null;
+    latency_ms: number | null;
+  };
+  activity: {
+    status: 'recent' | 'quiet' | 'never_seen';
+    last_event_at: string | null;
+    last_event_type: string | null;
+    hours_since_last_event: number | null;
+  };
+  window_days: number;
+  counts: {
+    leads: number;
+    consultations_scheduled: number;
+    consultations_completed: number;
+    quotes_sent: number;
+    bookings_started: number;
+    deposits_paid: number;
+    journeys_completed: number;
+    reconciliation_required: number;
+  };
+};
