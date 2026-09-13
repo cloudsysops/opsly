@@ -113,6 +113,22 @@ describe('local prompt-submit → local-agents queue', () => {
       })
   );
 
+  it('rejects prompt-submit bodies larger than 64 KiB without enqueueing', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'acme',
+        prompt_body: 'x'.repeat(70_000),
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(413);
+    expect(raw).toMatch(/request body too large/i);
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
   it('POST /api/local/prompt-submit calls enqueueLocalAgentJob with OrchestratorJob (not enqueueJob)', async () => {
     const { status, raw } = await postJson(
       port,
