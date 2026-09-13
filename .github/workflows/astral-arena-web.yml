@@ -217,17 +217,16 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf dist/astral-arena-web
-          mkdir -p dist/astral-arena-web
-          output="$GITHUB_WORKSPACE/dist/astral-arena-web/index.html"
+          mkdir -p dist/astral-arena-web/games/astral-arena
+          output="$GITHUB_WORKSPACE/dist/astral-arena-web/games/astral-arena/index.html"
           ".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"             --headless             --verbose             --path apps/game-astral-arena             --export-release "Web" "$output"
-          mkdir -p dist/astral-arena-web/games
-          cp -a apps/game-astral-arena/web/games/. dist/astral-arena-web/games/
+          cp -a apps/game-astral-arena/web/games/. dist/astral-arena-web/
 
       - name: Build pinned open-source originals
         shell: bash
         env:
           GODOT_BIN: ${{ github.workspace }}/.tools/godot/Godot_v${{ env.GODOT_VERSION }}-stable_linux.x86_64
-          OUT_DIR: ${{ github.workspace }}/dist/astral-arena-web/games/upstream
+          OUT_DIR: ${{ github.workspace }}/dist/astral-arena-web/upstream
         run: |
           set -euo pipefail
           chmod +x scripts/games/build-clone-lab-upstreams.sh
@@ -238,19 +237,21 @@ jobs:
         run: |
           set -euo pipefail
           test -s dist/astral-arena-web/index.html
-          find dist/astral-arena-web -maxdepth 1 -type f -name '*.wasm' -size +0c | grep -q .
-          find dist/astral-arena-web -maxdepth 1 -type f -name '*.pck' -size +0c | grep -q .
-          find dist/astral-arena-web -maxdepth 1 -type f -name '*.js' -size +0c | grep -q .
-          test -s dist/astral-arena-web/games/index.html
-          test -s dist/astral-arena-web/games/emulator.html
-          test -s dist/astral-arena-web/games/originals.js
-          test -s dist/astral-arena-web/games/clone-lab/upstream-catalog.js
-          test -s dist/astral-arena-web/games/upstream/godot-rpg-original/index.html
-          test -s dist/astral-arena-web/games/upstream/godot-isometric-original/index.html
-          test -s dist/astral-arena-web/games/upstream/godot-pong-original/index.html
-          test -s dist/astral-arena-web/games/upstream/godot-dodge-original/index.html
-          test -s dist/astral-arena-web/games/upstream/godot-rpg-original/source.json
-          test -s dist/astral-arena-web/games/upstream/godot-rpg-original/UPSTREAM-LICENSE-MIT.txt
+          test -s dist/astral-arena-web/app.js
+          test -s dist/astral-arena-web/originals.js
+          test -s dist/astral-arena-web/emulator.html
+          test -s dist/astral-arena-web/clone-lab/upstream-catalog.js
+          test -s dist/astral-arena-web/games/astral-arena/index.html
+          find dist/astral-arena-web/games/astral-arena -maxdepth 1 -type f -name '*.wasm' -size +0c | grep -q .
+          find dist/astral-arena-web/games/astral-arena -maxdepth 1 -type f -name '*.pck' -size +0c | grep -q .
+          find dist/astral-arena-web/games/astral-arena -maxdepth 1 -type f -name '*.js' -size +0c | grep -q .
+          test -s dist/astral-arena-web/upstream/godot-rpg-original/index.html
+          test -s dist/astral-arena-web/upstream/godot-isometric-original/index.html
+          test -s dist/astral-arena-web/upstream/godot-pong-original/index.html
+          test -s dist/astral-arena-web/upstream/godot-dodge-original/index.html
+          test -s dist/astral-arena-web/upstream/godot-rpg-original/source.json
+          test -s dist/astral-arena-web/upstream/godot-rpg-original/UPSTREAM-LICENSE-MIT.txt
+          grep -q 'Opsly Games' dist/astral-arena-web/index.html
           find dist/astral-arena-web -type f ! -name 'SHA256SUMS.txt' -print0 \
             | sort -z \
             | xargs -0 sha256sum > dist/astral-arena-web/SHA256SUMS.txt
