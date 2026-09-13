@@ -9,8 +9,10 @@ test('PC Gamer OpenCode plane is local-first and model-discovering', async () =>
   assert.match(source, /OPSLY_LOCAL_MODEL_PREFERENCE/);
   assert.match(source, /\/api\/tags/);
   assert.match(source, /resolve_local_model/);
-  assert.ok(source.includes('OPSLY_OPENCODE_MODEL="$selected_model"'));
-  assert.ok(source.includes('OLLAMA_URL="$OLLAMA_URL"'));
+  // The generated EnvironmentFile is a heredoc with shell expansion, so the
+  // canonical assignments are emitted without shell quotes.
+  assert.ok(source.includes('OPSLY_OPENCODE_MODEL=${selected_model}'));
+  assert.ok(source.includes('OLLAMA_URL=${OLLAMA_URL}'));
   assert.doesNotMatch(source, /Environment=OPSLY_OPENCODE_MODEL=ollama\/llama3\.2/);
 });
 
