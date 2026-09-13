@@ -713,6 +713,11 @@ async function maybeCreateCommissionEvent(params: {
     return null;
   }
 
+  if (!signal.paymentIdentity) {
+    pushUnique(params.reconciliation, 'payment_identity_missing');
+    return null;
+  }
+
   if (!params.offer) {
     pushUnique(params.reconciliation, 'commission_offer_unresolved');
     return null;
