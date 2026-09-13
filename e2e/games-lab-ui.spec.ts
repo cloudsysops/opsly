@@ -6,10 +6,20 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
 });
 
+test('Games is the product home and Astral Arena is nested inside it', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: 'Todo empieza en Games.' })).toBeVisible();
+  await expect(page.locator('#first-party-grid [data-card-game="astral-arena"]')).toBeVisible();
+  await page.locator('#first-party-grid [data-play="astral-arena"]').click();
+  await expect(page.locator('#game-theater')).toBeVisible();
+  await expect(page.locator('#active-title')).toHaveText('Astral Arena');
+  await expect(page.locator('#upstream-frame')).toHaveAttribute('src', './astral-arena/');
+  await page.locator('#close-game').click();
+});
+
 test('primary console buttons perform their actions', async ({ page }) => {
   const theater = page.locator('#game-theater');
 
-  await expect(page.getByRole('heading', { name: '¿Cuál quieren probar primero?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Todo empieza en Games.' })).toBeVisible();
 
   await page.locator('[data-play="meteor-dodge-godot"]').first().click();
   await expect(theater).toBeVisible();
@@ -82,13 +92,19 @@ test('clone idea button stores a named remix', async ({ page }) => {
   expect(ideas[0]?.sourceMechanic).toBe('aurora-sky-islands');
 });
 
-test('surprise button opens a touch-ready playable game and touch controls exist', async ({ page }) => {
+test('surprise button opens a touch-ready game', async ({ page }) => {
   await page.getByRole('button', { name: '📱 iPhone' }).click();
   await page.locator('#surprise-game').click();
   await expect(page.locator('#game-theater')).toBeVisible();
   await expect(page.locator('#active-title')).not.toHaveText('Juego');
 
-  await expect(page.locator('#upstream-frame')).toBeHidden();
+  const canvasVisible = await page.locator('#game-canvas').isVisible();
+  const iframeVisible = await page.locator('#upstream-frame').isVisible();
+  expect(canvasVisible || iframeVisible).toBe(true);
+});
+
+test('local playable games expose working touch controls', async ({ page }) => {
+  await page.locator('[data-play="meteor-dodge-godot"]').first().click();
   await expect(page.locator('[data-control="left"]')).toBeVisible();
   await expect(page.locator('[data-control="action"]')).toBeVisible();
   await expect(page.locator('[data-control="right"]')).toBeVisible();
