@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getServiceClient } from '../supabase/client';
+import { resolveHealthTravelTenantSlug } from './health-travel-tenant';
 
 const DEFAULT_WINDOW_DAYS = 30;
 const MAX_EVENT_ROWS = 5000;
@@ -48,16 +49,6 @@ type ReceiptRow = {
   processing_status: string;
   occurred_at: string;
 };
-
-export function resolveHealthTravelTenantSlug(params?: {
-  tenantSlug?: string;
-}): string {
-  return (
-    params?.tenantSlug?.trim() ||
-    process.env.HEALTH_TRAVEL_TENANT_SLUG?.trim() ||
-    'medical-tourism-demo'
-  );
-}
 
 function clampWindowDays(value: number): number {
   if (!Number.isFinite(value)) return DEFAULT_WINDOW_DAYS;
@@ -175,7 +166,7 @@ export async function getHealthTravelRuntimeSummary(params?: {
   tenantSlug?: string;
   windowDays?: number;
 }): Promise<HealthTravelRuntimeSummary> {
-  const tenantSlug = resolveHealthTravelTenantSlug(params);
+  const tenantSlug = resolveHealthTravelTenantSlug(params?.tenantSlug);
   const windowDays = clampWindowDays(params?.windowDays ?? DEFAULT_WINDOW_DAYS);
   const platform = getServiceClient().schema('platform') as any;
 
