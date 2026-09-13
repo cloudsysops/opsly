@@ -37,3 +37,13 @@ export type {
   ExecutionEvidenceV1,
 } from './execution-evidence-v1.js';
 export { normalizeExecutionEvidenceV1 } from './execution-evidence-v1.js';
+
+export { verifyIndependentlyV1, VERIFICATION_ORDER_V1 } from './verification-v1.js';
+export type {
+  VerificationOutcomeV1,
+  VerificationClassV1,
+  VerificationFailureClassV1,
+  VerificationCheckV1,
+  IndependentVerificationInputV1,
+  IndependentVerificationV1,
+} from './verification-v1.js';
