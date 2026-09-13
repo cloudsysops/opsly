@@ -370,6 +370,25 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
         dispatch_claim_id: dispatchClaimLease.claimId,
         dispatch_claim_expires_at: dispatchClaimLease.expiresAt,
       };
+
+      const ownershipHeader = [
+        '[OPSLY DISPATCH OWNERSHIP — TRUSTED CONTROL METADATA]',
+        `claim_id=${dispatchClaimLease.claimId}`,
+        `task_id=${dispatchClaimLease.taskId}`,
+        `workstream=${dispatchClaimLease.workstream}`,
+        `conflict_key=${dispatchClaimRequest.conflictKey}`,
+        dispatchClaimRequest.semanticScope
+          ? `semantic_scope=${dispatchClaimRequest.semanticScope}`
+          : null,
+        dispatchClaimRequest.affectedPaths.length > 0
+          ? `affected_paths=${dispatchClaimRequest.affectedPaths.join(',')}`
+          : null,
+        'Do not start a parallel branch/worktree/task for this owned scope. Reuse the existing claim until terminal completion.',
+        '[/OPSLY DISPATCH OWNERSHIP]',
+      ]
+        .filter((line): line is string => typeof line === 'string')
+        .join('\n');
+      job.payload.prompt_content = `${ownershipHeader}\n\n${promptForWorker}`;
     }
 
     let bull;
@@ -382,8 +401,14 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       throw err;
     }
 
-    const bullJobId = bull.id != null ? String(bull.id) : null;
-    console.log(`[LocalPromptSubmit] Enqueued ${job.type} job ${bull.id} (${agentKind}) to local-agents queue`);
+    const bullJobId = bull.id != null && String(bull.id).trim().length > 0 ? String(bull.id) : null;
+    if (!bullJobId) {
+      if (dispatchClaimLease) {
+        await releaseTaskDispatchClaim(dispatchClaimLease).catch(() => undefined);
+      }
+      throw new Error('BULLMQ_JOB_ID_REQUIRED: enqueue returned no durable job id');
+    }
+    console.log(`[LocalPromptSubmit] Enqueued ${job.type} job ${bullJobId} (${agentKind}) to local-agents queue`);
     recordRecentLocalJob({
       request_id: requestId,
       job_id: bullJobId,
