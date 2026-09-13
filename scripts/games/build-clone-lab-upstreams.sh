@@ -20,7 +20,7 @@ git -C "$REPO_DIR" remote add origin "https://github.com/${repository}.git"
 git -C "$REPO_DIR" sparse-checkout init --cone
 
 mapfile -t paths < <(node -e "const c=require(process.argv[1]); for (const g of c.games) console.log(g.path)" "$CONFIG")
-git -C "$REPO_DIR" sparse-checkout set LICENSE.md "${paths[@]}"
+git -C "$REPO_DIR" sparse-checkout set "${paths[@]}"
 git -C "$REPO_DIR" fetch -q --depth 1 origin "$commit"
 git -C "$REPO_DIR" checkout -q --detach FETCH_HEAD
 
