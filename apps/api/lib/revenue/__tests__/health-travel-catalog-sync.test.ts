@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   buildHealthTravelOfferPatch,
   healthTravelCatalogSchema,
+  healthTravelOfferIdentity,
   healthTravelPackageTypeToOfferType,
   healthTravelProviderTypeToPartnerType,
+  shouldPauseSyncedOffer,
+  shouldPauseSyncedProvider,
 } from '../health-travel-catalog-sync';
 
 describe('Health Travel catalog sync contract', () => {
@@ -46,6 +49,55 @@ describe('Health Travel catalog sync contract', () => {
     });
     expect(patch).not.toHaveProperty('price_from');
     expect(patch).not.toHaveProperty('price_to');
+  });
+
+  it('pauses only stale source-synced providers', () => {
+    const active = new Set(['provider-current']);
+    expect(
+      shouldPauseSyncedProvider({
+        externalRef: 'provider-stale',
+        status: 'active',
+        activeProviderRefs: active,
+      })
+    ).toBe(true);
+    expect(
+      shouldPauseSyncedProvider({
+        externalRef: 'provider-current',
+        status: 'active',
+        activeProviderRefs: active,
+      })
+    ).toBe(false);
+    expect(
+      shouldPauseSyncedProvider({
+        externalRef: 'provider-stale',
+        status: 'paused',
+        activeProviderRefs: active,
+      })
+    ).toBe(false);
+  });
+
+  it('treats package identity as provider + package so provider moves pause the old mapping', () => {
+    const active = new Set([
+      healthTravelOfferIdentity('provider-new', 'package-1'),
+    ]);
+
+    expect(
+      shouldPauseSyncedOffer({
+        partnerId: 'provider-old',
+        externalRef: 'package-1',
+        status: 'active',
+        activeOfferKeys: active,
+      })
+    ).toBe(true);
+
+    expect(
+      shouldPauseSyncedOffer({
+        partnerId: 'provider-new',
+        externalRef: 'package-1',
+        status: 'active',
+        activeOfferKeys: active,
+      })
+    ).toBe(false);
   });
 
   it('rejects leaked contact or internal provider fields', () => {
