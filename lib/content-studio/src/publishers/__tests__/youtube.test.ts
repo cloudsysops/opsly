@@ -5,20 +5,27 @@ import { join } from 'node:path';
 
 const insertMock = vi.fn();
 const playlistInsertMock = vi.fn();
+const channelsListMock = vi.fn();
 const setCredentialsMock = vi.fn();
+const getAccessTokenMock = vi.fn();
 
 vi.mock('googleapis', () => ({
   google: {
     auth: {
       // Must be a constructible function (not an arrow function) — the
       // publisher calls `new google.auth.OAuth2(...)`.
-      OAuth2: vi.fn().mockImplementation(function (this: { setCredentials: typeof setCredentialsMock }) {
+      OAuth2: vi.fn().mockImplementation(function (this: {
+        setCredentials: typeof setCredentialsMock;
+        getAccessToken: typeof getAccessTokenMock;
+      }) {
         this.setCredentials = setCredentialsMock;
+        this.getAccessToken = getAccessTokenMock;
       }),
     },
     youtube: vi.fn().mockImplementation(() => ({
       videos: { insert: insertMock },
       playlistItems: { insert: playlistInsertMock },
+      channels: { list: channelsListMock },
     })),
   },
 }));
@@ -39,6 +46,8 @@ describe('YouTubePublisher', () => {
     insertMock.mockReset();
     playlistInsertMock.mockReset();
     setCredentialsMock.mockReset();
+    getAccessTokenMock.mockReset();
+    channelsListMock.mockReset();
     dir = mkdtempSync(join(tmpdir(), 'yt-publisher-'));
     videoPath = join(dir, 'episode.mp4');
     writeFileSync(videoPath, 'fake-video-bytes');
@@ -53,6 +62,43 @@ describe('YouTubePublisher', () => {
   it('sets OAuth2 credentials on construction', () => {
     new YouTubePublisher(validCredentials);
     expect(setCredentialsMock).toHaveBeenCalledWith({ refresh_token: 'test-refresh-token' });
+  });
+
+  it('probes the authenticated channel without writing YouTube state', async () => {
+    getAccessTokenMock.mockResolvedValue({ token: 'ephemeral-access-token' });
+    channelsListMock.mockResolvedValue({
+      data: {
+        items: [
+          {
+            id: 'UCabc123',
+            snippet: { title: 'Opsly Tech', customUrl: '@opslytech' },
+          },
+        ],
+      },
+    });
+
+    const publisher = new YouTubePublisher(validCredentials);
+    const result = await publisher.probeConnection();
+
+    expect(result.token_exchange).toBe('PASS');
+    expect(result.channel_count).toBe(1);
+    expect(result.channels).toEqual([
+      { channel_id: 'UCabc123', title: 'Opsly Tech', custom_url: '@opslytech' },
+    ]);
+    expect(channelsListMock).toHaveBeenCalledWith({
+      part: ['snippet'],
+      mine: true,
+      maxResults: 50,
+    });
+    expect(insertMock).not.toHaveBeenCalled();
+    expect(playlistInsertMock).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when token exchange returns no access token', async () => {
+    getAccessTokenMock.mockResolvedValue({ token: null });
+    const publisher = new YouTubePublisher(validCredentials);
+    await expect(publisher.probeConnection()).rejects.toThrow(/no access token/);
+    expect(channelsListMock).not.toHaveBeenCalled();
   });
 
   it('rejects a publish request missing made_for_kids', async () => {

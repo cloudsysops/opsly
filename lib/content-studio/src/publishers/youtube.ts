@@ -4,6 +4,7 @@ import type {
   YouTubeCredentials,
   YouTubePublishRequest,
   YouTubePublishResult,
+  YouTubeConnectionProbeResult,
 } from '../types.js';
 
 /**
@@ -29,6 +30,42 @@ export class YouTubePublisher {
     }
     this.auth = new google.auth.OAuth2(credentials.client_id, credentials.client_secret);
     this.auth.setCredentials({ refresh_token: credentials.refresh_token });
+  }
+
+  /**
+   * Read-only connectivity probe.
+   *
+   * Exchanges the configured refresh token for an access token and asks
+   * YouTube which channel(s) the authenticated user owns/manages. This method
+   * never uploads or mutates YouTube state.
+   */
+  async probeConnection(): Promise<YouTubeConnectionProbeResult> {
+    const token = await this.auth.getAccessToken();
+    if (!token?.token) {
+      throw new Error('YouTube OAuth token exchange returned no access token');
+    }
+
+    const youtube = google.youtube({ version: 'v3', auth: this.auth });
+    const response = await youtube.channels.list({
+      part: ['snippet'],
+      mine: true,
+      maxResults: 50,
+    });
+
+    const channels = (response.data.items ?? [])
+      .map((item) => ({
+        channel_id: item.id ?? '',
+        title: item.snippet?.title ?? '',
+        custom_url: item.snippet?.customUrl ?? undefined,
+      }))
+      .filter((item) => Boolean(item.channel_id));
+
+    return {
+      token_exchange: 'PASS',
+      channel_count: channels.length,
+      channels,
+      checked_at: new Date().toISOString(),
+    };
   }
 
   async publish(request: YouTubePublishRequest): Promise<YouTubePublishResult> {

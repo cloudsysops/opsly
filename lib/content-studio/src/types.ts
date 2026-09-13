@@ -383,3 +383,16 @@ export interface YouTubePublishResult {
   url: string;
   uploaded_at: string;
 }
+
+export interface YouTubeOwnedChannelSummary {
+  channel_id: string;
+  title: string;
+  custom_url?: string;
+}
+
+export interface YouTubeConnectionProbeResult {
+  token_exchange: 'PASS';
+  channel_count: number;
+  channels: YouTubeOwnedChannelSummary[];
+  checked_at: string;
+}

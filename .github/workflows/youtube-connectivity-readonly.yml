@@ -1,0 +1,67 @@
+name: YouTube Connectivity Readonly
+
+on:
+  pull_request:
+    paths:
+      - 'lib/content-studio/src/publishers/youtube.ts'
+      - 'lib/content-studio/src/types.ts'
+      - 'lib/content-studio/src/publishers/__tests__/youtube.test.ts'
+      - 'scripts/content/youtube-connectivity-doctor.ts'
+      - '.github/workflows/youtube-connectivity-readonly.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  youtube-connectivity-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail closed if Doppler read token is unavailable
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${DOPPLER_TOKEN:-}" ]]; then
+            echo "YOUTUBE_CONNECTION_NO:REPO_DOPPLER_SECRET"
+            exit 78
+          fi
+          echo "repo_doppler_secret=present"
+
+      - name: Install Doppler CLI
+        run: |
+          curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sudo sh
+
+      - name: Install JS dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Report non-secret YouTube routing metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          doppler run --project ops-intcloudsysops --config prd --preserve-env -- bash -lc '
+            echo "youtube_default_channel=${YOUTUBE_UPLOAD_DEFAULT_CHANNEL:-unset}"
+            echo "youtube_bitsitos_channel_id=${YOUTUBE_BITSITOS_CHANNEL_ID:-unset}"
+            echo "youtube_splashitos_channel_id=${YOUTUBE_SPLASHITOS_CHANNEL_ID:-unset}"
+          '
+
+      - name: Run read-only YouTube connectivity doctor
+        id: doctor
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          doppler run --project ops-intcloudsysops --config prd --preserve-env -- \
+            npm run content:youtube:doctor
+
+      - name: Record live connectivity outcome
+        if: always()
+        shell: bash
+        run: |
+          echo "youtube_doctor_step_outcome=${{ steps.doctor.outcome }}"
+          echo "Live connectivity is informational for this code PR; unit/CI gates remain authoritative."
+
+# fresh recheck trigger: 2026-09-13T18:03:00-04:00
