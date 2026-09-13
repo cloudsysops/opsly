@@ -30,13 +30,13 @@ grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="Center"]
 layout_mode = 2
-custom_minimum_size = Vector2(620, 0)
-theme_override_constants/separation = 14
+custom_minimum_size = Vector2(720, 0)
+theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="Center/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.84, 0.35, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 38
 text = "JUGAR AHORA"
 horizontal_alignment = 1
 
@@ -51,7 +51,7 @@ text = "Modo"
 
 [node name="Mode" type="OptionButton" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(620, 56)
+custom_minimum_size = Vector2(720, 52)
 
 [node name="NicknameLabel" type="Label" parent="Center/VBox"]
 layout_mode = 2
@@ -67,7 +67,7 @@ text = "Guardián"
 
 [node name="Guardian" type="OptionButton" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(620, 56)
+custom_minimum_size = Vector2(720, 52)
 
 [node name="CompanionLabel" type="Label" parent="Center/VBox"]
 layout_mode = 2
@@ -75,7 +75,7 @@ text = "Compañero Astral"
 
 [node name="Companion" type="OptionButton" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(620, 56)
+custom_minimum_size = Vector2(720, 52)
 
 [node name="CompanionNameLabel" type="Label" parent="Center/VBox"]
 layout_mode = 2
@@ -91,22 +91,22 @@ text = "Color / Aura"
 
 [node name="Aura" type="OptionButton" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(620, 56)
+custom_minimum_size = Vector2(720, 52)
 
 [node name="Summary" type="Label" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(620, 130)
+custom_minimum_size = Vector2(720, 92)
 theme_override_colors/font_color = Color(0.78, 0.84, 1, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 text = "Preparando Guardián..."
 horizontal_alignment = 1
 
 [node name="Start" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(620, 72)
+custom_minimum_size = Vector2(720, 64)
 text = "⚔ JUGAR BATALLA HÍBRIDA"
 
 [node name="Back" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(620, 54)
+custom_minimum_size = Vector2(720, 50)
 text = "Volver"

@@ -30,40 +30,40 @@ grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="Center"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Center/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.84, 0.35, 1)
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "ASTRAL ARENA · HYBRID GAME LAB"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Center/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.85, 1, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "Un solo canon y estado · múltiples presentaciones"
 horizontal_alignment = 1
 
 [node name="QuickPlay" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(520, 82)
+custom_minimum_size = Vector2(620, 72)
 text = "▶ JUGAR AHORA · Guardián + Compañero"
 
 [node name="Story3D" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(520, 72)
+custom_minimum_size = Vector2(620, 64)
 text = "Historia 3D · Templo de los Cristales"
 
 [node name="World2D" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(520, 72)
+custom_minimum_size = Vector2(620, 64)
 text = "Mundo 2D · Exploración Top-Down"
 
 [node name="HybridBattle" type="Button" parent="Center/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(520, 72)
+custom_minimum_size = Vector2(620, 64)
 text = "Battle Lab Híbrido · cambia 2D ↔ 3D en vivo"
 
 [node name="Hint" type="Label" parent="Center/VBox"]
