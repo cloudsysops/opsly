@@ -216,42 +216,120 @@ ensure_worktree() {
   run git worktree add -B "$OVERNIGHT_BRANCH" "$OVERNIGHT_WORKTREE" origin/main
 }
 
-start_bridge() {
+bridge_unit_path() {
+  printf '%s/opsly-pc-gamer-opencode.service\n' "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+}
+
+bridge_env_path() {
+  printf '%s/runtime/tmp/pc-gamer-opencode-bridge.env\n' "$ROOT"
+}
+
+require_systemd_user() {
+  command -v systemctl >/dev/null 2>&1 || {
+    echo "[pc-gamer-opencode] ERROR: systemctl is required for managed bridge lifecycle" >&2
+    exit 1
+  }
+  systemctl --user show-environment >/dev/null 2>&1 || {
+    echo "[pc-gamer-opencode] ERROR: systemd user manager is unavailable" >&2
+    exit 1
+  }
+}
+
+write_bridge_service() {
+  require_systemd_user
+
+  local unit
+  unit="$(bridge_unit_path)"
+  local env_file
+  env_file="$(bridge_env_path)"
+  local unit_dir
+  unit_dir="$(dirname "$unit")"
+
   local selected_model
   selected_model="$(resolve_local_model 2>/dev/null || true)"
-  if [[ -z "$selected_model" ]]; then
+  [[ -n "$selected_model" ]] || {
     echo "[pc-gamer-opencode] ERROR: no Ollama model available for OpenCode" >&2
     exit 1
-  fi
-  if [[ "$DRY_RUN" == "true" ]]; then
-    echo "[dry-run] start cli-agent-service opencode :${OPENCODE_PORT} cwd=$OVERNIGHT_WORKTREE model=$selected_model"
-    return 0
-  fi
+  }
+
   local token
   token="$(grep '^OPSLY_CLI_AGENT_TOKEN=' "$ENV_WORKER" | cut -d= -f2-)"
-  echo "[pc-gamer-opencode] starting cli-agent-service (opencode) on :${OPENCODE_PORT}…"
-  mkdir -p "${ROOT}/runtime/logs"
-  run env \
-    OPSLY_CLI_AGENT=opencode \
-    PORT="$OPENCODE_PORT" \
-    OPSLY_CLI_AGENT_TOKEN="$token" \
-    OPSLY_CLI_AGENT_CWD="$OVERNIGHT_WORKTREE" \
-    OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX="$OVERNIGHT_WORKTREE" \
-    OPSLY_CLI_AGENT_BIND="$OPENCODE_BIND" \
-    OPSLY_OPENCODE_MODEL="$selected_model" \
-    OLLAMA_URL="$OLLAMA_URL" \
-    setsid nohup npx tsx "${ROOT}/scripts/cli-agent-service.ts" \
-    >"${ROOT}/runtime/logs/pc-gamer-opencode-bridge.log" 2>&1 &
-  disown || true
+  [[ -n "$token" ]] || {
+    echo "[pc-gamer-opencode] ERROR: OPSLY_CLI_AGENT_TOKEN missing" >&2
+    exit 1
+  }
+
+  local npx_bin
+  npx_bin="$(command -v npx)"
+
+  if [[ "$DRY_RUN" == "true" ]]; then
+    echo "[dry-run] would write managed bridge env $env_file (mode 600)"
+    echo "[dry-run] would write systemd unit $unit"
+    return 0
+  fi
+
+  mkdir -p "$unit_dir" "$(dirname "$env_file")"
+  umask 077
+  cat >"$env_file" <<EOF
+OPSLY_CLI_AGENT=opencode
+PORT=${OPENCODE_PORT}
+OPSLY_CLI_AGENT_TOKEN=${token}
+OPSLY_CLI_AGENT_CWD=${OVERNIGHT_WORKTREE}
+OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX=${OVERNIGHT_WORKTREE}
+OPSLY_CLI_AGENT_BIND=${OPENCODE_BIND}
+OPSLY_OPENCODE_MODEL=${selected_model}
+OLLAMA_HOST=127.0.0.1:11434
+OLLAMA_URL=${OLLAMA_URL}
+EOF
+  chmod 600 "$env_file"
+
+  umask 022
+  cat >"$unit" <<EOF
+[Unit]
+Description=Opsly PC Gamer OpenCode bridge
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=${ROOT}
+EnvironmentFile=${env_file}
+Environment=PATH=${HOME}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=${npx_bin} tsx ${ROOT}/scripts/cli-agent-service.ts
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+EOF
+
+  systemctl --user daemon-reload
+}
+
+start_bridge_service() {
+  write_bridge_service
+  if [[ "$DRY_RUN" == "true" ]]; then
+    if [[ "$INSTALL_AUTOSTART" == "true" ]]; then
+      echo "[dry-run] systemctl --user enable --now opsly-pc-gamer-opencode.service"
+    else
+      echo "[dry-run] systemctl --user start opsly-pc-gamer-opencode.service"
+    fi
+    return 0
+  fi
+
+  if [[ "$INSTALL_AUTOSTART" == "true" ]]; then
+    systemctl --user enable --now opsly-pc-gamer-opencode.service
+    echo "[pc-gamer-opencode] managed bridge enabled for autostart"
+  else
+    systemctl --user restart opsly-pc-gamer-opencode.service
+    echo "[pc-gamer-opencode] managed bridge started"
+  fi
 }
 
 compose_up() {
   ensure_env
   ensure_worktree
-  if [[ "$INSTALL_AUTOSTART" != "true" ]]; then
-    start_bridge
-    sleep 2
-  fi
+  start_bridge_service
+  [[ "$DRY_RUN" == "true" ]] || sleep 2
   echo "[pc-gamer-opencode] recreating worker-openclaw with local-agents allowlist…"
   if [[ -f infra/opslyquantum.env ]]; then
     run docker compose "${COMPOSE_WORKERS[@]}" \
@@ -266,10 +344,11 @@ compose_up() {
 }
 
 compose_down() {
-  echo "[pc-gamer-opencode] stopping bridge…"
-  run pkill -f "scripts/cli-agent-service.ts" 2>/dev/null || true
+  echo "[pc-gamer-opencode] stopping managed bridge…"
   if command -v systemctl >/dev/null 2>&1; then
-    run systemctl --user stop opsly-pc-gamer-opencode.service 2>/dev/null || true
+    run systemctl --user stop opsly-pc-gamer-opencode.service
+  else
+    echo "[pc-gamer-opencode] WARN: systemctl unavailable; no unmanaged process fallback will be used" >&2
   fi
 }
 
@@ -289,59 +368,11 @@ show_status() {
 }
 
 install_autostart() {
-  local unit_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
-  local unit="$unit_dir/opsly-pc-gamer-opencode.service"
-
-  if [[ "$DRY_RUN" == "true" ]]; then
-    echo "[dry-run] would write $unit and enable it"
-    return 0
-  fi
-
   ensure_env
   ensure_worktree
-  mkdir -p "$unit_dir" "${ROOT}/runtime/logs"
-  local token
-  token="$(grep '^OPSLY_CLI_AGENT_TOKEN=' "$ENV_WORKER" | cut -d= -f2-)"
-  local npx_bin
-  npx_bin="$(command -v npx)"
-  local selected_model
-  selected_model="$(resolve_local_model 2>/dev/null || true)"
-  [[ -n "$selected_model" ]] || {
-    echo "[pc-gamer-opencode] ERROR: no Ollama model available for OpenCode" >&2
-    exit 1
-  }
-
-  cat >"$unit" <<EOF
-[Unit]
-Description=Opsly PC-gamer OpenCode overnight bridge
-After=network-online.target
-
-[Service]
-Type=simple
-WorkingDirectory=${ROOT}
-Environment=OPSLY_CLI_AGENT=opencode
-Environment=PORT=${OPENCODE_PORT}
-Environment=OPSLY_CLI_AGENT_TOKEN=${token}
-Environment=OPSLY_CLI_AGENT_CWD=${OVERNIGHT_WORKTREE}
-Environment=OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX=${OVERNIGHT_WORKTREE}
-Environment=OPSLY_CLI_AGENT_BIND=${OPENCODE_BIND}
-Environment=OPSLY_OPENCODE_MODEL=${selected_model}
-Environment=OLLAMA_HOST=127.0.0.1:11434
-Environment=OLLAMA_URL=${OLLAMA_URL}
-Environment=PATH=${HOME}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
-ExecStart=${npx_bin} tsx ${ROOT}/scripts/cli-agent-service.ts
-Restart=on-failure
-RestartSec=10
-
-[Install]
-WantedBy=default.target
-EOF
-
-  systemctl --user daemon-reload
-  systemctl --user enable --now opsly-pc-gamer-opencode.service
-  echo "[pc-gamer-opencode] autostart enabled"
+  INSTALL_AUTOSTART=true
+  start_bridge_service
 }
-
 if [[ -n "$PULL_MODEL" ]]; then
   if [[ "$DRY_RUN" == "true" ]]; then
     echo "[dry-run] ollama pull $PULL_MODEL"
