@@ -183,6 +183,59 @@ describe('local prompt-submit → local-agents queue', () => {
     expect(jobArg.payload.agent_task?.execution_mode).toBe('enqueue');
   });
 
+  it('rejects write-capable agent work before execution when no ownership claim can be derived', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'write-no-claim-001',
+        agent: 'local_opencode',
+        agent_role: 'implement',
+        prompt_body: 'Implement a code change',
+        context: {},
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(400);
+    expect(raw).toMatch(/DISPATCH_CLAIM_REQUIRED/);
+    expect(claimMocks.acquireTaskDispatchClaim).not.toHaveBeenCalled();
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('allows write-capable agent work only after ownership metadata can be claimed', async () => {
+    const { status } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'write-with-claim-001',
+        agent: 'local_opencode',
+        agent_role: 'implement',
+        prompt_body: 'Implement only the claimed module',
+        context: {
+          task_id: 'write-task-001',
+          workstream: 'orchestrator',
+          conflict_key: 'orchestrator/write-task-001',
+          semantic_scope: 'write task one',
+          affected_paths: ['apps/orchestrator/src'],
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(202);
+    expect(claimMocks.acquireTaskDispatchClaim).toHaveBeenCalledTimes(1);
+    expect(enqueueLocalAgentJob).toHaveBeenCalledTimes(1);
+  });
+
   it('fails closed when governed GitHub dispatch has no ownership conflict key', async () => {
     const { status, raw } = await postJson(
       port,
