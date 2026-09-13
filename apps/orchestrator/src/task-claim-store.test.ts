@@ -71,6 +71,39 @@ describe('task dispatch claim store', () => {
     }
   });
 
+  it('scopes shared repository ownership dimensions across tenants', async () => {
+    redis.eval.mockResolvedValue([1, 4, '']);
+
+    await acquireTaskDispatchClaim({
+      tenantSlug: 'tenant-a',
+      requestId: 'claim-a',
+      taskId: 'wp-a',
+      workstream: 'orchestrator',
+      conflictKey: 'orchestrator/shared-runtime',
+      semanticScope: 'shared runtime ownership',
+      affectedPaths: ['apps/orchestrator/src'],
+    });
+    await acquireTaskDispatchClaim({
+      tenantSlug: 'tenant-b',
+      requestId: 'claim-b',
+      taskId: 'wp-b',
+      workstream: 'orchestrator',
+      conflictKey: 'orchestrator/shared-runtime',
+      semanticScope: 'shared runtime ownership',
+      affectedPaths: ['apps/orchestrator/src'],
+    });
+
+    const first = redis.eval.mock.calls[0]!;
+    const second = redis.eval.mock.calls[1]!;
+    // Exact task identity remains tenant-local.
+    expect(first[2]).not.toBe(second[2]);
+    // conflict / semantic / path keys protect the same repository checkout.
+    expect(first[3]).toBe(second[3]);
+    expect(first[4]).toBe(second[4]);
+    expect(first[5]).toBe(second[5]);
+    expect(String(first[3])).toContain(':repository:conflict:');
+  });
+
   it('returns JOIN_EXISTING for an exact task claim collision', async () => {
     redis.eval.mockResolvedValueOnce([
       0,
