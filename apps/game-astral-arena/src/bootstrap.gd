@@ -40,6 +40,10 @@ func _install_default_input_map() -> void:
     _ensure_key_action("toggle_mouse", KEY_F2)
     _ensure_key_action("switch_presentation", KEY_TAB)
     _ensure_key_action("return_to_hub", KEY_ESCAPE)
+    _ensure_action("look_left")
+    _ensure_action("look_right")
+    _ensure_action("look_up")
+    _ensure_action("look_down")
 
     _ensure_joy_axis("move_left", JOY_AXIS_LEFT_X, -1.0)
     _ensure_joy_axis("move_right", JOY_AXIS_LEFT_X, 1.0)
@@ -75,3 +79,8 @@ func _ensure_joy_button(action: StringName, button: JoyButton) -> void:
     var event := InputEventJoypadButton.new()
     event.button_index = button
     InputMap.action_add_event(action, event)
+
+
+func _ensure_action(action: StringName) -> void:
+    if not InputMap.has_action(action):
+        InputMap.add_action(action)
