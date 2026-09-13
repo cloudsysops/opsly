@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "michelle-butterfly-quest",
+  "title": "Michelle Butterfly Quest",
+  "status": "PLAYABLE",
+  "hypothesis": "A short collectible platforming quest with a visible portal goal creates stronger family attachment than an endless score loop.",
+  "sourceStudy": {
+    "repo": "godotengine/godot-demo-projects",
+    "commit": "a3b5c113112f77291d5f3d1360f33a882fdc52f7",
+    "path": "2d/platformer",
+    "codeLicense": "MIT"
+  },
+  "mechanics": ["platform", "jump", "collect", "camera-follow", "goal-portal"],
+  "originalExpression": true,
+  "assetPolicy": "opsly-original-canvas-only",
+  "target": ["mobile-web", "desktop-web"],
+  "playtest": {
+    "primaryQuestion": "Does collecting butterflies make the player want to reach the portal?",
+    "successSignal": "player completes one full portal run without prompting"
+  }
+}
