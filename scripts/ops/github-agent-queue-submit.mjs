@@ -42,8 +42,34 @@ function requireBooleanField(meta, key) {
   }
 }
 
+function listField(value) {
+  if (Array.isArray(value)) return value.map(String).map((v) => v.trim()).filter(Boolean);
+  if (typeof value !== 'string' || value.trim() === '') return [];
+  const trimmed = value.trim();
+  if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    try {
+      const parsed = JSON.parse(trimmed.replace(/'/g, '"'));
+      if (Array.isArray(parsed)) {
+        return parsed.map(String).map((v) => v.trim()).filter(Boolean);
+      }
+    } catch {}
+  }
+  return trimmed.split(',').map((v) => v.trim()).filter(Boolean);
+}
+
 function assertSafe(meta) {
-  for (const key of ['id','status','priority','agent','owner','environment','cost_class','estimated_cost_usd']) {
+  for (const key of [
+    'id',
+    'status',
+    'priority',
+    'agent',
+    'owner',
+    'environment',
+    'cost_class',
+    'estimated_cost_usd',
+    'workstream',
+    'conflict_key',
+  ]) {
     requireField(meta, key);
   }
   for (const key of ['requires_pr','requires_approval','production_deploy','paid_infra_required']) {
@@ -148,9 +174,12 @@ const payload = {
     github_run_id: process.env.GITHUB_RUN_ID || null,
     workpack_id: meta.id,
     workpack_file: file,
-    workstream: meta.workstream || null,
-    conflict_key: meta.conflict_key || null,
-    depends_on: meta.depends_on || null,
+    dispatch_contract_version: 'dispatch-claim-v1',
+    workstream: String(meta.workstream),
+    conflict_key: String(meta.conflict_key),
+    semantic_scope: String(meta.semantic_scope || meta.conflict_key),
+    affected_paths: listField(meta.affected_paths),
+    depends_on: listField(meta.depends_on),
     priority: meta.priority,
     owner: meta.owner,
     environment: meta.environment,
@@ -175,6 +204,11 @@ const submit = await request(`${orchestratorUrl}/api/local/prompt-submit`, {
 
 if (!submit.response.ok) {
   console.error(JSON.stringify(submit.body, null, 2));
+  if (submit.response.status === 409 && submit.body?.dispatch_decision) {
+    throw new Error(
+      `${submit.body.dispatch_decision}: ${submit.body.conflict_dimension || 'scope'} is already owned`
+    );
+  }
   throw new Error(`submit failed HTTP ${submit.response.status}`);
 }
 
