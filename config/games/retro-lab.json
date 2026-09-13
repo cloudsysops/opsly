@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "astral-games-lab",
+  "title": "Astral Games Lab",
+  "policy": {
+    "externalGameFiles": "user-selected-local-only",
+    "bundledThirdPartyGameFiles": false,
+    "bundledThirdPartyAssets": false,
+    "openSourceRuntimeOnly": true,
+    "homebrewNeedsExplicitLicense": true,
+    "mechanicTemplatesUseOriginalExpression": true
+  },
+  "mechanicTemplates": [
+    {
+      "id": "star-paddle",
+      "title": "Star Paddle",
+      "mechanic": "paddle-ball",
+      "ownership": "opsly-original"
+    },
+    {
+      "id": "crystal-breaker",
+      "title": "Crystal Breaker",
+      "mechanic": "brick-breaker",
+      "ownership": "opsly-original"
+    },
+    {
+      "id": "nexus-snake",
+      "title": "Nexus Snake",
+      "mechanic": "grid-snake",
+      "ownership": "opsly-original"
+    },
+    {
+      "id": "meteor-dodge",
+      "title": "Meteor Dodge",
+      "mechanic": "avoidance",
+      "ownership": "opsly-original"
+    }
+  ],
+  "emulatorFrontend": {
+    "name": "EmulatorJS",
+    "license": "GPL-3.0",
+    "upstream": "https://github.com/EmulatorJS/EmulatorJS",
+    "delivery": "stable-cdn",
+    "repoBundlesRuntime": false
+  },
+  "enabledSystems": [
+    "nes",
+    "snes",
+    "gb",
+    "gba",
+    "atari2600"
+  ]
+}
