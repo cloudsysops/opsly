@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { consumeHealthTravelRevenueEvent } from './revenue/health-travel-consumer';
+import { resolveHealthTravelTenantSlug } from './revenue/health-travel-tenant';
 
 const MAX_HEALTH_TRAVEL_EVENT_BODY_BYTES = 16 * 1024;
 const AI_BOARD_FORWARD_TIMEOUT_MS = 1000;
@@ -187,8 +188,9 @@ export async function handleHealthTravelEventRequest(request: Request): Promise<
   }
 
   const event = parsed.data;
-  const expectedTenant =
-    process.env.HEALTH_TRAVEL_TENANT_ID?.trim() || 'health-travel-colombia';
+  const expectedTenant = resolveHealthTravelTenantSlug(
+    process.env.HEALTH_TRAVEL_TENANT_ID
+  );
   if (event.tenant_id !== expectedTenant) {
     return Response.json({ error: 'Tenant mismatch' }, { status: 403 });
   }
