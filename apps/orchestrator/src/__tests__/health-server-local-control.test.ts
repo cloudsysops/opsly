@@ -34,6 +34,7 @@ vi.mock('../http/local-prompt-admission.js', () => ({
 }));
 
 import { setLocalControlMode } from '../control-mode.js';
+import { checkLocalPromptAdmission } from '../http/local-prompt-admission.js';
 import { startOrchestratorHealthServer } from '../health-server.js';
 
 function postJson(
@@ -184,6 +185,12 @@ describe('health-server local hybrid control plane', () => {
     expect(parsed.control_mode).toBe('ide_fallback');
     expect(parsed.prepared_only).toBe(true);
     expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+    expect(vi.mocked(checkLocalPromptAdmission)).toHaveBeenCalledWith(
+      expect.anything(),
+      'acme',
+      undefined,
+      { skipQueueCapacity: true }
+    );
   });
 
   it('GET /api/local/state returns control mode and configured agents', async () => {
