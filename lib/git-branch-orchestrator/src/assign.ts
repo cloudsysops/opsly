@@ -36,6 +36,7 @@ export interface AssignWorkerInput {
   session_id?: string;
   request_id?: string;
   dispatch_claim?: BranchDispatchClaimEvidence;
+  verify_dispatch_claim?: (claim: BranchDispatchClaimEvidence) => Promise<boolean>;
   materialize_git?: boolean;
   repo_path?: string;
   open_pr?: boolean;
@@ -94,6 +95,17 @@ export async function assignWorkerToBranch(
     ) {
       throw new Error(
         'DISPATCH_CLAIM_REQUIRED: materialize_git requires verified dispatch-claim-v1 evidence bound to request_id'
+      );
+    }
+    if (typeof input.verify_dispatch_claim !== 'function') {
+      throw new Error(
+        'DISPATCH_CLAIM_VERIFIER_REQUIRED: materialize_git requires an active-claim verifier'
+      );
+    }
+    const active = await input.verify_dispatch_claim(claim);
+    if (!active) {
+      throw new Error(
+        'DISPATCH_CLAIM_NOT_ACTIVE: branch materialization refused because ownership is absent or expired'
       );
     }
   }
