@@ -57,6 +57,20 @@ function countryCode(country: string): string | null {
   return null;
 }
 
+export function buildHealthTravelOfferPatch(
+  offer: HealthTravelCatalog['offers'][number],
+  metadata: Record<string, unknown>
+) {
+  return {
+    name: offer.name,
+    offer_type: healthTravelPackageTypeToOfferType(offer.package_type),
+    status: 'active' as const,
+    currency: offer.currency.toUpperCase(),
+    price_amount: offer.price_from_usd,
+    metadata,
+  };
+}
+
 async function fetchCatalog(): Promise<HealthTravelCatalog> {
   const url = process.env.HEALTH_TRAVEL_CATALOG_URL?.trim() ?? '';
   const secret = process.env.HEALTH_TRAVEL_CATALOG_SECRET?.trim() ?? '';
@@ -105,8 +119,8 @@ async function resolveTenantId(platform: any, tenantSlug: string): Promise<strin
 export type HealthTravelCatalogSyncResult = Readonly<{
   tenant_slug: string;
   source_generated_at: string;
-  providers: { created: number; updated: number };
-  offers: { created: number; updated: number; skipped_unassigned: number };
+  providers: { created: number; updated: number; paused: number };
+  offers: { created: number; updated: number; paused: number; skipped_unassigned: number };
 }>;
 
 export async function syncHealthTravelCatalog(
@@ -118,10 +132,14 @@ export async function syncHealthTravelCatalog(
 
   let providerCreated = 0;
   let providerUpdated = 0;
+  let providerPaused = 0;
   let offerCreated = 0;
   let offerUpdated = 0;
+  let offerPaused = 0;
   let skippedUnassigned = 0;
   const partnerIds = new Map<string, string>();
+  const activeProviderRefs = new Set(catalog.providers.map((provider) => provider.id));
+  const activeOfferKeys = new Set<string>();
 
   for (const provider of catalog.providers) {
     const existing = await platform
@@ -197,6 +215,7 @@ export async function syncHealthTravelCatalog(
       skippedUnassigned += 1;
       continue;
     }
+    activeOfferKeys.add(`${partnerId}:${offer.id}`);
 
     const existing = await platform
       .from('revenue_offers')
@@ -220,15 +239,7 @@ export async function syncHealthTravelCatalog(
       catalog_synced_at: new Date().toISOString(),
     };
 
-    const patch = {
-      name: offer.name,
-      offer_type: healthTravelPackageTypeToOfferType(offer.package_type),
-      status: 'active',
-      currency: offer.currency.toUpperCase(),
-      price_from: offer.price_from_usd,
-      price_to: null,
-      metadata,
-    };
+    const patch = buildHealthTravelOfferPatch(offer, metadata);
 
     if (existing.data?.id) {
       // Deliberately do NOT update commission_model or commission_value.
@@ -258,13 +269,74 @@ export async function syncHealthTravelCatalog(
     }
   }
 
+  // Reconcile records previously synchronized from SmileTripCare that are no
+  // longer present in the approved/published source catalog. Manual Opsly
+  // partners/offers are untouched because only rows tagged source_system are
+  // eligible for this lifecycle transition.
+  const syncedPartners = await platform
+    .from('revenue_partners')
+    .select('id, external_ref, status, metadata')
+    .eq('tenant_id', tenantId)
+    .contains('metadata', { source_system: 'smile-trip-care' });
+
+  if (syncedPartners.error) {
+    throw new Error(`Synced partner reconciliation lookup failed: ${syncedPartners.error.message}`);
+  }
+
+  for (const partner of syncedPartners.data ?? []) {
+    const externalRef = typeof partner.external_ref === 'string' ? partner.external_ref : '';
+    if (!externalRef || activeProviderRefs.has(externalRef) || partner.status === 'paused') continue;
+
+    const paused = await platform
+      .from('revenue_partners')
+      .update({ status: 'paused' })
+      .eq('id', partner.id)
+      .eq('tenant_id', tenantId);
+    if (paused.error) {
+      throw new Error(`Partner pause failed for ${externalRef}: ${paused.error.message}`);
+    }
+    providerPaused += 1;
+  }
+
+  const syncedOffers = await platform
+    .from('revenue_offers')
+    .select('id, partner_id, external_ref, status, metadata')
+    .eq('tenant_id', tenantId)
+    .contains('metadata', { source_system: 'smile-trip-care' });
+
+  if (syncedOffers.error) {
+    throw new Error(`Synced offer reconciliation lookup failed: ${syncedOffers.error.message}`);
+  }
+
+  for (const offer of syncedOffers.data ?? []) {
+    const externalRef = typeof offer.external_ref === 'string' ? offer.external_ref : '';
+    const partnerId = typeof offer.partner_id === 'string' ? offer.partner_id : '';
+    const activeKey = `${partnerId}:${externalRef}`;
+    if (!externalRef || activeOfferKeys.has(activeKey) || offer.status === 'paused') continue;
+
+    const paused = await platform
+      .from('revenue_offers')
+      .update({ status: 'paused' })
+      .eq('id', offer.id)
+      .eq('tenant_id', tenantId);
+    if (paused.error) {
+      throw new Error(`Offer pause failed for ${externalRef}: ${paused.error.message}`);
+    }
+    offerPaused += 1;
+  }
+
   return {
     tenant_slug: tenantSlug,
     source_generated_at: catalog.generated_at,
-    providers: { created: providerCreated, updated: providerUpdated },
+    providers: {
+      created: providerCreated,
+      updated: providerUpdated,
+      paused: providerPaused,
+    },
     offers: {
       created: offerCreated,
       updated: offerUpdated,
+      paused: offerPaused,
       skipped_unassigned: skippedUnassigned,
     },
   };
