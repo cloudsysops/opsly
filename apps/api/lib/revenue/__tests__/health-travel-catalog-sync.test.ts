@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildHealthTravelOfferPatch,
   healthTravelCatalogSchema,
   healthTravelPackageTypeToOfferType,
   healthTravelProviderTypeToPartnerType,
@@ -19,6 +20,32 @@ describe('Health Travel catalog sync contract', () => {
     expect(healthTravelPackageTypeToOfferType('health')).toBe('health');
     expect(healthTravelPackageTypeToOfferType('tour')).toBe('travel');
     expect(healthTravelPackageTypeToOfferType('combo')).toBe('service');
+  });
+
+  it('writes public price into the canonical Revenue Core price_amount column', () => {
+    const patch = buildHealthTravelOfferPatch(
+      {
+        id: 'package-1',
+        provider_id: 'provider-1',
+        name: 'Smile Journey',
+        package_type: 'health',
+        location: 'Medellin',
+        recovery_city: 'Manizales',
+        currency: 'USD',
+        price_from_usd: 4200,
+        published: true,
+      },
+      { source_system: 'smile-trip-care' }
+    );
+
+    expect(patch).toMatchObject({
+      name: 'Smile Journey',
+      offer_type: 'health',
+      currency: 'USD',
+      price_amount: 4200,
+    });
+    expect(patch).not.toHaveProperty('price_from');
+    expect(patch).not.toHaveProperty('price_to');
   });
 
   it('rejects leaked contact or internal provider fields', () => {
