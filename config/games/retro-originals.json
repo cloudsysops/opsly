@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "lab": "astral-games-lab",
+  "clonePolicy": "mechanics-and-structure-only-no-third-party-ip",
+  "templates": [
+    {
+      "id": "star-paddle",
+      "title": "Star Paddle",
+      "mechanicFamily": "paddle-ball",
+      "license": "Opsly-original",
+      "cloneable": true
+    },
+    {
+      "id": "crystal-breaker",
+      "title": "Crystal Breaker",
+      "mechanicFamily": "brick-breaker",
+      "license": "Opsly-original",
+      "cloneable": true
+    },
+    {
+      "id": "nexus-snake",
+      "title": "Nexus Snake",
+      "mechanicFamily": "grid-growth",
+      "license": "Opsly-original",
+      "cloneable": true
+    },
+    {
+      "id": "meteor-dodge",
+      "title": "Meteor Dodge",
+      "mechanicFamily": "survival-dodge",
+      "license": "Opsly-original",
+      "cloneable": true
+    }
+  ]
+}

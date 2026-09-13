@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "product": "astral-games-lab",
+  "defaultDecision": "deny",
+  "emulatorFrontend": {
+    "name": "EmulatorJS",
+    "license": "GPL-3.0",
+    "source": "https://github.com/EmulatorJS/EmulatorJS",
+    "delivery": "official-stable-cdn",
+    "dataPath": "https://cdn.emulatorjs.org/stable/data/"
+  },
+  "allowedSystems": [
+    {
+      "system": "nes",
+      "core": "fceumm",
+      "license": "GPL-2.0",
+      "contentExtensions": [
+        ".nes",
+        ".zip"
+      ],
+      "commercialUseGate": "license-compatible"
+    },
+    {
+      "system": "gb",
+      "core": "gambatte",
+      "license": "GPL-2.0",
+      "contentExtensions": [
+        ".gb",
+        ".gbc",
+        ".zip"
+      ],
+      "commercialUseGate": "license-compatible"
+    },
+    {
+      "system": "gba",
+      "core": "mgba",
+      "license": "MPL-2.0",
+      "contentExtensions": [
+        ".gba",
+        ".zip"
+      ],
+      "commercialUseGate": "license-compatible"
+    },
+    {
+      "system": "atari2600",
+      "core": "stella2014",
+      "license": "GPL-2.0",
+      "contentExtensions": [
+        ".a26",
+        ".bin",
+        ".zip"
+      ],
+      "commercialUseGate": "license-compatible"
+    }
+  ],
+  "explicitlyBlockedCores": [
+    {
+      "core": "snes9x",
+      "reason": "non-commercial-license"
+    },
+    {
+      "core": "genesis_plus_gx",
+      "reason": "non-commercial-license"
+    },
+    {
+      "core": "picodrive",
+      "reason": "non-commercial-license"
+    },
+    {
+      "core": "opera",
+      "reason": "non-commercial-license"
+    },
+    {
+      "core": "fbalpha2012_cps1",
+      "reason": "non-commercial-license"
+    },
+    {
+      "core": "fbalpha2012_cps2",
+      "reason": "non-commercial-license"
+    },
+    {
+      "core": "mame2003",
+      "reason": "non-commercial-or-legacy-license-review-required"
+    }
+  ],
+  "contentPolicy": {
+    "allowed": [
+      "original-homebrew",
+      "open-source-game",
+      "public-domain",
+      "explicit-redistribution-license",
+      "user-owned-dump-where-lawful"
+    ],
+    "denied": [
+      "commercial-rom-download",
+      "unknown-origin-rom-pack",
+      "copied-commercial-assets",
+      "copied-commercial-music",
+      "proprietary-bios-without-rights"
+    ],
+    "uploadBehavior": "local-browser-object-url-only",
+    "serverStorage": false
+  }
+}

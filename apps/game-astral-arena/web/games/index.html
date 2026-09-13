@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#070b1f" />
+  <title>Astral Games Lab</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="../">← Astral Arena</a>
+    <div>
+      <div class="eyebrow">ARENA + BRISSA</div>
+      <h1>Games Lab</h1>
+      <p>Prueba juegos, descubre mecánicas y conviértelas en ideas Astral.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <span class="pill">RETRO → PROTOTIPO → ASTRAL</span>
+        <h2>Jugar también es investigar.</h2>
+        <p>
+          Los prototipos de esta página usan código y arte propios. El Emulator Lab
+          solo carga archivos locales que tengas derecho a usar.
+        </p>
+      </div>
+      <a class="primary-link" href="./emulator.html">Abrir Emulator Lab</a>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <div>
+          <div class="eyebrow">RETRO ORIGINALS</div>
+          <h2>Prototipos clonables</h2>
+        </div>
+        <p>Inspirados en mecánicas clásicas, sin copiar personajes, música, nombres ni sprites.</p>
+      </div>
+
+      <div class="game-grid" id="game-grid"></div>
+    </section>
+
+    <section class="playground" id="playground" hidden>
+      <div class="play-head">
+        <div>
+          <div class="eyebrow">PLAYTEST</div>
+          <h2 id="active-title">Juego</h2>
+          <p id="active-description"></p>
+        </div>
+        <button class="ghost" id="close-game">Cerrar</button>
+      </div>
+
+      <div class="canvas-shell">
+        <canvas id="game-canvas" width="960" height="540" aria-label="Retro game canvas"></canvas>
+      </div>
+
+      <div class="touch-row" id="touch-row">
+        <button data-control="left">◀</button>
+        <button data-control="action">●</button>
+        <button data-control="right">▶</button>
+      </div>
+
+      <div class="feedback">
+        <button data-feedback="love">❤️ Me gusta</button>
+        <button data-feedback="meh">🤔 Cambiaría algo</button>
+        <button data-feedback="clone">✨ Clonar mecánica</button>
+      </div>
+      <div id="feedback-note" class="note"></div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <div>
+          <div class="eyebrow">EMULATOR LAB</div>
+          <h2>Retro legal / homebrew</h2>
+        </div>
+      </div>
+      <div class="emulator-card">
+        <div>
+          <h3>Trae tu archivo legal</h3>
+          <p>
+            Carga un ROM/homebrew propio, dominio público o con licencia que permita su uso.
+            No almacenamos el archivo: el navegador lo abre localmente.
+          </p>
+        </div>
+        <div class="emulator-actions">
+          <a class="primary-link" href="./emulator.html">Elegir consola y cargar archivo</a>
+          <a class="secondary-link" href="./licenses.html">Licencias permitidas</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="ideas">
+      <div class="section-title">
+        <div>
+          <div class="eyebrow">IDEAS GUARDADAS</div>
+          <h2>Clones conceptuales</h2>
+        </div>
+        <button class="ghost" id="export-ideas">Exportar JSON</button>
+      </div>
+      <div id="idea-list" class="idea-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Astral Games Lab · mecánicas propias + software open source con licencias verificadas.</p>
+  </footer>
+
+  <script src="./originals.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
