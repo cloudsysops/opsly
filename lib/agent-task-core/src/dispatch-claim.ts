@@ -27,6 +27,10 @@ function normalizeText(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
+export function normalizeDispatchConflictKey(value: string): string {
+  return normalizeText(value);
+}
+
 export function normalizeDispatchPath(value: string): string {
   const normalized = value
     .trim()
@@ -54,7 +58,7 @@ export function buildDispatchClaimDescriptors(
   const input = DispatchClaimInputSchema.parse(raw);
   const descriptors: DispatchClaimDescriptor[] = [
     { dimension: 'task', value: normalizeText(input.taskId) },
-    { dimension: 'conflict', value: normalizeText(input.conflictKey) },
+    { dimension: 'conflict', value: normalizeDispatchConflictKey(input.conflictKey) },
   ];
 
   if (input.semanticScope?.trim()) {
