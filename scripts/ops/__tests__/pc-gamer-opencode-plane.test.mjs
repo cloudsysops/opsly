@@ -28,3 +28,17 @@ test('pulling a model is explicit, never automatic during normal up', async () =
   assert.match(source, /ollama pull "$PULL_MODEL"/);
   assert.doesNotMatch(source, /ollama pull qwen3-coder/);
 });
+
+
+test('PC Gamer OpenCode bridge lifecycle is systemd-managed and contains no nohup fallback', async () => {
+  const source = await readFile(scriptFile, 'utf8');
+  assert.match(source, /systemctl --user (restart|enable --now) opsly-pc-gamer-opencode\.service/);
+  assert.match(source, /EnvironmentFile=/);
+  assert.match(source, /chmod 600 "\$env_file"/);
+  assert.match(source, /managed OpenCode bridge service active/);
+  assert.match(source, /auth_configured===true/);
+  assert.match(source, /execution_model==="ephemeral-tmux-session"/);
+  assert.doesNotMatch(source, /\bnohup\b/);
+  assert.doesNotMatch(source, /\bdisown\b/);
+  assert.doesNotMatch(source, /pkill -f/);
+});
