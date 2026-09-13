@@ -89,6 +89,9 @@ jobs:
       - name: Validate Clone Lab upstream builds
         run: node scripts/games/validate-clone-lab-upstreams.mjs
 
+      - name: Validate Games Lab UI button contract
+        run: node scripts/games/validate-games-lab-ui-contract.mjs
+
       - name: Prove reusable blueprint
         shell: bash
         run: |
@@ -112,6 +115,8 @@ jobs:
         run: node scripts/games/validate-clone-lab-sources.mjs
       - name: Validate Clone Lab upstream build set
         run: node scripts/games/validate-clone-lab-upstreams.mjs
+      - name: Validate Games Lab UI button contract
+        run: node scripts/games/validate-games-lab-ui-contract.mjs
       - name: Syntax-check Clone Lab browser runtimes
         shell: bash
         run: |
@@ -178,6 +183,16 @@ jobs:
 
       - name: Verify Godot version
         run: '".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64" --version'
+
+      - name: Install Playwright smoke dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false @playwright/test@1.59.1
+          npx playwright install --with-deps chromium
+
+      - name: Run Games Lab mobile button smoke
+        run: npx playwright test --config=playwright.games-lab.config.ts
 
       - name: Import project
         shell: bash
