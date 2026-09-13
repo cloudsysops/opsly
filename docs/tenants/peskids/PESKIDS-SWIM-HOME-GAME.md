@@ -52,7 +52,7 @@ V1:
 
 Planned:
 
-`family account -> student -> mission assigned by teacher or authorized support -> completion -> family portal progress -> teacher/support follow-up`
+`class/progress event -> n8n rule engine OR teacher/support assignment -> student mission -> completion -> family portal progress -> teacher/support follow-up`
 
 The planned sync must remain guardian-controlled and should avoid unnecessary child data.
 
@@ -67,3 +67,39 @@ The planned sync must remain guardian-controlled and should avoid unnecessary ch
 - rewards/badges that connect to real class progress without replacing instructor evaluation;
 - offline/PWA support;
 - accessibility and Spanish/English language toggle.
+
+
+## Automatic assignment with n8n
+
+n8n may assign or recommend a home mission automatically when a trusted Peskids event is received.
+
+Examples:
+
+- class completed;
+- attendance recorded;
+- instructor marks a skill as needing reinforcement;
+- student reaches a level/stage;
+- previous home mission completed;
+- support records a follow-up reason.
+
+Canonical flow:
+
+`Peskids event -> n8n workflow -> eligibility/rule check -> mission assignment -> family notification -> completion event -> progress update`
+
+Guardrails:
+
+- n8n must use the same assignment contract as teacher/support; it must not create a parallel mission system;
+- every automatic assignment records `assigned_by = automation`, workflow/rule id, timestamp and reason;
+- teacher or authorized support can override, replace or cancel an automatic assignment;
+- automation may only choose from an academy-approved mission catalog;
+- no autonomous water-practice instruction;
+- no breath-holding or underwater challenge generation;
+- safety-critical or ambiguous cases should route to human review instead of auto-assigning.
+
+Recommended modes:
+
+1. **recommend_only** — n8n proposes a mission for teacher/support approval.
+2. **auto_assign_safe** — n8n directly assigns pre-approved low-risk dry-land missions.
+3. **human_required** — the event creates a support/teacher task but does not assign a mission.
+
+Start with `recommend_only`, then enable `auto_assign_safe` only for explicit academy-approved rules.
