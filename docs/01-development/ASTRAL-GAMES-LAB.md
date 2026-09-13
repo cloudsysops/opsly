@@ -1,4 +1,25 @@
-# Astral Games Lab
+# Opsly Games / Games Lab
+
+## Product hierarchy
+
+```text
+Opsly Games
+├── Astral Arena
+├── Astral Remixes
+├── Open-Source Originals
+├── Arcade Lab
+└── Emulator Lab
+```
+
+**Opsly Games is the player-facing container. Astral Arena is a first-party title inside Games.**
+
+Canonical staging routes:
+- Games home: `/games/`
+- Astral Arena: `/games/astral-arena/`
+- legacy `/astral-arena/` redirects to the canonical nested route.
+
+The repository path may still use historical `game-astral-arena` names while the migration is in progress; those internal names do not define product hierarchy.
+
 
 ## Purpose
 
