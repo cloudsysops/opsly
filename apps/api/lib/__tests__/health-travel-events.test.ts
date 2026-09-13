@@ -43,6 +43,7 @@ describe('Health Travel runtime bridge', () => {
     delete process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET;
     delete process.env.HEALTH_TRAVEL_TENANT_ID;
     delete process.env.OPSLY_EVENT_BUS_URL;
+    delete process.env.OPSLY_EVENT_BUS_TOKEN;
   });
 
   it('verifies HMAC-SHA256 signatures', () => {
@@ -76,6 +77,7 @@ describe('Health Travel runtime bridge', () => {
     process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET = 'secret';
     process.env.HEALTH_TRAVEL_TENANT_ID = 'health-travel-colombia';
     process.env.OPSLY_EVENT_BUS_URL = 'http://orchestrator:3011/events';
+    process.env.OPSLY_EVENT_BUS_TOKEN = 'internal-bus-token';
 
     const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 202 }));
     vi.stubGlobal('fetch', fetchMock);
@@ -87,6 +89,9 @@ describe('Health Travel runtime bridge', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe('http://orchestrator:3011/events');
+    expect((init.headers as Record<string, string>)['X-Opsly-Event-Token']).toBe(
+      'internal-bus-token',
+    );
 
     const forwarded = JSON.parse(String(init.body));
     expect(forwarded).toMatchObject({
