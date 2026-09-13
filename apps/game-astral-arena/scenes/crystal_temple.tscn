@@ -1,7 +1,8 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://src/crystal_temple.gd" id="1_temple"]
 [ext_resource type="Script" path="res://src/player_controller.gd" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/mobile_controls.tscn" id="3_mobile"]
 
 [sub_resource type="StandardMaterial3D" id="FloorMat"]
 albedo_color = Color(0.055, 0.07, 0.16, 1)
@@ -144,11 +145,13 @@ fov = 72.0
 
 [node name="UI" type="CanvasLayer" parent="."]
 
+[node name="MobileControls" parent="UI" instance=ExtResource("3_mobile")]
+
 [node name="Margin" type="MarginContainer" parent="UI"]
 offset_left = 32.0
 offset_top = 28.0
-offset_right = 900.0
-offset_bottom = 280.0
+offset_right = 760.0
+offset_bottom = 250.0
 
 [node name="VBox" type="VBoxContainer" parent="UI/Margin"]
 theme_override_constants/separation = 12
@@ -160,21 +163,21 @@ text = "ASTRAL ARENA · TEMPLO DE LOS CRISTALES"
 
 [node name="Mission" type="Label" parent="UI/Margin/VBox"]
 theme_override_colors/font_color = Color(0.95, 0.97, 1, 1)
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 28
 text = "Dos Firmas Astrales"
 
 [node name="Step" type="Label" parent="UI/Margin/VBox"]
 theme_override_colors/font_color = Color(0.78, 0.84, 1, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 18
 text = "Objetivo: sigue el hilo estelar."
 autowrap_mode = 2
 
 [node name="Interaction" type="Label" parent="UI/Margin/VBox"]
 theme_override_colors/font_color = Color(1, 0.66, 0.84, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = ""
 
 [node name="Help" type="Label" parent="UI/Margin/VBox"]
 theme_override_colors/font_color = Color(0.65, 0.7, 0.82, 1)
 theme_override_font_sizes/font_size = 16
-text = "WASD / stick: mover · mouse / right stick: mirar · E: interactuar · Space: saltar · Esc: liberar mouse"
+text = "Mobile: flechas izquierda=mover · flechas derecha=mirar · Interactuar / Saltar · Menú"

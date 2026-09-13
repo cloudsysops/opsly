@@ -19,12 +19,12 @@ func _ready() -> void:
     $BattleGate.body_entered.connect(func(body):
         if body == player:
             near_gate = true
-            hint.text = "E · entrar al Battle Lab híbrido"
+            hint.text = "Toca INTERACTUAR para entrar al Battle Lab híbrido"
     )
     $BattleGate.body_exited.connect(func(body):
         if body == player:
             near_gate = false
-            hint.text = "Explora el mapa 2D · WASD / stick"
+            hint.text = "Explora el mapa 2D · usa las flechas táctiles"
     )
 
 func _unhandled_input(event: InputEvent) -> void:

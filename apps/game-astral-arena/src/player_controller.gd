@@ -46,9 +46,11 @@ func _physics_process(delta: float) -> void:
         Input.get_joy_axis(0, JOY_AXIS_RIGHT_X),
         Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y)
     )
-    if joy_look.length() > 0.18:
-        rotate_y(-joy_look.x * gamepad_look_speed * delta)
-        camera_pivot.rotate_x(-joy_look.y * gamepad_look_speed * delta)
+    var touch_look := Input.get_vector("look_left", "look_right", "look_up", "look_down")
+    var look := joy_look if joy_look.length() > touch_look.length() else touch_look
+    if look.length() > 0.18:
+        rotate_y(-look.x * gamepad_look_speed * delta)
+        camera_pivot.rotate_x(-look.y * gamepad_look_speed * delta)
         camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, -1.15, 0.85)
 
     move_and_slide()
