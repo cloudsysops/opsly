@@ -254,6 +254,8 @@ jobs:
           test -s dist/astral-arena-web/upstream/godot-rpg-original/source.json
           test -s dist/astral-arena-web/upstream/godot-rpg-original/UPSTREAM-LICENSE-MIT.txt
           grep -q 'Opsly Games' dist/astral-arena-web/index.html
+          grep -q '"name": "Opsly Games"' dist/astral-arena-web/manifest.webmanifest
+          grep -q "CACHE_VERSION = 'opsly-games-shell-v1'" dist/astral-arena-web/sw.js
           find dist/astral-arena-web -type f ! -name 'SHA256SUMS.txt' -print0 \
             | sort -z \
             | xargs -0 sha256sum > dist/astral-arena-web/SHA256SUMS.txt
@@ -539,7 +541,14 @@ jobs:
               echo "Astral Arena nested game: OK — $arena_url"
               echo "### 🎮 Opsly Games playable preview" >> "$GITHUB_STEP_SUMMARY"
               echo "$ASTRAL_STAGING_URL" >> "$GITHUB_STEP_SUMMARY"
+              legacy_url="https://peskids-staging.op-sly.com/astral-arena/"
+              legacy_location="$(curl -fsSI --max-time 15 "$legacy_url" 2>/dev/null | tr -d '\r' | awk 'tolower($1)=="location:" {print $2}' | tail -1 || true)"
+              if [ "$legacy_location" != "https://peskids-staging.op-sly.com/games/astral-arena/" ]; then
+                echo "::error::Legacy Astral route did not redirect to canonical Games path: $legacy_location"
+                exit 1
+              fi
               echo "Astral Arena: $arena_url" >> "$GITHUB_STEP_SUMMARY"
+              echo "Legacy redirect: OK" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
             echo "Waiting for Games + Astral Arena routes ($attempt/18)..."
