@@ -34,7 +34,7 @@ test('OpenClaw uses the authenticated generic bridge and headless one-shot exec'
   assert.equal(services.services.local_openclaw.envUrl, 'OPSLY_OPENCLAW_AGENT_URL');
   assert.equal(
     packageJson.scripts['opsly:local-openclaw-service'],
-    'OPSLY_CLI_AGENT=openclaw PORT=5012 tsx scripts/cli-agent-service.ts'
+    'OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 OPSLY_CLI_AGENT=openclaw PORT=5012 tsx scripts/cli-agent-service.ts'
   );
 
   assert.match(bridge, /case 'openclaw':/);
