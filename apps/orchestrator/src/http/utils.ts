@@ -5,21 +5,46 @@ import type { OrchestratorJob } from '../types.js';
 
 export const TENANT_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
 
-export async function parseBody(req: IncomingMessage): Promise<unknown> {
+export async function parseBody(req: IncomingMessage, maxBytes = 1_048_576): Promise<unknown> {
   return new Promise((resolve, reject) => {
     let data = '';
+    let bytes = 0;
+    let settled = false;
     req.on('data', (chunk: Buffer) => {
+      if (settled) return;
+      bytes += chunk.length;
+      if (bytes > maxBytes) {
+        settled = true;
+        // Keep consuming/discarding the remainder so keep-alive sockets cannot be pinned.
+        req.resume();
+        reject(new Error('request body too large'));
+        return;
+      }
       data += chunk.toString();
     });
     req.on('end', () => {
+      if (settled) return;
       try {
+        settled = true;
         resolve(JSON.parse(data));
       } catch {
+        settled = true;
         reject(new Error('Invalid JSON'));
       }
     });
-    req.on('error', reject);
+    req.on('error', (error) => {
+      if (settled) return;
+      settled = true;
+      reject(error);
+    });
   });
+}
+
+export function extractPlatformAdminBearerToken(req: IncomingMessage): string {
+  const auth = req.headers.authorization;
+  return typeof auth === 'string' && auth.startsWith('Bearer ')
+    ? auth.slice('Bearer '.length).trim()
+    : '';
 }
 
 export function verifyPlatformAdminToken(req: IncomingMessage): boolean {
@@ -27,11 +52,7 @@ export function verifyPlatformAdminToken(req: IncomingMessage): boolean {
   if (expected.length === 0) {
     return false;
   }
-  const auth = req.headers.authorization;
-  const bearer =
-    typeof auth === 'string' && auth.startsWith('Bearer ')
-      ? auth.slice('Bearer '.length).trim()
-      : '';
+  const bearer = extractPlatformAdminBearerToken(req);
   return bearer.length > 0 && bearer === expected;
 }
 
