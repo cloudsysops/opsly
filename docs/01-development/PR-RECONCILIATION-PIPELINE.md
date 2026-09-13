@@ -69,6 +69,23 @@ Priority order for capacity:
 
 `SUPERSEDED` consumes no reconciliation capacity. `PROTECTED` never enters automatic reconciliation.
 
+## Supervised agent handoff
+
+The pipeline prepares `AgentTaskEnvelopeV1` records for actionable workpacks.
+
+Each envelope carries:
+
+- one exclusive `conflictKey` derived from the PR/branch lock;
+- the exact `expectedHeadSha` captured during inventory;
+- the PR head/base and reconciliation lane;
+- `requiresApproval: true`;
+- `productionDeploy: false`;
+- zero paid-infrastructure budget.
+
+These envelopes are **prepared only**. `dispatchAllowed` remains false because branch reconciliation is GitHub write-capable work. They MUST NOT be sent through the autonomous `github-agent-queue` path while the write-approval gate remains closed.
+
+This preserves the canonical boundary: task sources converge on the orchestrator, but write-capable GitHub execution remains supervised.
+
 ## Cleanup
 
 Merged or superseded branches are cleanup candidates only after confirming they are no longer the head of an active PR and are not a dependency base for another active PR. Cleanup must never force-delete a branch.
@@ -77,10 +94,17 @@ Merged or superseded branches are cleanup candidates only after confirming they 
 
 - Policy: `config/pr-reconciliation-policy.json`
 - Inventory: `scripts/ops/pr-reconciliation-inventory.mjs`
+- Workpacks: `scripts/ops/pr-reconciliation-workpacks.mjs`
+- Agent envelopes: `scripts/ops/pr-reconciliation-agent-envelopes.mjs`
+- Envelope contract test: `scripts/ops/__tests__/pr-reconciliation-agent-envelopes.test.mjs`
 - Workflow: `.github/workflows/pr-reconciliation-inventory.yml`
 
-The hourly workflow publishes `pr-reconciliation-inventory.json` as an artifact and writes lane counts to the Actions job summary.
+The hourly workflow publishes:
+
+- `pr-reconciliation-inventory.json`;
+- `pr-reconciliation-workpacks.json`;
+- `pr-reconciliation-agent-envelopes.json`.
 
 ## Next phase
 
-Once the inventory proves stable, a separate supervised reconciliation executor can consume only `BEHIND` and `CONFLICTED` workpacks. Merge remains independently gated and protected by `expected_head_sha`.
+Implement the typed approval chain for GitHub write-capable reconciliation. Only after that gate exists may approved `BEHIND`/`CONFLICTED` envelopes be dispatched to governed local runtimes. Merge remains independently gated and protected by `expected_head_sha`.
