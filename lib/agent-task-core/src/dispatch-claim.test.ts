@@ -46,6 +46,9 @@ describe('DispatchClaimV1', () => {
       'JOIN_EXISTING'
     );
     expect(
+      classifyDispatchConflict({ dimension: 'task', value: 'task-1' }, 'completed')
+    ).toBe('ALREADY_DONE');
+    expect(
       classifyDispatchConflict({ dimension: 'conflict', value: 'revenue/consumer' })
     ).toBe('CONFLICT_BLOCKED');
     expect(
