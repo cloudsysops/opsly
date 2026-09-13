@@ -123,6 +123,29 @@ describe('git-branch-orchestrator', () => {
     expect(result.entry.workstream).toBe('ownership-gate');
   });
 
+  it('refuses materialization when dispatch evidence is shaped correctly but no longer active', async () => {
+    process.env.OPSLY_GIT_DRY_RUN = '1';
+
+    await expect(
+      assignWorkerToBranch({
+        tenant_slug: 'intcloudsysops',
+        initiative: 'ownership-gate',
+        task_slug: 'stale-claim',
+        task_type: 'implementation',
+        worker_id: 'opencode',
+        request_id: 'claim-stale-001',
+        dispatch_claim: {
+          version: 'dispatch-claim-v1',
+          claim_id: 'claim-stale-001',
+          task_id: 'stale-claim',
+          workstream: 'ownership-gate',
+        },
+        verify_dispatch_claim: async () => false,
+        materialize_git: true,
+      })
+    ).rejects.toThrow(/DISPATCH_CLAIM_NOT_ACTIVE/);
+  });
+
   it('ChatOps dispatch plans MVP branches', async () => {
     const result = await dispatchChatOps({
       tenant_slug: 'intcloudsysops',
