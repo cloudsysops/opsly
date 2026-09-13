@@ -57,6 +57,20 @@ function countryCode(country: string): string | null {
   return null;
 }
 
+export function buildHealthTravelOfferPatch(
+  offer: HealthTravelCatalog['offers'][number],
+  metadata: Record<string, unknown>
+) {
+  return {
+    name: offer.name,
+    offer_type: healthTravelPackageTypeToOfferType(offer.package_type),
+    status: 'active' as const,
+    currency: offer.currency.toUpperCase(),
+    price_amount: offer.price_from_usd,
+    metadata,
+  };
+}
+
 async function fetchCatalog(): Promise<HealthTravelCatalog> {
   const url = process.env.HEALTH_TRAVEL_CATALOG_URL?.trim() ?? '';
   const secret = process.env.HEALTH_TRAVEL_CATALOG_SECRET?.trim() ?? '';
@@ -220,14 +234,7 @@ export async function syncHealthTravelCatalog(
       catalog_synced_at: new Date().toISOString(),
     };
 
-    const patch = {
-      name: offer.name,
-      offer_type: healthTravelPackageTypeToOfferType(offer.package_type),
-      status: 'active',
-      currency: offer.currency.toUpperCase(),
-      price_amount: offer.price_from_usd,
-      metadata,
-    };
+    const patch = buildHealthTravelOfferPatch(offer, metadata);
 
     if (existing.data?.id) {
       // Deliberately do NOT update commission_model or commission_value.
