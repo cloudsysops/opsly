@@ -210,9 +210,12 @@ const submit = await request(`${orchestratorUrl}/api/local/prompt-submit`, {
 if (!submit.response.ok) {
   console.error(JSON.stringify(submit.body, null, 2));
   if (submit.response.status === 409 && submit.body?.dispatch_decision) {
-    if (submit.body.dispatch_decision === 'JOIN_EXISTING') {
+    if (
+      submit.body.dispatch_decision === 'JOIN_EXISTING' ||
+      submit.body.dispatch_decision === 'ALREADY_DONE'
+    ) {
       console.log(
-        `JOIN_EXISTING task=${submit.body.existing_task_id || 'unknown'} claim=${submit.body.existing_claim_id || 'unknown'}`
+        `${submit.body.dispatch_decision} task=${submit.body.existing_task_id || 'unknown'} claim=${submit.body.existing_claim_id || 'unknown'}`
       );
       process.exit(0);
     }
