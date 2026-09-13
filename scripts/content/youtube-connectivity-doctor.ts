@@ -8,7 +8,7 @@
 import {
   YouTubePublisher,
   loadYouTubeCredentialsFromEnv,
-} from '../../lib/content-studio/src/index.js';
+} from '../../lib/content-studio/src/publishers/youtube.js';
 
 type FailureClass = 'ACCESS' | 'AUTH' | 'API' | 'CONFIG' | 'UNKNOWN';
 
