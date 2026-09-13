@@ -34,6 +34,21 @@ vi.mock('../queue.js', async (importOriginal) => {
   };
 });
 
+
+const claimMocks = vi.hoisted(() => ({
+  acquireTaskDispatchClaim: vi.fn(),
+  releaseTaskDispatchClaim: vi.fn(async () => 0),
+}));
+
+vi.mock('../task-claim-store.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../task-claim-store.js')>();
+  return {
+    ...actual,
+    acquireTaskDispatchClaim: claimMocks.acquireTaskDispatchClaim,
+    releaseTaskDispatchClaim: claimMocks.releaseTaskDispatchClaim,
+  };
+});
+
 vi.mock('../openclaw/runtime-events.js', () => ({
   recordOpenClawIntentQueued: vi.fn(),
 }));
@@ -84,6 +99,22 @@ describe('local prompt-submit → local-agents queue', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    claimMocks.acquireTaskDispatchClaim.mockResolvedValue({
+      acquired: true,
+      lease: {
+        version: 'dispatch-claim-v1',
+        claimId: 'ghq-owned-001',
+        tenantSlug: 'local',
+        taskId: 'workpack-001',
+        workstream: 'orchestrator',
+        descriptors: [
+          { dimension: 'task', value: 'workpack-001' },
+          { dimension: 'conflict', value: 'orchestrator/local-dispatch' },
+        ],
+        acquiredAt: '2026-09-13T18:00:00.000Z',
+        expiresAt: '2026-09-13T22:00:00.000Z',
+      },
+    });
     process.env.PLATFORM_ADMIN_TOKEN = 'test-platform-admin';
     process.env.ORCHESTRATOR_HEALTH_PORT = '0';
     server = startOrchestratorHealthServer();
@@ -150,6 +181,118 @@ describe('local prompt-submit → local-agents queue', () => {
     expect(jobArg.payload.agent_task?.tenant_slug).toBe('acme');
     expect(jobArg.payload.agent_task?.selected_agent).toBe('local_cursor');
     expect(jobArg.payload.agent_task?.execution_mode).toBe('enqueue');
+  });
+
+  it('fails closed when governed GitHub dispatch has no ownership conflict key', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'ghq-missing-claim-001',
+        agent: 'local_opencode',
+        agent_role: 'review',
+        prompt_body: 'Do not duplicate active work',
+        context: {
+          source: 'github-agent-queue',
+          workpack_id: 'workpack-missing-key',
+          workstream: 'orchestrator',
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(400);
+    expect(raw).toMatch(/conflict_key is required/i);
+    expect(claimMocks.acquireTaskDispatchClaim).not.toHaveBeenCalled();
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('blocks a second agent when the requested scope is already owned', async () => {
+    claimMocks.acquireTaskDispatchClaim.mockResolvedValueOnce({
+      acquired: false,
+      conflict: {
+        descriptor: { dimension: 'semantic', value: 'health travel revenue consumer' },
+        decision: 'CONFLICT_BLOCKED',
+        existingClaimId: 'ghq-owner-001',
+        existingTaskId: 'health-revenue-owner',
+        existingWorkstream: 'health-travel',
+      },
+    });
+
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'ghq-duplicate-002',
+        agent: 'local_opencode',
+        agent_role: 'review',
+        prompt_body: 'Build the same revenue consumer again',
+        context: {
+          source: 'github-agent-queue',
+          workpack_id: 'health-revenue-duplicate',
+          workstream: 'health-travel',
+          conflict_key: 'health-travel/revenue-consumer',
+          semantic_scope: 'health travel revenue consumer',
+          affected_paths: ['apps/api/lib/revenue'],
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(409);
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    expect(parsed.dispatch_decision).toBe('CONFLICT_BLOCKED');
+    expect(parsed.existing_task_id).toBe('health-revenue-owner');
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('attaches an acquired ownership lease to the queued task', async () => {
+    const { status } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'ghq-owned-001',
+        agent: 'local_opencode',
+        agent_role: 'review',
+        prompt_body: 'Implement only the claimed scope',
+        context: {
+          source: 'github-agent-queue',
+          workpack_id: 'workpack-001',
+          workstream: 'orchestrator',
+          conflict_key: 'orchestrator/local-dispatch',
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(202);
+    expect(claimMocks.acquireTaskDispatchClaim).toHaveBeenCalledTimes(1);
+    const queued = enqueueLocalAgentJob.mock.calls[0]![0] as {
+      taskId?: string;
+      idempotency_key?: string;
+      payload: { context?: Record<string, unknown> };
+      metadata?: Record<string, unknown>;
+    };
+    expect(queued.taskId).toBe('workpack-001');
+    expect(queued.idempotency_key).toBe('ghq-owned-001');
+    expect(queued.payload.context?.dispatch_claim).toMatchObject({
+      version: 'dispatch-claim-v1',
+      claimId: 'ghq-owned-001',
+      taskId: 'workpack-001',
+    });
+    expect(queued.metadata?.dispatch_claim_id).toBe('ghq-owned-001');
   });
 
   it('review role produces a read-only AgentTaskEnvelopeV1 that does not require write approval', async () => {
