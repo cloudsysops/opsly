@@ -26,7 +26,9 @@ if queue_depth + current >= queue_limit then
   return 0
 end
 local next = redis.call('INCR', KEYS[1])
-redis.call('PEXPIRE', KEYS[1], ARGV[3])
+if next == 1 then
+  redis.call('PEXPIRE', KEYS[1], ARGV[3])
+end
 return next
 `;
 
