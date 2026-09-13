@@ -73,6 +73,7 @@ let activeGame = null;
 let activeSession = null;
 let currentFilter = 'all';
 let previousBodyOverflow = '';
+let lastLauncher = null;
 
 function readJson(key, fallback) {
   try {
@@ -189,6 +190,7 @@ function bindCards(root = document) {
   root.querySelectorAll('[data-card-game]').forEach(card => {
     const launch = event => {
       if (event.target.closest('button, a')) return;
+      lastLauncher = card;
       launchGame(card.dataset.cardGame);
     };
     card.addEventListener('click', launch);
@@ -205,7 +207,10 @@ function bindCards(root = document) {
   });
 
   root.querySelectorAll('[data-play]').forEach(button => {
-    button.addEventListener('click', () => launchGame(button.dataset.play));
+    button.addEventListener('click', () => {
+      lastLauncher = button;
+      launchGame(button.dataset.play);
+    });
   });
 
   root.querySelectorAll('[data-favorite]').forEach(button => {
@@ -256,7 +261,9 @@ function renderAll() {
   renderCollection(dom.retro, retroGames.map(game => byId.get(game.id)).filter(Boolean));
 
   document.querySelectorAll('.filter-chip').forEach(button => {
-    button.classList.toggle('active', button.dataset.filter === currentFilter);
+    const active = button.dataset.filter === currentFilter;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
   });
 
   dom.favoritesButton.setAttribute('aria-pressed', String(currentFilter === 'favorite'));
@@ -335,11 +342,15 @@ function setTheaterVisible(visible) {
     previousBodyOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     dom.catalog.setAttribute('aria-hidden', 'true');
+    dom.catalog.inert = true;
     dom.theater.hidden = false;
+    requestAnimationFrame(() => document.querySelector('#close-game')?.focus());
   } else {
     document.body.style.overflow = previousBodyOverflow;
     dom.catalog.removeAttribute('aria-hidden');
+    dom.catalog.inert = false;
     dom.theater.hidden = true;
+    requestAnimationFrame(() => lastLauncher?.focus?.());
   }
 }
 
