@@ -238,11 +238,14 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
             : undefined
   );
   const requiresPr = context.requires_pr === true;
-  const writeAllowed =
+  const inferredWriteAllowed =
     requiresPr ||
     roleHint.includes('build') ||
     roleHint.includes('implement') ||
     roleHint.includes('debug');
+  const writeAllowed = taskEnvelopeResult?.success
+    ? taskEnvelopeResult.data.constraints.write_allowed === true
+    : inferredWriteAllowed;
 
   const taskEnvelope = taskEnvelopeResult?.success
     ? taskEnvelopeResult.data
@@ -280,6 +283,15 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       ctx.res,
       400,
       'AgentTaskEnvelopeV1 tenant_slug/request_id/selected_agent mismatch'
+    );
+    return;
+  }
+
+  if (writeAllowed && !dispatchClaimRequest) {
+    errorResponse(
+      ctx.res,
+      400,
+      'DISPATCH_CLAIM_REQUIRED: write-capable agent work requires workstream + conflict_key before execution'
     );
     return;
   }
