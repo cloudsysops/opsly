@@ -28,6 +28,11 @@ vi.mock('../openclaw/runtime-events.js', () => ({
   recordOpenClawIntentQueued: vi.fn(),
 }));
 
+vi.mock('../http/local-prompt-admission.js', () => ({
+  checkLocalPromptAdmission: vi.fn(async () => ({ ok: true })),
+  releaseLocalPromptAdmissionReservation: vi.fn(async () => undefined),
+}));
+
 import { setLocalControlMode } from '../control-mode.js';
 import { startOrchestratorHealthServer } from '../health-server.js';
 
