@@ -70,7 +70,11 @@
     },
     "crm_provider": {
       "type": "string",
-      "enum": ["twenty", "supabase-only", "manual"]
+      "enum": [
+        "twenty",
+        "supabase-only",
+        "manual"
+      ]
     },
     "crm_pipeline_name": {
       "type": "string",
@@ -90,7 +94,9 @@
     "brand_basic": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["tone"],
+      "required": [
+        "tone"
+      ],
       "properties": {
         "logo": {
           "type": "string",
@@ -176,7 +182,11 @@
     },
     "approval_boundary": {
       "type": "string",
-      "enum": ["approval-first", "workflow-first", "read-only"]
+      "enum": [
+        "approval-first",
+        "workflow-first",
+        "read-only"
+      ]
     },
     "extraction_ready": {
       "type": "boolean"
@@ -214,12 +224,43 @@
         },
         "sync_twenty": {
           "type": "string",
-          "enum": ["none", "notes-only", "person-link"]
+          "enum": [
+            "none",
+            "notes-only",
+            "person-link"
+          ]
         },
         "primary_whatsapp_provider": {
           "type": "string",
-          "enum": ["wacrm", "jelou", "openwa", "meta-direct", "none"]
+          "enum": [
+            "wacrm",
+            "jelou",
+            "openwa",
+            "meta-direct",
+            "none"
+          ]
         }
+      }
+    },
+    "external_services": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "journey_stages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "provider_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
       }
     }
   }
