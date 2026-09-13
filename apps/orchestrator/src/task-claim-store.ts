@@ -10,6 +10,7 @@ import {
 import { localAgentQueue } from './queue.js';
 
 const CLAIM_KEY_PREFIX = 'opsly:dispatch-claim:v1';
+const REPOSITORY_LOCK_SCOPE = 'repository';
 const DEFAULT_CLAIM_TTL_MS = 4 * 60 * 60 * 1000;
 const MIN_CLAIM_TTL_MS = 60_000;
 const MAX_CLAIM_TTL_MS = 8 * 60 * 60 * 1000;
@@ -71,7 +72,11 @@ function descriptorRedisKey(tenantSlug: string, descriptor: DispatchClaimDescrip
   const digest = createHash('sha256')
     .update(`${descriptor.dimension}\0${descriptor.value}`)
     .digest('hex');
-  return `${CLAIM_KEY_PREFIX}:${tenantSlug}:${descriptor.dimension}:${digest}`;
+  // Exact task identity can remain tenant-local, but every broader ownership
+  // dimension protects the shared repository checkout and therefore must be
+  // global across caller-selected tenants.
+  const scope = descriptor.dimension === 'task' ? tenantSlug : REPOSITORY_LOCK_SCOPE;
+  return `${CLAIM_KEY_PREFIX}:${scope}:${descriptor.dimension}:${digest}`;
 }
 
 function encodeOwner(
