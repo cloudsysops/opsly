@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "meteor-dodge-godot",
+  "title": "Meteor Dodge+",
+  "status": "PLAYABLE",
+  "hypothesis": "Adding collectible shields and a skill-based dash increases replayability without making the survival loop confusing.",
+  "sourceStudy": {
+    "repo": "godotengine/godot-demo-projects",
+    "commit": "a3b5c113112f77291d5f3d1360f33a882fdc52f7",
+    "path": "2d/dodge_the_creeps",
+    "codeLicense": "MIT"
+  },
+  "mechanics": ["2d-movement", "dodge", "survival", "collect", "shield", "dash", "score"],
+  "originalExpression": true,
+  "assetPolicy": "opsly-original-canvas-only",
+  "target": ["mobile-web", "desktop-web"],
+  "playtest": {
+    "primaryQuestion": "Does dash + shield make the run more exciting?",
+    "successSignal": "child voluntarily restarts at least twice"
+  }
+}

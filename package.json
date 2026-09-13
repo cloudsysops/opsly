@@ -215,7 +215,9 @@
     "game:astral:transmedia:validate": "node scripts/games/validate-astral-transmedia.mjs",
     "game:astral:content-series:validate": "node scripts/games/validate-astral-content-series.mjs",
     "content:astral:chapter1:plan": "node scripts/content/astral-chapter1-plan.mjs",
-    "content:astral:chapter1:plan:json": "node scripts/content/astral-chapter1-plan.mjs --json"
+    "content:astral:chapter1:plan:json": "node scripts/content/astral-chapter1-plan.mjs --json",
+    "game:astral:ui:contract": "node scripts/games/validate-games-lab-ui-contract.mjs",
+    "game:astral:ui:smoke": "playwright test --config=playwright.games-lab.config.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
