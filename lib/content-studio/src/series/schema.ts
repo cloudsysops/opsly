@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CharacterIdSchema } from '../characters/schema.js';
 
 export const SeriesIdSchema = z.enum([
   'opsly-origins',
@@ -20,6 +21,17 @@ export const SeriesSchema = z.object({
   brand: z.enum(['opsly', 'peskids', 'astral-arena']),
   episode_count: z.number().int().nonnegative(),
   created_at: z.string(),
+}).superRefine((series, ctx) => {
+  if (series.character_source !== 'legacy-content') return;
+  series.characters.forEach((characterId, index) => {
+    if (!CharacterIdSchema.safeParse(characterId).success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['characters', index],
+        message: `Unknown legacy character id: ${characterId}`,
+      });
+    }
+  });
 });
 
 export type SeriesInput = z.infer<typeof SeriesSchema>;
