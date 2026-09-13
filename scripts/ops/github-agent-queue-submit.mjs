@@ -53,6 +53,11 @@ function listField(value) {
         return parsed.map(String).map((v) => v.trim()).filter(Boolean);
       }
     } catch {}
+    return trimmed
+      .slice(1, -1)
+      .split(',')
+      .map((v) => v.trim().replace(/^['"]|['"]$/g, ''))
+      .filter(Boolean);
   }
   return trimmed.split(',').map((v) => v.trim()).filter(Boolean);
 }
@@ -205,6 +210,12 @@ const submit = await request(`${orchestratorUrl}/api/local/prompt-submit`, {
 if (!submit.response.ok) {
   console.error(JSON.stringify(submit.body, null, 2));
   if (submit.response.status === 409 && submit.body?.dispatch_decision) {
+    if (submit.body.dispatch_decision === 'JOIN_EXISTING') {
+      console.log(
+        `JOIN_EXISTING task=${submit.body.existing_task_id || 'unknown'} claim=${submit.body.existing_claim_id || 'unknown'}`
+      );
+      process.exit(0);
+    }
     throw new Error(
       `${submit.body.dispatch_decision}: ${submit.body.conflict_dimension || 'scope'} is already owned`
     );
