@@ -1,0 +1,46 @@
+name: YouTube Connectivity Readonly
+
+on:
+  pull_request:
+    paths:
+      - 'lib/content-studio/src/publishers/youtube.ts'
+      - 'lib/content-studio/src/types.ts'
+      - 'lib/content-studio/src/publishers/__tests__/youtube.test.ts'
+      - 'scripts/content/youtube-connectivity-doctor.ts'
+      - '.github/workflows/youtube-connectivity-readonly.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  youtube-connectivity-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail closed if Doppler read token is unavailable
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${DOPPLER_TOKEN:-}" ]]; then
+            echo "YOUTUBE_CONNECTION_NO:REPO_DOPPLER_SECRET"
+            exit 78
+          fi
+          echo "repo_doppler_secret=present"
+
+      - name: Install Doppler CLI
+        run: |
+          curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sudo sh
+
+      - name: Install JS dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Run read-only YouTube connectivity doctor
+        shell: bash
+        run: |
+          set -euo pipefail
+          doppler run --project ops-intcloudsysops --config prd --preserve-env -- \
+            npm run content:youtube:doctor
