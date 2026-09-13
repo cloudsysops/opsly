@@ -23,11 +23,18 @@
       "import": "./dist/agent-task.js",
       "require": "./dist/agent-task.js",
       "default": "./dist/agent-task.js"
+    },
+    "./creator-os": {
+      "types": "./dist/creator-os.d.ts",
+      "import": "./dist/creator-os.js",
+      "require": "./dist/creator-os.js",
+      "default": "./dist/creator-os.js"
     }
   },
   "scripts": {
     "build": "tsc",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "npm run build && node --test __tests__/creator-os.test.mjs"
   },
   "dependencies": {
     "zod": "^3.25.76"
