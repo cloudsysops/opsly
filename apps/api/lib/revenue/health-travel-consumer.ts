@@ -149,6 +149,21 @@ async function getOrCreateReceipt(
   }
   if (existing.data) return existing.data;
 
+  if (plan.receipt.dedupeKey) {
+    const existingByDedupe = await platform
+      .from('revenue_event_receipts')
+      .select('id, processing_status, attribution_id, referral_id, commission_event_id')
+      .eq('tenant_id', tenantId)
+      .eq('source_system', event.sourceSystem)
+      .eq('dedupe_key', plan.receipt.dedupeKey)
+      .maybeSingle();
+
+    if (existingByDedupe.error) {
+      throw new Error(`Revenue receipt dedupe lookup failed: ${existingByDedupe.error.message}`);
+    }
+    if (existingByDedupe.data) return existingByDedupe.data;
+  }
+
   const inserted = await platform
     .from('revenue_event_receipts')
     .insert({
@@ -169,8 +184,8 @@ async function getOrCreateReceipt(
 
   if (!inserted.error && inserted.data) return inserted.data;
 
-  // A concurrent delivery may have won the unique(event) race.
-  const raced = await platform
+  // A concurrent delivery may have won either unique key race.
+  const racedByEvent = await platform
     .from('revenue_event_receipts')
     .select('id, processing_status, attribution_id, referral_id, commission_event_id')
     .eq('tenant_id', tenantId)
@@ -178,12 +193,29 @@ async function getOrCreateReceipt(
     .eq('external_event_id', event.externalEventId)
     .maybeSingle();
 
-  if (raced.error || !raced.data) {
-    throw new Error(
-      `Revenue receipt insert failed: ${inserted.error?.message ?? raced.error?.message ?? 'unknown'}`
-    );
+  if (racedByEvent.error) {
+    throw new Error(`Revenue receipt race lookup failed: ${racedByEvent.error.message}`);
   }
-  return raced.data;
+  if (racedByEvent.data) return racedByEvent.data;
+
+  if (plan.receipt.dedupeKey) {
+    const racedByDedupe = await platform
+      .from('revenue_event_receipts')
+      .select('id, processing_status, attribution_id, referral_id, commission_event_id')
+      .eq('tenant_id', tenantId)
+      .eq('source_system', event.sourceSystem)
+      .eq('dedupe_key', plan.receipt.dedupeKey)
+      .maybeSingle();
+
+    if (racedByDedupe.error) {
+      throw new Error(`Revenue receipt dedupe race lookup failed: ${racedByDedupe.error.message}`);
+    }
+    if (racedByDedupe.data) return racedByDedupe.data;
+  }
+
+  throw new Error(
+    `Revenue receipt insert failed: ${inserted.error?.message ?? 'unknown'}`
+  );
 }
 
 async function upsertAttribution(
