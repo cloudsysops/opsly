@@ -738,3 +738,16 @@ a { color: inherit; }
   .hero-copy h1 { font-size: 37px; }
   .theater-actions #active-favorite { display: none; }
 }
+
+.empty-state {
+  grid-column: 1 / -1;
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(174, 186, 236, .18);
+  border-radius: 24px;
+  color: #9ca8cc;
+  background: rgba(255,255,255,.025);
+  text-align: center;
+  padding: 24px;
+}
