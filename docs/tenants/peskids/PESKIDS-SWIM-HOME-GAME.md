@@ -52,16 +52,17 @@ V1:
 
 Planned:
 
-`family account -> student -> instructor-assigned home mission -> completion -> family portal progress -> teacher feedback`
+`family account -> student -> mission assigned by teacher or authorized support -> completion -> family portal progress -> teacher/support follow-up`
 
 The planned sync must remain guardian-controlled and should avoid unnecessary child data.
 
 ## Next milestones
 
 - add Peki visual assets once the canonical art is approved for the Peskids app;
-- teacher-authored/recommended home missions;
+- teacher- or authorized-support-assigned home missions;
 - family account sync;
 - age/level-aware mission catalog controlled by the academy;
+- role-based assignment permissions for teacher/support;
 - parent completion confirmation;
 - rewards/badges that connect to real class progress without replacing instructor evaluation;
 - offline/PWA support;
