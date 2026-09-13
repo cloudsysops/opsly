@@ -90,13 +90,13 @@ check_optional_runtimes() {
   done
 }
 
-# Node identity: docs/00-architecture/TRUSTED-EXECUTION-NODES.md (#1196) is the
-# canonical source but has not merged yet as of this check's authoring — degrade
-# to WARN rather than block readiness on a file this doctor doesn't own.
+# Node identity: config/trusted-execution-nodes.json is the public metadata
+# source. Secret enrollment/auth enforcement is tracked separately and is not
+# inferred from registry presence.
 check_node_identity() {
   local registry="config/trusted-execution-nodes.json"
   if [[ ! -f "${registry}" ]]; then
-    warn node_identity "config/trusted-execution-nodes.json not present yet (see #1196) — node identity unverified"
+    warn node_identity "config/trusted-execution-nodes.json missing — node identity unverified"
     return
   fi
   local node_id="${OPSLY_NODE_ID:-macbook-personal-01}"
@@ -331,7 +331,7 @@ check_task_source_guard() {
   if [[ -f "lib/agent-task-core/src/task-source-guard.ts" ]] || [[ -f "lib/agent-task-core/dist/task-source-guard.js" ]]; then
     pass task_source_guard "TaskSourceGuard present in lib/agent-task-core"
   else
-    warn task_source_guard "TaskSourceGuard not present yet (see #1196) — provenance is not yet enforced on this node"
+    warn task_source_guard "TaskSourceGuard missing — provenance contract unavailable"
   fi
 }
 
