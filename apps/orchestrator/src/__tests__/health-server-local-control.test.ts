@@ -28,6 +28,7 @@ vi.mock('../openclaw/runtime-events.js', () => ({
 
 vi.mock('../http/local-prompt-admission.js', () => ({
   checkLocalPromptAdmission: vi.fn(async () => ({ ok: true })),
+  releaseLocalPromptAdmissionReservation: vi.fn(async () => undefined),
 }));
 
 import { setLocalControlMode } from '../control-mode.js';
