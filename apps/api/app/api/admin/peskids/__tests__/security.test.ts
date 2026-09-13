@@ -28,7 +28,9 @@ vi.mock('../../../../../lib/peskids/executive', () => ({
 }));
 
 vi.mock('../../../../../lib/peskids/sales-pipeline', () => ({
-  updateLeadStage: vi.fn().mockResolvedValue({ ok: true, lead: { id: 'lead-1', stage: 'contacted' } }),
+  updateLeadStage: vi
+    .fn()
+    .mockResolvedValue({ ok: true, lead: { id: 'lead-1', stage: 'contacted' } }),
 }));
 
 vi.mock('../../../../../lib/peskids/messages', () => ({
