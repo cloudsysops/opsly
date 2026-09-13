@@ -69,7 +69,8 @@ export function createCreatorLocalBridge(options = {}) {
 
   const server = createServer((req, res) => {
     const method = req.method ?? 'GET';
-    const requestUrl = new URL(req.url ?? '/', `http://${host}`);
+    const urlHost = host === '::1' ? '[::1]' : host;
+    const requestUrl = new URL(req.url ?? '/', `http://${urlHost}`);
 
     const contentLength = Number(req.headers['content-length'] ?? 0);
     if (Number.isFinite(contentLength) && contentLength > maxBodyBytes) {
