@@ -17,6 +17,7 @@ const requiredIds = [
   'surprise-game',
   'continue-game',
   'recent-grid',
+  'first-party-grid',
   'featured-grid',
   'clone-game-grid',
   'upstream-game-grid',
@@ -89,6 +90,10 @@ for (const attrs of buttonTags) {
     errors.push(`dead-static-button:<button${attrs}>`);
   }
 }
+
+if (!html.includes('Opsly Games')) errors.push('missing-games-brand');
+if (!app.includes("id: 'astral-arena'")) errors.push('missing-astral-arena-first-party-game');
+if (!app.includes("playUrl: './astral-arena/'")) errors.push('wrong-astral-arena-route');
 
 for (const dynamicAction of [
   "root.querySelectorAll('[data-play]')",
