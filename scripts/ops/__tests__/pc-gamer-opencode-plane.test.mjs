@@ -51,3 +51,13 @@ test('PC Gamer bridge stays loopback-only because worker uses host networking', 
   assert.match(source, /bridge must stay loopback-only/);
   assert.doesNotMatch(source, /set OPSLY_OPENCODE_BIND to the Gamer Tailscale IP/);
 });
+
+
+test('GPU proof uses Ollama process VRAM evidence without loading a model', async () => {
+  const source = await readFile(scriptFile, 'utf8');
+  assert.match(source, /--gpu-proof/);
+  assert.match(source, /\/api\/ps/);
+  assert.match(source, /size_vram/);
+  assert.match(source, /GAMER_OLLAMA_GPU_ACTIVE/);
+  assert.doesNotMatch(source, /gpu_proof\(\)[\s\S]{0,1200}ollama pull/);
+});
