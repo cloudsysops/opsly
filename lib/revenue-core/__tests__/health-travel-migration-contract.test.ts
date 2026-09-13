@@ -11,6 +11,8 @@ describe('0102 Health Travel revenue receipts migration', () => {
   it('provides tenant-scoped event idempotency', () => {
     expect(migration).toContain('platform.revenue_event_receipts');
     expect(migration).toContain('UNIQUE (tenant_id, source_system, external_event_id)');
+    expect(migration).toContain('uq_revenue_event_receipts_dedupe_key');
+    expect(migration).toContain('WHERE dedupe_key IS NOT NULL');
     expect(migration).toContain('ENABLE ROW LEVEL SECURITY');
   });
 
