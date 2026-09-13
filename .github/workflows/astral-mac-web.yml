@@ -32,15 +32,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          candidates=(
+            "$HOME/Applications/Godot.app/Contents/MacOS/Godot"
+            "/Applications/Godot.app/Contents/MacOS/Godot"
+          )
           if command -v godot >/dev/null 2>&1; then
-            bin="$(command -v godot)"
-          elif command -v godot4 >/dev/null 2>&1; then
-            bin="$(command -v godot4)"
-          elif [[ -x "$HOME/Applications/Godot.app/Contents/MacOS/Godot" ]]; then
-            bin="$HOME/Applications/Godot.app/Contents/MacOS/Godot"
-          elif [[ -x "/Applications/Godot.app/Contents/MacOS/Godot" ]]; then
-            bin="/Applications/Godot.app/Contents/MacOS/Godot"
-          else
+            candidates+=("$(command -v godot)")
+          fi
+          if command -v godot4 >/dev/null 2>&1; then
+            candidates+=("$(command -v godot4)")
+          fi
+
+          bin=""
+          for candidate in "${candidates[@]}"; do
+            [[ -x "$candidate" ]] || continue
+            version="$($candidate --version)"
+            if [[ "$version" == 4.7.2* ]]; then
+              bin="$candidate"
+              break
+            fi
+          done
+
+          if [[ -z "$bin" ]]; then
             echo "::error::Godot 4.7.2 is required on the Mac runner"
             exit 1
           fi
@@ -71,7 +84,7 @@ jobs:
           test -s dist/astral-arena-web/index.html
           find dist/astral-arena-web -maxdepth 1 -type f -name '*.wasm' -size +0c | grep -q .
           find dist/astral-arena-web -maxdepth 1 -type f -name '*.pck' -size +0c | grep -q .
-          sha256sum dist/astral-arena-web/* > dist/astral-arena-web/SHA256SUMS.txt
+          shasum -a 256 dist/astral-arena-web/* > dist/astral-arena-web/SHA256SUMS.txt
 
       - name: Upload Web artifact
         uses: actions/upload-artifact@v4
