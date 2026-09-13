@@ -165,7 +165,10 @@ export async function getHealthTravelRuntimeSummary(params?: {
   tenantSlug?: string;
   windowDays?: number;
 }): Promise<HealthTravelRuntimeSummary> {
-  const tenantSlug = params?.tenantSlug?.trim() || 'health-travel-colombia';
+  const tenantSlug =
+    params?.tenantSlug?.trim() ||
+    process.env.HEALTH_TRAVEL_TENANT_SLUG?.trim() ||
+    'medical-tourism-demo';
   const windowDays = clampWindowDays(params?.windowDays ?? DEFAULT_WINDOW_DAYS);
   const platform = getServiceClient().schema('platform') as any;
 
