@@ -518,6 +518,19 @@ dom.activeFavorite.addEventListener('click', () => {
   showToast(nowFavorite ? '❤️ Guardado en favoritos' : 'Quitado de favoritos');
 });
 
+document.querySelector('#retry-game').addEventListener('click', () => {
+  if (activeGame) launchGame(activeGame.id);
+});
+
+document.querySelector('#next-game').addEventListener('click', () => {
+  const filtered = allGames.filter(game => categoryMatches(game, currentFilter));
+  const pool = filtered.length ? filtered : allGames;
+  if (!pool.length) return;
+  const currentIndex = activeGame ? pool.findIndex(game => game.id === activeGame.id) : -1;
+  const next = pool[(currentIndex + 1 + pool.length) % pool.length];
+  if (next) launchGame(next.id);
+});
+
 document.querySelector('#fullscreen-game').addEventListener('click', async () => {
   try {
     if (document.fullscreenElement) {
