@@ -1,4 +1,4 @@
-name: Astral Arena Web Preview
+name: Opsly Games Web Preview
 
 on:
   push:
@@ -259,7 +259,7 @@ jobs:
           find dist/astral-arena-web -type f ! -name 'SHA256SUMS.txt' -print0 \
             | sort -z \
             | xargs -0 sha256sum > dist/astral-arena-web/SHA256SUMS.txt
-          echo "Astral Arena browser export: OK"
+          echo "Opsly Games browser export: OK"
 
       - name: Upload browser artifact
         uses: actions/upload-artifact@v4
@@ -483,7 +483,7 @@ jobs:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
           ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
 
-      - name: Deploy isolated Astral Arena staging route
+      - name: Deploy Opsly Games staging routes
         uses: appleboy/ssh-action@v1.0.3
         env:
           GITHUB_DEPLOY_TOKEN: ${{ github.token }}
@@ -514,7 +514,7 @@ jobs:
 
             for attempt in $(seq 1 30); do
               if docker exec astral-arena-web-staging wget -q -O /dev/null http://127.0.0.1:8080/index.html; then
-                echo "Astral Arena staging container: OK"
+                echo "Opsly Games staging container: OK"
                 exit 0
               fi
               sleep 2
