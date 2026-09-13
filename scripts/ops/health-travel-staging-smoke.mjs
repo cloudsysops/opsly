@@ -10,6 +10,18 @@ const packageId =
   process.env.HT_SMOKE_PACKAGE_ID?.trim() || '22222222-2222-4222-8222-222222222222';
 const requireResolvedCatalog =
   process.env.HT_SMOKE_REQUIRE_RESOLVED_CATALOG === 'true';
+const requireNoReconciliation =
+  process.env.HT_SMOKE_REQUIRE_NO_RECONCILIATION === 'true';
+const verifyIdempotency =
+  process.env.HT_SMOKE_VERIFY_IDEMPOTENCY !== 'false';
+
+const CATALOG_RECONCILIATION_REASONS = new Set([
+  'provider_ref_missing',
+  'offer_without_provider',
+  'provider_ref_unresolved',
+  'offer_ref_unresolved',
+  'commission_offer_unresolved',
+]);
 
 if (!ingressUrl || !secret || !tenantId) {
   console.error(
@@ -109,15 +121,18 @@ function sign(rawBody) {
   return `sha256=${createHmac('sha256', secret).update(rawBody, 'utf8').digest('hex')}`;
 }
 
-async function send(step, index) {
-  const eventId = randomUUID();
+async function send(step, index, options = {}) {
+  const eventId = options.eventId ?? randomUUID();
+  const dedupeKey =
+    options.dedupeKey ??
+    `staging-smoke:${runId}:${step.local_event_type}`;
   const envelope = {
     event_id: eventId,
     event_type: step.event_type,
     tenant_id: tenantId,
     occurred_at: new Date(Date.now() + index * 1000).toISOString(),
     source_system: 'smile-trip-care',
-    dedupe_key: `staging-smoke:${runId}:${step.local_event_type}`,
+    dedupe_key: dedupeKey,
     data: {
       lead_id: leadId,
       local_event_type: step.local_event_type,
@@ -152,13 +167,22 @@ async function send(step, index) {
     throw new Error(`${step.event_type} returned no durable Revenue receipt`);
   }
 
-  if (
-    requireResolvedCatalog &&
-    Array.isArray(body.revenue.reconciliation_required) &&
-    body.revenue.reconciliation_required.length > 0
-  ) {
+  const reconciliation = Array.isArray(body.revenue.reconciliation_required)
+    ? body.revenue.reconciliation_required
+    : [];
+  const catalogReconciliation = reconciliation.filter((reason) =>
+    CATALOG_RECONCILIATION_REASONS.has(reason)
+  );
+
+  if (requireResolvedCatalog && catalogReconciliation.length > 0) {
     throw new Error(
-      `${step.event_type} requires reconciliation: ${body.revenue.reconciliation_required.join(', ')}`
+      `${step.event_type} has unresolved catalog mapping: ${catalogReconciliation.join(', ')}`
+    );
+  }
+
+  if (requireNoReconciliation && reconciliation.length > 0) {
+    throw new Error(
+      `${step.event_type} requires reconciliation: ${reconciliation.join(', ')}`
     );
   }
 
@@ -169,10 +193,18 @@ async function send(step, index) {
       receipt_id: body.revenue.receipt_id,
       duplicate: body.revenue.duplicate,
       revenue_status: body.revenue.status,
-      reconciliation_required: body.revenue.reconciliation_required ?? [],
+      reconciliation_required: reconciliation,
       board: body.board ?? null,
     })
   );
+
+  return {
+    receiptId: body.revenue.receipt_id,
+    duplicate: body.revenue.duplicate === true,
+    revenueStatus: body.revenue.status,
+    reconciliation,
+    dedupeKey,
+  };
 }
 
 console.log(
@@ -187,15 +219,37 @@ console.log(
   })
 );
 
+let firstReceipt = null;
 for (let index = 0; index < sequence.length; index += 1) {
-  await send(sequence[index], index);
+  const result = await send(sequence[index], index);
+  if (index === 0) firstReceipt = result;
+}
+
+let idempotencyVerified = false;
+if (verifyIdempotency && firstReceipt) {
+  const replay = await send(sequence[0], sequence.length, {
+    eventId: randomUUID(),
+    dedupeKey: firstReceipt.dedupeKey,
+  });
+
+  if (!replay.duplicate) {
+    throw new Error('dedupe-key replay was not reported as duplicate');
+  }
+  if (replay.receiptId !== firstReceipt.receiptId) {
+    throw new Error(
+      `dedupe-key replay changed receipt: ${firstReceipt.receiptId} -> ${replay.receiptId}`
+    );
+  }
+  idempotencyVerified = true;
 }
 
 console.log(
   JSON.stringify({
     ok: true,
     smoke: 'health-travel-golden-path',
-    events_sent: sequence.length,
+    events_sent: sequence.length + (idempotencyVerified ? 1 : 0),
+    canonical_events: sequence.length,
+    idempotency_verified: idempotencyVerified,
     run_id: runId,
   })
 );

@@ -82,3 +82,24 @@ npm run health-travel:sandbox:bootstrap -- --execute-onboard
 
 The wrapper refuses any slug except `medical-tourism-demo` and never enables
 Doppler, Twenty, wacrm, external communications, or production deployment.
+
+
+## Reconciliation gates
+
+`HT_SMOKE_REQUIRE_RESOLVED_CATALOG=true` fails only when provider/package
+mapping is unresolved. It intentionally permits policy-correct commercial
+reconciliation such as `commission_terms_require_manual_resolution`, because
+new synced offers default to `commission_model=manual` and Opsly must not
+invent commission terms.
+
+For a scenario that is expected to have zero reconciliation of any kind, also
+set:
+
+```bash
+export HT_SMOKE_REQUIRE_NO_RECONCILIATION=true
+```
+
+The smoke verifies dedupe-key idempotency by default: it replays the first
+event with a new `event_id` and the same `dedupe_key`, then requires the same
+Revenue receipt and `duplicate=true`. Disable only for diagnostics with
+`HT_SMOKE_VERIFY_IDEMPOTENCY=false`.
