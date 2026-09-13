@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type ComponentType } from 'react'
 import Link from 'next/link'
-import { CalendarClock, Gamepad2, Gift, Loader2, MessageSquare } from 'lucide-react'
+import { CalendarClock, Gift, Loader2, MessageSquare, Waves } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { SubmissionsDashboard } from '@/components/dashboards/submissions-dashboard'
 import { FeedbackComposer } from '@/components/feedback/feedback-composer'
@@ -274,7 +274,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
 
                 <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <MiniFamilyAction icon={CalendarClock} label="Reservar" href="/familias/reservas" />
-                  <MiniFamilyAction icon={Gamepad2} label="Practicar" href="/games" />
+                  <MiniFamilyAction icon={Waves} label="Practicar" href="/games" />
                   <MiniFamilyAction
                     icon={MessageSquare}
                     label="Mensaje"
