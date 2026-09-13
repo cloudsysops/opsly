@@ -48,6 +48,13 @@ jobs:
           RECONCILIATION_AGENT_ENVELOPES: pr-reconciliation-agent-envelopes.json
         run: node scripts/ops/pr-reconciliation-agent-envelopes.mjs
 
+      - name: Build branch cleanup candidates
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RECONCILIATION_CLEANUP: pr-reconciliation-cleanup-candidates.json
+        run: node scripts/ops/pr-reconciliation-cleanup-candidates.mjs
+
       - name: Validate reconciliation envelope contract
         run: node --test scripts/ops/__tests__/pr-reconciliation-agent-envelopes.test.mjs
 
@@ -59,6 +66,7 @@ jobs:
             pr-reconciliation-inventory.json
             pr-reconciliation-workpacks.json
             pr-reconciliation-agent-envelopes.json
+            pr-reconciliation-cleanup-candidates.json
           if-no-files-found: error
           retention-days: 7
 
@@ -70,6 +78,7 @@ jobs:
           const inventory = JSON.parse(fs.readFileSync('pr-reconciliation-inventory.json', 'utf8'));
           const workpacks = JSON.parse(fs.readFileSync('pr-reconciliation-workpacks.json', 'utf8'));
           const envelopes = JSON.parse(fs.readFileSync('pr-reconciliation-agent-envelopes.json', 'utf8'));
+          const cleanup = JSON.parse(fs.readFileSync('pr-reconciliation-cleanup-candidates.json', 'utf8'));
           console.log('# PR Reconciliation Inventory');
           console.log('');
           console.log(`Generated: ${inventory.generatedAt}`);
@@ -83,10 +92,13 @@ jobs:
           console.log(`Actionable supervised workpacks: **${workpacks.count}**`);
           console.log(`Prepared AgentTaskEnvelopeV1 tasks: **${envelopes.count}**`);
           console.log(`Recommended maximum parallel workers: **${workpacks.maxParallelismRecommendation}**`);
+          console.log(`Branch cleanup candidates (read-only): **${cleanup.cleanupCandidateCount}** / ${cleanup.totalBranches}`);
           console.log('');
           console.log('## Safety invariants');
-          console.log('- Read-only inventory/workpack/envelope preparation');
+          console.log('- Read-only inventory/workpack/envelope/cleanup preparation');
           console.log('- Agent envelopes are SUPERVISED_ONLY and dispatchAllowed=false');
+          console.log('- Cleanup only identifies candidates; it never deletes branches');
+          console.log('- Active PR heads and active dependency bases cannot be cleanup candidates');
           console.log('- No auto-merge');
           console.log('- No production deploy');
           console.log('- No safe-daytime or hotfix-prod application');
