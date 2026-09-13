@@ -127,7 +127,7 @@ process.stdout.write(String(b.status || b.state || "unknown").toLowerCase());
 ' "$JOB_RESPONSE")"
     case "$final_status" in
       completed|done|success) break ;;
-      failed|error) fail "smoke job failed: $(cat "$JOB_RESPONSE")" ;;
+      failed|error|cancelled) fail "smoke job failed: $(cat "$JOB_RESPONSE")" ;;
     esac
   elif [[ "$code" != "404" ]]; then
     fail "job-status returned HTTP ${code}"
