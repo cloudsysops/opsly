@@ -210,7 +210,7 @@
     "pc-gamer:opencode:up": "bash scripts/ops/pc-gamer-opencode-plane.sh --up",
     "pc-gamer:opencode:autostart": "bash scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart",
     "test:pc-gamer-opencode": "node --test scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs",
-    "opsly:local-openclaw-service": "OPSLY_CLI_AGENT=openclaw PORT=5012 tsx scripts/cli-agent-service.ts"
+    "opsly:local-openclaw-service": "OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 OPSLY_CLI_AGENT=openclaw PORT=5012 tsx scripts/cli-agent-service.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
