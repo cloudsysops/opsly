@@ -65,9 +65,24 @@ jobs:
             exit 0
           fi
 
+          # Bound PR/branch creation before creating any new remote branch.
+          OPEN_AUTOFIX="$(gh pr list --repo "${{ github.repository }}" \
+            --state open --search 'auto-fix/push in:head' --json number --jq 'length')"
+          if [ "${OPEN_AUTOFIX}" -ge 5 ]; then
+            echo "::notice::Skipping auto-fix: ${OPEN_AUTOFIX} auto-fix PRs already open. Cleanup/review first."
+            exit 0
+          fi
+
           DATE="$(date -u +%Y-%m-%d)"
           SHA_SHORT="$(git rev-parse --short HEAD)"
           BRANCH="auto-fix/push-${SHA_SHORT}"
+
+          PR_COUNT="$(gh pr list --repo "${{ github.repository }}" \
+            --head "${BRANCH}" --state open --json number --jq 'length')"
+          if [ "${PR_COUNT}" != "0" ]; then
+            echo "PR already open for ${BRANCH}; skipping."
+            exit 0
+          fi
 
           git stash push -u -m "auto-fix-${SHA_SHORT}"
           git fetch origin
@@ -78,31 +93,16 @@ jobs:
           git commit -m "chore: auto-fix code quality on ${SHA_SHORT}"
           git push origin "HEAD:${BRANCH}"
 
-          PR_COUNT="$(gh pr list --repo "${{ github.repository }}" \
-            --head "${BRANCH}" --state open --json number --jq 'length')"
-          if [ "${PR_COUNT}" != "0" ]; then
-            echo "PR already open for ${BRANCH}; skipping."
-            exit 0
-          fi
-
-          # Cap open auto-fix PRs to avoid unbounded noise under the night window.
-          OPEN_AUTOFIX="$(gh pr list --repo "${{ github.repository }}" \
-            --state open --search 'auto-fix/push in:head' --json number --jq 'length')"
-          if [ "${OPEN_AUTOFIX}" -ge 5 ]; then
-            echo "::notice::Skipping auto-fix PR: ${OPEN_AUTOFIX} already open. Cleanup first."
-            exit 0
-          fi
-
-          PR_BODY="$(printf '%s\n\n%s\n\n%s' \
+          PR_BODY="$(printf '%s\n\n%s\n\n%s\n\n%s' \
             "Automated ESLint/Prettier fixes triggered by push to main." \
             "Triggered by commit \`${SHA_SHORT}\`. Review before merging." \
+            "No safe-daytime certification is applied automatically; blast-radius classification remains a review decision." \
             "Workflow: ${RUN_URL}")"
           gh pr create \
             --repo "${{ github.repository }}" \
             --base main \
             --head "${BRANCH}" \
             --title "chore: auto-fix code quality (${DATE} ${SHA_SHORT})" \
-            --body "${PR_BODY}" \
-            --label "safe-daytime"
+            --body "${PR_BODY}"
 
-          echo "✅ PR created (safe-daytime) for branch ${BRANCH}"
+          echo "✅ PR created for branch ${BRANCH}; review/classification required before merge"
