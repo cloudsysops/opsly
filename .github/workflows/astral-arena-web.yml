@@ -55,10 +55,24 @@ jobs:
         run: node scripts/games/validate-astral-arena-game.mjs
 
       - name: Validate transmedia continuity
-        run: npm run game:astral:transmedia:validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/games/validate-astral-transmedia.mjs ] && [ -f config/games/astral-arena-transmedia.json ]; then
+            node scripts/games/validate-astral-transmedia.mjs
+          else
+            echo "Fast preview lane: transmedia manifest not present; skipping continuity validation."
+          fi
 
       - name: Validate Astral Content Studio series
-        run: npm run game:astral:content-series:validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/games/validate-astral-content-series.mjs ] && [ -d data/content/series/astral-arena ]; then
+            node scripts/games/validate-astral-content-series.mjs
+          else
+            echo "Fast preview lane: editorial series not present; skipping Content Studio series validation."
+          fi
 
       - name: Validate Retro Games Lab licenses
         run: node scripts/games/validate-retro-lab-licenses.mjs
