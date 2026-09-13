@@ -89,6 +89,18 @@ if [[ "$AGENT" == "openclaw" || "$AGENT" == "local_openclaw" ]]; then
   if ! OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 bash scripts/ops/openclaw-readonly-policy-doctor.sh; then
     fail "OpenClaw read-only acceptance policy is not ready"
   fi
+
+  log "OpenClaw preflight: no stale local_openclaw work"
+  if ! (
+    set -a
+    # shellcheck disable=SC1091
+    source /tmp/opsly-mac-redis.env
+    set +a
+    doppler run --project ops-intcloudsysops --config prd --preserve-env --       node scripts/ops/openclaw-acceptance-queue-guard.mjs local_openclaw
+  ); then
+    fail "OpenClaw acceptance queue contains stale/in-flight work"
+  fi
+
   start_openclaw_acceptance_worker
 fi
 
