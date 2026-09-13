@@ -40,7 +40,26 @@ export interface AstralAffinity {
  * Store the returned affinity, not the player's birth date.
  */
 export function zodiacSignFromBirthDate(birthDate: string | Date): ZodiacSign {
-  const date = birthDate instanceof Date ? birthDate : new Date(`${birthDate}T12:00:00Z`);
+  let date: Date;
+  if (birthDate instanceof Date) {
+    date = birthDate;
+  } else {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthDate);
+    if (!match) {
+      throw new Error('INVALID_BIRTH_DATE');
+    }
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    date = new Date(Date.UTC(year, month - 1, day, 12));
+    if (
+      date.getUTCFullYear() !== year ||
+      date.getUTCMonth() + 1 !== month ||
+      date.getUTCDate() !== day
+    ) {
+      throw new Error('INVALID_BIRTH_DATE');
+    }
+  }
   if (Number.isNaN(date.getTime())) {
     throw new Error('INVALID_BIRTH_DATE');
   }
