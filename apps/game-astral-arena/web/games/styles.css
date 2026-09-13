@@ -751,3 +751,64 @@ a { color: inherit; }
   text-align: center;
   padding: 24px;
 }
+
+.game-card[role="button"]:focus-visible {
+  outline: 3px solid rgba(127, 244, 217, .9);
+  outline-offset: 3px;
+}
+
+.rotate-hint {
+  position: absolute;
+  inset: auto 50% 18px auto;
+  transform: translateX(50%);
+  z-index: 4;
+  min-width: 220px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(174, 188, 255, .18);
+  background: rgba(8, 11, 26, .9);
+  backdrop-filter: blur(14px);
+  text-align: center;
+  box-shadow: 0 12px 42px rgba(0,0,0,.28);
+}
+
+.rotate-hint > span {
+  display: block;
+  font-size: 24px;
+  color: #8ff4dc;
+}
+
+.rotate-hint strong,
+.rotate-hint small {
+  display: block;
+}
+
+.rotate-hint small {
+  margin-top: 2px;
+  color: #95a2c8;
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .theater {
+    grid-template-rows: auto 1fr auto;
+  }
+  .theater-bottom {
+    display: none;
+  }
+  .touch-controls {
+    position: absolute;
+    left: 50%;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 5;
+    width: min(620px, calc(100% - 24px));
+    opacity: .88;
+  }
+  .touch-button {
+    min-height: 58px;
+  }
+  #game-canvas,
+  #upstream-frame {
+    max-height: calc(100vh - 76px);
+  }
+}
