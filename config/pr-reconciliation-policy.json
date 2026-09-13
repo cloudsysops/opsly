@@ -21,7 +21,15 @@
       "dns",
       "traefik",
       "supabase/migrations/",
-      "/migrations/"
+      "/migrations/",
+      "apps/orchestrator/",
+      "packages/agent-task-core/",
+      "packages/git-branch-orchestrator/",
+      "scripts/ops/github-agent-queue-submit.mjs",
+      "infra/docker-compose",
+      ".github/workflows/night-merge",
+      ".github/workflows/production-change-window",
+      ".github/workflows/validate-doppler"
     ],
     "allowAutoReconcile": false,
     "allowAutoMerge": false,
