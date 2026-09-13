@@ -56,7 +56,9 @@ on:
 # (cortar compose mid-flight deja Traefik a medias). Merges en ráfaga se encolan.
 concurrency:
   group: deploy-${{ github.ref }}
-  cancel-in-progress: false
+  # Staging is disposable QA: cancel stale runs and test the newest SHA.
+  # Production must never be interrupted mid-SSH/compose deploy.
+  cancel-in-progress: ${{ github.ref_name == 'staging' }}
 
 jobs:
   release-gate:
