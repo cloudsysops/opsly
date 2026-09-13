@@ -363,6 +363,24 @@ function updateActiveFavorite() {
   dom.activeFavorite.setAttribute('aria-pressed', String(favorite));
 }
 
+async function probeEmbeddedGame(game) {
+  if (!game.playUrl) return true;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 6000);
+  try {
+    const response = await fetch(game.playUrl + 'index.html', {
+      method: 'HEAD',
+      cache: 'no-store',
+      signal: controller.signal,
+    });
+    return response.ok;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function launchGame(id) {
   const game = byId.get(id);
   if (!game) return;
@@ -390,6 +408,15 @@ async function launchGame(id) {
   updateOrientationHint();
 
   if (game.kind === 'upstream' || game.kind === 'first-party') {
+    const available = await probeEmbeddedGame(game);
+    if (!available) {
+      dom.loading.hidden = true;
+      dom.frame.hidden = true;
+      dom.feedbackNote.textContent = '🚧 Este juego todavía no está disponible en este build. Prueba otro mientras termina de compilar.';
+      showToast('Ese juego todavía está compilando. Prueba otro ✨');
+      return;
+    }
+
     dom.frame.hidden = false;
     dom.touch.hidden = true;
 
@@ -720,3 +747,17 @@ window.addEventListener('appinstalled', () => {
   if (installButton) installButton.hidden = true;
   showToast('✨ Opsly Games quedó instalado.');
 });
+
+
+const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+  || window.navigator.standalone === true;
+
+if (isiOS && !isStandalone) {
+  const installButton = document.querySelector('#install-games');
+  if (installButton) {
+    installButton.hidden = false;
+    installButton.title = 'Agregar a pantalla de inicio';
+  }
+}
