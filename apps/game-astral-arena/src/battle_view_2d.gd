@@ -11,10 +11,20 @@ extends Control
 func render_battle_state(state: Dictionary, definitions: Dictionary) -> void:
     var player: Array = state.get("player", [])
     var opponent: Array = state.get("opponent", [])
-    if not player.is_empty():
-        _render_card(player[0], definitions, player_name, player_hp)
-    if not opponent.is_empty():
-        _render_card(opponent[0], definitions, enemy_name, enemy_hp)
+    var active_player := _first_alive(player)
+    var active_opponent := _first_alive(opponent)
+    if not active_player.is_empty():
+        _render_card(active_player, definitions, player_name, player_hp)
+    if not active_opponent.is_empty():
+        _render_card(active_opponent, definitions, enemy_name, enemy_hp)
+
+func _first_alive(fighters: Array) -> Dictionary:
+    for fighter in fighters:
+        if fighter is Dictionary and float(fighter.get("health", 0)) > 0.0:
+            return fighter
+    if not fighters.is_empty() and fighters[0] is Dictionary:
+        return fighters[0]
+    return {}
 
 func _render_card(
     fighter: Dictionary,
