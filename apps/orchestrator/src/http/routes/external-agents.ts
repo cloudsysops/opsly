@@ -59,7 +59,7 @@ async function requestHealth(url: string, fetchImpl: FetchLike): Promise<Respons
   const timeout = setTimeout(() => controller.abort(), 2500);
   try {
     const head = await fetchImpl(url, { method: 'HEAD', signal: controller.signal });
-    if (head.status !== 405 && head.status !== 501) return head;
+    if (head.ok) return head;
     return fetchImpl(url, { method: 'GET', signal: controller.signal });
   } finally {
     clearTimeout(timeout);
