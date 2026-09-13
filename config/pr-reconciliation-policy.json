@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "mode": "inventory-first",
+  "lanes": [
+    "MERGE_READY",
+    "BEHIND",
+    "CONFLICTED",
+    "CHECK_FAILED",
+    "CHECK_PENDING",
+    "REVIEW_BLOCKED",
+    "SUPERSEDED",
+    "PROTECTED",
+    "UNKNOWN"
+  ],
+  "protected": {
+    "patterns": [
+      "peskids",
+      "production",
+      "n8n",
+      "doppler",
+      "dns",
+      "traefik",
+      "supabase/migrations/",
+      "/migrations/"
+    ],
+    "allowAutoReconcile": false,
+    "allowAutoMerge": false,
+    "allowAutoDeploy": false
+  },
+  "merge": {
+    "method": "squash",
+    "requireExpectedHeadSha": true,
+    "requireMergeable": true,
+    "requireChecksGreen": true,
+    "requireNoMaterialReviewBlockers": true,
+    "autoMerge": false
+  },
+  "cleanup": {
+    "deleteMergedBranches": "manual-or-supervised",
+    "deleteSupersededBranches": "manual-or-supervised",
+    "forceDelete": false
+  }
+}
