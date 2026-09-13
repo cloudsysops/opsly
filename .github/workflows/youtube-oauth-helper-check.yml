@@ -1,0 +1,35 @@
+name: YouTube OAuth Helper Check
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/youtube-oauth-doppler-setup.ts'
+      - 'scripts/youtube-oauth-doppler-setup.sh'
+      - 'docs/brand/icso/YOUTUBE-DOPPLER-MONETIZATION.md'
+      - '.github/workflows/youtube-oauth-helper-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Validate shell wrapper
+        run: bash -n scripts/youtube-oauth-doppler-setup.sh
+      - name: Prove dry-run has no external mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$(npm run youtube:oauth:dry)"
+          printf '%s\n' "$output"
+          grep -q '^mode=dry-run$' <<<"$output"
+          grep -q '^oauth_callback_host=127.0.0.1$' <<<"$output"
+          grep -q '^YOUTUBE_OAUTH_SETUP_DRY_RUN_OK$' <<<"$output"
