@@ -348,7 +348,7 @@ jobs:
 
 
   publish-staging:
-    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push' && github.ref == 'refs/heads/preview/astral-arena')
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && contains(github.event.pull_request.labels.*.name, 'staging-preview')) || (github.event_name == 'push' && github.ref == 'refs/heads/preview/astral-arena')
     needs: build-web
     runs-on: ubuntu-latest
     environment: staging
@@ -389,7 +389,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tag }}
 
   deploy-staging:
-    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push' && github.ref == 'refs/heads/preview/astral-arena')
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && contains(github.event.pull_request.labels.*.name, 'staging-preview')) || (github.event_name == 'push' && github.ref == 'refs/heads/preview/astral-arena')
     needs: [build-web, publish-staging]
     runs-on: ubuntu-latest
     environment: staging
