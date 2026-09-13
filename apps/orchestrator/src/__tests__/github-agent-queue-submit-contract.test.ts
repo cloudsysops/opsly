@@ -19,8 +19,8 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).not.toMatch(/spawn\(/);
   });
 
-  it('is fail-closed to zero-cost read-only local OpenCode workpacks', () => {
-    expect(source).toContain("meta.agent !== 'local_opencode'");
+  it('is fail-closed to approved zero-cost governed local runtimes', () => {
+    expect(source).toContain("new Set(['local_opencode', 'local_hermes', 'local_openclaw'])");
     expect(source).toContain("['free','free_with_quota']");
     expect(source).toContain('estimated_cost_usd must be exactly 0');
     expect(source).toContain('requires_pr=true is not eligible for autonomous GitHub dispatch yet');
@@ -28,6 +28,7 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('production_deploy=true is forbidden');
     expect(source).toContain('paid_infra_required=true is forbidden');
     expect(source).toContain("agent_role: 'review'");
+    expect(source).toContain('agent: String(meta.agent)');
     expect(source).toContain('requires_pr: false');
   });
 
@@ -52,10 +53,18 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('PREPARED_ONLY: orchestrator did not enqueue the task');
   });
 
-  it('reads the canonical BullMQ completed result and can require terminal completion', () => {
-    expect(source).toContain('status.body.returnvalue ?? status.body.result ?? status.body.output');
+  it('supports fast enqueue mode and optional terminal completion', () => {
     expect(source).toContain("OPSLY_GITHUB_AGENT_REQUIRE_COMPLETION === 'true'");
+    expect(source).toContain('queued for governed parallel execution');
+    expect(source).toContain('process.exit(0)');
+    expect(source).toContain('status.body.returnvalue ?? status.body.result ?? status.body.output');
     expect(source).toContain('job did not reach a terminal state');
+  });
+
+  it('propagates workstream metadata for conflict/dependency scheduling', () => {
+    expect(source).toContain('workstream: meta.workstream || null');
+    expect(source).toContain('conflict_key: meta.conflict_key || null');
+    expect(source).toContain('depends_on: meta.depends_on || null');
   });
 
   it('can require an exact terminal acceptance marker', () => {
