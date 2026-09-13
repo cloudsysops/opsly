@@ -137,12 +137,18 @@ export async function handleHealthTravelEventRequest(request: Request): Promise<
 
   let upstream: Response;
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-Health-Travel-Event': 'true',
+    };
+    const eventBusToken = process.env.OPSLY_EVENT_BUS_TOKEN?.trim();
+    if (eventBusToken) {
+      headers['X-Opsly-Event-Token'] = eventBusToken;
+    }
+
     upstream = await fetch(busUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Health-Travel-Event': 'true',
-      },
+      headers,
       body: JSON.stringify(busEnvelope),
     });
   } catch {
