@@ -40,6 +40,7 @@ vi.mock('../openclaw/runtime-events.js', () => ({
 
 vi.mock('../http/local-prompt-admission.js', () => ({
   checkLocalPromptAdmission: vi.fn(async () => ({ ok: true })),
+  releaseLocalPromptAdmissionReservation: vi.fn(async () => undefined),
 }));
 
 const { enqueueJob, enqueueLocalAgentJob } = queueMocks;
