@@ -6,6 +6,7 @@ const registry = JSON.parse(readFileSync('config/external-agent-registry.json', 
 const policy = JSON.parse(readFileSync('config/external-runtime-policy.json', 'utf8'));
 const services = JSON.parse(readFileSync('config/agent-services.json', 'utf8'));
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
+const orchestratorServices = readFileSync('apps/orchestrator/config/agent-services.yaml', 'utf8');
 const bridge = readFileSync('scripts/cli-agent-service.ts', 'utf8');
 const launchd = readFileSync('scripts/ops/install-mac-ephemeral-runtime-launchd.sh', 'utf8');
 const doctor = readFileSync('scripts/ops/mac-ephemeral-runtime-doctor.sh', 'utf8');
@@ -27,6 +28,8 @@ test('OpenClaw is registered as an external runtime but held from automatic rout
 
 test('OpenClaw uses the authenticated generic bridge and headless one-shot exec', () => {
   assert.equal(services.services.local_openclaw.enabled, false);
+  assert.match(orchestratorServices, /local_openclaw:\n\s+enabled: false/);
+  assert.match(orchestratorServices, /endpoint: http:\/\/localhost:5012/);
   assert.equal(services.services.local_openclaw.url, 'http://localhost:5012');
   assert.equal(services.services.local_openclaw.envUrl, 'OPSLY_OPENCLAW_AGENT_URL');
   assert.equal(
