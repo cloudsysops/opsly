@@ -259,6 +259,11 @@ check_bridges() {
     else
       fail runtime:openclaw_exec "openclaw is installed but agent exec is unavailable"
     fi
+    if OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 bash scripts/ops/openclaw-readonly-policy-doctor.sh >/dev/null 2>&1; then
+      pass runtime:openclaw_policy "OpenClaw acceptance policy is strict read-only with local Ollama"
+    else
+      warn runtime:openclaw_policy "OpenClaw policy not yet acceptance-ready; run scripts/ops/openclaw-readonly-policy-doctor.sh"
+    fi
   else
     warn bridge:openclaw "OpenClaw runtime not installed; canonical bridge remains held"
   fi
