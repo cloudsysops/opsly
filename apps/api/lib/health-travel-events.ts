@@ -2,6 +2,9 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { consumeHealthTravelRevenueEvent } from './revenue/health-travel-consumer';
 
+const MAX_HEALTH_TRAVEL_EVENT_BODY_BYTES = 16 * 1024;
+const AI_BOARD_FORWARD_TIMEOUT_MS = 1000;
+
 export const HEALTH_TRAVEL_EVENT_NAMES = [
   'health.lead.created',
   'health.consultation.scheduled',
@@ -110,11 +113,14 @@ async function forwardToBoard(event: HealthTravelEventEnvelope): Promise<{
     },
   });
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), AI_BOARD_FORWARD_TIMEOUT_MS);
   try {
     const response = await fetch(busUrl, {
       method: 'POST',
       headers,
       body,
+      signal: controller.signal,
     });
     return {
       attempted: true,
@@ -123,6 +129,8 @@ async function forwardToBoard(event: HealthTravelEventEnvelope): Promise<{
     };
   } catch {
     return { attempted: true, accepted: false, status: null };
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -142,7 +150,19 @@ export async function handleHealthTravelEventRequest(request: Request): Promise<
     );
   }
 
+  const declaredLength = Number(request.headers.get('content-length') ?? '0');
+  if (
+    Number.isFinite(declaredLength) &&
+    declaredLength > MAX_HEALTH_TRAVEL_EVENT_BODY_BYTES
+  ) {
+    return Response.json({ error: 'Health Travel event body too large' }, { status: 413 });
+  }
+
   const rawBody = await request.text();
+  if (Buffer.byteLength(rawBody, 'utf8') > MAX_HEALTH_TRAVEL_EVENT_BODY_BYTES) {
+    return Response.json({ error: 'Health Travel event body too large' }, { status: 413 });
+  }
+
   const signatureHeader =
     request.headers.get('x-opsly-signature') ??
     request.headers.get('X-Opsly-Signature');
