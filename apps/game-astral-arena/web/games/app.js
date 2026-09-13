@@ -87,14 +87,18 @@ function rememberRecent(id) {
   updateContinueButton();
 }
 
-function toggleFavorite(id) {
+function setFavorite(id, value) {
   const items = favorites();
-  if (items.has(id)) items.delete(id);
-  else items.add(id);
+  if (value) items.add(id);
+  else items.delete(id);
   writeJson(STORAGE.favorites, [...items]);
   renderAll();
   updateActiveFavorite();
   return items.has(id);
+}
+
+function toggleFavorite(id) {
+  return setFavorite(id, !isFavorite(id));
 }
 
 function isFavorite(id) {
@@ -343,6 +347,7 @@ async function launchGame(id) {
 
     const onLoad = () => {
       dom.loading.hidden = true;
+      dom.frame.focus?.();
       dom.frame.removeEventListener('load', onLoad);
     };
     dom.frame.addEventListener('load', onLoad);
@@ -535,7 +540,7 @@ document.querySelectorAll('[data-feedback]').forEach(button => {
     if (activeSession) activeSession.feedback = type;
 
     if (type === 'love') {
-      toggleFavorite(activeGame.id);
+      setFavorite(activeGame.id, true);
       dom.feedbackNote.textContent = '❤️ Guardado. Este sube en la lista.';
       return;
     }
