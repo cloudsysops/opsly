@@ -43,6 +43,10 @@ CREATE INDEX IF NOT EXISTS idx_revenue_event_receipts_tenant_status
 CREATE INDEX IF NOT EXISTS idx_revenue_event_receipts_lead
   ON platform.revenue_event_receipts(tenant_id, lead_ref, occurred_at DESC);
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_revenue_event_receipts_dedupe_key
+  ON platform.revenue_event_receipts(tenant_id, source_system, dedupe_key)
+  WHERE dedupe_key IS NOT NULL;
+
 -- Health Travel commission events are keyed by the source event reference.
 -- This closes the concurrent-delivery race where two workers can both observe
 -- "no commission event yet" before either insert commits.
