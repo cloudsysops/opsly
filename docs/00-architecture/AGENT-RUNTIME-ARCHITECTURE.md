@@ -22,7 +22,11 @@ The canonical lifecycle is:
 ```text
 task source
   ↓
+TaskGraphV1 readiness / reuse-first check
+  ↓
 governed submit
+  ↓
+DispatchClaimV1 (atomic Redis ownership)
   ↓
 AgentTaskEnvelopeV1
   ↓
@@ -63,6 +67,33 @@ Canonical control components:
 - authenticated CLI/runtime bridges
 
 Any GitHub, scheduler, n8n or local watcher integration must converge on this path instead of spawning an AI CLI directly.
+
+
+## Pre-dispatch ownership gate
+
+Governed autonomous work must acquire exclusive ownership **before BullMQ can assign it to a worker**. The gate reuses Orchestrator Redis/BullMQ infrastructure; it is not a second task store or scheduler.
+
+Required GitHub workpack identity:
+
+- `task_id/workpack_id`: exact task identity;
+- `workstream`: portfolio grouping (not itself an exclusive lock);
+- `conflict_key`: exclusive capability/resource ownership;
+- `semantic_scope`: optional semantic-equivalence lock (defaults to conflict key);
+- `affected_paths`: optional explicit path scopes.
+
+The Orchestrator acquires all claim dimensions atomically. If any dimension is held:
+
+- exact task collision → `JOIN_EXISTING`;
+- conflict/semantic/path collision → `CONFLICT_BLOCKED`;
+- no BullMQ job is created.
+
+Invariant for governed autonomous work:
+
+`NO CLAIM → NO BRANCH → NO WORKTREE → NO EXECUTION`.
+
+Claims survive BullMQ retries, release only on terminal completion/failure, and have a bounded TTL for crash recovery. Client-supplied claim leases are discarded; only the Orchestrator may mint/release them.
+
+`TaskGraphV1` remains the dependency/parallel-wave planner. `DispatchClaimV1` is the runtime admission lock that makes conflict metadata enforceable.
 
 ## Machine roles
 
