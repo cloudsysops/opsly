@@ -21,12 +21,12 @@
     "email",
     "origin_country",
     "preferred_city",
-    "requested_service",
+    "requested_service_category",
     "preferred_dates",
     "budget_range",
     "companions",
-    "language",
-    "mobility_requirements",
+    "preferred_language",
+    "mobility_coordination",
     "consent_to_contact"
   ],
   "cta_text": "Solicita una coordinacion inicial",
@@ -70,14 +70,6 @@
     "transport_provider",
     "recovery_support",
     "experience_provider"
-  ],
-  "revenue_records": [
-    "platform.revenue_partners",
-    "platform.revenue_offers",
-    "platform.revenue_attributions",
-    "platform.revenue_referrals",
-    "platform.revenue_commission_events",
-    "platform.revenue_payouts"
   ],
   "brand_basic": {
     "tone": "bilingual, reassuring, transparent, concierge-first"
@@ -124,5 +116,15 @@
     "Do not estimate medical savings unless a comparable source quote exists.",
     "Do not rank providers only by commission.",
     "Travel inventory should come from approved APIs/feeds or manually verified partners."
+  ],
+  "supabase_records": [
+    "platform.tenants",
+    "platform.leads",
+    "platform.revenue_partners",
+    "platform.revenue_offers",
+    "platform.revenue_attributions",
+    "platform.revenue_referrals",
+    "platform.revenue_commission_events",
+    "platform.revenue_payouts"
   ]
 }
