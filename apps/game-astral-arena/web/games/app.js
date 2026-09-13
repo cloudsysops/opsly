@@ -669,3 +669,12 @@ window.addEventListener('pagehide', () => {
 renderAll();
 renderIdeas();
 updateContinueButton();
+
+
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(error => {
+      console.warn('Opsly Games service worker registration failed', error);
+    });
+  });
+}
