@@ -49,7 +49,9 @@ export type HealthTravelRevenuePlan = Readonly<{
     leadRef: string;
     providerRef: string | null;
     offerRef: string | null;
+    paymentRef: string | null;
     dedupeKey: string | null;
+    businessDedupeKey: string | null;
     occurredAt: string;
   };
   attribution: {
@@ -71,6 +73,7 @@ export type HealthTravelRevenuePlan = Readonly<{
   };
   commissionSignal: null | {
     paymentRef: string | null;
+    paymentIdentity: string | null;
     depositAmount: number | null;
     currency: string | null;
     requiresExplicitTerms: true;
@@ -99,18 +102,61 @@ function finiteNonNegative(value: number | null | undefined): number | null {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
+function requireNonBlank(value: unknown, field: string): string {
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error(`Invalid Health Travel event: ${field} must be non-empty`);
+  }
+  return value.trim();
+}
+
+function requireIsoTimestamp(value: unknown): string {
+  const normalized = requireNonBlank(value, 'occurredAt');
+  if (!Number.isFinite(Date.parse(normalized))) {
+    throw new Error('Invalid Health Travel event: occurredAt must be an ISO timestamp');
+  }
+  return normalized;
+}
+
 /**
  * Converts one canonical Health Travel event into a conservative Revenue Core plan.
  *
- * The plan deliberately never invents providers/offers/commission terms. Missing
- * external refs are surfaced through reconciliationRequired.
+ * Validation happens before any DB work. The plan deliberately never invents
+ * providers/offers/commission terms; missing or contradictory commercial facts
+ * become reconciliation work rather than money-bearing writes.
  */
 export function planHealthTravelRevenueEvent(
   event: HealthTravelRevenueEvent
 ): HealthTravelRevenuePlan {
+  const externalEventId = requireNonBlank(event?.externalEventId, 'externalEventId');
+  const tenantSlug = requireNonBlank(event?.tenantSlug, 'tenantSlug');
+  if (event?.sourceSystem !== 'smile-trip-care') {
+    throw new Error('Invalid Health Travel event: unsupported sourceSystem');
+  }
+  if (!HEALTH_TRAVEL_REVENUE_EVENT_NAMES.includes(event?.eventType)) {
+    throw new Error('Invalid Health Travel event: unsupported eventType');
+  }
+  const occurredAt = requireIsoTimestamp(event?.occurredAt);
+  const leadRef = requireNonBlank(event?.data?.lead_id, 'data.lead_id');
+
   const providerRef = event.data.provider_id?.trim() || null;
   const offerRef = event.data.package_id?.trim() || null;
-  const leadRef = event.data.lead_id.trim();
+  const paymentRef = event.data.payment_id?.trim() || null;
+  const dedupeKey = event.dedupeKey?.trim() || null;
+  const normalizedCurrency = event.data.currency?.trim().toUpperCase() || null;
+  const paymentIdentity = paymentRef
+    ? `payment:${paymentRef}`
+    : dedupeKey
+      ? `dedupe:${dedupeKey}`
+      : null;
+
+  const businessDedupeKey =
+    event.eventType === 'health.deposit.paid'
+      ? paymentIdentity
+        ? `deposit:${paymentIdentity}`
+        : null
+      : dedupeKey
+        ? `${event.eventType}:dedupe:${dedupeKey}`
+        : null;
 
   const reconciliationRequired: string[] = [];
   if (!providerRef && event.eventType !== 'health.lead.created') {
@@ -118,6 +164,23 @@ export function planHealthTravelRevenueEvent(
   }
   if (offerRef && !providerRef) {
     reconciliationRequired.push('offer_without_provider');
+  }
+  if (event.eventType === 'health.deposit.paid' && !paymentIdentity) {
+    reconciliationRequired.push('payment_identity_missing');
+  }
+  if (
+    event.eventType === 'health.deposit.paid' &&
+    event.data.amount_cents != null &&
+    finiteNonNegative(event.data.amount_cents) === null
+  ) {
+    reconciliationRequired.push('deposit_amount_invalid');
+  }
+  if (
+    event.eventType === 'health.deposit.paid' &&
+    normalizedCurrency !== null &&
+    !/^[A-Z]{3}$/.test(normalizedCurrency)
+  ) {
+    reconciliationRequired.push('deposit_currency_invalid');
   }
 
   const attributionSource =
@@ -135,7 +198,7 @@ export function planHealthTravelRevenueEvent(
         convertedAt:
           event.eventType === 'health.deposit.paid' ||
           event.eventType === 'health.journey.completed'
-            ? event.occurredAt
+            ? occurredAt
             : null,
       }
     : null;
@@ -143,29 +206,34 @@ export function planHealthTravelRevenueEvent(
   const commissionSignal =
     event.eventType === 'health.deposit.paid'
       ? {
-          paymentRef: event.data.payment_id?.trim() || null,
-          // Deposit is intentionally not called gross_value. The eventual adapter
-          // may use it only when stored partner/offer terms explicitly define the
-          // deposit as the commission basis.
+          paymentRef,
+          paymentIdentity,
+          // Deposit is intentionally not called gross_value. The adapter may use
+          // it only when stored offer terms explicitly define deposit as the basis.
           depositAmount:
             finiteNonNegative(event.data.amount_cents) === null
               ? null
               : finiteNonNegative(event.data.amount_cents)! / 100,
-          currency: event.data.currency?.trim().toUpperCase() || null,
+          currency: normalizedCurrency,
           requiresExplicitTerms: true as const,
         }
       : null;
 
+  // tenantSlug is validated here even though the planner does not persist it.
+  void tenantSlug;
+
   return {
     receipt: {
-      externalEventId: event.externalEventId,
+      externalEventId,
       sourceSystem: event.sourceSystem,
       eventType: event.eventType,
       leadRef,
       providerRef,
       offerRef,
-      dedupeKey: event.dedupeKey?.trim() || null,
-      occurredAt: event.occurredAt,
+      paymentRef,
+      dedupeKey,
+      businessDedupeKey,
+      occurredAt,
     },
     attribution: {
       attributionKey: `health-travel:${leadRef}`,
@@ -173,8 +241,8 @@ export function planHealthTravelRevenueEvent(
       campaign: event.data.utm_campaign?.trim() || null,
       channel: event.data.utm_medium?.trim() || null,
       leadRef,
-      firstTouchAt: event.occurredAt,
-      lastTouchAt: event.occurredAt,
+      firstTouchAt: occurredAt,
+      lastTouchAt: occurredAt,
     },
     referral,
     commissionSignal,
