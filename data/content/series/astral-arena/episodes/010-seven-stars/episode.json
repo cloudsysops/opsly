@@ -1,0 +1,48 @@
+{
+  "id": "astral-s01e10-seven-stars",
+  "series_id": "astral-arena",
+  "episode_number": 10,
+  "title": {
+    "es": "Siete estrellas",
+    "en": "Seven Stars"
+  },
+  "hook": {
+    "es": "Capítulo 10 de Guardians of the Nexus. El contenido se escribirá desde el evento canónico story-seven-stars cuando la misión esté madura.",
+    "en": "Chapter 10 of Guardians of the Nexus. Content will be written from canonical event story-seven-stars when the mission is mature."
+  },
+  "objective": "Reserved editorial production slot for story-seven-stars. Do not invent canon here; script only from the approved Universe event and game mission.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Sigue la temporada de Astral Arena / Follow the Astral Arena season",
+    "captions": {
+      "es": "Siete estrellas — próximo capítulo de Astral Arena. #AstralArena #GuardiansOfTheNexus",
+      "en": "Seven Stars — upcoming Astral Arena chapter. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Editorial placeholder for Seven Stars. Final concept must be generated from approved canon/gameplay."
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Reserved from transmedia story event story-seven-stars.",
+      "Mapped mission: seven-stars-001.",
+      "No scenes are authored until Universe/Game Core canon for this mission is ready."
+    ]
+  }
+}

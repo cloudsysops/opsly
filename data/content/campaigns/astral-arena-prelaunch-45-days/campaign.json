@@ -1,0 +1,55 @@
+{
+  "id": "ASTRAL_ARENA_PRELAUNCH_45_DAYS",
+  "name": "Astral Arena — Season 1 Prelaunch",
+  "description": "45-day draft campaign connecting the first playable, Season 1 editorial episodes, gameplay clips and Steam-readiness. No auto-publish; dates are planning slots and Moon approval remains required.",
+  "series_ids": [
+    "astral-arena"
+  ],
+  "duration_days": 45,
+  "start_date": "2026-09-21",
+  "end_date": "2026-11-04",
+  "episode_schedule": [
+    {
+      "episode_id": "astral-s01e01-awakening",
+      "scheduled_publish_date": "2026-09-21",
+      "day_of_week": 1
+    },
+    {
+      "episode_id": "astral-s01e02-orion",
+      "scheduled_publish_date": "2026-09-28",
+      "day_of_week": 1
+    },
+    {
+      "episode_id": "astral-s01e03-aurora",
+      "scheduled_publish_date": "2026-10-05",
+      "day_of_week": 1
+    },
+    {
+      "episode_id": "astral-s01e04-nx7",
+      "scheduled_publish_date": "2026-10-12",
+      "day_of_week": 1
+    }
+  ],
+  "objectives": [
+    "Validate the first playable with family testers before public claims",
+    "Establish Astral Arena as one story across game, episodes and short-form content",
+    "Generate approved real-gameplay footage for trailer and Steam store assets",
+    "Build an audience before Steam release without promising unfinished online features",
+    "Switch CTA from follow/play-preview to Steam wishlist only after Coming Soon is actually live"
+  ],
+  "target_platforms": [
+    "youtube",
+    "youtube_shorts",
+    "tiktok",
+    "instagram_reels",
+    "steam"
+  ],
+  "production_status": {
+    "episodes_planned": 16,
+    "episodes_scripted": 4,
+    "episodes_with_assets": 0,
+    "episodes_rendered": 0,
+    "episodes_reviewed": 0,
+    "episodes_published": 0
+  }
+}

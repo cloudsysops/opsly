@@ -1,0 +1,183 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://src/crystal_temple.gd" id="1_temple"]
+[ext_resource type="Script" path="res://src/player_controller.gd" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/mobile_controls.tscn" id="3_mobile"]
+
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.055, 0.07, 0.16, 1)
+metallic = 0.28
+roughness = 0.55
+
+[sub_resource type="BoxMesh" id="FloorMesh"]
+material = SubResource("FloorMat")
+size = Vector3(30, 1, 30)
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(30, 1, 30)
+
+[sub_resource type="StandardMaterial3D" id="PlayerMat"]
+albedo_color = Color(0.38, 0.12, 0.72, 1)
+metallic = 0.12
+roughness = 0.42
+
+[sub_resource type="CapsuleMesh" id="PlayerMesh"]
+material = SubResource("PlayerMat")
+radius = 0.45
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="PlayerShape"]
+radius = 0.45
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="ArenaCrystalMat"]
+albedo_color = Color(0.47, 0.12, 0.9, 1)
+emission_enabled = true
+emission = Color(0.28, 0.04, 0.8, 1)
+emission_energy_multiplier = 2.4
+
+[sub_resource type="StandardMaterial3D" id="BrissaCrystalMat"]
+albedo_color = Color(0.1, 0.34, 0.95, 1)
+emission_enabled = true
+emission = Color(0.04, 0.2, 0.8, 1)
+emission_energy_multiplier = 2.4
+
+[sub_resource type="StandardMaterial3D" id="GlowMat"]
+transparency = 1
+albedo_color = Color(1, 0.68, 0.16, 0.22)
+emission_enabled = true
+emission = Color(1, 0.45, 0.06, 1)
+emission_energy_multiplier = 5.0
+
+[sub_resource type="BoxMesh" id="CrystalMeshArena"]
+material = SubResource("ArenaCrystalMat")
+size = Vector3(1.2, 4, 1.2)
+
+[sub_resource type="BoxMesh" id="CrystalMeshBrissa"]
+material = SubResource("BrissaCrystalMat")
+size = Vector3(1.2, 4, 1.2)
+
+[sub_resource type="BoxMesh" id="GlowMesh"]
+material = SubResource("GlowMat")
+size = Vector3(1.5, 4.3, 1.5)
+
+[sub_resource type="BoxShape3D" id="CrystalAreaShape"]
+size = Vector3(3.2, 5.2, 3.2)
+
+[node name="CrystalTemple" type="Node3D"]
+script = ExtResource("1_temple")
+
+[node name="WorldLight" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.75, -0.55, 0)
+light_color = Color(0.77, 0.83, 1, 1)
+light_energy = 1.1
+shadow_enabled = true
+
+[node name="Temple" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Temple"]
+position = Vector3(0, -0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Temple/Floor"]
+mesh = SubResource("FloorMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Temple/Floor"]
+shape = SubResource("FloorShape")
+
+[node name="CrystalOne" type="Area3D" parent="Temple"]
+position = Vector3(-4.5, 2, -5)
+
+[node name="Crystal" type="MeshInstance3D" parent="Temple/CrystalOne"]
+rotation = Vector3(0, 0, 0.785398)
+mesh = SubResource("CrystalMeshArena")
+
+[node name="Glow" type="MeshInstance3D" parent="Temple/CrystalOne"]
+visible = false
+rotation = Vector3(0, 0, 0.785398)
+mesh = SubResource("GlowMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Temple/CrystalOne"]
+shape = SubResource("CrystalAreaShape")
+
+[node name="Light" type="OmniLight3D" parent="Temple/CrystalOne"]
+light_color = Color(0.55, 0.2, 1, 1)
+light_energy = 4.2
+omni_range = 8.0
+
+[node name="CrystalTwo" type="Area3D" parent="Temple"]
+position = Vector3(4.5, 2, -5)
+
+[node name="Crystal" type="MeshInstance3D" parent="Temple/CrystalTwo"]
+rotation = Vector3(0, 0, -0.785398)
+mesh = SubResource("CrystalMeshBrissa")
+
+[node name="Glow" type="MeshInstance3D" parent="Temple/CrystalTwo"]
+visible = false
+rotation = Vector3(0, 0, -0.785398)
+mesh = SubResource("GlowMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Temple/CrystalTwo"]
+shape = SubResource("CrystalAreaShape")
+
+[node name="Light" type="OmniLight3D" parent="Temple/CrystalTwo"]
+light_color = Color(0.15, 0.45, 1, 1)
+light_energy = 4.2
+omni_range = 8.0
+
+[node name="Player" type="CharacterBody3D" parent="."]
+position = Vector3(0, 1, 8)
+script = ExtResource("2_player")
+
+[node name="Collision" type="CollisionShape3D" parent="Player"]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("PlayerShape")
+
+[node name="Body" type="MeshInstance3D" parent="Player"]
+position = Vector3(0, 0.9, 0)
+mesh = SubResource("PlayerMesh")
+
+[node name="CameraPivot" type="Node3D" parent="Player"]
+position = Vector3(0, 1.5, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Player/CameraPivot"]
+position = Vector3(0, 0.45, 4.8)
+fov = 72.0
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="MobileControls" parent="UI" instance=ExtResource("3_mobile")]
+
+[node name="Margin" type="MarginContainer" parent="UI"]
+offset_left = 32.0
+offset_top = 28.0
+offset_right = 760.0
+offset_bottom = 250.0
+
+[node name="VBox" type="VBoxContainer" parent="UI/Margin"]
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="UI/Margin/VBox"]
+theme_override_colors/font_color = Color(0.96, 0.84, 0.35, 1)
+theme_override_font_sizes/font_size = 18
+text = "ASTRAL ARENA · TEMPLO DE LOS CRISTALES"
+
+[node name="Mission" type="Label" parent="UI/Margin/VBox"]
+theme_override_colors/font_color = Color(0.95, 0.97, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "Dos Firmas Astrales"
+
+[node name="Step" type="Label" parent="UI/Margin/VBox"]
+theme_override_colors/font_color = Color(0.78, 0.84, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Objetivo: sigue el hilo estelar."
+autowrap_mode = 2
+
+[node name="Interaction" type="Label" parent="UI/Margin/VBox"]
+theme_override_colors/font_color = Color(1, 0.66, 0.84, 1)
+theme_override_font_sizes/font_size = 18
+text = ""
+
+[node name="Help" type="Label" parent="UI/Margin/VBox"]
+theme_override_colors/font_color = Color(0.65, 0.7, 0.82, 1)
+theme_override_font_sizes/font_size = 16
+text = "Mobile: flechas izquierda=mover · flechas derecha=mirar · Interactuar / Saltar · Menú"

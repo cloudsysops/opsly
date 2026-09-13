@@ -105,40 +105,7 @@ if [[ "$DRY_RUN" == "1" ]]; then
   exit 0
 fi
 
-HEALTH_WAIT_SECONDS="${OPSLY_MAC_HEALTH_WAIT_SECONDS:-90}"
-if ! [[ "$HEALTH_WAIT_SECONDS" =~ ^[0-9]+$ ]] || (( HEALTH_WAIT_SECONDS < 10 || HEALTH_WAIT_SECONDS > 300 )); then
-  echo "OPSLY_MAC_HEALTH_WAIT_SECONDS must be an integer between 10 and 300" >&2
-  exit 2
-fi
-
-log "waiting for bridges/orchestrator to report healthy (hard deadline: ${HEALTH_WAIT_SECONDS}s)"
-health_deadline=$((SECONDS + HEALTH_WAIT_SECONDS))
-all_up=0
-
-while (( SECONDS < health_deadline )); do
-  all_up=1
-
-  for port in 5002 5004 5005 5007 3011; do
-    if (( SECONDS >= health_deadline )); then
-      all_up=0
-      break
-    fi
-
-    if ! curl -sf --connect-timeout 1 --max-time 1       "http://127.0.0.1:${port}/health" >/dev/null 2>&1; then
-      all_up=0
-    fi
-  done
-
-  [[ "$all_up" == "1" ]] && break
-
-  if (( SECONDS < health_deadline )); then
-    sleep 1
-  fi
-done
-
-if [[ "$all_up" != "1" ]]; then
-  log "health deadline reached; readiness doctor will report the exact unhealthy endpoint(s)"
-fi
+sleep 3
 
 log "running readiness doctor through Doppler (FAIL blocks; WARN remains visible)"
 doppler run --project ops-intcloudsysops --config prd --   ./scripts/ops/mac-ephemeral-runtime-doctor.sh

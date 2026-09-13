@@ -1,18 +1,13 @@
 ---
-status: historical
+status: draft
 owner: operations
-last_review: 2026-09-12
+last_review: 2026-05-24
 type: agent-doc
 tags:
   - opsly/agents
 ---
 
 # Multi-Agent Architecture: Opsly Fase 4
-
-> Historical architecture note. Do not use this document as the current execution topology.
-> Canonical runtime: [AGENT-RUNTIME-ARCHITECTURE.md](../00-architecture/AGENT-RUNTIME-ARCHITECTURE.md).
-> Current Opsly execution uses AgentTaskEnvelopeV1, BullMQ, registry-driven real runtimes, Session Manager and ephemeral per-task sessions. Persistent/mock service diagrams below are retained only for historical context.
-
 
 **Status:** Production-Ready Implementation  
 **Last Updated:** 2026-04-13  

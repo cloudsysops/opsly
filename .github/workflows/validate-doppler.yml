@@ -7,13 +7,13 @@ name: Validate Doppler Config
 
 on:
   push:
-  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   validate-doppler:
     runs-on: ubuntu-latest
-    # Skip on non-main branches (feature branches don't have Doppler secrets configured)
-    if: github.ref == 'refs/heads/main'
+    # Feature/preview branches do not consume a runner; Doppler validation is main-only.
     steps:
       - uses: actions/checkout@v4
 

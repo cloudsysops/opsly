@@ -1,0 +1,113 @@
+{
+  "id": "astral-s01e01-awakening",
+  "series_id": "astral-arena",
+  "episode_number": 1,
+  "title": {
+    "es": "Las hermanas despiertan",
+    "en": "The Sisters Awaken"
+  },
+  "hook": {
+    "es": "Dos cristales despiertan al mismo tiempo. El Nexo no esperaba a dos Guardianas.",
+    "en": "Two crystals awaken at the same time. The Nexus was not expecting two Guardians."
+  },
+  "objective": "Introduce Arena and Brissa, establish sisterhood as the emotional center, and reveal that the Nexus is damaged but repairable.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [
+    {
+      "number": 1,
+      "description": "The silent temple",
+      "visuals": "Crystal Temple in darkness; two dormant crystals on opposite sides.",
+      "copy": "Algo se rompió mucho antes de que ellas llegaran.",
+      "duration_sec": 10,
+      "assets_needed": [
+        "Crystal Temple gameplay capture",
+        "Arena crystal shot",
+        "Brissa crystal shot"
+      ]
+    },
+    {
+      "number": 2,
+      "description": "Arena awakens",
+      "visuals": "Purple-gold threads begin to glow around Arena.",
+      "copy": "Arena no sabe dónde está. Pero sabe que algo necesita ser reparado.",
+      "duration_sec": 12,
+      "assets_needed": [
+        "Arena canonical render",
+        "astral thread effect"
+      ]
+    },
+    {
+      "number": 3,
+      "description": "Brissa answers",
+      "visuals": "Blue-purple constellation light wakes across the room.",
+      "copy": "Brissa escucha el mismo llamado desde el otro lado.",
+      "duration_sec": 12,
+      "assets_needed": [
+        "Brissa canonical render",
+        "constellation shield effect"
+      ]
+    },
+    {
+      "number": 4,
+      "description": "The connection",
+      "visuals": "Their light crosses the chamber and joins at the center.",
+      "copy": "No son dos poderes separados. Son una conexión.",
+      "duration_sec": 13,
+      "assets_needed": [
+        "sisters-connect gameplay marker"
+      ]
+    },
+    {
+      "number": 5,
+      "description": "First choice",
+      "visuals": "A broken portal flickers; the girls move toward it together.",
+      "copy": "Proteger no significa detenerse. Reparar no significa hacerlo sola.",
+      "duration_sec": 15,
+      "assets_needed": [
+        "portal-revealed gameplay marker"
+      ]
+    },
+    {
+      "number": 6,
+      "description": "Cliffhanger",
+      "visuals": "A distant signal pulses beyond the portal.",
+      "copy": "Y entonces algo responde desde la Tierra.",
+      "duration_sec": 13,
+      "assets_needed": [
+        "portal signal",
+        "Orion silhouette teaser"
+      ]
+    }
+  ],
+  "metadata": {
+    "call_to_action": "Descubre el siguiente capítulo jugando Astral Arena / Discover the next chapter by playing Astral Arena",
+    "captions": {
+      "es": "Las hermanas despiertan. La historia continúa dentro del juego. #AstralArena #GuardiansOfTheNexus",
+      "en": "The Sisters Awaken. The story continues inside the game. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Arena and Brissa facing each other across the Crystal Temple, purple-gold and blue-pink light connecting between them, broken portal behind, cinematic family adventure."
+  },
+  "production": {
+    "status": "storyboard",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Derived from Opsly Universe canon and mapped through config/games/astral-arena-transmedia.json.",
+      "Content Studio may present this event but may not redefine canon."
+    ]
+  }
+}

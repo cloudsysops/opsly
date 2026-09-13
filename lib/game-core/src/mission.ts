@@ -6,6 +6,7 @@ import {
 } from './constants.js';
 import { recordEvent } from './events.js';
 import { getFirstPortalMission } from './first-portal.js';
+import { getAstralArenaMission } from './astral-arena.js';
 import { grantCollectibles } from './inventory.js';
 import { GraphEdgeSchema, MissionResultSchema } from './schemas.js';
 import type { GameStore } from './store.js';
@@ -24,16 +25,19 @@ export function isLegalIpoEdge(from: string, to: string): boolean {
   );
 }
 
+function resolveMission(missionId: string): Mission {
+  const firstPortal = getFirstPortalMission();
+  if (firstPortal.id === missionId) return firstPortal;
+  return getAstralArenaMission(missionId);
+}
+
 export function startMission(
   store: GameStore,
   sessionId: string,
   missionId: string,
   now: () => Date,
 ): Mission {
-  const mission = getFirstPortalMission();
-  if (mission.id !== missionId) {
-    throw new Error(`Unknown mission: ${missionId}`);
-  }
+  const mission = resolveMission(missionId);
   const state = store.get(sessionId);
   if (state.session.portalId !== mission.portalId) {
     throw new Error('Enter the matching portal before starting this mission');
@@ -51,7 +55,7 @@ export function startMission(
     sessionId,
     type: 'mission.started',
     missionId,
-    evidence: 'Explorer received the First Portal systems mission',
+    evidence: `Explorer started mission ${mission.id}: ${mission.title}`,
     now,
   });
   return mission;
@@ -68,6 +72,9 @@ export function connectNodes(
   const state = store.get(sessionId);
   if (!state.mission || state.mission.status !== 'in-progress') {
     throw new Error('No active mission to connect');
+  }
+  if (state.mission.missionId !== getFirstPortalMission().id) {
+    throw new Error('Use completeMissionStep for non-IPO missions');
   }
   state.edges.push(edge);
   if (!isLegalIpoEdge(from, to)) {
@@ -93,6 +100,34 @@ export function connectNodes(
   return state.mission;
 }
 
+export function completeMissionStep(
+  store: GameStore,
+  sessionId: string,
+  stepId: string,
+  now: () => Date,
+): MissionResult {
+  const state = store.get(sessionId);
+  if (!state.mission || state.mission.status !== 'in-progress') {
+    throw new Error('No active mission to advance');
+  }
+  const mission = resolveMission(state.mission.missionId);
+  if (mission.id === getFirstPortalMission().id) {
+    throw new Error('Use connectNodes for the First Portal IPO mission');
+  }
+  if (!mission.steps.some((step) => step.id === stepId)) {
+    throw new Error(`Unknown mission step: ${stepId}`);
+  }
+  const completedStepIds = Array.from(
+    new Set([...(state.mission.completedStepIds ?? []), stepId]),
+  );
+  state.mission = { ...state.mission, completedStepIds };
+  store.put(state);
+  if (mission.steps.every((step) => completedStepIds.includes(step.id))) {
+    return completeMission(store, sessionId, now);
+  }
+  return state.mission;
+}
+
 function completeMission(store: GameStore, sessionId: string, now: () => Date): MissionResult {
   const state = store.get(sessionId);
   if (!state.mission) {
@@ -112,9 +147,14 @@ function completeMission(store: GameStore, sessionId: string, now: () => Date): 
     sessionId,
     type: 'mission.completed',
     missionId: completed.missionId,
-    evidence: 'Explorer restored INPUT → PROCESS → OUTPUT',
+    evidence:
+      completed.missionId === getFirstPortalMission().id
+        ? 'Explorer restored INPUT → PROCESS → OUTPUT'
+        : `Explorer completed mission ${completed.missionId}`,
     now,
   });
-  grantCollectibles(store, sessionId, now);
+  if (completed.missionId === getFirstPortalMission().id) {
+    grantCollectibles(store, sessionId, now);
+  }
   return completed;
 }

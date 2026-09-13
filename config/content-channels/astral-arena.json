@@ -1,0 +1,31 @@
+{
+  "channel": "astral-arena",
+  "name": "Astral Arena",
+  "resolution": { "width": 1080, "height": 1920 },
+  "aspectRatio": "9:16",
+  "fps": 30,
+  "defaultDurationMs": 45000,
+  "font": "Inter",
+  "subtitleStyle": {
+    "fontSize": 58,
+    "primaryColor": "#FFF7ED",
+    "outlineColor": "#0B1026",
+    "outlineWidth": 7,
+    "shadowColor": "#0B1026",
+    "shadowOffset": 4,
+    "alignment": 2,
+    "marginV": 210
+  },
+  "safeArea": { "top": 140, "right": 100, "bottom": 280, "left": 100 },
+  "transitionStyle": "cinematic",
+  "musicLevel": -22,
+  "voiceLevel": -4,
+  "brandColors": ["#6D28D9", "#2563EB", "#EC4899", "#D4AF37", "#0B1026"],
+  "logo": null,
+  "intro": "Astral Arena — Los Guardianes del Nexo",
+  "outro": "Si se rompe, se cose.",
+  "ctaStyle": "family adventure, hopeful, serialized",
+  "sceneDurationLimits": { "minMs": 1800, "maxMs": 7000 },
+  "motionDefaults": ["slow-zoom-in", "pan-right", "static"],
+  "tone": "family cinematic fantasy sci-fi, adventurous, warm, wondrous, serialized, child-safe"
+}

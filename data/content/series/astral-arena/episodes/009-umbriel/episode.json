@@ -1,0 +1,48 @@
+{
+  "id": "astral-s01e09-umbriel",
+  "series_id": "astral-arena",
+  "episode_number": 9,
+  "title": {
+    "es": "El Guardián caído",
+    "en": "The Fallen Guardian"
+  },
+  "hook": {
+    "es": "Capítulo 9 de Guardians of the Nexus. El contenido se escribirá desde el evento canónico story-umbriel-fallen cuando la misión esté madura.",
+    "en": "Chapter 9 of Guardians of the Nexus. Content will be written from canonical event story-umbriel-fallen when the mission is mature."
+  },
+  "objective": "Reserved editorial production slot for story-umbriel-fallen. Do not invent canon here; script only from the approved Universe event and game mission.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Sigue la temporada de Astral Arena / Follow the Astral Arena season",
+    "captions": {
+      "es": "El Guardián caído — próximo capítulo de Astral Arena. #AstralArena #GuardiansOfTheNexus",
+      "en": "The Fallen Guardian — upcoming Astral Arena chapter. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Editorial placeholder for The Fallen Guardian. Final concept must be generated from approved canon/gameplay."
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Reserved from transmedia story event story-umbriel-fallen.",
+      "Mapped mission: umbriel-fallen-001.",
+      "No scenes are authored until Universe/Game Core canon for this mission is ready."
+    ]
+  }
+}

@@ -1,5 +1,19 @@
 import type { UniverseWorld } from '../types.js';
 
+const ASTRAL_ARENA_CAST = [
+  'arena',
+  'brissa',
+  'orion-shepherd',
+  'aurora-unicorn',
+  'nx-7',
+  'altair',
+  'umbra',
+  'asterion',
+  'pyra',
+  'nebryx',
+  'umbriel',
+];
+
 const ALL = [
   'traveler',
   'nova',
@@ -13,6 +27,73 @@ const ALL = [
 ];
 
 export const CANONICAL_WORLDS: UniverseWorld[] = [
+  {
+    id: 'technolia',
+    slug: 'technolia',
+    name: 'TECHNOLIA',
+    description:
+      'A buildable technology civilization connected to Astral Arena. Guardians gather resources, research software architecture, construct machines, defend safe cyber ranges, assemble a starship, and progressively reveal the stellar map.',
+    visualIdentity: {
+      palette: ['deep navy', 'electric blue', 'royal purple', 'antique gold', 'crystal cyan'],
+      architecture:
+        'Modular Nexus settlements, gateway towers, observatories, queues as luminous docks, worker foundries, data vaults, starship yards, and distributed stellar outposts',
+      atmosphere: 'Constructive strategy, discovery, engineering, defense, and visible progression',
+      lighting: 'Clean technological glow with warm gold guidance lights; readable systems over neon clutter',
+      motifs: ['network graphs', 'crystal circuits', 'modular buildings', 'star maps', 'Nexus rings', 'dragon-current routes'],
+      negatives: [
+        'real-world exploit instructions',
+        'military realism as the core fantasy',
+        'grimdark cyberpunk',
+        'opaque technology with no learning purpose',
+      ],
+    },
+    themes: ['building', 'systems thinking', 'security', 'resilience', 'exploration', 'cooperation'],
+    allowedCharacters: ASTRAL_ARENA_CAST,
+    educationalDomains: [
+      'software architecture',
+      'distributed systems',
+      'cybersecurity defense',
+      'observability',
+      'platform engineering',
+      'resource planning',
+    ],
+    transitions: ['astral-arena', 'nexus', 'future', 'lab', 'unknown'],
+    portalSymbol: 'crystal circuit inside a starship ring',
+  },
+  {
+    id: 'astral-arena',
+    slug: 'astral-arena',
+    name: 'ASTRAL ARENA',
+    description:
+      'A family fantasy-sci-fi realm inside the wider Nexus: Crystal Temple, Celestial City, the Forest Without Sky, Dragon Sanctuaries, living Nexus Currents, and the Great Rift. Arena and Brissa are its central sister-heroes.',
+    visualIdentity: {
+      palette: ['night navy', 'royal purple', 'deep blue', 'rose pink', 'antique gold', 'star white'],
+      architecture:
+        'Floating crystal temples, luminous bridges, constellation cities, dragon sanctuaries, ring portals, and ancient technology grown into living geometry',
+      atmosphere: 'Wonder, movement, family warmth, cosmic danger without horror',
+      lighting: 'Cinematic starlight, purple-blue volumetric glow, warm gold faces, restrained pink energy accents',
+      motifs: ['woven star threads', 'constellation shields', 'winged Nexus rings', 'dragon currents', 'crystal gates'],
+      negatives: [
+        'gore',
+        'horror-child imagery',
+        'hypersexualized child heroes',
+        'religious iconography presented as theology',
+        'trademarked superhero costume imitation',
+        'generic neon cyberpunk overload',
+      ],
+    },
+    themes: ['sisterhood', 'repair', 'memory', 'courage', 'cooperation', 'second chances'],
+    allowedCharacters: ASTRAL_ARENA_CAST,
+    educationalDomains: [
+      'astronomy-lite clearly separated from fantasy',
+      'maps and systems',
+      'technology responsibility',
+      'teamwork and emotional learning',
+      'fictional creature ecology clearly labeled as fiction',
+    ],
+    transitions: ['nexus', 'unknown', 'technolia'],
+    portalSymbol: 'woven star inside an open Nexus ring',
+  },
   {
     id: 'nexus',
     slug: 'nexus',

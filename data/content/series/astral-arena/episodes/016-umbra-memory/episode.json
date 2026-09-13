@@ -1,0 +1,48 @@
+{
+  "id": "astral-s01e16-umbra-memory",
+  "series_id": "astral-arena",
+  "episode_number": 16,
+  "title": {
+    "es": "Umbra recuerda",
+    "en": "Umbra Remembers"
+  },
+  "hook": {
+    "es": "Capítulo 16 de Guardians of the Nexus. El contenido se escribirá desde el evento canónico story-umbra-memory cuando la misión esté madura.",
+    "en": "Chapter 16 of Guardians of the Nexus. Content will be written from canonical event story-umbra-memory when the mission is mature."
+  },
+  "objective": "Reserved editorial production slot for story-umbra-memory. Do not invent canon here; script only from the approved Universe event and game mission.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Sigue la temporada de Astral Arena / Follow the Astral Arena season",
+    "captions": {
+      "es": "Umbra recuerda — próximo capítulo de Astral Arena. #AstralArena #GuardiansOfTheNexus",
+      "en": "Umbra Remembers — upcoming Astral Arena chapter. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Editorial placeholder for Umbra Remembers. Final concept must be generated from approved canon/gameplay."
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Reserved from transmedia story event story-umbra-memory.",
+      "Mapped mission: umbra-memory-001.",
+      "No scenes are authored until Universe/Game Core canon for this mission is ready."
+    ]
+  }
+}

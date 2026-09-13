@@ -1,0 +1,109 @@
+{
+  "id": "astral-s01e04-nx7",
+  "series_id": "astral-arena",
+  "episode_number": 4,
+  "title": {
+    "es": "NX-7 despierta",
+    "en": "NX-7 Wakes Up"
+  },
+  "hook": {
+    "es": "¿Qué pasa cuando una máquina despierta y su primera pregunta no es qué puede hacer, sino para qué sirve?",
+    "en": "What happens when a machine wakes up and its first question is not what it can do, but what it is for?"
+  },
+  "objective": "Introduce NX-7 and Technolia, establishing the rule that technology serves life and requires understood limits.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [
+    {
+      "number": 1,
+      "description": "Technolia dark",
+      "visuals": "A silent city of disconnected modules waits beyond the portal.",
+      "copy": "Technolia tiene energía. Tiene datos. Lo que no tiene es propósito.",
+      "duration_sec": 10,
+      "assets_needed": [
+        "Technolia establishing shot"
+      ]
+    },
+    {
+      "number": 2,
+      "description": "NX-7 boot",
+      "visuals": "A small blue core lights inside NX-7.",
+      "copy": "NX-7 inicia con una pregunta: ¿qué necesita este lugar?",
+      "duration_sec": 12,
+      "assets_needed": [
+        "nx7-boot capture"
+      ]
+    },
+    {
+      "number": 3,
+      "description": "Altair arrives",
+      "visuals": "Altair observes without giving the answer.",
+      "copy": "Altair no le dice qué construir. Le enseña a preguntar por qué.",
+      "duration_sec": 13,
+      "assets_needed": [
+        "Altair canonical render"
+      ]
+    },
+    {
+      "number": 4,
+      "description": "First system",
+      "visuals": "The team connects Nexus Core to Portal Gateway.",
+      "copy": "Una arquitectura no es una colección de piezas. Es una promesa entre ellas.",
+      "duration_sec": 14,
+      "assets_needed": [
+        "Technolia building capture"
+      ]
+    },
+    {
+      "number": 5,
+      "description": "Logic pulse",
+      "visuals": "NX-7 detects a broken request and routes around it.",
+      "copy": "La tecnología sirve cuando hace visible sus límites.",
+      "duration_sec": 14,
+      "assets_needed": [
+        "logic-pulse gameplay capture"
+      ]
+    },
+    {
+      "number": 6,
+      "description": "The larger map",
+      "visuals": "Technolia lights reveal distant sectors and a dragon-shaped signal.",
+      "copy": "La ciudad despierta. Y con ella, una señal mucho más antigua.",
+      "duration_sec": 12,
+      "assets_needed": [
+        "technolia-first-view marker",
+        "dragon signal teaser"
+      ]
+    }
+  ],
+  "metadata": {
+    "call_to_action": "Descubre el siguiente capítulo jugando Astral Arena / Discover the next chapter by playing Astral Arena",
+    "captions": {
+      "es": "NX-7 despierta. La historia continúa dentro del juego. #AstralArena #GuardiansOfTheNexus",
+      "en": "NX-7 Wakes Up. The story continues inside the game. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "NX-7 glowing blue in the center of Technolia as Arena, Brissa and Altair watch a city of modular systems come online, dragon-shaped signal in distant sky."
+  },
+  "production": {
+    "status": "storyboard",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Derived from Opsly Universe canon and mapped through config/games/astral-arena-transmedia.json.",
+      "Content Studio may present this event but may not redefine canon."
+    ]
+  }
+}

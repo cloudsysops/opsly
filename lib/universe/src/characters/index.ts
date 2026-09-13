@@ -7,6 +7,7 @@ import { nova } from './nova.js';
 import { orion } from './orion.js';
 import { traveler } from './traveler.js';
 import { wavo } from './wavo.js';
+import { ASTRAL_ARENA_CHARACTERS, arena, brissa, orionShepherd, aurora, nx7, altair, umbra, asterion, pyra, nebryx, umbriel } from './astral-arena.js';
 import type { UniverseCharacter } from '../types.js';
 
 export const CANONICAL_CHARACTERS: UniverseCharacter[] = [
@@ -19,6 +20,7 @@ export const CANONICAL_CHARACTERS: UniverseCharacter[] = [
   maya,
   echo,
   wavo,
+  ...ASTRAL_ARENA_CHARACTERS,
 ];
 
 export {
@@ -31,4 +33,16 @@ export {
   orion,
   traveler,
   wavo,
+  arena,
+  brissa,
+  orionShepherd,
+  aurora,
+  nx7,
+  altair,
+  umbra,
+  asterion,
+  pyra,
+  nebryx,
+  umbriel,
+  ASTRAL_ARENA_CHARACTERS,
 };

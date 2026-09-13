@@ -26,6 +26,7 @@ export function chooseExplorer(
       companionCharacterId: input.companionCharacterId,
     },
     interestTags: input.interestTags ?? [],
+    astralAffinity: input.astralAffinity,
   });
   const state = store.get(sessionId);
   state.player = { ...state.player, explorer };
@@ -34,7 +35,7 @@ export function chooseExplorer(
     sessionId,
     type: 'explorer.chosen',
     evidence: 'Explorer chose appearance and optional companion',
-    context: { palette: explorer.appearance.palette },
+    context: { palette: explorer.appearance.palette, astralAffinity: explorer.astralAffinity?.element ?? null },
     now,
   });
   return explorer;

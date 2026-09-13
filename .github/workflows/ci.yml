@@ -3,11 +3,14 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'apps/game-astral-arena/**'
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:

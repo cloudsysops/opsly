@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "blueprints": [
+    {
+      "id": "godot-steam",
+      "label": "Godot Steam Game",
+      "engine": "godot",
+      "engine_version": "4.7.2",
+      "target": "windows-x64",
+      "description": "Reusable Opsly game-product blueprint for 3D/2D Steam games using Godot as the client renderer and Opsly packages as canonical data/control-plane owners."
+    }
+  ],
+  "commands": {
+    "list": "jq -r '.blueprints[] | \"\\(.id)\\t\\(.label)\\tGodot \\(.engine_version)\"' config/game-blueprints/index.json",
+    "clone": "./scripts/provisioning/clone-game-launch.sh --blueprint godot-steam --slug <game-slug> --title \"Game Title\" --dry-run"
+  }
+}

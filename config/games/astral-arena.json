@@ -1,0 +1,100 @@
+{
+  "id": "astral-arena",
+  "title": "Astral Arena: Guardians of the Nexus",
+  "productType": "premium-pc-game",
+  "storeTarget": "steam",
+  "releaseStrategy": "vertical-slice-then-demo-then-full-release",
+  "platforms": {
+    "launch": [
+      "windows-x64"
+    ],
+    "later": [
+      "linux-x64",
+      "steam-deck",
+      "macos"
+    ]
+  },
+  "runtime": {
+    "canon": "@intcloudsysops/universe",
+    "gameLogic": "@intcloudsysops/game-core",
+    "viewModel": "@intcloudsysops/game-web",
+    "content": "@intcloudsysops/content-studio",
+    "authoritativeState": "opsly-control-plane",
+    "gpuCompute": "pc-gamer-optional"
+  },
+  "firstPlayable": {
+    "name": "The Crystal Temple",
+    "storyMissions": [
+      "awakening-sisters-001",
+      "orion-earth-guardian-001",
+      "aurora-magic-guardian-001",
+      "nx7-awakening-001"
+    ],
+    "technolia": {
+      "eras": [
+        "SPARK_ERA"
+      ],
+      "requiredBuildings": [
+        "nexus-core",
+        "portal-gateway",
+        "memory-vault"
+      ],
+      "requiredTechnologies": [
+        "structured-requests"
+      ]
+    },
+    "cyberArena": [
+      "cyber-001-bot-swarm",
+      "cyber-002-credential-storm",
+      "cyber-003-injection-echo"
+    ],
+    "learningArcade": [
+      "console-001-game-loop",
+      "homelab-001-inventory",
+      "pi-001-boot"
+    ],
+    "physicalCollectibles": "post-vertical-slice"
+  },
+  "steam": {
+    "appId": null,
+    "demoAppId": null,
+    "depotIds": {
+      "windows": null
+    },
+    "defaultBranch": "default",
+    "testBranch": "playtest",
+    "credentialsInRepo": false,
+    "steamworksApiPhase": "after-first-playable",
+    "initialFeatures": [
+      "steam-pipe-build-delivery"
+    ],
+    "laterFeatures": [
+      "achievements",
+      "steam-cloud",
+      "controller-api",
+      "rich-presence",
+      "steam-deck-verification"
+    ],
+    "releasePipeline": {
+      "windowsArtifact": "astral-arena-windows-${sha}",
+      "steamPipe": "prepare-only-until-steamworks-onboarding",
+      "privateBranch": "playtest",
+      "uploadRequiresProtectedEnvironment": true,
+      "humanApprovalRequired": true,
+      "idsSource": "github-repository-variables",
+      "credentialsSource": "protected-secrets-never-repository"
+    }
+  },
+  "content": {
+    "channel": "astral-arena",
+    "storeAssetsFromContentOS": true,
+    "gameplayClipsFromContentOS": true,
+    "humanApprovalRequired": true
+  },
+  "safety": {
+    "cyberRange": "isolated-simulation-only",
+    "childCharacters": "age-appropriate-family-safe",
+    "birthAffinity": "fictional-customization-not-destiny",
+    "realWorldUploads": "explicit-user-upload-review-required"
+  }
+}

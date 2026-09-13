@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#070b1f" />
+  <title>Astral Emulator Lab</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    .emu-wrap{width:min(1100px,calc(100% - 28px));margin:0 auto 40px}
+    .legal-box,.loader-box{border:1px solid #2d3a64;border-radius:22px;background:#0d1430;padding:20px;margin:16px 0}
+    .loader-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    select,input[type=file],button.start{width:100%;min-height:54px;border-radius:14px;border:1px solid #374572;background:#121a35;color:#f7f7fb;padding:10px 12px;font:inherit}
+    button.start{border:0;background:linear-gradient(135deg,#8a5cff,#ef5db3);font-weight:800}
+    #game{width:100%;min-height:540px;background:#02040d;border-radius:20px;overflow:hidden}
+    .warning{color:#ffd483}.ok{color:#86f7c5}
+    @media(max-width:700px){.loader-grid{grid-template-columns:1fr}#game{min-height:420px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="./">← Games Lab</a>
+    <div>
+      <div class="eyebrow">OPEN SOURCE + LOCAL FILE</div>
+      <h1>Emulator Lab</h1>
+      <p>Prueba homebrew, dominio público o dumps propios sin subir el ROM al servidor.</p>
+    </div>
+  </header>
+
+  <main class="emu-wrap">
+    <div class="legal-box">
+      <div class="eyebrow">REGLA</div>
+      <h2>Solo contenido que tengamos derecho a usar.</h2>
+      <p class="warning">
+        El emulador no incluye juegos comerciales ni BIOS. Selecciona únicamente archivos
+        homebrew/open-source/public-domain o copias propias permitidas por la ley aplicable.
+      </p>
+      <p>
+        Frontend: EmulatorJS (GPL-3.0). Esta primera versión solo habilita cores cuya licencia
+        hemos incluido en nuestro allowlist.
+      </p>
+      <a class="secondary-link" href="./licenses.html">Ver licencias y cores</a>
+    </div>
+
+    <div class="loader-box" id="loader-box">
+      <div class="loader-grid">
+        <label>
+          <span class="eyebrow">SISTEMA</span>
+          <select id="system">
+            <option value="nes">NES · FCEUmm · GPLv2</option>
+            <option value="gb">Game Boy · Gambatte · GPLv2</option>
+            <option value="gba">Game Boy Advance · mGBA · MPLv2</option>
+            <option value="atari2600">Atari 2600 · Stella 2014 · GPLv2</option>
+          </select>
+        </label>
+        <label>
+          <span class="eyebrow">ARCHIVO LOCAL</span>
+          <input id="rom" type="file" accept=".nes,.gb,.gbc,.gba,.a26,.bin,.zip" />
+        </label>
+      </div>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin:16px 0">
+        <input id="rights" type="checkbox" />
+        <span>Confirmo que tengo derecho a usar este archivo y que no es una descarga comercial no autorizada.</span>
+      </label>
+      <button class="start" id="start">Iniciar emulador</button>
+      <p class="note" id="status">El ROM permanece en tu navegador mediante una URL local temporal.</p>
+    </div>
+
+    <div id="game"></div>
+  </main>
+
+  <script src="./emulator.js"></script>
+</body>
+</html>

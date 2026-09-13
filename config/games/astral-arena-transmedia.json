@@ -1,0 +1,354 @@
+{
+  "schemaVersion": 1,
+  "franchiseId": "astral-arena",
+  "title": "Astral Arena: Guardians of the Nexus",
+  "canonOwner": "@intcloudsysops/universe",
+  "rulesOwner": "@intcloudsysops/game-core",
+  "contentOwner": "@intcloudsysops/content-studio",
+  "gameClient": "apps/game-astral-arena",
+  "humanReview": "apps/admin/app/moon/creator",
+  "season": {
+    "id": "season-01-guardians-of-the-nexus",
+    "title": "Guardians of the Nexus",
+    "thesis": "Learn, build, protect, restore and grow together.",
+    "surfaces": [
+      "GAME",
+      "STORY_EPISODE",
+      "SHORT",
+      "TRAILER",
+      "STEAM_STORE",
+      "SOCIAL",
+      "LORE"
+    ],
+    "chapters": [
+      {
+        "id": "chapter-01-awakening",
+        "title": "The Awakening",
+        "missionIds": [
+          "awakening-sisters-001",
+          "orion-earth-guardian-001",
+          "aurora-magic-guardian-001",
+          "nx7-awakening-001"
+        ],
+        "contentArc": "Meet the sisters, companions and first Nexus rule.",
+        "status": "first-playable"
+      },
+      {
+        "id": "chapter-02-dragons",
+        "title": "The Dragon Current",
+        "missionIds": [
+          "dragon-signal-001",
+          "asterion-awakening-001",
+          "pyra-heartfire-001",
+          "nebryx-code-001",
+          "umbriel-fallen-001"
+        ],
+        "contentArc": "Discover that dragons are conscious guardians, not weapons.",
+        "status": "planned"
+      },
+      {
+        "id": "chapter-03-seven-stars",
+        "title": "Seven Stars",
+        "missionIds": [
+          "seven-stars-001",
+          "dragon-current-war-001",
+          "winged-ascension-001"
+        ],
+        "contentArc": "The team learns cooperation across worlds and powers.",
+        "status": "planned"
+      },
+      {
+        "id": "chapter-04-umbra",
+        "title": "The Shadow Remembers",
+        "missionIds": [
+          "city-without-colors-001",
+          "shadow-truth-001",
+          "shadow-rift-001",
+          "umbra-memory-001"
+        ],
+        "contentArc": "Restoration becomes more important than defeating an enemy.",
+        "status": "planned"
+      }
+    ]
+  },
+  "storyEvents": [
+    {
+      "id": "story-awakening-sisters",
+      "missionIds": [
+        "awakening-sisters-001"
+      ],
+      "episodeId": "astral-s01e01-awakening",
+      "title": "The Sisters Awaken",
+      "characters": [
+        "arena",
+        "brissa"
+      ],
+      "companions": [],
+      "worlds": [
+        "crystal-temple"
+      ],
+      "contentGoal": "Introduce the sisters and the broken Nexus.",
+      "captureMarkers": [
+        "first-crystal-awakens",
+        "sisters-connect",
+        "portal-revealed"
+      ],
+      "status": "implemented-mission"
+    },
+    {
+      "id": "story-orion-guardian",
+      "missionIds": [
+        "orion-earth-guardian-001"
+      ],
+      "episodeId": "astral-s01e02-orion",
+      "title": "Orion, Guardian of Earth",
+      "characters": [
+        "arena",
+        "brissa",
+        "orion-shepherd"
+      ],
+      "companions": [
+        "orion-shepherd"
+      ],
+      "worlds": [
+        "crystal-temple"
+      ],
+      "contentGoal": "Show that loyalty and protection are active choices.",
+      "captureMarkers": [
+        "orion-arrives",
+        "guardian-rush",
+        "team-bond"
+      ],
+      "status": "implemented-content"
+    },
+    {
+      "id": "story-aurora-guardian",
+      "missionIds": [
+        "aurora-magic-guardian-001"
+      ],
+      "episodeId": "astral-s01e03-aurora",
+      "title": "Aurora Chooses",
+      "characters": [
+        "arena",
+        "brissa",
+        "aurora-unicorn"
+      ],
+      "companions": [
+        "aurora-unicorn"
+      ],
+      "worlds": [
+        "crystal-temple"
+      ],
+      "contentGoal": "Introduce chosen companionship and hope.",
+      "captureMarkers": [
+        "aurora-reveal",
+        "prism-charge",
+        "nexus-purified"
+      ],
+      "status": "implemented-content"
+    },
+    {
+      "id": "story-nx7-awakening",
+      "missionIds": [
+        "nx7-awakening-001"
+      ],
+      "episodeId": "astral-s01e04-nx7",
+      "title": "NX-7 Wakes Up",
+      "characters": [
+        "arena",
+        "brissa",
+        "nx-7",
+        "altair"
+      ],
+      "companions": [
+        "nx-7"
+      ],
+      "worlds": [
+        "technolia"
+      ],
+      "contentGoal": "Technology serves life when people understand its limits.",
+      "captureMarkers": [
+        "nx7-boot",
+        "logic-pulse",
+        "technolia-first-view"
+      ],
+      "status": "implemented-content"
+    },
+    {
+      "id": "story-dragon-signal",
+      "missionIds": [
+        "dragon-signal-001"
+      ],
+      "episodeId": "astral-s01e05-dragon-signal",
+      "title": "The Dragon Signal",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-asterion-awakening",
+      "missionIds": [
+        "asterion-awakening-001"
+      ],
+      "episodeId": "astral-s01e06-asterion",
+      "title": "Asterion Awakens",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-pyra-heartfire",
+      "missionIds": [
+        "pyra-heartfire-001"
+      ],
+      "episodeId": "astral-s01e07-pyra",
+      "title": "Heartfire",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-nebryx-code",
+      "missionIds": [
+        "nebryx-code-001"
+      ],
+      "episodeId": "astral-s01e08-nebryx",
+      "title": "The Living Code",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-umbriel-fallen",
+      "missionIds": [
+        "umbriel-fallen-001"
+      ],
+      "episodeId": "astral-s01e09-umbriel",
+      "title": "The Fallen Guardian",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-seven-stars",
+      "missionIds": [
+        "seven-stars-001"
+      ],
+      "episodeId": "astral-s01e10-seven-stars",
+      "title": "Seven Stars",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-dragon-current-war",
+      "missionIds": [
+        "dragon-current-war-001"
+      ],
+      "episodeId": "astral-s01e11-dragon-current",
+      "title": "The Dragon Current",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-winged-ascension",
+      "missionIds": [
+        "winged-ascension-001"
+      ],
+      "episodeId": "astral-s01e12-ascension",
+      "title": "Winged Ascension",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-city-without-colors",
+      "missionIds": [
+        "city-without-colors-001"
+      ],
+      "episodeId": "astral-s01e13-colorless-city",
+      "title": "The City Without Colors",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-shadow-truth",
+      "missionIds": [
+        "shadow-truth-001"
+      ],
+      "episodeId": "astral-s01e14-shadow-truth",
+      "title": "The Truth of the Shadow",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-shadow-rift",
+      "missionIds": [
+        "shadow-rift-001"
+      ],
+      "episodeId": "astral-s01e15-rift",
+      "title": "The Shadow Rift",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    },
+    {
+      "id": "story-umbra-memory",
+      "missionIds": [
+        "umbra-memory-001"
+      ],
+      "episodeId": "astral-s01e16-umbra-memory",
+      "title": "Umbra Remembers",
+      "characters": [],
+      "companions": [],
+      "worlds": [],
+      "contentGoal": "Expand Season 1 canon through game + story + approved content.",
+      "captureMarkers": [],
+      "status": "planned"
+    }
+  ],
+  "productionRules": {
+    "gameCanonNeverDerivedFromSocial": true,
+    "contentCannotRewriteCanon": true,
+    "gameplayCapturePreferredForStoreClaims": true,
+    "moonHumanApprovalRequired": true,
+    "noAutoPublishSensitiveContent": true,
+    "analyticsMustComeFromRealPlatforms": true
+  }
+}

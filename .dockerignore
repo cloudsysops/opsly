@@ -5,6 +5,10 @@ npm-debug.log
 .gitignore
 .next
 dist
+!dist/
+dist/*
+!dist/astral-arena-web/
+!dist/astral-arena-web/**
 build
 coverage
 .DS_Store

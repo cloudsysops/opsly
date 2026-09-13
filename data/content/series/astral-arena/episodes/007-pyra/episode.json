@@ -1,0 +1,48 @@
+{
+  "id": "astral-s01e07-pyra",
+  "series_id": "astral-arena",
+  "episode_number": 7,
+  "title": {
+    "es": "Fuego del corazón",
+    "en": "Heartfire"
+  },
+  "hook": {
+    "es": "Capítulo 7 de Guardians of the Nexus. El contenido se escribirá desde el evento canónico story-pyra-heartfire cuando la misión esté madura.",
+    "en": "Chapter 7 of Guardians of the Nexus. Content will be written from canonical event story-pyra-heartfire when the mission is mature."
+  },
+  "objective": "Reserved editorial production slot for story-pyra-heartfire. Do not invent canon here; script only from the approved Universe event and game mission.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Sigue la temporada de Astral Arena / Follow the Astral Arena season",
+    "captions": {
+      "es": "Fuego del corazón — próximo capítulo de Astral Arena. #AstralArena #GuardiansOfTheNexus",
+      "en": "Heartfire — upcoming Astral Arena chapter. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Editorial placeholder for Heartfire. Final concept must be generated from approved canon/gameplay."
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Reserved from transmedia story event story-pyra-heartfire.",
+      "Mapped mission: pyra-heartfire-001.",
+      "No scenes are authored until Universe/Game Core canon for this mission is ready."
+    ]
+  }
+}

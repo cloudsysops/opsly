@@ -1,0 +1,64 @@
+{
+  "product": {
+    "workingName": "Astral Arena: Guardians of the Nexus",
+    "slug": "astral-arena",
+    "steamAppId": null,
+    "demoAppId": null,
+    "playtestAppId": null
+  },
+  "release": {
+    "stage": "pre-steamworks",
+    "strategy": ["private-build", "steam-playtest", "public-demo", "commercial-release"],
+    "earlyAccessDecision": "defer-until-playtest-data",
+    "priceUsd": null
+  },
+  "platforms": {
+    "launch": ["windows-x64"],
+    "later": ["linux-steamos", "macos"]
+  },
+  "depots": {
+    "windows": {
+      "depotId": null,
+      "contentRoot": "dist/steam/windows"
+    }
+  },
+  "build": {
+    "offlineFirst": true,
+    "requiresOpslyProductionCredentials": false,
+    "requiresLiveGenerativeAi": false,
+    "steamworksApiRequiredForMvp": false,
+    "saveSchema": "astral-arena-save-v1"
+  },
+  "demo": {
+    "targetMinutes": { "min": 60, "max": 90 },
+    "regions": ["crystal-landing", "echo-ridge", "data-canyon"],
+    "buildings": [
+      "nexus-core",
+      "portal-gateway",
+      "memory-vault",
+      "identity-citadel",
+      "api-forge",
+      "dragon-queue",
+      "observatory"
+    ],
+    "machines": ["zephyr-scout", "terra-builder", "nx-sentinel"],
+    "cyberBattles": [
+      "cyber-001-bot-swarm",
+      "cyber-002-credential-storm",
+      "cyber-005-queue-flood"
+    ],
+    "starshipGoal": "navigation-core"
+  },
+  "steamFeatures": {
+    "cloud": "post-first-playable",
+    "achievements": "post-first-playable",
+    "steamInput": "before-public-demo",
+    "deckValidation": "after-windows-playtest"
+  },
+  "ai": {
+    "liveGeneratedInShippedMvp": false,
+    "pregeneratedAssetDisclosureRequired": true,
+    "assetProvenanceManifestRequired": true
+  },
+  "contentChannel": "astral-arena"
+}

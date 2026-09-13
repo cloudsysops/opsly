@@ -1,0 +1,11 @@
+"DepotBuild"
+{
+  "DepotID" "{{STEAM_WINDOWS_DEPOT_ID}}"
+  "ContentRoot" "../content/astral-arena/windows/"
+  "FileMapping"
+  {
+    "LocalPath" "*"
+    "DepotPath" "."
+    "recursive" "1"
+  }
+}

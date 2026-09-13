@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "product": "astral-arena",
+  "principle": "One canon event can produce game progress, editorial story, gameplay media and store marketing without creating parallel canon.",
+  "phases": [
+    {
+      "id": "family-playtest",
+      "status": "active",
+      "entryGate": "web-or-windows-build-available",
+      "exitGate": "family-session-completes-without-developer-intervention",
+      "cta": "play-preview",
+      "outputs": [
+        "gameplay-capture",
+        "ux-notes",
+        "highlight-candidates"
+      ]
+    },
+    {
+      "id": "content-proof",
+      "status": "active",
+      "entryGate": "owned-gameplay-capture-exists",
+      "exitGate": "moon-approved-episode-and-short",
+      "cta": "follow-development",
+      "outputs": [
+        "episode",
+        "shorts",
+        "thumbnail",
+        "trailer-candidates"
+      ]
+    },
+    {
+      "id": "steam-coming-soon",
+      "status": "blocked-external",
+      "entryGate": "steamworks-onboarding-appid-store-page-approved",
+      "exitGate": "coming-soon-page-live",
+      "cta": "wishlist",
+      "outputs": [
+        "steam-capsules",
+        "screenshots",
+        "trailer",
+        "store-copy"
+      ]
+    },
+    {
+      "id": "steam-private-playtest",
+      "status": "blocked-external",
+      "entryGate": "appid-depotid-and-private-steampipe-build",
+      "exitGate": "normal-steam-client-install-passes-smoke",
+      "cta": "private-test",
+      "outputs": [
+        "steam-buildid",
+        "qa-evidence",
+        "controller-smoke"
+      ]
+    },
+    {
+      "id": "demo-or-release",
+      "status": "planned",
+      "entryGate": "product-review-and-release-gates-pass",
+      "exitGate": "human-release-decision",
+      "cta": "play-on-steam",
+      "outputs": [
+        "demo-or-full-release",
+        "launch-content",
+        "post-launch-learning"
+      ]
+    }
+  ],
+  "feedbackRules": {
+    "mayOptimize": [
+      "hooks",
+      "thumbnail",
+      "trailer-pacing",
+      "onboarding-clarity",
+      "capture-priorities"
+    ],
+    "mayNotAutoChange": [
+      "canon",
+      "child-character-identity",
+      "story-outcome",
+      "ranked-balance",
+      "safety-policy"
+    ]
+  }
+}

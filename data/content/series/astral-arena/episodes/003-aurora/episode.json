@@ -1,0 +1,108 @@
+{
+  "id": "astral-s01e03-aurora",
+  "series_id": "astral-arena",
+  "episode_number": 3,
+  "title": {
+    "es": "Aurora elige",
+    "en": "Aurora Chooses"
+  },
+  "hook": {
+    "es": "Un unicornio no aparece porque alguien lo invoque. Aparece porque decide confiar.",
+    "en": "A unicorn does not appear because someone summons it. It appears because it chooses to trust."
+  },
+  "objective": "Introduce Aurora as a chosen companion and frame hope as an active force rather than passive optimism.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [
+    {
+      "number": 1,
+      "description": "Prismatic trail",
+      "visuals": "The team follows impossible color through a dim corridor.",
+      "copy": "Donde la Sombra borra color, algo insiste en dejar un rastro.",
+      "duration_sec": 10,
+      "assets_needed": [
+        "prismatic trail"
+      ]
+    },
+    {
+      "number": 2,
+      "description": "Aurora reveal",
+      "visuals": "Aurora steps into the light, free and watchful.",
+      "copy": "Aurora no es una recompensa. Es una Guardiana que puede decir que no.",
+      "duration_sec": 12,
+      "assets_needed": [
+        "Aurora canonical render"
+      ]
+    },
+    {
+      "number": 3,
+      "description": "Choice",
+      "visuals": "Arena lowers her hands rather than approaching.",
+      "copy": "La confianza empieza cuando dejamos espacio para elegir.",
+      "duration_sec": 13,
+      "assets_needed": [
+        "Arena/Aurora quiet scene"
+      ]
+    },
+    {
+      "number": 4,
+      "description": "Prism charge",
+      "visuals": "A threat reaches the group; Aurora acts by choice.",
+      "copy": "Y cuando decide ayudar, la esperanza se vuelve acción.",
+      "duration_sec": 14,
+      "assets_needed": [
+        "prism-charge gameplay capture"
+      ]
+    },
+    {
+      "number": 5,
+      "description": "Purify Nexus",
+      "visuals": "Aurora restores color to a damaged Nexus fragment.",
+      "copy": "Reparar también significa devolver posibilidades.",
+      "duration_sec": 14,
+      "assets_needed": [
+        "nexus-purified marker"
+      ]
+    },
+    {
+      "number": 6,
+      "description": "Machine signal",
+      "visuals": "A geometric voice breaks through the restored fragment.",
+      "copy": "La magia abrió una puerta. Del otro lado, una máquina acaba de despertar.",
+      "duration_sec": 12,
+      "assets_needed": [
+        "NX-7 signal teaser"
+      ]
+    }
+  ],
+  "metadata": {
+    "call_to_action": "Descubre el siguiente capítulo jugando Astral Arena / Discover the next chapter by playing Astral Arena",
+    "captions": {
+      "es": "Aurora elige. La historia continúa dentro del juego. #AstralArena #GuardiansOfTheNexus",
+      "en": "Aurora Chooses. The story continues inside the game. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Aurora white unicorn in a restored prism of color, Arena respectfully at a distance, Brissa and Orion watching, magical hopeful lighting."
+  },
+  "production": {
+    "status": "storyboard",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Derived from Opsly Universe canon and mapped through config/games/astral-arena-transmedia.json.",
+      "Content Studio may present this event but may not redefine canon."
+    ]
+  }
+}

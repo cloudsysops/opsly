@@ -1,0 +1,48 @@
+{
+  "id": "astral-s01e15-rift",
+  "series_id": "astral-arena",
+  "episode_number": 15,
+  "title": {
+    "es": "La grieta de Sombra",
+    "en": "The Shadow Rift"
+  },
+  "hook": {
+    "es": "Capítulo 15 de Guardians of the Nexus. El contenido se escribirá desde el evento canónico story-shadow-rift cuando la misión esté madura.",
+    "en": "Chapter 15 of Guardians of the Nexus. Content will be written from canonical event story-shadow-rift when the mission is mature."
+  },
+  "objective": "Reserved editorial production slot for story-shadow-rift. Do not invent canon here; script only from the approved Universe event and game mission.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Sigue la temporada de Astral Arena / Follow the Astral Arena season",
+    "captions": {
+      "es": "La grieta de Sombra — próximo capítulo de Astral Arena. #AstralArena #GuardiansOfTheNexus",
+      "en": "The Shadow Rift — upcoming Astral Arena chapter. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Editorial placeholder for The Shadow Rift. Final concept must be generated from approved canon/gameplay."
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Reserved from transmedia story event story-shadow-rift.",
+      "Mapped mission: shadow-rift-001.",
+      "No scenes are authored until Universe/Game Core canon for this mission is ready."
+    ]
+  }
+}

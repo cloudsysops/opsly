@@ -1,0 +1,33 @@
+{
+  "blueprint_id": "godot-steam",
+  "template_path": "tools/templates/game-products/godot-steam",
+  "app_path": "apps/game-{game_slug}",
+  "godot": {
+    "project_file": "project.godot",
+    "main_scene": "res://scenes/bootstrap.tscn",
+    "content_pack_path": "res://generated/game-content.pack.json",
+    "windows_export_preset": "Windows Desktop",
+    "presentation_modes": [
+      "2D",
+      "3D",
+      "HYBRID"
+    ],
+    "hybrid_switch_action": "switch_presentation",
+    "shared_battle_state": true
+  },
+  "steam": {
+    "app_id": null,
+    "depot_id_windows": null,
+    "api_optional_until_vertical_slice": true,
+    "steampipe_template_path": "tools/steam/{game_slug}"
+  },
+  "ci": {
+    "required_checks": [
+      "content-pack-validation",
+      "godot-headless-import",
+      "godot-headless-smoke",
+      "windows-export",
+      "no-secrets"
+    ]
+  }
+}
