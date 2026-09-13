@@ -6,7 +6,7 @@ export async function POST(request: Request): Promise<Response> {
   if (authError) return authError;
 
   try {
-    const result = await syncHealthTravelCatalog('health-travel-colombia');
+    const result = await syncHealthTravelCatalog();
     return Response.json({ ok: true, ...result });
   } catch (error) {
     return Response.json(
