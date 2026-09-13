@@ -295,6 +295,34 @@ describe('local prompt-submit → local-agents queue', () => {
     expect(queued.metadata?.dispatch_claim_id).toBe('ghq-owned-001');
   });
 
+  it('discards caller-supplied dispatch leases on unclaimed manual requests', async () => {
+    const { status } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'acme',
+        request_id: 'manual-forged-claim-001',
+        prompt_body: 'manual review',
+        context: {
+          dispatch_claim: {
+            version: 'dispatch-claim-v1',
+            claimId: 'victim-claim',
+            tenantSlug: 'acme',
+            taskId: 'victim-task',
+          },
+        },
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(202);
+    const queued = enqueueLocalAgentJob.mock.calls[0]![0] as {
+      payload: { context?: Record<string, unknown> };
+    };
+    expect(queued.payload.context?.dispatch_claim).toBeUndefined();
+    expect(claimMocks.acquireTaskDispatchClaim).not.toHaveBeenCalled();
+  });
+
   it('review role produces a read-only AgentTaskEnvelopeV1 that does not require write approval', async () => {
     const { status } = await postJson(
       port,
