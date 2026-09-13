@@ -55,8 +55,10 @@ jobs:
           RECONCILIATION_CLEANUP: pr-reconciliation-cleanup-candidates.json
         run: node scripts/ops/pr-reconciliation-cleanup-candidates.mjs
 
-      - name: Validate reconciliation envelope contract
-        run: node --test scripts/ops/__tests__/pr-reconciliation-agent-envelopes.test.mjs
+      - name: Validate reconciliation contracts
+        run: |
+          node --test scripts/ops/__tests__/pr-reconciliation-agent-envelopes.test.mjs
+          node --test scripts/ops/__tests__/pr-reconciliation-cleanup-candidates.test.mjs
 
       - name: Publish reconciliation artifacts
         uses: actions/upload-artifact@v4
