@@ -198,7 +198,7 @@
     "test:ephemeral-agents": "node --test scripts/ops/__tests__/ephemeral-agent-lifecycle.test.mjs && npm test --workspace=@intcloudsysops/session-manager && npm test --workspace=@intcloudsysops/orchestrator -- src/__tests__/local-agent-http-worker.test.ts",
     "test:mac-ephemeral-runtime": "node --test scripts/ops/__tests__/mac-ephemeral-runtime.test.mjs",
     "test:mac-ephemeral-runtime-doctor": "node --test scripts/ops/__tests__/mac-ephemeral-runtime-doctor.test.mjs",
-    "test:mac-go-live": "node --test scripts/ops/__tests__/mac-go-live-e2e.test.mjs",
+    "test:mac-go-live": "node --test scripts/ops/__tests__/mac-go-live-e2e.test.mjs scripts/ops/__tests__/physical-acceptance-data-path.test.mjs scripts/ops/__tests__/openclaw-acceptance-queue-guard.test.mjs",
     "opsly:background:launchd:dry-run": "bash scripts/ops/install-background-scheduler-launchd.sh --dry-run",
     "opsly:background:launchd:enable": "bash scripts/ops/install-background-scheduler-launchd.sh --enable",
     "opsly:background:launchd:remove": "bash scripts/ops/install-background-scheduler-launchd.sh --remove",
