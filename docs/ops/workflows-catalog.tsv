@@ -13,6 +13,7 @@ evolution-pipeline.yml	experimental	review_quarterly		unknown	no success in samp
 github-project-sync.yml	tenant-ops	review_quarterly		unknown	no success in sample; manual-only scheduled or failing
 guardian-shield-deploy.yml	deploy-release	review_quarterly		unknown	no success in sample; manual-only scheduled or failing
 hermes-health.yml	health-autonomy	keep	2026-05-02T13:54:41Z	yes	success sample from gh run list
+key-hygiene.yml	health-autonomy	keep		unknown	daily Tailscale node-key disable on servers + GitHub secret age warn
 nightly-fix.yml	ci-quality	review_quarterly		unknown	no success in sample; manual-only scheduled or failing
 notebooklm-sync.yml	sync-docs	review_quarterly		unknown	no success in sample; manual-only scheduled or failing
 obsidian-vault-sync.yml	sync-docs	keep	2026-05-03T20:35:20Z	yes	success sample from gh run list
