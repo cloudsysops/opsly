@@ -42,9 +42,57 @@ elevated_enabled="$(json_get tools.elevated.enabled | node -e '
     }
   });
 ')"
+allow_json="$(json_get tools.allow)"
 deny_json="$(json_get tools.deny)"
+model_json="$(json_get agents.defaults.model)"
 
 fail=0
+
+allow_check="$(ALLOW_JSON="$allow_json" node - <<'NODE'
+const raw = process.env.ALLOW_JSON || "";
+let allow = [];
+try {
+  const parsed = JSON.parse(raw);
+  if (Array.isArray(parsed)) allow = parsed.map(String);
+} catch {}
+process.stdout.write(allow.length === 1 && allow[0] === "read" ? "ok" : allow.join(","));
+NODE
+)"
+if [[ "$allow_check" == "ok" ]]; then
+  echo "tools_allow=read"
+else
+  echo "BLOCKED: tools.allow must be exactly [read] for acceptance (actual=${allow_check:-unset})" >&2
+  fail=1
+fi
+
+model_check="$(MODEL_JSON="$model_json" node - <<'NODE'
+const raw = process.env.MODEL_JSON || "";
+let primary = "";
+let fallbacks = [];
+try {
+  const parsed = JSON.parse(raw);
+  if (typeof parsed === "string") primary = parsed;
+  else if (parsed && typeof parsed === "object") {
+    primary = typeof parsed.primary === "string" ? parsed.primary : "";
+    fallbacks = Array.isArray(parsed.fallbacks) ? parsed.fallbacks.map(String) : [];
+  }
+} catch {}
+const local = primary.startsWith("ollama/") && !primary.includes(":cloud");
+if (!local) {
+  process.stdout.write("bad-primary:" + primary);
+} else if (fallbacks.length > 0) {
+  process.stdout.write("fallbacks:" + fallbacks.join(","));
+} else {
+  process.stdout.write("ok:" + primary);
+}
+NODE
+)"
+if [[ "$model_check" == ok:* ]]; then
+  echo "model_primary=${model_check#ok:}"
+else
+  echo "BLOCKED: OpenClaw acceptance requires a local ollama/<model> primary with no fallbacks (actual=$model_check)" >&2
+  fail=1
+fi
 
 if [[ "$workspace_access" == "ro" || "$workspace_access" == "none" ]]; then
   echo "workspace_access=$workspace_access"
@@ -74,8 +122,8 @@ try {
   const parsed = JSON.parse(raw);
   if (Array.isArray(parsed)) deny = parsed.map(String);
 } catch {}
-const required = ["exec", "process", "write", "edit", "apply_patch"];
-const missing = required.filter((name) => !deny.includes(name) && !deny.includes("group:runtime") && !deny.includes("group:fs"));
+const required = ["exec", "process", "write", "edit", "apply_patch", "browser", "gateway", "sessions_spawn"];
+const missing = required.filter((name) => !deny.includes(name));
 process.stdout.write(missing.join(","));
 NODE
 )"
@@ -91,4 +139,10 @@ if (( fail != 0 )); then
   exit 3
 fi
 
+if [[ "${OPENCLAW_CONFIG_READONLY:-}" != "1" ]]; then
+  echo "BLOCKED: OPENCLAW_CONFIG_READONLY=1 is required in the bridge environment" >&2
+  exit 3
+fi
+
+echo "config_readonly=1"
 echo "OPENCLAW_READONLY_POLICY_READY"
