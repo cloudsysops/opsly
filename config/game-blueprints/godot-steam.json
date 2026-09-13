@@ -1,6 +1,6 @@
 {
   "blueprint_id": "godot-steam",
-  "template_path": "templates/game-products/godot-steam",
+  "template_path": "tools/templates/game-products/godot-steam",
   "app_path": "apps/game-{game_slug}",
   "godot": {
     "project_file": "project.godot",

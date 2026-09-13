@@ -19,7 +19,7 @@ Usage: ./scripts/provisioning/clone-game-launch.sh \
 
 Creates:
   config/games/<slug>.launch.json
-  apps/game-<slug>/            (from templates/game-products/<blueprint>/)
+  apps/game-<slug>/            (from tools/templates/game-products/<blueprint>/)
 
 The generated game consumes canon/rules from Opsly content packs.
 It does NOT copy another game's canon, save data, Steam IDs, or credentials.
@@ -54,7 +54,7 @@ command -v jq >/dev/null 2>&1 || { echo "Required command not found: jq" >&2; ex
 
 BASE="$ROOT/config/game-blueprints/_base.json"
 SPEC="$ROOT/config/game-blueprints/${BLUEPRINT}.json"
-TEMPLATE="$ROOT/templates/game-products/${BLUEPRINT}"
+TEMPLATE="$ROOT/tools/templates/game-products/${BLUEPRINT}"
 OUT="$ROOT/config/games/${SLUG}.launch.json"
 APP="$ROOT/apps/game-${SLUG}"
 
