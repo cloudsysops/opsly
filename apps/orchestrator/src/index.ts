@@ -2,6 +2,7 @@ import { setupLangSmithTracing } from './agents/langsmith.js';
 import { processIntent } from './engine.js';
 import { subscribeEvents } from './events/bus.js';
 import { startOrchestratorHealthServer } from './health-server.js';
+import { startOrchestratorHeartbeatLoop } from './infra/heartbeat.js';
 import { startRuntimeGovernorSweeper } from './lib/runtime-governor-sweeper.js';
 import { drainMeteringOperations } from './metering/usage-events-meter.js';
 import { closeOrchestratorRedis } from './metering/redis-client.js';
@@ -266,11 +267,25 @@ async function main(): Promise<void> {
   const role = parseOrchestratorRole();
   console.log(`[orchestrator] Iniciando… role=${role} mode=${orchestratorModeLabel(role)}`);
 
+  const heartbeatServiceName =
+    process.env.OPSLY_HEARTBEAT_SERVICE_NAME?.trim() ||
+    `orchestrator-${role}`;
+  const stopHeartbeat = startOrchestratorHeartbeatLoop(heartbeatServiceName, {
+    role,
+    mode: orchestratorModeLabel(role),
+    node_id: process.env.OPSLY_NODE_ID ?? null,
+    pid: process.pid,
+  });
+
   let teamManager: TeamManager | undefined;
   let autonomousScheduler: AutonomousScheduler | undefined;
   let cursorCopilotBridge: CursorCopilotBridge | undefined;
   let opslyCortex: OpslyCortex | undefined;
-  const cleanupTasks: AsyncCleanup[] = [];
+  const cleanupTasks: AsyncCleanup[] = [
+    async () => {
+      stopHeartbeat();
+    },
+  ];
 
   if (shouldRunControlPlane(role)) {
     teamManager = new TeamManager(connection);
