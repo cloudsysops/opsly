@@ -84,6 +84,25 @@ describe('external agent fleet observability', () => {
     });
   });
 
+  it('fails closed when registry metadata would be rejected by canonical queue admission', async () => {
+    const broken = registry();
+    broken.workers['hermes-cli'] = {
+      ...broken.workers['hermes-cli'],
+      adapter: 'unsupported-adapter',
+    };
+
+    const fetchImpl = vi.fn(async () => new Response(null, { status: 200 })) as typeof fetch;
+    const rows = await buildExternalAgentFleetSnapshot(broken, fetchImpl);
+    const hermes = rows.find((row) => row.worker_id === 'hermes-cli');
+
+    expect(hermes).toMatchObject({
+      runtime_state: 'LIVE',
+      registry_enabled: true,
+      dispatch_eligible: false,
+      dispatch_blocker: 'unsupported_adapter',
+    });
+  });
+
   it('reports unreachable without fabricating a live runtime', async () => {
     const fetchImpl = vi.fn(async () => {
       throw new Error('connection refused');
