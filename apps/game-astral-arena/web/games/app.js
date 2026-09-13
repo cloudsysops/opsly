@@ -42,6 +42,7 @@ const dom = {
   icon: document.querySelector('#active-icon'),
   feedbackNote: document.querySelector('#feedback-note'),
   activeFavorite: document.querySelector('#active-favorite'),
+  rotateHint: document.querySelector('#rotate-hint'),
   featured: document.querySelector('#featured-grid'),
   retro: document.querySelector('#game-grid'),
   clone: document.querySelector('#clone-game-grid'),
@@ -141,7 +142,7 @@ function gameCard(game, compact = false) {
   const favorite = isFavorite(game.id);
 
   return `
-    <article class="game-card" data-kind="${game.kind}" data-card-game="${game.id}">
+    <article class="game-card" data-kind="${game.kind}" data-card-game="${game.id}" role="button" tabindex="0" aria-label="Jugar ${game.title}">
       <div class="card-top">
         <div class="icon" aria-hidden="true">${game.icon || '🎮'}</div>
         <button
@@ -170,6 +171,24 @@ function gameCard(game, compact = false) {
 }
 
 function bindCards(root = document) {
+  root.querySelectorAll('[data-card-game]').forEach(card => {
+    const launch = event => {
+      if (event.target.closest('button, a')) return;
+      launchGame(card.dataset.cardGame);
+    };
+    card.addEventListener('click', launch);
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        launchGame(card.dataset.cardGame);
+      }
+    });
+    card.addEventListener('pointerenter', () => {
+      const game = byId.get(card.dataset.cardGame);
+      if (game?.runtimeScript) loadScript(game.runtimeScript).catch(() => {});
+    }, { once: true });
+  });
+
   root.querySelectorAll('[data-play]').forEach(button => {
     button.addEventListener('click', () => launchGame(button.dataset.play));
   });
@@ -340,6 +359,7 @@ async function launchGame(id) {
   dom.icon.textContent = game.icon || '🎮';
   updateActiveFavorite();
   setTheaterVisible(true);
+  updateOrientationHint();
 
   if (game.kind === 'upstream') {
     dom.frame.hidden = false;
@@ -391,8 +411,10 @@ function closeGame(reason = 'closed') {
 }
 
 function randomGame() {
-  const candidates = allGames.filter(game => categoryMatches(game, currentFilter));
-  const pool = candidates.length ? candidates : allGames;
+  const mobileLike = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 700;
+  const filtered = allGames.filter(game => categoryMatches(game, currentFilter));
+  const mobilePool = mobileLike ? filtered.filter(game => game.touchReady) : filtered;
+  const pool = mobilePool.length ? mobilePool : (filtered.length ? filtered : allGames);
   if (!pool.length) return;
   const game = pool[Math.floor(Math.random() * pool.length)];
   launchGame(game.id);
@@ -400,6 +422,17 @@ function randomGame() {
 
 function setControl(name, value) {
   runtime?.setControl?.(name, value);
+  if (value && navigator.vibrate) navigator.vibrate(8);
+}
+
+function updateOrientationHint() {
+  if (!activeGame || activeGame.kind === 'upstream') {
+    dom.rotateHint.hidden = true;
+    return;
+  }
+  const portrait = window.innerHeight > window.innerWidth;
+  const smallScreen = Math.min(window.innerWidth, window.innerHeight) < 700;
+  dom.rotateHint.hidden = !(portrait && smallScreen);
 }
 
 function loadIdeas() {
@@ -487,8 +520,14 @@ dom.activeFavorite.addEventListener('click', () => {
 
 document.querySelector('#fullscreen-game').addEventListener('click', async () => {
   try {
-    if (document.fullscreenElement) await document.exitFullscreen();
-    else await dom.stage.requestFullscreen();
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+      return;
+    }
+    await dom.stage.requestFullscreen();
+    if (screen.orientation?.lock && window.innerWidth < 900) {
+      screen.orientation.lock('landscape').catch(() => {});
+    }
   } catch {
     showToast('Pantalla completa no está disponible en este dispositivo.');
   }
@@ -590,6 +629,9 @@ document.querySelector('#export-ideas').addEventListener('click', () => {
   anchor.click();
   setTimeout(() => URL.revokeObjectURL(anchor.href), 500);
 });
+
+window.addEventListener('resize', updateOrientationHint);
+window.addEventListener('orientationchange', updateOrientationHint);
 
 window.addEventListener('pagehide', () => {
   if (activeSession) finishSession('pagehide');
