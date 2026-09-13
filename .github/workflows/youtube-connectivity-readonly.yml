@@ -39,8 +39,17 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Run read-only YouTube connectivity doctor
+        id: doctor
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
           doppler run --project ops-intcloudsysops --config prd --preserve-env -- \
             npm run content:youtube:doctor
+
+      - name: Record live connectivity outcome
+        if: always()
+        shell: bash
+        run: |
+          echo "youtube_doctor_step_outcome=${{ steps.doctor.outcome }}"
+          echo "Live connectivity is informational for this code PR; unit/CI gates remain authoritative."
