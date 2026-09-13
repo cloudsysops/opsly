@@ -8,5 +8,12 @@
   "orientation": "any",
   "background_color": "#060812",
   "theme_color": "#070914",
-  "categories": ["games", "entertainment", "education"]
+  "categories": [
+    "games",
+    "entertainment",
+    "education"
+  ],
+  "id": "./",
+  "lang": "es",
+  "dir": "ltr"
 }
