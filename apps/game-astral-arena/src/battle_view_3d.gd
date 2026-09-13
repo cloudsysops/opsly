@@ -8,9 +8,10 @@ extends Node3D
 func render_battle_state(state: Dictionary, definitions: Dictionary) -> void:
     var player: Array = state.get("player", [])
     var opponent: Array = state.get("opponent", [])
+    var p := _first_alive(player)
+    var e := _first_alive(opponent)
 
-    if not player.is_empty():
-        var p: Dictionary = player[0]
+    if not p.is_empty():
         var pd: Dictionary = definitions.get(str(p.get("fighter_id", "")), {})
         player_hp.text = "%s\nHP %d / %d" % [
             str(pd.get("name", p.get("fighter_id", "?"))),
@@ -24,8 +25,7 @@ func render_battle_state(state: Dictionary, definitions: Dictionary) -> void:
         )
         player_mesh.scale = Vector3.ONE * p_ratio
 
-    if not opponent.is_empty():
-        var e: Dictionary = opponent[0]
+    if not e.is_empty():
         var ed: Dictionary = definitions.get(str(e.get("fighter_id", "")), {})
         enemy_hp.text = "%s\nHP %d / %d" % [
             str(ed.get("name", e.get("fighter_id", "?"))),
@@ -38,6 +38,14 @@ func render_battle_state(state: Dictionary, definitions: Dictionary) -> void:
             1.0
         )
         enemy_mesh.scale = Vector3.ONE * e_ratio
+
+func _first_alive(fighters: Array) -> Dictionary:
+    for fighter in fighters:
+        if fighter is Dictionary and float(fighter.get("health", 0)) > 0.0:
+            return fighter
+    if not fighters.is_empty() and fighters[0] is Dictionary:
+        return fighters[0]
+    return {}
 
 
 func apply_player_color(html_color: String) -> void:
