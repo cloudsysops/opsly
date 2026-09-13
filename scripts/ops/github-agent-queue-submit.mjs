@@ -219,6 +219,15 @@ if (!submit.response.ok) {
       );
       process.exit(0);
     }
+    if (submit.body.error === 'DISPATCH_SCOPE_ALREADY_OWNED') {
+      throw new Error(
+        `DISPATCH_SCOPE_ALREADY_OWNED: dispatch_decision=${submit.body.dispatch_decision} ` +
+          `${submit.body.conflict_dimension || 'scope'}="${submit.body.conflict_scope || 'unknown'}" ` +
+          `already owned by task=${submit.body.existing_task_id || 'unknown'} ` +
+          `workstream=${submit.body.existing_workstream || 'unknown'} ` +
+          `claim=${submit.body.existing_claim_id || 'unknown'}`
+      );
+    }
     throw new Error(
       `${submit.body.dispatch_decision}: ${submit.body.conflict_dimension || 'scope'} is already owned`
     );
