@@ -118,6 +118,9 @@ describe('git-branch-orchestrator', () => {
 
     expect(result.git?.dry_run).toBe(true);
     expect(result.git?.branch_created).toBe(true);
+    expect(result.entry.dispatch_claim_id).toBe('claim-ok-001');
+    expect(result.entry.dispatch_task_id).toBe('claimed-write');
+    expect(result.entry.workstream).toBe('ownership-gate');
   });
 
   it('ChatOps dispatch plans MVP branches', async () => {
