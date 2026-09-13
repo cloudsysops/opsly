@@ -1,0 +1,85 @@
+name: Astral PC Gamer Runtime Diagnose
+
+on:
+  push:
+    branches:
+      - 'ops/astral-pc-render-smoke-20260912'
+    paths:
+      - '.github/workflows/astral-pc-runtime-diagnose.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Diagnose worker heartbeats and queues
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 2m
+          script: |
+            set -euo pipefail
+            echo "=== VPS tailscale PC signal ==="
+            if command -v tailscale >/dev/null 2>&1; then
+              tailscale status 2>/dev/null | grep -i 'pc-gamer' || echo "pc-gamer not listed"
+              tailscale ping -c 1 --timeout 4s 100.74.88.103 2>&1 || true
+            else
+              echo "tailscale CLI unavailable on VPS host"
+            fi
+
+            echo "=== Redis worker + queue evidence ==="
+            docker exec -i opsly_orchestrator node --input-type=module <<'NODE'
+            import IORedis from 'ioredis';
+            import { Queue } from 'bullmq';
+
+            const redis = new IORedis(process.env.REDIS_URL, {
+              maxRetriesPerRequest: null,
+              connectTimeout: 4000,
+            });
+
+            const heartbeatKeys = [
+              'opsly:worker:heartbeat:pc-gamer-openclaw-01',
+              'opsly:worker:heartbeat:pc-gamer',
+              'opsly:worker:heartbeat:mac-local-agents-worker',
+            ];
+            for (const key of heartbeatKeys) {
+              const ttl = await redis.ttl(key);
+              const value = await redis.get(key);
+              console.log(JSON.stringify({
+                key,
+                present: Boolean(value),
+                ttl,
+                valuePreview: value ? value.slice(0, 180) : null,
+              }));
+            }
+
+            for (const name of ['content-video', 'local-agents']) {
+              const queue = new Queue(name, { connection: redis });
+              const counts = await queue.getJobCounts('waiting','active','completed','failed','delayed','paused');
+              console.log(JSON.stringify({ queue: name, counts }));
+              const jobs = await queue.getJobs(['waiting','active','failed'], 0, 8, true);
+              for (const job of jobs) {
+                console.log(JSON.stringify({
+                  queue: name,
+                  jobId: job.id,
+                  name: job.name,
+                  state: await job.getState(),
+                  failedReason: job.failedReason || null,
+                  requestId: job.data?.request_id || job.data?.payload?.job_id || null,
+                  type: job.data?.type || null,
+                }));
+              }
+              await queue.close();
+            }
+
+            await redis.quit();
+            NODE
