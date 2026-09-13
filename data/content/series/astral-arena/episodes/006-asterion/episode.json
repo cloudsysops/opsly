@@ -1,0 +1,48 @@
+{
+  "id": "astral-s01e06-asterion",
+  "series_id": "astral-arena",
+  "episode_number": 6,
+  "title": {
+    "es": "Asterion despierta",
+    "en": "Asterion Awakens"
+  },
+  "hook": {
+    "es": "Capítulo 6 de Guardians of the Nexus. El contenido se escribirá desde el evento canónico story-asterion-awakening cuando la misión esté madura.",
+    "en": "Chapter 6 of Guardians of the Nexus. Content will be written from canonical event story-asterion-awakening when the mission is mature."
+  },
+  "objective": "Reserved editorial production slot for story-asterion-awakening. Do not invent canon here; script only from the approved Universe event and game mission.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Sigue la temporada de Astral Arena / Follow the Astral Arena season",
+    "captions": {
+      "es": "Asterion despierta — próximo capítulo de Astral Arena. #AstralArena #GuardiansOfTheNexus",
+      "en": "Asterion Awakens — upcoming Astral Arena chapter. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Editorial placeholder for Asterion Awakens. Final concept must be generated from approved canon/gameplay."
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Reserved from transmedia story event story-asterion-awakening.",
+      "Mapped mission: asterion-awakening-001.",
+      "No scenes are authored until Universe/Game Core canon for this mission is ready."
+    ]
+  }
+}

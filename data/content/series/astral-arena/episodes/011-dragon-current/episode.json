@@ -1,0 +1,48 @@
+{
+  "id": "astral-s01e11-dragon-current",
+  "series_id": "astral-arena",
+  "episode_number": 11,
+  "title": {
+    "es": "La corriente de los dragones",
+    "en": "The Dragon Current"
+  },
+  "hook": {
+    "es": "Capítulo 11 de Guardians of the Nexus. El contenido se escribirá desde el evento canónico story-dragon-current-war cuando la misión esté madura.",
+    "en": "Chapter 11 of Guardians of the Nexus. Content will be written from canonical event story-dragon-current-war when the mission is mature."
+  },
+  "objective": "Reserved editorial production slot for story-dragon-current-war. Do not invent canon here; script only from the approved Universe event and game mission.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Sigue la temporada de Astral Arena / Follow the Astral Arena season",
+    "captions": {
+      "es": "La corriente de los dragones — próximo capítulo de Astral Arena. #AstralArena #GuardiansOfTheNexus",
+      "en": "The Dragon Current — upcoming Astral Arena chapter. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Editorial placeholder for The Dragon Current. Final concept must be generated from approved canon/gameplay."
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Reserved from transmedia story event story-dragon-current-war.",
+      "Mapped mission: dragon-current-war-001.",
+      "No scenes are authored until Universe/Game Core canon for this mission is ready."
+    ]
+  }
+}

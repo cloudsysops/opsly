@@ -55,10 +55,10 @@ jobs:
         run: node scripts/games/validate-astral-arena-game.mjs
 
       - name: Validate transmedia continuity
-        run: npm run game:astral:transmedia:validate
+        run: node scripts/games/validate-astral-transmedia.mjs
 
       - name: Validate Astral Content Studio series
-        run: npm run game:astral:content-series:validate
+        run: node scripts/games/validate-astral-content-series.mjs
 
       - name: Validate Retro Games Lab licenses
         run: node scripts/games/validate-retro-lab-licenses.mjs
