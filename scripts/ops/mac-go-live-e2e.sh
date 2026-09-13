@@ -19,12 +19,50 @@ AUTH_CFG="${TMP_DIR}/curl-auth.conf"
 SUBMIT_BODY="${TMP_DIR}/submit.json"
 SUBMIT_RESPONSE="${TMP_DIR}/submit-response.json"
 JOB_RESPONSE="${TMP_DIR}/job-response.json"
+OPENCLAW_ACCEPTANCE_WORKER_SESSION="opsly-acceptance-openclaw-worker"
 
-cleanup() { rm -rf "$TMP_DIR"; }
+cleanup() {
+  if command -v tmux >/dev/null 2>&1 && tmux has-session -t "$OPENCLAW_ACCEPTANCE_WORKER_SESSION" 2>/dev/null; then
+    tmux kill-session -t "$OPENCLAW_ACCEPTANCE_WORKER_SESSION" 2>/dev/null || true
+  fi
+  rm -rf "$TMP_DIR"
+}
 trap cleanup EXIT
 
 log(){ printf '[mac-go-live] %s\n' "$*"; }
 fail(){ log "FAIL: $*"; exit 1; }
+
+start_openclaw_acceptance_worker() {
+  if tmux has-session -t "$OPENCLAW_ACCEPTANCE_WORKER_SESSION" 2>/dev/null; then
+    fail "stale OpenClaw acceptance worker session exists: $OPENCLAW_ACCEPTANCE_WORKER_SESSION"
+  fi
+
+  local root_q
+  printf -v root_q '%q' "$ROOT"
+  local worker_cmd
+  worker_cmd="cd $root_q && exec doppler run --project ops-intcloudsysops --config prd --preserve-env -- env OPSLY_OPENCLAW_ACCEPTANCE_ENABLED=true OPSLY_LOCAL_AGENT_KINDS=local_openclaw OPSLY_HEARTBEAT_SERVICE_NAME=openclaw-acceptance-worker ORCHESTRATOR_HEALTH_PORT=0 bash scripts/ops/start-mac-local-agents-worker.sh"
+
+  log "starting temporary OpenClaw acceptance worker"
+  tmux new-session -d -s "$OPENCLAW_ACCEPTANCE_WORKER_SESSION" "$worker_cmd"     || fail "failed to create OpenClaw acceptance worker session"
+
+  local deadline=$((SECONDS + 120))
+  local output=""
+  while (( SECONDS < deadline )); do
+    if ! tmux has-session -t "$OPENCLAW_ACCEPTANCE_WORKER_SESSION" 2>/dev/null; then
+      fail "OpenClaw acceptance worker exited before readiness"
+    fi
+    output="$(tmux capture-pane -p -t "$OPENCLAW_ACCEPTANCE_WORKER_SESSION" -S -80 2>/dev/null || true)"
+    if grep -q 'Unified worker ready on local-agents queue' <<<"$output"; then
+      log "temporary OpenClaw acceptance worker ready"
+      return 0
+    fi
+    sleep 2
+  done
+
+  log "OpenClaw acceptance worker output:"
+  printf '%s\n' "$output"
+  fail "timed out waiting for OpenClaw acceptance worker"
+}
 
 [[ "$(uname -s)" == "Darwin" ]] || fail "macOS/Darwin required"
 for cmd in curl node tmux doppler; do
@@ -51,6 +89,7 @@ if [[ "$AGENT" == "openclaw" || "$AGENT" == "local_openclaw" ]]; then
   if ! OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 bash scripts/ops/openclaw-readonly-policy-doctor.sh; then
     fail "OpenClaw read-only acceptance policy is not ready"
   fi
+  start_openclaw_acceptance_worker
 fi
 
 log "2/7 verify healthy idle before task"
@@ -187,7 +226,8 @@ const evidence={
     production_deploy:false,
     paid_infra:false,
     task_session_teardown:true,
-    healthy_idle_restored:true
+    healthy_idle_restored:true,
+    temporary_acceptance_worker: agent === 'openclaw' || agent === 'local_openclaw'
   }
 };
 fs.writeFileSync(file, JSON.stringify(evidence,null,2)+'\n');
