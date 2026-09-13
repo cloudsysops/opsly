@@ -40,6 +40,7 @@ jobs:
           ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
 
       - name: Probe PC gamer worker and render bridge
+        id: pc_probe
         shell: bash
         run: |
           set +e
@@ -53,6 +54,79 @@ jobs:
           echo
           echo "worker_probe_rc=${worker_rc}"
           echo "bridge_probe_rc=${bridge_rc}"
+          if [ "$worker_rc" -eq 0 ] && [ "$bridge_rc" -eq 0 ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+          exit 0
+
+      - name: Request Mac operator recovery
+        if: steps.pc_probe.outputs.ready != 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 3m
+          script: |
+            set -euo pipefail
+            docker exec opsly_orchestrator node --input-type=module <<'NODE'
+            const token = process.env.PLATFORM_ADMIN_TOKEN;
+            if (!token) throw new Error('orchestrator missing PLATFORM_ADMIN_TOKEN');
+            const prompt = [
+              'OPERATIONAL RECOVERY ONLY. Do not edit files, do not commit, do not push.',
+              'On the Mac operator, recover the existing Opsly PC gamer worker plane.',
+              'Run from the Opsly repository:',
+              '1) PC_GAMER_BRANCH=main ./scripts/ops/pc-gamer-reconnect.sh --wait 120 --use-host-ollama',
+              '2) Then run over the existing SSH alias pc-gamer:',
+              'ssh -o BatchMode=yes -o ConnectTimeout=15 pc-gamer "wsl -d Ubuntu -u devops -e bash -lc \'cd /home/devops/opsly && ./scripts/ops/pc-gamer-docker-plane.sh --up --with-content --use-host-ollama && ./scripts/ops/pc-gamer-docker-plane.sh --status\'"',
+              'Do not pull large models. Do not change production. Return the status only.',
+            ].join('\n');
+            const body = {
+              prompt_content: prompt,
+              agent: 'cursor',
+              agent_role: 'executor',
+              tenant_slug: 'local',
+              request_id: 'pc-gamer-recovery-' + Date.now(),
+              goal: 'Bring existing PC gamer content-video worker and MoneyPrinter bridge online without code changes.',
+              max_steps: 8,
+              context: { requires_pr: false, operational_recovery: true },
+            };
+            const resp = await fetch('http://127.0.0.1:3011/api/local/prompt-submit', {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+                authorization: 'Bearer ' + token,
+              },
+              body: JSON.stringify(body),
+            });
+            const text = await resp.text();
+            console.log('Mac recovery submit:', resp.status, text);
+            if (!resp.ok) process.exit(2);
+            NODE
+
+      - name: Wait briefly for Mac recovery and re-probe
+        if: steps.pc_probe.outputs.ready != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            echo "recovery probe attempt $attempt/6"
+            worker=1
+            bridge=1
+            curl -fsS --max-time 4 "http://${PC_TAILSCALE_IP}:3011/health" && worker=0 || true
+            echo
+            curl -fsS --max-time 4 "http://${PC_TAILSCALE_IP}:8080/health" && bridge=0 || true
+            echo
+            if [ "$worker" -eq 0 ] && [ "$bridge" -eq 0 ]; then
+              echo "PC gamer content plane recovered."
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::warning::Mac recovery was requested but PC gamer content plane is still unreachable."
           exit 0
 
       - name: Enqueue lightweight Astral render and wait
