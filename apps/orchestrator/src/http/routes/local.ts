@@ -21,6 +21,12 @@ import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
 import { jsonResponse, errorResponse } from '../router.js';
 import { agentTaskEnvelopeV1Schema } from '@intcloudsysops/types/agent-task';
 import { buildAgentTaskEnvelope, inferTaskType } from '@intcloudsysops/agent-task-core';
+import {
+  acquireTaskDispatchClaim,
+  dispatchClaimRequestFromContext,
+  releaseTaskDispatchClaim,
+  type DispatchClaimLease,
+} from '../../task-claim-store.js';
 
 const MAX_RECENT_LOCAL_JOBS = 25;
 
@@ -189,6 +195,18 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
   const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
 
+  let dispatchClaimRequest = null;
+  try {
+    dispatchClaimRequest = dispatchClaimRequestFromContext({
+      context,
+      tenantSlug,
+      requestId,
+    });
+  } catch (err) {
+    errorResponse(ctx.res, 400, err instanceof Error ? err.message : String(err));
+    return;
+  }
+
   const agentKind = resolveLocalPromptAgentKind(b, promptForAgentResolve);
   const jobType = jobTypeForLocalAgent(agentKind);
 
@@ -275,10 +293,22 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       agent_task: taskEnvelope,
       job_id: requestId,
     },
+    taskId: dispatchClaimRequest?.taskId,
     tenant_slug: tenantSlug,
     initiated_by: 'system',
     request_id: requestId,
-    metadata: { labels: ['local_prompt'] },
+    idempotency_key: requestId,
+    metadata: {
+      labels: ['local_prompt'],
+      ...(dispatchClaimRequest
+        ? {
+            workstream: dispatchClaimRequest.workstream,
+            conflict_key: dispatchClaimRequest.conflictKey,
+            semantic_scope: dispatchClaimRequest.semanticScope ?? null,
+            affected_paths: dispatchClaimRequest.affectedPaths,
+          }
+        : {}),
+    },
   };
   const controlMode = getLocalControlMode();
 
@@ -313,7 +343,43 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       return;
     }
 
-    const bull = await enqueueLocalAgentJob(job);
+    let dispatchClaimLease: DispatchClaimLease | null = null;
+    if (dispatchClaimRequest) {
+      const claim = await acquireTaskDispatchClaim(dispatchClaimRequest);
+      if (!claim.acquired) {
+        jsonResponse(ctx.res, 409, {
+          success: false,
+          ok: false,
+          error: 'DISPATCH_SCOPE_ALREADY_OWNED',
+          dispatch_decision: claim.conflict.decision,
+          conflict_dimension: claim.conflict.descriptor.dimension,
+          conflict_scope: claim.conflict.descriptor.value,
+          existing_claim_id: claim.conflict.existingClaimId,
+          existing_task_id: claim.conflict.existingTaskId,
+          existing_workstream: claim.conflict.existingWorkstream,
+          request_id: requestId,
+        });
+        return;
+      }
+      dispatchClaimLease = claim.lease;
+      context.dispatch_claim = dispatchClaimLease;
+      job.metadata = {
+        ...job.metadata,
+        dispatch_claim_id: dispatchClaimLease.claimId,
+        dispatch_claim_expires_at: dispatchClaimLease.expiresAt,
+      };
+    }
+
+    let bull;
+    try {
+      bull = await enqueueLocalAgentJob(job);
+    } catch (err) {
+      if (dispatchClaimLease) {
+        await releaseTaskDispatchClaim(dispatchClaimLease).catch(() => undefined);
+      }
+      throw err;
+    }
+
     const bullJobId = bull.id != null ? String(bull.id) : null;
     console.log(`[LocalPromptSubmit] Enqueued ${job.type} job ${bull.id} (${agentKind}) to local-agents queue`);
     recordRecentLocalJob({
@@ -334,6 +400,17 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       job_id: bullJobId,
       request_id: requestId,
       control_mode: controlMode,
+      ...(dispatchClaimLease
+        ? {
+            dispatch_claim: {
+              version: dispatchClaimLease.version,
+              claim_id: dispatchClaimLease.claimId,
+              task_id: dispatchClaimLease.taskId,
+              workstream: dispatchClaimLease.workstream,
+              expires_at: dispatchClaimLease.expiresAt,
+            },
+          }
+        : {}),
     });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
