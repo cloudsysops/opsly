@@ -225,8 +225,7 @@ export async function syncHealthTravelCatalog(
       offer_type: healthTravelPackageTypeToOfferType(offer.package_type),
       status: 'active',
       currency: offer.currency.toUpperCase(),
-      price_from: offer.price_from_usd,
-      price_to: null,
+      price_amount: offer.price_from_usd,
       metadata,
     };
 
