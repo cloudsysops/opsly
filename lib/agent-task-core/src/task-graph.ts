@@ -1,3 +1,4 @@
+import { normalizeDispatchConflictKey } from './dispatch-claim.js';
 import { z } from 'zod';
 
 export const TASK_GRAPH_VERSION = 'task-graph-v1' as const;
@@ -132,9 +133,12 @@ export function planTaskGraphWaves(input: unknown): TaskGraphWave[] {
     const selected: TaskGraphNode[] = [];
 
     for (const node of ready) {
-      if (node.conflictKey && usedConflicts.has(node.conflictKey)) continue;
+      const conflictKey = node.conflictKey
+        ? normalizeDispatchConflictKey(node.conflictKey)
+        : null;
+      if (conflictKey && usedConflicts.has(conflictKey)) continue;
       selected.push(node);
-      if (node.conflictKey) usedConflicts.add(node.conflictKey);
+      if (conflictKey) usedConflicts.add(conflictKey);
     }
 
     for (const node of selected) {
