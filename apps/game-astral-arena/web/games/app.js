@@ -5,7 +5,7 @@ const firstPartyGames = [
     icon: '✦',
     description: 'El juego principal del Astral Universe: historia, exploración 2D/3D, batalla híbrida y juego cooperativo.',
     tags: ['adventure', '2P', 'touch', 'Astral Universe'],
-    playUrl: './games/astral-arena/',
+    playUrl: './astral-arena/',
     source: { path: 'opsly/astral-arena', license: 'Opsly original' },
   },
 ];
