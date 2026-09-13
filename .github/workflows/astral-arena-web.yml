@@ -9,6 +9,8 @@ on:
       - 'config/games/astral-arena.json'
       - 'config/games/retro-lab-license-policy.json'
       - 'config/games/retro-originals.json'
+      - 'config/games/clone-lab-sources.json'
+      - 'config/games/clone-lab-experiments/**'
       - 'lib/game-core/**'
       - 'lib/universe/**'
       - 'scripts/games/**'
@@ -20,6 +22,8 @@ on:
       - 'config/games/astral-arena.json'
       - 'config/games/retro-lab-license-policy.json'
       - 'config/games/retro-originals.json'
+      - 'config/games/clone-lab-sources.json'
+      - 'config/games/clone-lab-experiments/**'
       - 'lib/game-core/**'
       - 'lib/universe/**'
       - 'scripts/games/**'
@@ -76,6 +80,9 @@ jobs:
 
       - name: Validate Retro Games Lab licenses
         run: node scripts/games/validate-retro-lab-licenses.mjs
+
+      - name: Validate Clone Lab source provenance
+        run: node scripts/games/validate-clone-lab-sources.mjs
 
       - name: Prove reusable blueprint
         shell: bash
