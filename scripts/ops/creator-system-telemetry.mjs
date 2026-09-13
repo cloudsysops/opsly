@@ -1,5 +1,7 @@
 import { execFile } from 'node:child_process';
 import os from 'node:os';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
@@ -129,7 +131,7 @@ export async function collectCreatorSystemSnapshot(options = {}) {
   };
 }
 
-if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   collectCreatorSystemSnapshot()
     .then(snapshot => {
       process.stdout.write(`${JSON.stringify(snapshot)}\n`);
