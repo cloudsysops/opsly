@@ -129,6 +129,9 @@ export async function assignWorkerToBranch(
       status: 'active',
       session_id: input.session_id,
       request_id: input.request_id,
+      dispatch_claim_id: input.dispatch_claim?.claim_id,
+      dispatch_task_id: input.dispatch_claim?.task_id,
+      workstream: input.dispatch_claim?.workstream,
     });
     await upsertBranchEntry(entry);
   } else {
@@ -136,6 +139,9 @@ export async function assignWorkerToBranch(
       status: 'active',
       session_id: input.session_id ?? entry.session_id,
       request_id: input.request_id ?? entry.request_id,
+      dispatch_claim_id: input.dispatch_claim?.claim_id ?? entry.dispatch_claim_id,
+      dispatch_task_id: input.dispatch_claim?.task_id ?? entry.dispatch_task_id,
+      workstream: input.dispatch_claim?.workstream ?? entry.workstream,
     })) ?? entry;
   }
 
