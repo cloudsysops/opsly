@@ -12,6 +12,7 @@ vi.mock('./queue.js', () => ({
 
 import {
   acquireTaskDispatchClaim,
+  completeTaskDispatchClaim,
   dispatchClaimRequestFromContext,
   parseDispatchClaimLease,
   releaseTaskDispatchClaim,
@@ -93,6 +94,29 @@ describe('task dispatch claim store', () => {
     }
   });
 
+  it('returns ALREADY_DONE when the exact task has a completed tombstone', async () => {
+    redis.eval.mockResolvedValueOnce([
+      0,
+      1,
+      'completed-claim|{"task_id":"wp-done","workstream":"orchestrator","state":"completed"}',
+    ]);
+
+    const result = await acquireTaskDispatchClaim({
+      tenantSlug: 'local',
+      requestId: 'claim-new',
+      taskId: 'wp-done',
+      workstream: 'orchestrator',
+      conflictKey: 'orchestrator/next-scope',
+      affectedPaths: [],
+    });
+
+    expect(result.acquired).toBe(false);
+    if (!result.acquired) {
+      expect(result.conflict.decision).toBe('ALREADY_DONE');
+      expect(result.conflict.existingTaskId).toBe('wp-done');
+    }
+  });
+
   it('returns CONFLICT_BLOCKED for a semantic/conflict/path collision', async () => {
     redis.eval.mockResolvedValueOnce([
       0,
@@ -116,6 +140,28 @@ describe('task dispatch claim store', () => {
       expect(result.conflict.decision).toBe('CONFLICT_BLOCKED');
       expect(result.conflict.existingTaskId).toBe('wp-owner');
     }
+  });
+
+  it('on success keeps the exact task tombstone and releases broader scopes', async () => {
+    redis.eval.mockResolvedValueOnce([1, 2]);
+    const result = await completeTaskDispatchClaim({
+      version: 'dispatch-claim-v1',
+      claimId: 'claim-done',
+      tenantSlug: 'local',
+      taskId: 'wp-done',
+      workstream: 'orchestrator',
+      descriptors: [
+        { dimension: 'task', value: 'wp-done' },
+        { dimension: 'conflict', value: 'orchestrator/claim' },
+        { dimension: 'semantic', value: 'exclusive work' },
+      ],
+      acquiredAt: '2026-09-13T18:00:00.000Z',
+      expiresAt: '2026-09-13T22:00:00.000Z',
+    });
+
+    expect(result).toEqual({ tombstoneWritten: true, released: 2 });
+    expect(redis.eval).toHaveBeenCalledTimes(1);
+    expect(redis.eval.mock.calls[0]!.join(' ')).toContain('"state":"completed"');
   });
 
   it('releases only through the claim-owned Redis compare/delete script', async () => {
