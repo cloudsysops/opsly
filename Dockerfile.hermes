@@ -16,6 +16,7 @@ COPY config ./config
 RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types \
+  && npm run build -w @intcloudsysops/universe \
   && npm run build -w @intcloudsysops/content-studio \
   && npm run build -w @intcloudsysops/pattern-catalog \
   && npm run build -w @intcloudsysops/sigma-harness \
@@ -76,6 +77,8 @@ COPY --from=builder /app/lib/ai-board/dist ./lib/ai-board/dist
 COPY --from=builder /app/lib/ai-board/package.json ./lib/ai-board/package.json
 COPY --from=builder /app/lib/runtime ./lib/runtime
 COPY --from=builder /app/lib/content-studio ./lib/content-studio
+COPY --from=builder /app/lib/universe/dist ./lib/universe/dist
+COPY --from=builder /app/lib/universe/package.json ./lib/universe/package.json
 COPY --from=builder /app/lib/voice-messaging ./lib/voice-messaging
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/config/git-branch-policy.json ./config/git-branch-policy.json
