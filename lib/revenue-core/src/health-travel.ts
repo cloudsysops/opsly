@@ -129,14 +129,14 @@ export function planHealthTravelRevenueEvent(
 ): HealthTravelRevenuePlan {
   const externalEventId = requireNonBlank(event?.externalEventId, 'externalEventId');
   const tenantSlug = requireNonBlank(event?.tenantSlug, 'tenantSlug');
-  if (event?.sourceSystem !== 'smile-trip-care') {
+  if (event.sourceSystem !== 'smile-trip-care') {
     throw new Error('Invalid Health Travel event: unsupported sourceSystem');
   }
-  if (!HEALTH_TRAVEL_REVENUE_EVENT_NAMES.includes(event?.eventType)) {
+  if (!HEALTH_TRAVEL_REVENUE_EVENT_NAMES.includes(event.eventType)) {
     throw new Error('Invalid Health Travel event: unsupported eventType');
   }
-  const occurredAt = requireIsoTimestamp(event?.occurredAt);
-  const leadRef = requireNonBlank(event?.data?.lead_id, 'data.lead_id');
+  const occurredAt = requireIsoTimestamp(event.occurredAt);
+  const leadRef = requireNonBlank(event.data?.lead_id, 'data.lead_id');
 
   const providerRef = event.data.provider_id?.trim() || null;
   const offerRef = event.data.package_id?.trim() || null;
