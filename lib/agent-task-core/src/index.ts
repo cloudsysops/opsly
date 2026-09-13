@@ -20,6 +20,17 @@ export {
   type OrchestratorClientOptions,
 } from './orchestrator-client.js';
 
+export {
+  evaluateTaskSource,
+  DEFAULT_TASK_SOURCE_POLICY,
+  type TaskSourceType,
+  type TaskSourceRejectReason,
+  type TaskContractFrontmatter,
+  type TaskSourceDescriptor,
+  type TaskSourcePolicy,
+  type TaskSourceDecision,
+} from './task-source-guard.js';
+
 export type {
   AgentTaskEnvelopeV1,
   AgentTaskType,
