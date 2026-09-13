@@ -18,6 +18,7 @@ DO_STATUS=false
 INSTALL_AUTOSTART=false
 PULL_MODEL=""
 DOCTOR=false
+GPU_PROOF=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -27,6 +28,7 @@ for arg in "$@"; do
     --status) DO_STATUS=true ;;
     --install-autostart) INSTALL_AUTOSTART=true ;;
     --doctor) DOCTOR=true ;;
+    --gpu-proof) GPU_PROOF=true ;;
     --pull-model=*) PULL_MODEL="${arg#*=}" ;;
     -h|--help)
       sed -n '2,10p' "$0"
@@ -160,6 +162,36 @@ doctor() {
   fi
   echo "LOCAL_FIRST_NOT_READY failures=$failures"
   return 1
+}
+
+gpu_proof() {
+  if ! command -v nvidia-smi >/dev/null 2>&1; then
+    echo "BLOCKED: nvidia-smi not available on PC Gamer" >&2
+    return 1
+  fi
+
+  local ps_json
+  ps_json="$(curl -sf --max-time 5 "${OLLAMA_URL%/}/api/ps" 2>/dev/null || true)"
+  [[ -n "$ps_json" ]] || {
+    echo "BLOCKED: Ollama /api/ps unavailable" >&2
+    return 1
+  }
+
+  PS_JSON="$ps_json" node - <<'NODE'
+const body = JSON.parse(process.env.PS_JSON || '{"models":[]}');
+const loaded = (body.models || []).filter((m) => Number(m.size_vram || 0) > 0);
+if (loaded.length === 0) {
+  console.error('BLOCKED: no Ollama model currently has GPU VRAM allocated');
+  process.exit(1);
+}
+const best = loaded.sort((a,b) => Number(b.size_vram || 0) - Number(a.size_vram || 0))[0];
+console.log(
+  'GAMER_OLLAMA_GPU_ACTIVE model=' +
+    String(best.name || best.model || 'unknown') +
+    ' size_vram=' +
+    String(best.size_vram)
+);
+NODE
 }
 
 run() {
@@ -401,7 +433,7 @@ if [[ -n "$PULL_MODEL" ]]; then
   fi
 fi
 
-if [[ "$DO_UP$DO_DOWN$DO_STATUS$INSTALL_AUTOSTART$DOCTOR" == "falsefalsefalsefalsefalse" ]]; then
+if [[ "$DO_UP$DO_DOWN$DO_STATUS$INSTALL_AUTOSTART$DOCTOR$GPU_PROOF" == "falsefalsefalsefalsefalsefalse" ]]; then
   DO_STATUS=true
 fi
 
@@ -412,5 +444,6 @@ if [[ "$INSTALL_AUTOSTART" == "true" && "$DO_UP" != "true" ]]; then
 fi
 [[ "$DO_STATUS" == "true" ]] && show_status
 [[ "$DOCTOR" == "true" ]] && doctor
+[[ "$GPU_PROOF" == "true" ]] && gpu_proof
 
 echo "[pc-gamer-opencode] done."
