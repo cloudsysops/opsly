@@ -10,7 +10,13 @@ test('go-live smoke uses governed submit and verifies teardown', async () => {
   assert.match(source, /\/api\/local\/prompt-submit/);
   assert.match(source, /\/api\/job-status\//);
   assert.match(source, /grep '\^opsly-task-'/);
-  assert.match(source, /OPSLY_E2E_OK/);
+  assert.match(source, /OPSLY_E2E_EXPECT_MARKER/);
+  assert.match(source, /prepared_only/);
+  assert.match(source, /b\.returnvalue \?\? b\.result/);
+  assert.match(source, /terminal result mismatch/);
+  assert.match(source, /runtime smoke mutated the repository working tree/);
+  assert.match(source, /openclaw-readonly-policy-doctor\.sh/);
+  assert.match(source, /cancelled/);
   assert.match(source, /paid_infra:false/);
   assert.doesNotMatch(source, /git reset --hard|git push --force|terraform apply/);
 });
