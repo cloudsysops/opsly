@@ -25,3 +25,6 @@ export * from './review-loop.js';
 export * from './distribution.js';
 export * from './capabilities.js';
 export * from './universe-bridge.js';
+export * from './astral-arena.js';
+
+export * from './transmedia.js';

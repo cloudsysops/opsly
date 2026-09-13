@@ -87,18 +87,19 @@ export async function ingestOwnedVideo(options: {
       options.tenantId === 'bitsitos' ||
       options.tenantId === 'splashitos' ||
       options.tenantId === 'opsly-universe' ||
-      options.tenantId === 'icso-gaming-tbd'
+      options.tenantId === 'icso-gaming-tbd' ||
+      options.tenantId === 'astral-arena'
         ? options.tenantId
         : 'opsly-universe',
-    series: 'creator-studio',
+    series: options.tenantId === 'astral-arena' ? 'astral-arena-gameplay' : 'creator-studio',
     title: options.title ?? path.basename(options.filePath, path.extname(options.filePath)),
-    goal: 'education',
-    audience: 'general',
+    goal: options.tenantId === 'astral-arena' ? 'engagement' : 'education',
+    audience: options.tenantId === 'astral-arena' ? 'family' : 'general',
     format: 'youtube_short',
     mode: options.mode ?? 'repurpose',
-    portal: 'FUTURE',
-    formatTemplate: options.mode === 'commentary' ? 'NOVA_REACTS' : 'NOVA_EXPLAINS',
-    question: '¿Puede una IA reemplazar a un programador?',
+    portal: options.tenantId === 'astral-arena' ? 'ASTRAL_ARENA' : 'FUTURE',
+    formatTemplate: options.tenantId === 'astral-arena' ? 'ASTRAL_GAMEPLAY' : options.mode === 'commentary' ? 'NOVA_REACTS' : 'NOVA_EXPLAINS',
+    question: options.tenantId === 'astral-arena' ? '¿Qué momento del Nexo merece convertirse en historia?' : '¿Puede una IA reemplazar a un programador?',
   };
   let envelope = await createProjectEnvelope(input, baseDir);
   const probe = await probeMedia(options.filePath);

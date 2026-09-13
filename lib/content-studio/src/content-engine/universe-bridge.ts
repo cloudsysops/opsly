@@ -35,6 +35,7 @@ const CHANNEL_FEATURED_FALLBACK: Record<ContentChannel, readonly string[]> = {
   peskids: ['orion', 'kai', 'wavo'],
   'opsly-universe': ['traveler', 'nova', 'echo'],
   'icso-gaming-tbd': [],
+  'astral-arena': ['arena', 'brissa', 'orion-shepherd', 'aurora-unicorn', 'nx-7', 'altair'],
 };
 
 function worldIdToPortal(worldId: string): ContentPortal | null {
@@ -128,14 +129,27 @@ function bindingFromContext(context: ComposedCharacterContext): UniverseProjectB
   };
 }
 
-export function composeUniverseForProject(envelope: ContentProjectEnvelope): UniverseProjectBinding {
+export function composeUniverseForProject(envelope: ContentProjectEnvelope, characterIdsOverride?: string[]): UniverseProjectBinding {
   const channel = envelope.project.channel;
   const tenant = tenantKeyForChannel(channel);
   const topic =
     envelope.project.learningGoal ?? envelope.project.question ?? envelope.project.title;
-  const characterIds = featuredCharacterIdsForChannel(channel);
+  const characterIds = characterIdsOverride?.length ? characterIdsOverride : featuredCharacterIdsForChannel(channel);
+  const astralTopic = topic.toLowerCase();
+  const explicitTechnoliaContext =
+    envelope.project.portal === 'TECHNOLIA' ||
+    envelope.project.series === 'astral-technolia' ||
+    envelope.project.series === 'astral-cyber';
+  const worldId =
+    channel === 'astral-arena'
+      ? explicitTechnoliaContext ||
+        /(technolia|cyber|arquitectura|architecture|build|constru|nave|ship|software)/.test(astralTopic)
+        ? 'technolia'
+        : 'astral-arena'
+      : undefined;
   const context = universe.getContext({
     characters: characterIds.length > 0 ? characterIds : undefined,
+    worldId,
     topic,
     audience: audienceForProject(envelope.project.audience),
     tenant,

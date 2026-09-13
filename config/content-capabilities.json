@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-09-10",
+  "lastUpdated": "2026-09-12",
   "canonicalDoc": "docs/00-architecture/CONTENT-PIPELINE-CANONICAL.md",
-  "productionPath": "GAMEPLAY \u2192 INGEST \u2192 SESSION \u2192 TRANSCRIPT? \u2192 HIGHLIGHTS \u2192 SCORE \u2192 CLIP \u2192 RENDER \u2192 INDEPENDENT AI REVIEW \u2192 REPAIR? \u2192 RIGHTS \u2192 READY_FOR_HUMAN_APPROVAL \u2192 APPROVAL \u2192 MULTI-PLATFORM PUBLISH",
+  "productionPath": "GAMEPLAY → INGEST → SESSION → TRANSCRIPT? → HIGHLIGHTS → SCORE → CLIP → RENDER → INDEPENDENT AI REVIEW → REPAIR? → RIGHTS → READY_FOR_HUMAN_APPROVAL → APPROVAL → MULTI-PLATFORM PUBLISH",
   "rule": "Before implementing any content/video/clip/highlight/publish feature: read this file. Extend the canonical owner. If unclear, BLOCK and report. No second pipeline, render engine, publisher, or highlight engine.",
   "stateRoot": "runtime/content-os/tenants/<tenant>/projects/<id>/project.json",
   "reviewUi": "apps/admin/app/moon/creator/",
@@ -140,7 +140,7 @@
         "lib/content-studio/src/content-engine/__tests__/gameplay-session.test.ts"
       ],
       "deprecated_paths": [
-        "apps/rendering-engine (Hermes MCP) \u2014 superseded for this pipeline"
+        "apps/rendering-engine (Hermes MCP) — superseded for this pipeline"
       ],
       "notes": "Gameplay render = FFmpeg via renderTopClips. MoneyPrinterTurbo + ContentVideoWorker = synthetic event/kids video ADAPTER, not gameplay. Remotion = REFERENCE_ONLY until ADR + cost approval."
     },
@@ -231,7 +231,7 @@
         "lib/content-studio/src/content-engine/__tests__/independent-review-e2e.test.ts"
       ],
       "deprecated_paths": [],
-      "notes": "MASTER \u2192 YouTube/TikTok/Instagram/Facebook/X metadata packages. One human Approve & Schedule enqueues separate jobs. No credentials on PC gamer."
+      "notes": "MASTER → YouTube/TikTok/Instagram/Facebook/X metadata packages. One human Approve & Schedule enqueues separate jobs. No credentials on PC gamer."
     },
     "approval": {
       "name": "approval",
@@ -273,6 +273,19 @@
       "tests": [],
       "deprecated_paths": [],
       "notes": "analytics: not-wired-no-metrics-source. Do not invent views/CTR/retention. BLOCK fake dashboards."
+    },
+    "transmedia.binding": {
+      "name": "transmedia.binding",
+      "canonical_owner": "lib/content-studio/src/content-engine/transmedia.ts",
+      "path": "lib/content-studio/src/content-engine/transmedia.ts",
+      "functions": [
+        "bindTransmediaContext"
+      ],
+      "status": "canonical",
+      "runtime": "control-plane",
+      "tests": [],
+      "deprecated_paths": [],
+      "notes": "Links canon/game/content surfaces inside the existing ContentProjectEnvelope. No second content pipeline or canon store."
     }
   },
   "otherDomains": {
@@ -281,14 +294,14 @@
       "role": "ADAPTER",
       "cli": "scripts/content-cli.ts (npm run content-engine:*)",
       "state": "data/content/tenants/<slug>/ + runtime/content-artifacts/",
-      "use": "Original stills\u2192ffmpeg storyboards (Bitsitos/Splashitos scripted). Not Mauro gameplay."
+      "use": "Original stills→ffmpeg storyboards (Bitsitos/Splashitos scripted). Not Mauro gameplay."
     },
     "event_drafts": {
       "owner": "lib/content-studio/src/{mappers,generators,adapters,rendering/moneyprinterturbo.ts}",
       "role": "ADAPTER",
       "queue": "content-video",
       "worker": "apps/orchestrator/src/workers/ContentVideoWorker.ts",
-      "use": "Runtime event \u2192 caption/story \u2192 MoneyPrinterTurbo. Not gameplay."
+      "use": "Runtime event → caption/story → MoneyPrinterTurbo. Not gameplay."
     },
     "brand_bible": {
       "owner": "lib/content-studio/src/{characters,series,episodes,campaigns}/ + data/content/",

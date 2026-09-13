@@ -1,0 +1,459 @@
+name: Astral Arena Web Preview
+
+on:
+  push:
+    branches:
+      - 'preview/astral-arena'
+    paths:
+      - 'apps/game-astral-arena/**'
+      - 'config/games/astral-arena.json'
+      - 'config/games/retro-lab-license-policy.json'
+      - 'config/games/retro-originals.json'
+      - 'lib/game-core/**'
+      - 'lib/universe/**'
+      - 'scripts/games/**'
+      - '.github/workflows/astral-arena-web.yml'
+      - '.dockerignore'
+  pull_request:
+    paths:
+      - 'apps/game-astral-arena/**'
+      - 'config/games/astral-arena.json'
+      - 'config/games/retro-lab-license-policy.json'
+      - 'config/games/retro-originals.json'
+      - 'lib/game-core/**'
+      - 'lib/universe/**'
+      - 'scripts/games/**'
+      - '.github/workflows/astral-arena-web.yml'
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy this ref to https://astral-arena.op-sly.com'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: astral-arena-web-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: '4.7.2'
+  GODOT_EDITOR_SHA256: 'cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4'
+  GODOT_TEMPLATES_SHA256: 'f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011'
+  GODOT_EDITOR_ZIP: 'Godot_v4.7.2-stable_linux.x86_64.zip'
+  GODOT_TEMPLATES_FILE: 'Godot_v4.7.2-stable_export_templates.tpz'
+  WEB_IMAGE: 'ghcr.io/cloudsysops/astral-arena-web'
+
+jobs:
+  validate-product:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate product contract
+        run: node scripts/games/validate-astral-arena-game.mjs
+
+      - name: Validate transmedia continuity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/games/validate-astral-transmedia.mjs ] && [ -f config/games/astral-arena-transmedia.json ]; then
+            node scripts/games/validate-astral-transmedia.mjs
+          else
+            echo "Fast preview lane: transmedia manifest not present; skipping continuity validation."
+          fi
+
+      - name: Validate Astral Content Studio series
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/games/validate-astral-content-series.mjs ] && [ -d data/content/series/astral-arena ]; then
+            node scripts/games/validate-astral-content-series.mjs
+          else
+            echo "Fast preview lane: editorial series not present; skipping Content Studio series validation."
+          fi
+
+      - name: Validate Retro Games Lab licenses
+        run: node scripts/games/validate-retro-lab-licenses.mjs
+
+      - name: Prove reusable blueprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x scripts/provisioning/clone-game-launch.sh
+          scripts/provisioning/clone-game-launch.sh \
+            --blueprint godot-steam \
+            --slug guardian-lab \
+            --title "Guardian Lab" \
+            --dry-run > /tmp/guardian-lab-blueprint.txt
+          grep -q '"game_slug": "guardian-lab"' /tmp/guardian-lab-blueprint.txt
+          ! grep -Eiq 'Arena Botero|Brissa Botero|Señor Sombra' /tmp/guardian-lab-blueprint.txt
+
+  build-web:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot editor
+        id: cache-editor
+        uses: actions/cache@v4
+        with:
+          path: .tools/godot
+          key: astral-godot-editor-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_EDITOR_SHA256 }}
+
+      - name: Download verified Godot editor
+        if: steps.cache-editor.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tools/godot
+          curl --fail --location --retry 3             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${GODOT_EDITOR_ZIP}"             --output "/tmp/${GODOT_EDITOR_ZIP}"
+          echo "${GODOT_EDITOR_SHA256}  /tmp/${GODOT_EDITOR_ZIP}" | sha256sum --check -
+          unzip -q "/tmp/${GODOT_EDITOR_ZIP}" -d .tools/godot
+          chmod +x ".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+
+      - name: Cache Godot export templates
+        id: cache-templates
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot/export_templates/4.7.2.stable
+          key: astral-godot-templates-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_TEMPLATES_SHA256 }}
+
+      - name: Download verified Godot export templates
+        if: steps.cache-templates.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${GODOT_TEMPLATES_FILE}"             --output "/tmp/${GODOT_TEMPLATES_FILE}"
+          echo "${GODOT_TEMPLATES_SHA256}  /tmp/${GODOT_TEMPLATES_FILE}" | sha256sum --check -
+          rm -rf /tmp/godot-export-templates
+          mkdir -p /tmp/godot-export-templates
+          unzip -q "/tmp/${GODOT_TEMPLATES_FILE}" -d /tmp/godot-export-templates
+          target="$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          rm -rf "$target"
+          mkdir -p "$target"
+          if [ -d /tmp/godot-export-templates/templates ]; then
+            cp -a /tmp/godot-export-templates/templates/. "$target/"
+          else
+            cp -a /tmp/godot-export-templates/. "$target/"
+          fi
+          test -n "$(find "$target" -maxdepth 1 -type f -print -quit)"
+
+      - name: Verify Godot version
+        run: .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --version
+
+      - name: Import project
+        shell: bash
+        run: |
+          set -euo pipefail
+          .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64             --headless             --editor             --path apps/game-astral-arena             --quit
+
+      - name: Verify Web export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          echo "Installed export templates:"
+          find "$target" -maxdepth 1 -type f -printf '%f\n' | sort
+          test -f "$target/web_nothreads_release.zip" || {
+            echo "::error::Missing web_nothreads_release.zip"
+            exit 1
+          }
+
+      - name: Export browser build
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist/astral-arena-web
+          mkdir -p dist/astral-arena-web
+          output="$GITHUB_WORKSPACE/dist/astral-arena-web/index.html"
+          .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64             --headless             --verbose             --path apps/game-astral-arena             --export-release "Web" "$output"
+          mkdir -p dist/astral-arena-web/games
+          cp -a apps/game-astral-arena/web/games/. dist/astral-arena-web/games/
+
+      - name: Smoke exported files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s dist/astral-arena-web/index.html
+          find dist/astral-arena-web -maxdepth 1 -type f -name '*.wasm' -size +0c | grep -q .
+          find dist/astral-arena-web -maxdepth 1 -type f -name '*.pck' -size +0c | grep -q .
+          find dist/astral-arena-web -maxdepth 1 -type f -name '*.js' -size +0c | grep -q .
+          test -s dist/astral-arena-web/games/index.html
+          test -s dist/astral-arena-web/games/emulator.html
+          test -s dist/astral-arena-web/games/originals.js
+          find dist/astral-arena-web -type f ! -name 'SHA256SUMS.txt' -print0 \
+            | sort -z \
+            | xargs -0 sha256sum > dist/astral-arena-web/SHA256SUMS.txt
+          echo "Astral Arena browser export: OK"
+
+      - name: Upload browser artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: astral-arena-web-${{ github.sha }}
+          path: dist/astral-arena-web
+          if-no-files-found: error
+          retention-days: 14
+
+  publish-image:
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
+    needs: [validate-product, build-web]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download browser artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: astral-arena-web-${{ github.sha }}
+          path: dist/astral-arena-web
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Resolve immutable tag
+        id: meta
+        shell: bash
+        run: echo "tag=${WEB_IMAGE}:sha-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push static preview image
+        id: image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/game-astral-arena/web/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.tag }}
+            ${{ env.WEB_IMAGE }}:preview
+
+      - name: Image summary
+        run: |
+          echo "Image: ${{ steps.meta.outputs.tag }}"
+          echo "Digest: ${{ steps.image.outputs.digest }}"
+
+  deploy-preview:
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
+    needs: [build-web, publish-image]
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      ASTRAL_ARENA_WEB_HOST: astral-arena.op-sly.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate deploy secrets
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          [ -n "${VPS_USER:-}" ] || { echo "Missing VPS_USER" >&2; missing=1; }
+          [ -n "${VPS_SSH_KEY:-}" ] || { echo "Missing VPS_SSH_KEY" >&2; missing=1; }
+          if [ -z "${VPS_SSH_HOST:-}" ] && [ -z "${VPS_HOST:-}" ]; then
+            echo "Missing VPS_SSH_HOST or VPS_HOST" >&2
+            missing=1
+          fi
+          [ "$missing" -eq 0 ]
+
+      - name: Connect Tailscale for SSH
+        if: env.TAILSCALE_AUTHKEY != ''
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
+
+      - name: Deploy immutable preview image behind Traefik
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          ASTRAL_IMAGE: ${{ needs.publish-image.outputs.tag }}
+          ASTRAL_DIGEST: ${{ needs.publish-image.outputs.digest }}
+          RELEASE_SHA: ${{ github.sha }}
+          ASTRAL_HOST: ${{ env.ASTRAL_ARENA_WEB_HOST }}
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 5m
+          command_timeout: 20m
+          envs: GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,ASTRAL_IMAGE,ASTRAL_DIGEST,RELEASE_SHA,ASTRAL_HOST
+          script: |
+            set -euo pipefail
+            docker logout ghcr.io 2>/dev/null || true
+            echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
+            docker pull "$ASTRAL_IMAGE"
+            repo_digest="$(docker image inspect --format '{{index .RepoDigests 0}}' "$ASTRAL_IMAGE")"
+            actual_digest="${repo_digest##*@}"
+            [ "$actual_digest" = "$ASTRAL_DIGEST" ] || {
+              echo "Astral Arena image digest mismatch: $actual_digest != $ASTRAL_DIGEST" >&2
+              exit 1
+            }
+            docker rm -f astral-arena-web 2>/dev/null || true
+            docker run -d               --name astral-arena-web               --restart unless-stopped               --network traefik-public               --label traefik.enable=true               --label traefik.docker.network=traefik-public               --label "traefik.http.routers.astral-arena-web.rule=Host(\`$ASTRAL_HOST\`)"               --label traefik.http.routers.astral-arena-web.entrypoints=websecure               --label traefik.http.routers.astral-arena-web.tls=true               --label traefik.http.routers.astral-arena-web.tls.certresolver=letsencrypt               --label traefik.http.services.astral-arena-web.loadbalancer.server.port=8080               --label "opsly.release.sha=$RELEASE_SHA"               "$ASTRAL_IMAGE" >/dev/null
+            for attempt in $(seq 1 30); do
+              if docker exec astral-arena-web wget -q -O /dev/null http://127.0.0.1:8080/index.html; then
+                echo "Container health: OK"
+                exit 0
+              fi
+              sleep 2
+            done
+            docker logs astral-arena-web --tail 100 >&2 || true
+            exit 1
+
+      - name: Public HTTPS smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://${ASTRAL_ARENA_WEB_HOST}/"
+          for attempt in $(seq 1 12); do
+            if body="$(curl -fsSL --max-time 15 "$url" 2>/dev/null)" && printf '%s' "$body" | grep -qi '<canvas\|godot'; then
+              echo "Astral Arena public preview: OK — $url"
+              exit 0
+            fi
+            echo "Waiting for DNS/TLS/Traefik ($attempt/12)..."
+            sleep 10
+          done
+          echo "::error::Public preview did not become healthy: $url"
+          exit 1
+
+
+  publish-staging:
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push' && github.ref == 'refs/heads/preview/astral-arena')
+    needs: build-web
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download browser artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: astral-arena-web-${{ github.sha }}
+          path: dist/astral-arena-web
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Resolve staging image tag
+        id: meta
+        shell: bash
+        run: echo "tag=${WEB_IMAGE}:staging-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push staging image
+        id: image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/game-astral-arena/web/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tag }}
+
+  deploy-staging:
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push' && github.ref == 'refs/heads/preview/astral-arena')
+    needs: [build-web, publish-staging]
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      ASTRAL_STAGING_URL: https://peskids-staging.op-sly.com/astral-arena/
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Connect Tailscale for SSH
+        if: env.TAILSCALE_AUTHKEY != ''
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+
+      - name: Deploy isolated Astral Arena staging route
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          ASTRAL_IMAGE: ${{ needs.publish-staging.outputs.tag }}
+          ASTRAL_DIGEST: ${{ needs.publish-staging.outputs.digest }}
+          RELEASE_SHA: ${{ github.sha }}
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 5m
+          command_timeout: 20m
+          envs: GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,ASTRAL_IMAGE,ASTRAL_DIGEST,RELEASE_SHA
+          script: |
+            set -euo pipefail
+            echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
+            docker pull "$ASTRAL_IMAGE"
+            repo_digest="$(docker image inspect --format '{{index .RepoDigests 0}}' "$ASTRAL_IMAGE")"
+            actual_digest="${repo_digest##*@}"
+            [ "$actual_digest" = "$ASTRAL_DIGEST" ] || {
+              echo "Digest mismatch: $actual_digest != $ASTRAL_DIGEST" >&2
+              exit 1
+            }
+
+            docker rm -f astral-arena-web-staging 2>/dev/null || true
+            docker run -d               --name astral-arena-web-staging               --restart unless-stopped               --network traefik-public               --label traefik.enable=true               --label traefik.docker.network=traefik-public               --label 'traefik.http.routers.astral-arena-staging.rule=Host(`peskids-staging.op-sly.com`) && PathPrefix(`/astral-arena`)'               --label traefik.http.routers.astral-arena-staging.priority=200               --label traefik.http.routers.astral-arena-staging.entrypoints=websecure               --label traefik.http.routers.astral-arena-staging.tls=true               --label traefik.http.routers.astral-arena-staging.tls.certresolver=letsencrypt               --label traefik.http.routers.astral-arena-staging.middlewares=astral-arena-staging-strip               --label traefik.http.middlewares.astral-arena-staging-strip.stripprefix.prefixes=/astral-arena               --label traefik.http.services.astral-arena-staging.loadbalancer.server.port=8080               --label "opsly.release.sha=$RELEASE_SHA"               "$ASTRAL_IMAGE" >/dev/null
+
+            for attempt in $(seq 1 30); do
+              if docker exec astral-arena-web-staging wget -q -O /dev/null http://127.0.0.1:8080/index.html; then
+                echo "Astral Arena staging container: OK"
+                exit 0
+              fi
+              sleep 2
+            done
+            docker logs astral-arena-web-staging --tail 100 >&2 || true
+            exit 1
+
+      - name: Public staging smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            if body="$(curl -fsSL --max-time 15 "$ASTRAL_STAGING_URL" 2>/dev/null)" && printf '%s' "$body" | grep -qi '<canvas\|godot'; then
+              echo "Playable preview: $ASTRAL_STAGING_URL"
+              echo "### 🎮 Astral Arena playable preview" >> "$GITHUB_STEP_SUMMARY"
+              echo "$ASTRAL_STAGING_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Waiting for staging route ($attempt/18)..."
+            sleep 10
+          done
+          echo "::error::Astral Arena staging route did not become healthy"
+          exit 1

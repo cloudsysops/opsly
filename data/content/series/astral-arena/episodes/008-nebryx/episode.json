@@ -1,0 +1,48 @@
+{
+  "id": "astral-s01e08-nebryx",
+  "series_id": "astral-arena",
+  "episode_number": 8,
+  "title": {
+    "es": "El código viviente",
+    "en": "The Living Code"
+  },
+  "hook": {
+    "es": "Capítulo 8 de Guardians of the Nexus. El contenido se escribirá desde el evento canónico story-nebryx-code cuando la misión esté madura.",
+    "en": "Chapter 8 of Guardians of the Nexus. Content will be written from canonical event story-nebryx-code when the mission is mature."
+  },
+  "objective": "Reserved editorial production slot for story-nebryx-code. Do not invent canon here; script only from the approved Universe event and game mission.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Sigue la temporada de Astral Arena / Follow the Astral Arena season",
+    "captions": {
+      "es": "El código viviente — próximo capítulo de Astral Arena. #AstralArena #GuardiansOfTheNexus",
+      "en": "The Living Code — upcoming Astral Arena chapter. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Editorial placeholder for The Living Code. Final concept must be generated from approved canon/gameplay."
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Reserved from transmedia story event story-nebryx-code.",
+      "Mapped mission: nebryx-code-001.",
+      "No scenes are authored until Universe/Game Core canon for this mission is ready."
+    ]
+  }
+}

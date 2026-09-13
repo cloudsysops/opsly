@@ -10,6 +10,7 @@ export const contentChannelValues = [
   // Placeholder slug — youth/adult gaming channel, brand/name not decided yet.
   // Rename everywhere this string appears once branding lands.
   'icso-gaming-tbd',
+  'astral-arena',
 ] as const;
 export type ContentChannel = (typeof contentChannelValues)[number];
 
@@ -26,6 +27,8 @@ export const contentPortalValues = [
   'LAB',
   'ORIGINS',
   'UNKNOWN',
+  'ASTRAL_ARENA',
+  'TECHNOLIA',
 ] as const;
 export type ContentPortal = (typeof contentPortalValues)[number];
 
@@ -47,6 +50,8 @@ export const contentFormatTemplateValues = [
   'SPORT_SCIENCE',
   'OPSLY_STORY',
   'SPLASHITOS_LEARNS',
+  'ASTRAL_STORY',
+  'ASTRAL_GAMEPLAY',
 ] as const;
 export type ContentFormatTemplate = (typeof contentFormatTemplateValues)[number];
 
@@ -653,6 +658,23 @@ export interface UniverseProjectBinding {
   };
 }
 
+export interface TransmediaProjectBinding {
+  franchiseId: string;
+  seasonId: string;
+  chapterId?: string;
+  storyEventId: string;
+  missionIds: string[];
+  episodeId?: string;
+  characterIds: string[];
+  companionIds: string[];
+  worldIds: string[];
+  surfaces: Array<'GAME' | 'STORY_EPISODE' | 'YOUTUBE_LONG' | 'SHORT' | 'TRAILER' | 'STEAM_STORE' | 'SOCIAL' | 'LORE'>;
+  continuity: 'CANON' | 'CANON_ADJACENT' | 'PROMO';
+  source: 'gameplay' | 'scripted_story' | 'mixed';
+  gameplayBuildSha?: string;
+  captureMarkers?: string[];
+}
+
 export interface ContentProjectEnvelope {
   schemaVersion: typeof CONTENT_ENGINE_SCHEMA_VERSION;
   project: ContentProject;
@@ -669,6 +691,7 @@ export interface ContentProjectEnvelope {
   research?: string[];
   brandKit?: BrandKit;
   universeContext?: UniverseProjectBinding;
+  transmedia?: TransmediaProjectBinding;
   qaFlags?: string[];
   session?: GameplaySessionMeta;
   selectedClipIds?: string[];
@@ -794,6 +817,23 @@ export const ContentMetadataSchema = z.object({
   privacyStatus: z.enum(['private', 'unlisted']),
 });
 
+export const TransmediaProjectBindingSchema = z.object({
+  franchiseId: z.string().min(1),
+  seasonId: z.string().min(1),
+  chapterId: z.string().min(1).optional(),
+  storyEventId: z.string().min(1),
+  missionIds: z.array(z.string().min(1)),
+  episodeId: z.string().min(1).optional(),
+  characterIds: z.array(z.string().min(1)),
+  companionIds: z.array(z.string().min(1)),
+  worldIds: z.array(z.string().min(1)),
+  surfaces: z.array(z.enum(['GAME', 'STORY_EPISODE', 'YOUTUBE_LONG', 'SHORT', 'TRAILER', 'STEAM_STORE', 'SOCIAL', 'LORE'])).min(1),
+  continuity: z.enum(['CANON', 'CANON_ADJACENT', 'PROMO']),
+  source: z.enum(['gameplay', 'scripted_story', 'mixed']),
+  gameplayBuildSha: z.string().min(7).optional(),
+  captureMarkers: z.array(z.string().min(1)).optional(),
+});
+
 export const ContentProjectEnvelopeSchema = z.object({
   schemaVersion: z.literal(CONTENT_ENGINE_SCHEMA_VERSION),
   project: ContentProjectSchema,
@@ -802,6 +842,7 @@ export const ContentProjectEnvelopeSchema = z.object({
   renderJobs: z.array(ContentRenderJobSchema),
   approval: ContentApprovalSchema.optional(),
   metadata: ContentMetadataSchema.optional(),
+  transmedia: TransmediaProjectBindingSchema.optional(),
 });
 
 export const ContentProjectCreateInputSchema = z.object({

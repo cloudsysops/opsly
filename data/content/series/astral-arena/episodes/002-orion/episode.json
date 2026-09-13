@@ -1,0 +1,108 @@
+{
+  "id": "astral-s01e02-orion",
+  "series_id": "astral-arena",
+  "episode_number": 2,
+  "title": {
+    "es": "Orion, Guardián de la Tierra",
+    "en": "Orion, Guardian of Earth"
+  },
+  "hook": {
+    "es": "Antes de aprender a pelear, las Guardianas deben aprender por qué alguien decide quedarse.",
+    "en": "Before learning to fight, the Guardians must learn why someone chooses to stay."
+  },
+  "objective": "Introduce Orion as an independent Earth Guardian whose loyalty is a choice, not ownership.",
+  "audience": [
+    "families",
+    "players",
+    "young creators"
+  ],
+  "duration_estimate_sec": 75,
+  "scenes": [
+    {
+      "number": 1,
+      "description": "Earth signal",
+      "visuals": "The portal opens onto an Earth-like forest edge.",
+      "copy": "La señal no pide ayuda. Está buscando a alguien.",
+      "duration_sec": 10,
+      "assets_needed": [
+        "portal forest capture"
+      ]
+    },
+    {
+      "number": 2,
+      "description": "Orion appears",
+      "visuals": "Orion steps from shadow, alert but calm.",
+      "copy": "Orion no pertenece a nadie. Él decide a quién proteger.",
+      "duration_sec": 12,
+      "assets_needed": [
+        "Orion canonical render"
+      ]
+    },
+    {
+      "number": 3,
+      "description": "Trust test",
+      "visuals": "A Shadow pulse separates the sisters.",
+      "copy": "La primera prueba no es de fuerza. Es de confianza.",
+      "duration_sec": 13,
+      "assets_needed": [
+        "shadow encounter capture"
+      ]
+    },
+    {
+      "number": 4,
+      "description": "Guardian rush",
+      "visuals": "Orion crosses the gap to protect the exposed sister.",
+      "copy": "Cuando alguien corre hacia el peligro por ti, la confianza cambia.",
+      "duration_sec": 14,
+      "assets_needed": [
+        "guardian-rush gameplay capture"
+      ]
+    },
+    {
+      "number": 5,
+      "description": "Team bond",
+      "visuals": "Arena repairs, Brissa shields, Orion holds the line.",
+      "copy": "Tres habilidades. Una sola decisión: volver juntos.",
+      "duration_sec": 14,
+      "assets_needed": [
+        "team-bond marker"
+      ]
+    },
+    {
+      "number": 6,
+      "description": "New path",
+      "visuals": "Orion looks toward a magical light in the distance.",
+      "copy": "Pero otra presencia ya los está observando.",
+      "duration_sec": 12,
+      "assets_needed": [
+        "Aurora light teaser"
+      ]
+    }
+  ],
+  "metadata": {
+    "call_to_action": "Descubre el siguiente capítulo jugando Astral Arena / Discover the next chapter by playing Astral Arena",
+    "captions": {
+      "es": "Orion, Guardián de la Tierra. La historia continúa dentro del juego. #AstralArena #GuardiansOfTheNexus",
+      "en": "Orion, Guardian of Earth. The story continues inside the game. #AstralArena #GuardiansOfTheNexus"
+    },
+    "hashtags": [
+      "#AstralArena",
+      "#GuardiansOfTheNexus",
+      "#IndieGame",
+      "#FamilyGaming",
+      "#Godot"
+    ],
+    "thumbnail_concept": "Orion the German Shepherd standing protectively between Arena and Brissa, Earth forest merging with Astral portal light, heroic but gentle."
+  },
+  "production": {
+    "status": "storyboard",
+    "created_at": "2026-09-12T00:00:00Z",
+    "last_updated": "2026-09-12T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Derived from Opsly Universe canon and mapped through config/games/astral-arena-transmedia.json.",
+      "Content Studio may present this event but may not redefine canon."
+    ]
+  }
+}

@@ -225,3 +225,29 @@ Do **not** start Remotion, Auto-clipper, Whisper, or Dragon overlay.
 - [[04-infrastructure/PC-GAMER-WORKER|PC-GAMER-WORKER]]
 - Skill `opsly-content-studio`
 - PR #1131 ADR-058 · #1151 vendor research · #1155 intake · #1158 session
+
+
+## Franchise / transmedia binding
+
+Franchise context does **not** create another content pipeline.
+
+Canonical owner:
+`lib/content-studio/src/content-engine/transmedia.ts`
+
+The optional `ContentProjectEnvelope.transmedia` field links a content project to:
+- franchise;
+- season/chapter;
+- canonical story event;
+- game mission IDs;
+- episode ID;
+- characters/companions/worlds;
+- gameplay build SHA;
+- capture markers;
+- target surfaces.
+
+The production path remains the same:
+
+`INGEST → HIGHLIGHTS → RENDER → REVIEW → RIGHTS → HUMAN APPROVAL → DISTRIBUTION`
+
+Universe remains the canon owner. Content Studio may transform/present canon but may
+not redefine it.

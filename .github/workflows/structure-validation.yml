@@ -4,9 +4,15 @@ name: Structure Validation
 on:
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - 'apps/game-astral-arena/**'
   push:
     branches: [main]
   workflow_call:
+
+concurrency:
+  group: structure-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate-structure:

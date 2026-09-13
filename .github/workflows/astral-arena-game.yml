@@ -1,0 +1,80 @@
+name: Astral Arena Game Product
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: astral-game-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: '4.7.2'
+  GODOT_SHA256: 'cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4'
+  GODOT_ZIP: 'Godot_v4.7.2-stable_linux.x86_64.zip'
+
+jobs:
+  validate-product:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Astral Arena product structure
+        run: node scripts/games/validate-astral-arena-game.mjs
+
+      - name: Prove game blueprint can scaffold a second clean product
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x scripts/provisioning/clone-game-launch.sh
+          scripts/provisioning/clone-game-launch.sh             --blueprint godot-steam             --slug guardian-lab             --title "Guardian Lab"             --dry-run > /tmp/guardian-lab-blueprint.txt
+          grep -q '"game_slug": "guardian-lab"' /tmp/guardian-lab-blueprint.txt
+          grep -q '"title": "Guardian Lab"' /tmp/guardian-lab-blueprint.txt
+          if grep -Eiq 'Arena Botero|Brissa Botero|Señor Sombra|astral-arena-universe' /tmp/guardian-lab-blueprint.txt; then
+            echo "Blueprint leaked Astral Arena-specific canon into second product" >&2
+            exit 1
+          fi
+          echo "Reusable game blueprint smoke: OK"
+
+  godot-headless:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot editor
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: .tools/godot
+          key: godot-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_SHA256 }}
+
+      - name: Download verified Godot 4.7.2 stable
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tools/godot
+          curl --fail --location --retry 3             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${GODOT_ZIP}"             --output "/tmp/${GODOT_ZIP}"
+          echo "${GODOT_SHA256}  /tmp/${GODOT_ZIP}" | sha256sum --check -
+          unzip -q "/tmp/${GODOT_ZIP}" -d .tools/godot
+          chmod +x ".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+
+      - name: Verify Godot version
+        run: .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --version
+
+      - name: Import project and compile GDScript headlessly
+        shell: bash
+        run: |
+          set -euo pipefail
+          .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64             --headless             --editor             --path apps/game-astral-arena             --quit
+
+      - name: Validate imported project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d apps/game-astral-arena/.godot
+          test -f apps/game-astral-arena/project.godot
+          echo "Godot headless import: OK"

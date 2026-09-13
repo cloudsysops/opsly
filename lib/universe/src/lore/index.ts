@@ -36,4 +36,76 @@ export const CANONICAL_LORE: LoreNote[] = [
     relatedCharacterIds: ['traveler', 'nova', 'kai'],
     relatedWorldIds: ['nexus', 'unknown'],
   },
+  {
+    id: 'astral-arena-nexus-realm',
+    title: 'Astral Arena is a Nexus realm',
+    summary:
+      'Astral Arena is a fictional family adventure realm of the wider Nexus. Arena and Brissa repair connections between worlds rather than conquering them.',
+    fictionVsScience: 'fiction',
+    relatedCharacterIds: ['arena', 'brissa', 'nx-7', 'altair'],
+    relatedWorldIds: ['astral-arena', 'nexus'],
+  },
+  {
+    id: 'astral-dragons-are-conscious',
+    title: 'Astral Dragons are guardians, never property',
+    summary:
+      'Astral Dragons are conscious living guardians tied to Nexus Currents. They may choose alliances but are never pets, owned mounts, or weapons.',
+    fictionVsScience: 'fiction',
+    relatedCharacterIds: ['asterion', 'pyra', 'nebryx', 'umbriel'],
+    relatedWorldIds: ['astral-arena'],
+  },
+  {
+    id: 'winged-ascension-is-cosmic',
+    title: 'Winged Ascension is cosmic, not religious',
+    summary:
+      'Winged Ascension manifests angel-like wings as a fictional Nexus energy response symbolizing protection, freedom, and cooperation. It does not make theological claims.',
+    fictionVsScience: 'fiction',
+    relatedCharacterIds: ['arena', 'brissa', 'orion-shepherd', 'aurora-unicorn', 'nx-7'],
+    relatedWorldIds: ['astral-arena'],
+  },
+  {
+    id: 'astral-birth-affinity',
+    title: 'Birth Affinity is fictional customization, not destiny',
+    summary:
+      'Astral Arena may derive a Fire, Earth, Air, or Water starting affinity from a birth date and zodiac sign as a fictional game mechanic. It must never be presented as science, diagnosis, personality truth, or destiny. Store the derived affinity rather than the player birth date whenever possible.',
+    fictionVsScience: 'mixed-must-separate',
+    relatedCharacterIds: ['arena', 'brissa', 'altair', 'nx-7'],
+    relatedWorldIds: ['astral-arena'],
+  },
+  {
+    id: 'cyber-arena-safe-simulation',
+    title: 'Cyber Arena teaches architecture through safe simulation',
+    summary:
+      'Cyber battles model fictional attacks only inside disposable game state. Every threat must teach its matching defense and software-architecture reason; no real targets, credentials, exploit payloads, malware, persistence, or evasion are part of the game.',
+    fictionVsScience: 'mixed-must-separate',
+    relatedCharacterIds: ['nx-7', 'altair', 'arena', 'brissa'],
+    relatedWorldIds: ['astral-arena', 'lab'],
+  },
+  {
+    id: 'technolia-build-to-understand',
+    title: 'Technolia teaches architecture by building it',
+    summary:
+      'Technolia is a fictional strategy-progression world where structures map to real software concepts: gateway, identity, API, queue, workers, database, secrets, observability, backups, resilience, and distributed systems. Progress comes from understanding and operating the architecture.',
+    fictionVsScience: 'mixed-must-separate',
+    relatedCharacterIds: ['arena', 'brissa', 'nx-7', 'altair'],
+    relatedWorldIds: ['technolia', 'astral-arena'],
+  },
+  {
+    id: 'technolia-starship-is-a-composed-system',
+    title: 'The Guardian starship is a composed system',
+    summary:
+      'The Technolia starship is assembled from navigation, identity, event, memory, and propulsion modules. The fiction mirrors modular software architecture: independent capabilities connected through explicit contracts and observable dependencies.',
+    fictionVsScience: 'mixed-must-separate',
+    relatedCharacterIds: ['nx-7', 'brissa', 'asterion', 'arena'],
+    relatedWorldIds: ['technolia'],
+  },
+  {
+    id: 'umbra-last-memory-thread',
+    title: 'The last thread of Umbra',
+    summary:
+      'The Season 1 resolution favors restoration over destruction: Umbriel helps reveal the last memory-thread connecting Señor Sombra to the Guardian Umbra once was.',
+    fictionVsScience: 'fiction',
+    relatedCharacterIds: ['umbra', 'umbriel', 'arena', 'brissa', 'altair'],
+    relatedWorldIds: ['astral-arena'],
+  },
 ];

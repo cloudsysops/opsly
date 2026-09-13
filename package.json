@@ -209,7 +209,13 @@
     "pc-gamer:opencode:status": "bash scripts/ops/pc-gamer-opencode-plane.sh --status",
     "pc-gamer:opencode:up": "bash scripts/ops/pc-gamer-opencode-plane.sh --up",
     "pc-gamer:opencode:autostart": "bash scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart",
-    "test:pc-gamer-opencode": "node --test scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs"
+    "test:pc-gamer-opencode": "node --test scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs",
+    "game:astral:content-pack": "tsx scripts/games/generate-astral-arena-content-pack.ts",
+    "game:astral:validate": "node scripts/games/validate-astral-arena-game.mjs",
+    "game:astral:transmedia:validate": "node scripts/games/validate-astral-transmedia.mjs",
+    "game:astral:content-series:validate": "node scripts/games/validate-astral-content-series.mjs",
+    "content:astral:chapter1:plan": "node scripts/content/astral-chapter1-plan.mjs",
+    "content:astral:chapter1:plan:json": "node scripts/content/astral-chapter1-plan.mjs --json"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

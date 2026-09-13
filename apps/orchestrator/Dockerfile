@@ -26,7 +26,6 @@ RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/agent-task-core && \
     npm run build -w @intcloudsysops/git-branch-orchestrator && \
     npm run build -w @intcloudsysops/session-manager && \
-    npm run build -w @intcloudsysops/ai-board && \
     npm run build -w @intcloudsysops/runtime && \
     npm run build -w @intcloudsysops/voice-messaging && \
     npm run build -w @intcloudsysops/orchestrator
@@ -57,8 +56,6 @@ COPY --from=builder /app/lib/session-manager/dist ./lib/session-manager/dist
 COPY --from=builder /app/lib/session-manager/package.json ./lib/session-manager/package.json
 COPY --from=builder /app/lib/git-branch-orchestrator/dist ./lib/git-branch-orchestrator/dist
 COPY --from=builder /app/lib/git-branch-orchestrator/package.json ./lib/git-branch-orchestrator/package.json
-COPY --from=builder /app/lib/ai-board/dist ./lib/ai-board/dist
-COPY --from=builder /app/lib/ai-board/package.json ./lib/ai-board/package.json
 COPY --from=builder /app/lib/runtime/dist ./lib/runtime/dist
 COPY --from=builder /app/lib/runtime/package.json ./lib/runtime/package.json
 COPY --from=builder /app/lib/content-studio/dist ./lib/content-studio/dist

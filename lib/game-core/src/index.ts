@@ -23,6 +23,7 @@ export {
   AchievementSchema,
   CollectibleSchema,
   ExplorerIdentitySchema,
+  AstralAffinityProfileSchema,
   GameEventSchema,
   GameSessionSchema,
   InventorySchema,
@@ -39,6 +40,7 @@ export type {
   ChooseExplorerInput,
   Collectible,
   ExplorerIdentity,
+  AstralAffinityProfile,
   GameEvent,
   GameSession,
   Inventory,
@@ -51,3 +53,117 @@ export type {
   WorldInstance,
 } from './types.js';
 export type { GameRuntime } from './runtime.js';
+
+export {
+  ASTRAL_ARENA_PORTAL_ID,
+  ASTRAL_ARENA_WORLD_ID,
+  getAstralArenaMission,
+  getAstralArenaMissions,
+} from './astral-arena.js';
+
+export {
+  astralElementValues,
+  zodiacSignValues,
+  elementForSign,
+  resolveAstralAffinity,
+  zodiacSignFromBirthDate,
+  getAstralTechSpecialization,
+  ASTRAL_TECH_SPECIALIZATIONS,
+  type AstralTechSpecialization,
+  type AstralAffinity,
+  type AstralElement,
+  type AstralTechnique,
+  type ZodiacSign,
+} from './astral-affinity.js';
+
+export {
+  CYBER_ARENA_ID,
+  CYBER_ARENA_SAFETY_RULES,
+  CYBER_BATTLES,
+  NEXUS_STARTER_ARCHITECTURE,
+  cyberDefenseValues,
+  cyberThreatValues,
+  evaluateCyberDefense,
+  type ArchitectureEdge,
+  type ArchitectureNode,
+  type ArchitectureNodeKind,
+  type CyberArchitecture,
+  type CyberBattle,
+  type CyberBattleResult,
+  type CyberDefense,
+  type CyberThreat,
+} from './cyber-arena.js';
+
+export {
+  TECHNOLIA_WORLD_ID,
+  TECHNOLIA_STARTING_RESOURCES,
+  TECHNOLIA_BUILDINGS,
+  TECHNOLIA_TECH_TREE,
+  STARSHIP_MODULES,
+  TECHNOLIA_MACHINES,
+  TECHNOLIA_MAP,
+  technoliaResourceValues,
+  technoliaEraValues,
+  createTechnoliaProgression,
+  constructBuilding,
+  researchTechnology,
+  installStarshipModule,
+  buildTechnoliaMachine,
+  discoverTechnoliaRegion,
+  resolveTechnoliaEra,
+  type TechnoliaResource,
+  type TechnoliaEra,
+  type TechnoliaBuilding,
+  type TechnoliaTechnology,
+  type StarshipModule,
+  type TechnoliaMachine,
+  type TechnoliaRegion,
+  type TechnoliaProgressionState,
+  type ResourceCost,
+} from './technolia.js';
+
+export {
+  CONSOLE_HISTORY,
+  LEARNING_MISSIONS,
+  learningTrackValues,
+  missionById,
+  missionsForTrack,
+  type ConsoleHistoryNode,
+  type LearningMission,
+  type LearningTrack,
+} from './learning-arcade.js';
+
+export {
+  PHYSICAL_CAPTURE_RULES,
+  captureStatusValues,
+  physicalObjectCategoryValues,
+  applyCaptureAnalysis,
+  approvePhysicalCollectible,
+  createCollectibleCandidate,
+  type CaptureAnalysisProposal,
+  type CaptureStatus,
+  type PhysicalCollectible,
+  type PhysicalCollectibleCandidate,
+  type PhysicalObjectCategory,
+} from './physical-collectibles.js';
+
+export {
+  ASTRAL_COMPANIONS,
+  ASTRAL_DUEL_FIGHTERS,
+  COMPANION_FAMILIES,
+  ASTRAL_DUEL_RULESET,
+  GAME_MODE_BLUEPRINT,
+  battleActionKindValues,
+  createBattleState,
+  fighterDefinition,
+  gamePresentationModeValues,
+  type BattleAbilityDefinition,
+  type CompanionDefinition,
+  type CompanionFamily,
+  type BattleActionKind,
+  type BattleFighterDefinition,
+  type BattleRuleset,
+  type BattleRuntimeFighter,
+  type BattleRuntimeState,
+  type GamePresentationMode,
+} from './game-modes.js';

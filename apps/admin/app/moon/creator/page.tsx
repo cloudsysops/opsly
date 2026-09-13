@@ -20,6 +20,7 @@ const TAB_LABELS: Record<(typeof CREATOR_TABS)[number], string> = {
   trends: 'Trends',
   productions: 'Productions',
   clips: 'Clips',
+  franchise: 'Franchise',
   characters: 'Characters',
   brands: 'Brands',
   calendar: 'Calendar',
@@ -42,6 +43,13 @@ function toneForStatus(status: string): MoonHealthTone {
   if (status === 'approved' || status === 'published') return 'healthy';
   if (status === 'failed') return 'critical';
   if (status === 'human_review' || status === 'rights_review') return 'warning';
+  return 'unknown';
+}
+
+function toneForPhaseStatus(status: string): MoonHealthTone {
+  if (status === 'active') return 'healthy';
+  if (status === 'blocked-external') return 'warning';
+  if (status === 'failed') return 'critical';
   return 'unknown';
 }
 
@@ -197,6 +205,171 @@ export default async function MoonCreatorPage({
                 </MoonCard>
               ))
             )}
+          </div>
+        )
+      ) : null}
+
+      {tab === 'franchise' ? (
+        !data.franchise ? (
+          <MoonEmptyState
+            title="Franchise registry unavailable"
+            description="No se pudo cargar Mission Control de Astral Arena."
+          />
+        ) : (
+          <div className="space-y-6">
+            <div className="grid gap-3 md:grid-cols-5">
+              <MoonCard className="p-4">
+                <p className="font-mono text-[10px] uppercase text-slate-500">Season</p>
+                <p className="mt-1 text-sm text-slate-100">{data.franchise.seasonTitle}</p>
+              </MoonCard>
+              <MoonCard className="p-4">
+                <p className="font-mono text-[10px] uppercase text-slate-500">Missions</p>
+                <p className="mt-1 text-2xl text-slate-50">{data.franchise.summary.missions}</p>
+              </MoonCard>
+              <MoonCard className="p-4">
+                <p className="font-mono text-[10px] uppercase text-slate-500">Episodes</p>
+                <p className="mt-1 text-2xl text-slate-50">{data.franchise.summary.episodes}</p>
+              </MoonCard>
+              <MoonCard className="p-4">
+                <p className="font-mono text-[10px] uppercase text-slate-500">Projects</p>
+                <p className="mt-1 text-2xl text-slate-50">{data.franchise.summary.contentProjects}</p>
+              </MoonCard>
+              <MoonCard className="p-4">
+                <p className="font-mono text-[10px] uppercase text-slate-500">Deliverables</p>
+                <p className="mt-1 text-2xl text-slate-50">{data.franchise.summary.deliverables}</p>
+              </MoonCard>
+            </div>
+
+            <MoonCard className="p-4">
+              <p className="font-mono text-[10px] uppercase text-violet-300">
+                Franchise Mission Control
+              </p>
+              <p className="mt-1 text-xl text-slate-100">{data.franchise.title}</p>
+              <p className="mt-2 text-sm text-slate-400">{data.franchise.thesis}</p>
+            </MoonCard>
+
+            <div className="space-y-3">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                  Product gates
+                </p>
+                <h3 className="text-lg text-slate-100">Game → Audience → Steam</h3>
+              </div>
+              <div className="grid gap-3 xl:grid-cols-5">
+                {data.franchise.launchPhases.map((phase) => (
+                  <MoonCard key={phase.id} className="space-y-2 p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-mono text-[11px] text-slate-200">{phase.id}</p>
+                      <MoonStatusBadge tone={toneForPhaseStatus(phase.status)}>
+                        {phase.status}
+                      </MoonStatusBadge>
+                    </div>
+                    <p className="text-xs text-slate-400">IN: {phase.entryGate}</p>
+                    <p className="text-xs text-slate-400">OUT: {phase.exitGate}</p>
+                    <p className="font-mono text-[10px] text-violet-300">CTA {phase.cta}</p>
+                  </MoonCard>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-5">
+              {data.franchise.chapters.map((chapter) => (
+                <div key={chapter.id} className="space-y-3">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-violet-300">
+                      {chapter.id} · {chapter.status}
+                    </p>
+                    <h3 className="text-lg text-slate-100">{chapter.title}</h3>
+                    <p className="text-sm text-slate-400">{chapter.contentArc}</p>
+                  </div>
+                  <div className="grid gap-3 lg:grid-cols-2">
+                    {chapter.events.map((event) => (
+                      <MoonCard key={event.id} className="space-y-2 p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-sm text-slate-100">{event.title}</p>
+                            <p className="font-mono text-[10px] text-slate-500">
+                              {event.episodeId}
+                            </p>
+                          </div>
+                          <MoonStatusBadge
+                            tone={event.contentProjectStatus === 'published' ? 'healthy' : 'unknown'}
+                          >
+                            {event.contentProjectStatus ??
+                              event.episodeProductionStatus ??
+                              event.status}
+                          </MoonStatusBadge>
+                        </div>
+                        <p className="font-mono text-[11px] text-slate-400">
+                          Mission: {event.missionIds.join(' · ')}
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {event.surfaces.map((surface) => (
+                            <span
+                              key={surface}
+                              className="rounded border border-white/10 px-2 py-1 font-mono text-[10px] text-slate-300"
+                            >
+                              {surface}
+                            </span>
+                          ))}
+                        </div>
+                      </MoonCard>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {data.franchise.productionPack ? (
+              <div className="space-y-3">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                    Chapter 1 production
+                  </p>
+                  <h3 className="text-lg text-slate-100">
+                    {data.franchise.productionPack.title}
+                  </h3>
+                  <p className="text-sm text-slate-400">
+                    {data.franchise.productionPack.totalDeliverables} deliverables ·{' '}
+                    {data.franchise.productionPack.approval} ·{' '}
+                    {data.franchise.productionPack.publishPolicy}
+                  </p>
+                </div>
+                <div className="grid gap-3 lg:grid-cols-2">
+                  {data.franchise.productionPack.episodes.map((episode) => (
+                    <MoonCard key={episode.episodeId} className="space-y-3 p-4">
+                      <div>
+                        <p className="text-sm text-slate-100">{episode.episodeId}</p>
+                        <p className="font-mono text-[10px] text-violet-300">
+                          {episode.storyEventId}
+                        </p>
+                      </div>
+                      <p className="font-mono text-[10px] text-slate-500">
+                        Capture: {episode.captureMarkers.join(' · ')}
+                      </p>
+                      <div className="space-y-1">
+                        {episode.deliverables.map((deliverable, index) => (
+                          <div
+                            key={`${episode.episodeId}-${deliverable.type}-${index}`}
+                            className="flex items-center justify-between gap-3 rounded border border-white/10 px-2 py-1.5"
+                          >
+                            <span className="text-xs text-slate-200">
+                              {deliverable.type}
+                            </span>
+                            <span className="font-mono text-[10px] text-slate-500">
+                              {deliverable.aspect}
+                              {deliverable.targetSec ? ` · ${deliverable.targetSec}s` : ''}
+                              {' · '}
+                              {deliverable.source}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </MoonCard>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         )
       ) : null}

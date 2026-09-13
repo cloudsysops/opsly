@@ -1,0 +1,17 @@
+:8080 {
+  root * /srv
+  encode zstd gzip
+
+  header {
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "same-origin"
+    Permissions-Policy "camera=(self), microphone=(), geolocation=()"
+    Cache-Control "public, max-age=300"
+  }
+
+  @gamefiles path *.wasm *.pck *.js
+  header @gamefiles Cache-Control "public, max-age=60, must-revalidate"
+
+  try_files {path} {path}/ /index.html
+  file_server
+}

@@ -244,7 +244,7 @@ export interface CharacterProfile {
   prohibited_variations: string[];
 }
 
-export type SeriesId = 'opsly-origins' | 'peki-lab' | 'build-with-opsly' | 'opsly-parallel-path';
+export type SeriesId = 'opsly-origins' | 'peki-lab' | 'build-with-opsly' | 'opsly-parallel-path' | 'astral-arena';
 
 export interface Series {
   id: SeriesId;
@@ -253,8 +253,9 @@ export interface Series {
   theme: string;
   audience: string[];
   typical_duration_sec: number;
-  characters: CharacterId[];
-  brand: 'opsly' | 'peskids';
+  characters: string[];
+  character_source?: 'legacy-content' | 'universe';
+  brand: 'opsly' | 'peskids' | 'astral-arena';
   episode_count: number;
   created_at: string;
 }

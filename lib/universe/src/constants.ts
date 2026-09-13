@@ -1,4 +1,4 @@
-export const CANON_VERSION = '1.0';
+export const CANON_VERSION = '1.1';
 export const PROMPT_VERSION = '1.0';
 export const MODULE_ID = '@intcloudsysops/universe';
 

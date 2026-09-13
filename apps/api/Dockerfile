@@ -12,7 +12,6 @@ RUN npm ci --ignore-scripts \
   -w @intcloudsysops/llm-gateway \
   -w @intcloudsysops/ml \
   -w @intcloudsysops/notebooklm-agent \
-  -w @intcloudsysops/ai-board \
   -w @intcloudsysops/api
 
 FROM node:20-alpine AS builder
@@ -26,8 +25,7 @@ RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/prompt-guard && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
-    npm run build -w @intcloudsysops/notebooklm-agent && \
-    npm run build -w @intcloudsysops/ai-board
+    npm run build -w @intcloudsysops/notebooklm-agent
 WORKDIR /repo/apps/api
 ENV NEXT_TELEMETRY_DISABLED=1
 # CORS en next.config: se resuelve en build (mismo origen admin = https://admin.${PLATFORM_DOMAIN})
