@@ -145,9 +145,9 @@ if (!file) {
 
 const root = process.cwd();
 const absolute = path.resolve(root, file);
-const queueRoot = path.resolve(root, 'docs/01-development/github-agent-queue');
+const queueRoot = path.resolve(root, 'docs/01-development/night-queue');
 if (!(absolute === queueRoot || absolute.startsWith(queueRoot + path.sep))) {
-  throw new Error('workpack must live under docs/01-development/github-agent-queue');
+  throw new Error('workpack must live under docs/01-development/night-queue');
 }
 
 const orchestratorUrl = (process.env.OPSLY_ORCHESTRATOR_URL || '').replace(/\/+$/, '');
@@ -210,14 +210,19 @@ const submit = await request(`${orchestratorUrl}/api/local/prompt-submit`, {
 if (!submit.response.ok) {
   console.error(JSON.stringify(submit.body, null, 2));
   if (submit.response.status === 409 && submit.body?.dispatch_decision) {
-    if (
-      submit.body.dispatch_decision === 'JOIN_EXISTING' ||
-      submit.body.dispatch_decision === 'ALREADY_DONE'
-    ) {
+    if (submit.body.dispatch_decision === 'ALREADY_DONE') {
       console.log(
-        `${submit.body.dispatch_decision} task=${submit.body.existing_task_id || 'unknown'} claim=${submit.body.existing_claim_id || 'unknown'}`
+        `ALREADY_DONE task=${submit.body.existing_task_id || 'unknown'} claim=${submit.body.existing_claim_id || 'unknown'}`
       );
       process.exit(0);
+    }
+    if (submit.body.dispatch_decision === 'JOIN_EXISTING') {
+      console.error(
+        `JOIN_EXISTING_NONTERMINAL task=${submit.body.existing_task_id || 'unknown'} job=${submit.body.existing_job_id || 'unknown'} claim=${submit.body.existing_claim_id || 'unknown'}`
+      );
+      throw new Error(
+        'JOIN_EXISTING_NONTERMINAL: canonical work is still active; this submitter must not report success'
+      );
     }
     if (submit.body.error === 'DISPATCH_SCOPE_ALREADY_OWNED') {
       throw new Error(
