@@ -51,3 +51,14 @@ Do **not** substitute `colombia-health-journey` or a future production tenant
 until the synthetic provider -> catalog -> quote -> case -> booking flow has
 been validated. The smoke intentionally has no tenant default and fails closed
 when `HEALTH_TRAVEL_TENANT_ID` is absent.
+
+
+## Synthetic catalog fixture
+
+The default smoke provider/package IDs come from:
+
+`docs/tenants/health-travel/fixtures/smiletripcare-catalog.synthetic.json`
+
+The fixture is intentionally fictional and contains only public commercial
+coordination fields. It contains no contact details, patient identity, clinical
+records, diagnosis, or treatment recommendations.
