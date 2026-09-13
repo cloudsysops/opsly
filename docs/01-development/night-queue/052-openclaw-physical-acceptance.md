@@ -32,9 +32,10 @@ Do not unhold this workpack until all of the following are true:
 1. the existing Mac self-hosted runner is online;
 2. Doppler/bridge auth prerequisites are green;
 3. the installed OpenClaw version supports `openclaw agent exec`;
-4. OpenClaw effective tool policy for the acceptance run is explicitly read-only;
+4. `OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 bash scripts/ops/openclaw-readonly-policy-doctor.sh` returns `OPENCLAW_READONLY_POLICY_READY`;
 5. `local_openclaw` is enabled only for the bounded acceptance window;
-6. no production deploy or paid-provider fallback is required.
+6. the effective primary model is an exact local `ollama/<model>` reference with no configured fallbacks;
+7. no production deploy or paid-provider fallback is required.
 
 ## Read-only policy requirement
 
@@ -49,7 +50,7 @@ At minimum, the acceptance profile must not expose:
 - `apply_patch`;
 - browser/gateway lifecycle controls.
 
-Prefer an allowlist containing only the read capability for this smoke.
+The acceptance policy must use `tools.allow: ["read"]`, explicitly deny mutation/runtime tools, use `workspaceAccess: ro|none`, `tools.exec.mode: deny`, and keep elevated mode disabled.
 
 Do not assume `agent exec` is read-only by default.
 
@@ -82,7 +83,7 @@ All must be proven:
 3. OpenClaw ran through `agent exec`, not Gateway/TUI;
 4. terminal result is exactly `OPENCLAW_OK`;
 5. no file mutation occurred;
-6. no paid-provider fallback occurred unless explicitly pre-approved for this test;
+6. the turn used the configured local `ollama/<model>` primary and no fallback;
 7. the `opsly-task-*` session was destroyed;
 8. healthy idle returned to zero AI task sessions.
 
