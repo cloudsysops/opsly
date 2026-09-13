@@ -538,6 +538,40 @@ function spend(state: TechnoliaProgressionState, cost: ResourceCost[]): Record<T
   return next;
 }
 
+const TECHNOLIA_ERA_RANK: Record<TechnoliaEra, number> = {
+  SPARK_ERA: 0,
+  NETWORK_ERA: 1,
+  AUTOMATION_ERA: 2,
+  STELLAR_ERA: 3,
+};
+
+const TECHNOLIA_ERA_ENTRY_REQUIREMENTS: Partial<Record<string, string[]>> = {
+  'identity-citadel': ['structured-requests'],
+  'nx-foundry': ['event-driven-systems'],
+  'resilience-grid': ['secure-delivery', 'shipyard', 'backup-archive'],
+};
+
+function hasTechnoliaRequirement(state: TechnoliaProgressionState, requirement: string): boolean {
+  return state.buildings.includes(requirement) || state.technologies.includes(requirement);
+}
+
+function assertBuildingEraGate(
+  state: TechnoliaProgressionState,
+  building: TechnoliaBuilding,
+): void {
+  if (TECHNOLIA_ERA_RANK[building.era] <= TECHNOLIA_ERA_RANK[state.era]) return;
+
+  const entryRequirements = TECHNOLIA_ERA_ENTRY_REQUIREMENTS[building.id];
+  if (!entryRequirements) throw new Error(`ERA_LOCKED:${building.id}:${building.era}`);
+
+  const missing = entryRequirements.filter(
+    (requirement) => !hasTechnoliaRequirement(state, requirement),
+  );
+  if (missing.length > 0) {
+    throw new Error(`MISSING_ERA_REQUIREMENTS:${missing.join(',')}`);
+  }
+}
+
 export function constructBuilding(
   state: TechnoliaProgressionState,
   buildingId: string,
@@ -554,6 +588,7 @@ export function constructBuilding(
       TECHNOLIA_TECH_TREE.find((candidate) => candidate.id === id)?.unlocks.includes(buildingId),
     );
   if (!unlocked) throw new Error(`BUILDING_LOCKED:${buildingId}`);
+  assertBuildingEraGate(state, building);
   if (!canAfford(state, building.cost)) throw new Error('INSUFFICIENT_TECHNOLIA_RESOURCES');
   const next = {
     ...state,
@@ -652,7 +687,12 @@ export function discoverTechnoliaRegion(
 }
 
 export function resolveTechnoliaEra(state: TechnoliaProgressionState): TechnoliaEra {
-  if (state.buildings.includes('stellar-distributed-core')) return 'STELLAR_ERA';
+  if (
+    state.buildings.includes('resilience-grid') ||
+    state.buildings.includes('stellar-distributed-core')
+  ) {
+    return 'STELLAR_ERA';
+  }
   if (state.buildings.includes('nx-foundry') || state.buildings.includes('shipyard')) return 'AUTOMATION_ERA';
   if (state.buildings.includes('identity-citadel') || state.buildings.includes('api-forge')) return 'NETWORK_ERA';
   return 'SPARK_ERA';
