@@ -533,14 +533,19 @@ export function validateOfferAtEventTime(
   ) {
     return 'offer_terms_validity_invalid';
   }
-  if (validFromMs !== null && eventMs < validFromMs) {
+  if (offer.status === 'draft') {
+    return 'offer_terms_not_activated';
+  }
+  // Automated commission requires an explicit effective-from boundary so replay
+  // does not depend on whatever status the offer happens to have today.
+  if (validFromMs === null) {
+    return 'offer_terms_validity_missing';
+  }
+  if (eventMs < validFromMs) {
     return 'offer_terms_not_yet_valid_at_event_time';
   }
   if (validUntilMs !== null && eventMs > validUntilMs) {
     return 'offer_terms_expired_at_event_time';
-  }
-  if (!offer.valid_from && !offer.valid_until && offer.status !== 'active') {
-    return 'offer_terms_history_unavailable';
   }
   return null;
 }
