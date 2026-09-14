@@ -62,6 +62,10 @@ function toneState(value, enabled = true) {
   if (/ERROR|FAIL|BLOCKED|DEGRADED|UNREACHABLE|OFFLINE/.test(v)) return color.red + v + color.reset;
   return color.dim + v + color.reset;
 }
+function stateCell(value, width, enabled) {
+  const padded = fit(value || 'UNKNOWN', width);
+  return enabled ? toneState(padded, true) : padded;
+}
 
 async function fetchJson(apiBase, path, token, timeoutMs = 3500) {
   const controller = new AbortController();
@@ -248,7 +252,7 @@ export function renderOpslyTop(snapshot, options = {}) {
     lines.push(
       [
         fit(m.host, 18),
-        fit(toneState(m.state, useColor), useColor ? 20 : 11),
+        stateCell(m.state, 11, useColor),
         fit(pct(m.cpu_pct), 8),
         fit(ram, 14),
         fit(pct(m.gpu_pct), 8),
@@ -268,9 +272,9 @@ export function renderOpslyTop(snapshot, options = {}) {
     lines.push(
       [
         fit(a.id, 18),
-        fit(toneState(a.runtime_state, useColor), useColor ? 20 : 12),
-        fit(toneState(a.dispatch, useColor), useColor ? 20 : 12),
-        fit(toneState(a.session_state, useColor), useColor ? 22 : 16),
+        stateCell(a.runtime_state, 12, useColor),
+        stateCell(a.dispatch, 12, useColor),
+        stateCell(a.session_state, 16, useColor),
         fit(a.work_id || a.blocker || '—', 32),
       ].join(' '),
     );
