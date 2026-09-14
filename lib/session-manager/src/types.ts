@@ -48,6 +48,7 @@ export interface CreateSessionInput {
   jobId?: string;
   workspace: string;
   branch?: string;
+  tenantSlug?: string;
   initialCommand?: string;
   /** Explicit tmux session name for bounded task runtimes. Must already be normalized. */
   tmuxSessionName?: string;
