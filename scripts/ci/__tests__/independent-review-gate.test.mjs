@@ -314,3 +314,48 @@ test('allowlisted bot cannot independently approve its own PR', () => {
   assert.equal(decision.ok, false);
   assert.equal(decision.reason, 'no_independent_review_for_final_head');
 });
+
+
+test('accepts current Copilot clean final-head review wording', () => {
+  const result = evaluateIndependentReview({
+    headSha: 'abc1234',
+    author: 'cboteros',
+    reviews: [
+      {
+        user: { login: 'copilot-pull-request-reviewer[bot]' },
+        author_association: 'NONE',
+        commit_id: 'abc1234',
+        state: 'COMMENTED',
+        submitted_at: '2026-09-14T12:00:00Z',
+        body: '### 🟢 Approval recommended\n\nNo unresolved review issues were identified.',
+      },
+    ],
+    reviewComments: [],
+    issueComments: [],
+  });
+  assert.equal(result.ok, true);
+  assert.equal(
+    result.reason,
+    'clean_bot_review:copilot-pull-request-reviewer[bot]',
+  );
+});
+
+test('does not accept current Copilot clean wording from a stale head', () => {
+  const result = evaluateIndependentReview({
+    headSha: 'newhead1',
+    author: 'cboteros',
+    reviews: [
+      {
+        user: { login: 'copilot-pull-request-reviewer[bot]' },
+        author_association: 'NONE',
+        commit_id: 'oldhead1',
+        state: 'COMMENTED',
+        submitted_at: '2026-09-14T12:00:00Z',
+        body: 'No unresolved review issues were identified.',
+      },
+    ],
+    reviewComments: [],
+    issueComments: [],
+  });
+  assert.equal(result.ok, false);
+});
