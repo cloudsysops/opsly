@@ -4,13 +4,20 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import { OfficeCanvas } from '@/components/mission-control/office-canvas';
+import {
+  OfficeCanvas,
+  type OfficeAgentRuntime,
+} from '@/components/mission-control/office-canvas';
 import { getBaseUrl } from '@/lib/api-client';
 import type {
   AgentTeamsResponse,
   OpenClawSnapshot,
   OrchestratorStatus,
 } from '@/lib/mission-control-types';
+
+type ExecutionSourcesPayload = {
+  registered_workers?: OfficeAgentRuntime[];
+};
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -35,11 +42,20 @@ export default function MissionControlOfficePage() {
     { refreshInterval: 3000 },
   );
 
+  const { data: executionSources } = useSWR<ExecutionSourcesPayload>(
+    baseUrl + '/api/admin/mission-control/execution-sources',
+    fetcher,
+    { refreshInterval: 5000 },
+  );
+
   const teams = teamsData?.teams ?? [];
-  const running = teams.filter((team) => {
-    const status = team.status.toLowerCase();
-    return status === 'working' || status === 'busy' || status === 'running';
-  }).length;
+  const agents = executionSources?.registered_workers ?? [];
+  const running = agents.length
+    ? agents.filter((agent) => agent.runtime_state === 'LIVE').length
+    : teams.filter((team) => {
+        const status = team.status.toLowerCase();
+        return status === 'working' || status === 'busy' || status === 'running';
+      }).length;
   const queue = orchestratorData?.queue;
 
   return (
@@ -79,7 +95,9 @@ export default function MissionControlOfficePage() {
           <div className="mt-4 grid gap-2 sm:grid-cols-4">
             <div className="rounded-lg border border-slate-800 bg-black/25 p-2">
               <div className="text-[9px] uppercase tracking-[0.13em] text-slate-600">agents</div>
-              <div className="mt-1 font-mono text-sm text-cyan-200">{teams.length}</div>
+              <div className="mt-1 font-mono text-sm text-cyan-200">
+                {agents.length || teams.length}
+              </div>
             </div>
             <div className="rounded-lg border border-slate-800 bg-black/25 p-2">
               <div className="text-[9px] uppercase tracking-[0.13em] text-slate-600">running</div>
@@ -100,7 +118,12 @@ export default function MissionControlOfficePage() {
           </div>
         </header>
 
-        <OfficeCanvas orchestrator={orchestratorData} teams={teams} openClaw={openClawData} />
+        <OfficeCanvas
+          orchestrator={orchestratorData}
+          teams={teams}
+          openClaw={openClawData}
+          agents={agents}
+        />
 
         <p className="text-center font-mono text-[9px] uppercase tracking-[0.12em] text-neutral-700">
           Sources: Mission Control teams · orchestrator · OpenClaw · Redis queue evidence
