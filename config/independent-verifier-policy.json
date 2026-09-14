@@ -195,5 +195,6 @@
     "algorithm": "hmac-sha256",
     "signing_key_env": "SIERRA_VERIFIER_SIGNING_KEY",
     "principle": "Runtime verifier evidence counts only when the trusted-base evaluator verifies its HMAC signature."
-  }
+  },
+  "qualification_eval_suite": "2026-09-14"
 }
