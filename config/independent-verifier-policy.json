@@ -113,5 +113,51 @@
         "blast-radius"
       ]
     }
-  ]
+  ],
+  "runtime_verifier_profiles": {
+    "claude-code": {
+      "profile_id": "sierra-verifier-claude-runtime-v1",
+      "agent_id": "claude-code",
+      "model_family": "anthropic-cli",
+      "trust_level": "trusted",
+      "independence_group": "anthropic-claude",
+      "specialties": [
+        "architecture",
+        "security",
+        "ci",
+        "ownership",
+        "blast-radius"
+      ]
+    },
+    "decepticon-cli": {
+      "profile_id": "sierra-verifier-decepticon-runtime-v1",
+      "agent_id": "decepticon-cli",
+      "model_family": "openai-codex",
+      "trust_level": "trusted",
+      "independence_group": "openai-codex",
+      "specialties": [
+        "security",
+        "ci",
+        "blast-radius"
+      ]
+    },
+    "copilot-cli": {
+      "profile_id": "sierra-verifier-copilot-runtime-v1",
+      "agent_id": "copilot-cli",
+      "model_family": "github-copilot",
+      "trust_level": "trusted",
+      "independence_group": "github-copilot",
+      "specialties": [
+        "architecture",
+        "ci",
+        "ownership"
+      ]
+    }
+  },
+  "signed_runtime_evidence": {
+    "schema_version": "IndependentVerifierEvidenceV1",
+    "algorithm": "hmac-sha256",
+    "signing_key_env": "SIERRA_VERIFIER_SIGNING_KEY",
+    "principle": "Runtime verifier evidence counts only when the trusted-base evaluator verifies its HMAC signature."
+  }
 }
