@@ -13,4 +13,4 @@ This layer only joins merge evidence with cleanup evidence so Mission Control ca
 2. merged work items whose dispatch claims remain active;
 3. cleanup blockers.
 
-V1 is plan-only for claim release until the canonical DispatchClaim completion API is available. This prevents direct Redis mutation from becoming a second ownership path.
+V1 is plan-only for claim release. The canonical release primitive already exists in `apps/orchestrator/src/task-claim-store.ts` as `releaseTaskDispatchClaim`; a future post-merge coordinator must call that primitive rather than mutate Redis directly. This preserves one ownership path.
