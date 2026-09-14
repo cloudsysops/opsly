@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, it } from 'node:test';
 
 import { acquireClaim, releaseClaim, getClaimStatus } from '../lib/machine-claim.mjs';
@@ -140,5 +142,19 @@ describe('machine-claim: getClaimStatus', () => {
     const redis = fakeRedis();
     const status = await getClaimStatus(redis, { machine: 'pc-gamer' });
     assert.deepEqual(status, { held: false, holder: null, ttlMs: null });
+  });
+});
+
+
+describe('pc-gamer reconnect machine-claim contract', () => {
+  it('fails closed, renews the lease, and has no unsafe skip switch', () => {
+    const source = fs.readFileSync(
+      path.resolve(process.cwd(), 'scripts/ops/pc-gamer-reconnect.sh'),
+      'utf8'
+    );
+    assert.match(source, /start_machine_claim_heartbeat/);
+    assert.match(source, /machine-claim\.mjs" acquire/);
+    assert.match(source, /trap 'release_machine_claim; exit 130' INT TERM/);
+    assert.doesNotMatch(source, /MACHINE_CLAIM_SKIP/);
   });
 });
