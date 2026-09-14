@@ -3,6 +3,7 @@ import type {
   AgentsTeamResponse,
   AdminCostsResponse,
   AdminDockerContainersResponse,
+  AdminDockerResourcesResponse,
   AdminOverviewResponse,
   CostDecisionResponse,
   InvitationSendResponse,
@@ -410,6 +411,22 @@ export async function getAdminOverview(): Promise<AdminOverviewResponse> {
 
 export async function getDockerContainers(): Promise<AdminDockerContainersResponse> {
   return request<AdminDockerContainersResponse>('/api/admin/docker/containers');
+}
+
+export async function getDockerResources(): Promise<AdminDockerResourcesResponse> {
+  return request<AdminDockerResourcesResponse>('/api/admin/docker/resources');
+}
+
+export async function getMissionControlRuntimeNodes<T>(): Promise<T> {
+  return request<T>('/api/runtime/nodes/status');
+}
+
+export async function getMissionControlComputeWorkers<T>(): Promise<T> {
+  return request<T>('/api/admin/compute-workers');
+}
+
+export async function getMissionControlExecutionSources<T>(): Promise<T> {
+  return request<T>('/api/admin/mission-control/execution-sources');
 }
 
 export async function getTenantUsageMetrics(

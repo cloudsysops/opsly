@@ -266,6 +266,24 @@ export type AdminDockerContainersResponse = {
   containers: AdminDockerContainerRow[];
 };
 
+export type AdminDockerResourceRow = {
+  id: string;
+  name: string;
+  cpu_percent: number | null;
+  memory_usage: string;
+  memory_percent: number | null;
+  net_io: string;
+  block_io: string;
+  pids: number | null;
+};
+
+export type AdminDockerResourcesResponse = {
+  generated_at: string;
+  docker_available: boolean;
+  error: string | null;
+  containers: AdminDockerResourceRow[];
+};
+
 /** GET /api/admin/overview — plataforma: VPS, máquina local, Redis/BullMQ, LLM agregado */
 export type AdminOverviewLlmPeriod = {
   tokens_input: number;

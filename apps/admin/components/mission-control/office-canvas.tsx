@@ -1,22 +1,6 @@
 'use client';
 
-import {
-  Background,
-  Controls,
-  type Edge,
-  Handle,
-  MarkerType,
-  MiniMap,
-  type Node,
-  Position,
-  ReactFlow,
-  ReactFlowProvider,
-  useEdgesState,
-  useNodesState,
-} from '@xyflow/react';
-import type { NodeProps, OnSelectionChangeParams } from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import type {
   AgentLifecycleStatus,
@@ -29,310 +13,22 @@ import { mapIntentToLifecycle, mapTeamToLifecycle } from '@/lib/mission-control-
 import { useMissionControlOfficeStore } from '@/stores/mission-control-office-store';
 import { cn } from '@/lib/utils';
 
-const NODES = {
-  health: 'mcHealth',
-  queue: 'mcQueue',
-  workers: 'mcWorkers',
-  agent: 'mcAgent',
-  intent: 'mcIntent',
-} as const;
-
-function lifecycleRing(status: AgentLifecycleStatus): string {
-  switch (status) {
-    case 'running':
-      return 'border-emerald-500/90 bg-emerald-950/40 shadow-[0_0_18px_rgba(52,211,153,0.35)]';
-    case 'thinking':
-      return 'border-cyan-500/80 bg-cyan-950/35';
-    case 'blocked':
-      return 'border-amber-500/80 bg-amber-950/30 animate-pulse';
-    case 'failed':
-      return 'border-rose-500/90 bg-rose-950/40';
-    case 'sleeping':
-      return 'border-indigo-500/70 bg-indigo-950/35';
-    case 'dead':
-      return 'border-zinc-600 bg-zinc-950/80 opacity-70';
-    case 'reviving':
-      return 'border-violet-500/80 bg-violet-950/40 animate-pulse';
-    case 'idle':
-    default:
-      return 'border-neutral-600 bg-neutral-950/70';
-  }
-}
-
-type HealthData = {
-  mode: string;
-  role: string;
-  healthy: boolean;
-  violationCount: number;
-};
-
-function McHealthNode(props: NodeProps) {
-  const d = props.data as HealthData;
-  const delirium = d.violationCount > 0;
-  return (
-    <div
-      className={cn(
-        'min-w-[220px] max-w-[260px] rounded-lg border px-3 py-2 font-mono text-xs',
-        d.healthy && !delirium
-          ? 'border-emerald-700/80 bg-emerald-950/25'
-          : 'border-rose-600/90 bg-rose-950/35 shadow-[0_0_20px_rgba(244,63,94,0.35)]',
-        delirium && 'animate-pulse'
-      )}
-    >
-      <Handle className="!h-2 !w-2 !bg-neutral-500" position={Position.Bottom} type="source" />
-      <p className="text-[10px] uppercase tracking-wider text-neutral-500">Radar / Health</p>
-      <p className="mt-1 text-sm text-neutral-100">
-        mode=<span className="text-emerald-400">{d.mode}</span>
-      </p>
-      <p className="text-sm text-neutral-100">
-        role=<span className="text-sky-400">{d.role}</span>
-      </p>
-      {delirium ? (
-        <p className="mt-2 text-[11px] font-semibold text-rose-400">
-          ⚠ Policy / delirium risk ({d.violationCount})
-        </p>
-      ) : (
-        <p className="mt-2 text-[11px] text-neutral-500">No recent violations</p>
-      )}
-    </div>
-  );
-}
-
-type QueueData = OrchestratorStatus['queue'];
-
-function McQueueNode(props: NodeProps) {
-  const q = props.data as QueueData;
-  return (
-    <div className="min-w-[240px] rounded-lg border border-amber-600/60 bg-amber-950/20 px-3 py-2 font-mono text-xs">
-      <Handle className="!h-2 !w-2 !bg-amber-600" position={Position.Top} type="target" />
-      <Handle
-        id="out-bottom"
-        className="!h-2 !w-2 !bg-amber-600"
-        position={Position.Bottom}
-        type="source"
-      />
-      <Handle
-        id="out-right"
-        className="!h-2 !w-2 !bg-amber-500"
-        position={Position.Right}
-        type="source"
-      />
-      <p className="text-[10px] uppercase tracking-wider text-amber-500/90">BullMQ · openclaw</p>
-      <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-neutral-200">
-        <span className="text-neutral-500">wait</span>
-        <span className="text-right text-amber-300">{q.waiting}</span>
-        <span className="text-neutral-500">active</span>
-        <span className="text-right text-emerald-300">{q.active}</span>
-        <span className="text-neutral-500">done</span>
-        <span className="text-right text-sky-300">{q.completed}</span>
-        <span className="text-neutral-500">fail</span>
-        <span className="text-right text-rose-400">{q.failed}</span>
-      </div>
-    </div>
-  );
-}
-
-type WorkersData = { summary: string };
-
-function McWorkersNode(props: NodeProps) {
-  const { summary } = props.data as WorkersData;
-  return (
-    <div className="max-w-[280px] rounded-lg border border-violet-700/50 bg-violet-950/20 px-3 py-2 font-mono text-[11px] text-neutral-300">
-      <Handle className="!h-2 !w-2 !bg-violet-500" position={Position.Left} type="target" />
-      <p className="text-[10px] uppercase tracking-wider text-violet-400">Workers (config)</p>
-      <pre className="mt-2 max-h-28 overflow-auto whitespace-pre-wrap text-[10px] leading-snug">
-        {summary}
-      </pre>
-    </div>
-  );
-}
-
-type AgentData = {
+type AgentDesk = {
+  id: string;
   name: string;
   lifecycle: AgentLifecycleStatus;
-  lastTask: string | null;
+  task: string | null;
   completed: number;
   failed: number;
 };
 
-function McAgentNode(props: NodeProps) {
-  const d = props.data as AgentData;
-  return (
-    <div
-      className={cn(
-        'min-w-[180px] max-w-[220px] rounded-lg border px-3 py-2',
-        lifecycleRing(d.lifecycle)
-      )}
-    >
-      <Handle className="!h-2 !w-2 !bg-neutral-500" position={Position.Top} type="target" />
-      <p className="font-mono text-[10px] uppercase tracking-wide text-neutral-500">Agent team</p>
-      <p className="mt-1 font-mono text-sm text-neutral-100">{d.name}</p>
-      <p className="mt-1 text-[10px] text-neutral-400">{d.lifecycle}</p>
-      <p className="mt-1 truncate text-[10px] text-neutral-500" title={d.lastTask ?? ''}>
-        {d.lastTask ?? '—'}
-      </p>
-      <div className="mt-2 flex gap-2 text-[10px]">
-        <span className="text-emerald-400">ok {d.completed}</span>
-        <span className="text-rose-400">fail {d.failed}</span>
-      </div>
-    </div>
-  );
-}
-
-type IntentData = {
+type IntentDesk = {
+  id: string;
   requestId: string;
-  intent: string | null;
-  stage: string | null;
   lifecycle: AgentLifecycleStatus;
-  tenant: string | null;
+  task: string;
+  stage: string | null;
 };
-
-function McIntentNode(props: NodeProps) {
-  const d = props.data as IntentData;
-  return (
-    <div
-      className={cn(
-        'min-w-[200px] max-w-[240px] rounded-lg border px-3 py-2',
-        lifecycleRing(d.lifecycle)
-      )}
-    >
-      <Handle className="!h-2 !w-2 !bg-sky-500" position={Position.Top} type="target" />
-      <p className="text-[10px] uppercase tracking-wider text-sky-500/90">Task / intent</p>
-      <p className="mt-1 truncate font-mono text-[10px] text-sky-200/90" title={d.requestId}>
-        {d.requestId}
-      </p>
-      <p className="mt-1 text-xs text-neutral-200">{d.intent ?? 'unknown'}</p>
-      <p className="mt-1 text-[10px] text-neutral-500">
-        stage={d.stage ?? 'n/a'} · {d.tenant ?? 'tenant?'}
-      </p>
-    </div>
-  );
-}
-
-const nodeTypes = {
-  [NODES.health]: McHealthNode,
-  [NODES.queue]: McQueueNode,
-  [NODES.workers]: McWorkersNode,
-  [NODES.agent]: McAgentNode,
-  [NODES.intent]: McIntentNode,
-};
-
-function buildWorkersSummary(workers: OrchestratorStatus['workers']): string {
-  return Object.entries(workers)
-    .map(([k, v]) => `${k}: conc=${v.concurrency} active=${v.active}`)
-    .join('\n');
-}
-
-function buildGraph(input: {
-  orchestrator: OrchestratorStatus | undefined;
-  teams: AgentTeam[];
-  openClaw: OpenClawSnapshot | undefined;
-}): { nodes: Node[]; edges: Edge[] } {
-  const orch = input.orchestrator;
-  const queue = orch?.queue ?? { waiting: 0, active: 0, completed: 0, failed: 0 };
-  const workers = orch?.workers ?? {};
-  const violationCount = input.openClaw?.recent_policy_violations.length ?? 0;
-  const healthy = Boolean(orch) && violationCount === 0;
-
-  const nodes: Node[] = [
-    {
-      id: 'health',
-      type: NODES.health,
-      position: { x: 40, y: 0 },
-      data: {
-        mode: orch?.mode ?? 'unknown',
-        role: orch?.role ?? 'unknown',
-        healthy,
-        violationCount,
-      } satisfies HealthData,
-    },
-    {
-      id: 'queue',
-      type: NODES.queue,
-      position: { x: 320, y: 20 },
-      data: queue,
-    },
-    {
-      id: 'workers',
-      type: NODES.workers,
-      position: { x: 620, y: 0 },
-      data: { summary: buildWorkersSummary(workers) } satisfies WorkersData,
-    },
-  ];
-
-  const edges: Edge[] = [
-    {
-      id: 'e-health-queue',
-      source: 'health',
-      target: 'queue',
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#525252' },
-      style: { stroke: '#404040', strokeWidth: 1.2 },
-    },
-    {
-      id: 'e-queue-workers',
-      source: 'queue',
-      sourceHandle: 'out-right',
-      target: 'workers',
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#525252' },
-      style: { stroke: '#404040', strokeWidth: 1.2 },
-    },
-  ];
-
-  const teamColWidth = 220;
-  input.teams.forEach((team, i) => {
-    const id = `team-${team.name}`;
-    nodes.push({
-      id,
-      type: NODES.agent,
-      position: { x: 40 + i * teamColWidth, y: 220 },
-      data: {
-        name: team.name,
-        lifecycle: mapTeamToLifecycle(team),
-        lastTask: team.lastTask,
-        completed: team.completedTasks,
-        failed: team.failedTasks,
-      } satisfies AgentData,
-    });
-    edges.push({
-      id: `e-queue-${id}`,
-      source: 'queue',
-      sourceHandle: 'out-bottom',
-      target: id,
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#64748b' },
-      style: { stroke: '#52525b', strokeWidth: 1 },
-    });
-  });
-
-  const intents: OpenClawIntentRuntime[] = input.openClaw?.intents_in_progress?.length
-    ? input.openClaw.intents_in_progress
-    : [];
-  const fallbackIntents = intents.length ? intents : (input.openClaw?.intents.slice(0, 6) ?? []);
-  fallbackIntents.forEach((intent, i) => {
-    const id = `intent-${intent.request_id}`;
-    nodes.push({
-      id,
-      type: NODES.intent,
-      position: { x: 40 + i * 240, y: 420 },
-      data: {
-        requestId: intent.request_id,
-        intent: intent.intent,
-        stage: intent.current_stage,
-        lifecycle: mapIntentToLifecycle(intent),
-        tenant: intent.tenant_slug,
-      } satisfies IntentData,
-    });
-    edges.push({
-      id: `e-queue-${id}`,
-      source: 'queue',
-      sourceHandle: 'out-bottom',
-      target: id,
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#38bdf8' },
-      style: { stroke: '#0ea5e9', strokeWidth: 1, strokeDasharray: '4 4' },
-    });
-  });
-
-  return { nodes, edges };
-}
 
 export type OfficeCanvasProps = {
   orchestrator: OrchestratorStatus | undefined;
@@ -340,59 +36,362 @@ export type OfficeCanvasProps = {
   openClaw: OpenClawSnapshot | undefined;
 };
 
-function OfficeCanvasInner({ orchestrator, teams, openClaw }: OfficeCanvasProps) {
-  const setSelected = useMissionControlOfficeStore((s) => s.setSelectedNodeId);
-  const graph = useMemo(
-    () => buildGraph({ orchestrator, teams, openClaw }),
-    [orchestrator, teams, openClaw]
-  );
+const AGENT_PALETTES = [
+  ['bg-blue-400', 'bg-blue-600'],
+  ['bg-violet-400', 'bg-violet-600'],
+  ['bg-cyan-400', 'bg-cyan-600'],
+  ['bg-emerald-400', 'bg-emerald-600'],
+  ['bg-orange-400', 'bg-orange-600'],
+  ['bg-pink-400', 'bg-pink-600'],
+  ['bg-amber-400', 'bg-amber-600'],
+  ['bg-fuchsia-400', 'bg-fuchsia-600'],
+];
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(graph.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(graph.edges);
+function statusClass(status: AgentLifecycleStatus): string {
+  switch (status) {
+    case 'running':
+      return 'border-emerald-400/70 text-emerald-300';
+    case 'thinking':
+      return 'border-cyan-400/70 text-cyan-300';
+    case 'blocked':
+      return 'border-amber-400/70 text-amber-300';
+    case 'failed':
+      return 'border-rose-400/70 text-rose-300';
+    case 'reviving':
+      return 'border-violet-400/70 text-violet-300';
+    case 'sleeping':
+      return 'border-indigo-400/70 text-indigo-300';
+    case 'dead':
+      return 'border-zinc-600 text-zinc-500';
+    case 'idle':
+    default:
+      return 'border-slate-600 text-slate-400';
+  }
+}
 
-  useEffect(() => {
-    setNodes(graph.nodes);
-    setEdges(graph.edges);
-  }, [graph, setNodes, setEdges]);
-
-  const onSelectionChange = useCallback(
-    (p: OnSelectionChangeParams) => {
-      const first = p.nodes[0];
-      setSelected(first?.id ?? null);
-    },
-    [setSelected]
-  );
+function PixelAvatar({
+  index,
+  lifecycle,
+}: {
+  index: number;
+  lifecycle: AgentLifecycleStatus;
+}) {
+  const palette = AGENT_PALETTES[index % AGENT_PALETTES.length];
+  const body = palette[0];
+  const dark = palette[1];
+  const active = lifecycle === 'running' || lifecycle === 'thinking' || lifecycle === 'reviving';
 
   return (
-    <div className="h-[min(78vh,820px)] w-full rounded-lg border border-ops-border bg-[#080808]">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onSelectionChange={onSelectionChange}
-        fitView
-        minZoom={0.4}
-        maxZoom={1.4}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background gap={20} color="#1f2937" />
-        <Controls className="!bg-neutral-900/95 !border-neutral-700" />
-        <MiniMap
-          className="!bg-neutral-950/90 !border-neutral-700"
-          maskColor="rgba(0,0,0,0.65)"
-          nodeStrokeWidth={2}
-        />
-      </ReactFlow>
+    <div className="relative h-11 w-9 shrink-0" aria-hidden="true">
+      {active ? (
+        <span className="absolute -right-1 top-0 h-2 w-2 animate-pulse rounded-sm bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,.9)]" />
+      ) : null}
+      <div className={cn('absolute left-2 top-0 h-3 w-5 rounded-sm', body)} />
+      <div className={cn('absolute left-1 top-3 h-3 w-7 rounded-sm', body)} />
+      <div className={cn('absolute left-0 top-6 h-3 w-9 rounded-sm', dark)} />
+      <div className={cn('absolute left-1 top-9 h-2 w-3 rounded-sm', dark)} />
+      <div className={cn('absolute right-1 top-9 h-2 w-3 rounded-sm', dark)} />
+      <div className="absolute left-2.5 top-1.5 h-1 w-1 rounded-full bg-slate-950" />
+      <div className="absolute right-2.5 top-1.5 h-1 w-1 rounded-full bg-slate-950" />
     </div>
   );
 }
 
-export function OfficeCanvas(props: OfficeCanvasProps) {
+function Desk({
+  desk,
+  index,
+  onSelect,
+}: {
+  desk: AgentDesk;
+  index: number;
+  onSelect: () => void;
+}) {
+  const active = desk.lifecycle === 'running' || desk.lifecycle === 'thinking';
+
   return (
-    <ReactFlowProvider>
-      <OfficeCanvasInner {...props} />
-    </ReactFlowProvider>
+    <button
+      type="button"
+      onClick={onSelect}
+      className="group relative min-h-28 w-full rounded-sm border border-slate-800/80 bg-[#151515]/90 p-2 text-left transition hover:border-cyan-400/40 hover:bg-[#191919]"
+    >
+      {desk.task && active ? (
+        <div className="absolute -top-9 left-1/2 z-20 max-w-44 -translate-x-1/2 truncate rounded-md border border-slate-700 bg-black/90 px-2 py-1 font-mono text-[9px] text-slate-300 shadow-xl">
+          {desk.task}
+        </div>
+      ) : null}
+
+      <div className="absolute left-1/2 top-2 h-8 w-12 -translate-x-1/2 rounded-sm border border-blue-500/60 bg-blue-950 shadow-[0_0_10px_rgba(59,130,246,.22)]">
+        <div className="mx-auto mt-1 h-5 w-9 bg-blue-500/80" />
+      </div>
+      <div className="absolute left-1/2 top-10 h-2 w-16 -translate-x-1/2 bg-stone-500/80" />
+      <div className="absolute left-[calc(50%-1.75rem)] top-12 h-10 w-2 bg-stone-700" />
+      <div className="absolute right-[calc(50%-1.75rem)] top-12 h-10 w-2 bg-stone-700" />
+
+      <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 items-end gap-2">
+        <PixelAvatar index={index} lifecycle={desk.lifecycle} />
+        <div className="pb-1">
+          <div className="whitespace-nowrap font-mono text-[10px] font-semibold text-slate-200">
+            {desk.name}
+          </div>
+          <div className={cn('text-[9px] uppercase tracking-[0.12em]', statusClass(desk.lifecycle))}>
+            {desk.lifecycle}
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function EmptyDesk({ label }: { label: string }) {
+  return (
+    <div className="relative min-h-28 rounded-sm border border-slate-900 bg-black/20 opacity-60">
+      <div className="absolute left-1/2 top-3 h-8 w-12 -translate-x-1/2 rounded-sm border border-slate-800 bg-slate-950">
+        <div className="mx-auto mt-1 h-5 w-9 bg-blue-950/50" />
+      </div>
+      <div className="absolute left-1/2 top-11 h-2 w-16 -translate-x-1/2 bg-stone-800" />
+      <div className="absolute bottom-3 w-full text-center font-mono text-[9px] uppercase tracking-[0.12em] text-slate-700">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function Plant() {
+  return (
+    <div className="relative h-20 w-12" aria-hidden="true">
+      <div className="absolute bottom-0 left-2 h-8 w-8 rounded-sm bg-orange-700" />
+      <div className="absolute bottom-7 left-0 h-10 w-10 rounded-[48%] bg-emerald-600" />
+      <div className="absolute bottom-8 left-2 h-8 w-8 rounded-[48%] bg-emerald-500" />
+    </div>
+  );
+}
+
+function BuildCouncil({ activeIntents }: { activeIntents: IntentDesk[] }) {
+  const headline = activeIntents[0]?.task ?? 'No active council task';
+
+  return (
+    <div className="relative mx-auto flex min-h-52 max-w-md items-center justify-center">
+      <div className="absolute top-1 rounded-md border border-slate-700 bg-black/90 px-3 py-1 font-mono text-[9px] text-slate-300">
+        Build Council — {activeIntents.length ? String(activeIntents.length) + ' active' : 'idle'}
+      </div>
+      <div className="absolute top-8 max-w-64 truncate font-mono text-[9px] text-cyan-300">
+        {headline}
+      </div>
+
+      <div className="relative mt-8 h-28 w-44 rounded-[48%] border-4 border-stone-600 bg-stone-700/90 shadow-[0_12px_30px_rgba(0,0,0,.45)]">
+        <span className="absolute -left-5 top-10 h-8 w-8 rounded-full bg-stone-600" />
+        <span className="absolute -right-5 top-10 h-8 w-8 rounded-full bg-stone-600" />
+        <span className="absolute left-8 -top-5 h-8 w-8 rounded-full bg-stone-600" />
+        <span className="absolute right-8 -top-5 h-8 w-8 rounded-full bg-stone-600" />
+        <span className="absolute bottom-2 left-1/2 -translate-x-1/2 font-mono text-[9px] uppercase tracking-[0.14em] text-stone-400">
+          merge / verify
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function UtilityStation({
+  label,
+  detail,
+  tone = 'cyan',
+}: {
+  label: string;
+  detail: string;
+  tone?: 'cyan' | 'emerald' | 'amber' | 'rose';
+}) {
+  const map = {
+    cyan: 'border-cyan-500/30 text-cyan-300',
+    emerald: 'border-emerald-500/30 text-emerald-300',
+    amber: 'border-amber-500/30 text-amber-300',
+    rose: 'border-rose-500/30 text-rose-300',
+  }[tone];
+
+  return (
+    <div className={cn('rounded-sm border bg-black/35 p-3 font-mono', map)}>
+      <div className="text-[9px] uppercase tracking-[0.15em]">{label}</div>
+      <div className="mt-1 text-[10px] text-slate-500">{detail}</div>
+    </div>
+  );
+}
+
+export function OfficeCanvas({ orchestrator, teams, openClaw }: OfficeCanvasProps) {
+  const setSelected = useMissionControlOfficeStore((s) => s.setSelectedNodeId);
+
+  const desks = useMemo<AgentDesk[]>(
+    () =>
+      teams.slice(0, 8).map((team) => ({
+        id: 'team-' + team.name,
+        name: team.name,
+        lifecycle: mapTeamToLifecycle(team),
+        task: team.lastTask,
+        completed: team.completedTasks,
+        failed: team.failedTasks,
+      })),
+    [teams],
+  );
+
+  const intents = useMemo<IntentDesk[]>(() => {
+    const source: OpenClawIntentRuntime[] = openClaw?.intents_in_progress?.length
+      ? openClaw.intents_in_progress
+      : (openClaw?.intents.slice(0, 4) ?? []);
+
+    return source.map((intent) => ({
+      id: 'intent-' + intent.request_id,
+      requestId: intent.request_id,
+      lifecycle: mapIntentToLifecycle(intent),
+      task: intent.intent ?? 'Unknown intent',
+      stage: intent.current_stage,
+    }));
+  }, [openClaw]);
+
+  const queue = orchestrator?.queue ?? { waiting: 0, active: 0, completed: 0, failed: 0 };
+  const policyViolations = openClaw?.recent_policy_violations.length ?? 0;
+  const runningAgents = desks.filter(
+    (desk) => desk.lifecycle === 'running' || desk.lifecycle === 'thinking',
+  ).length;
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#080808] shadow-2xl shadow-black/50">
+      <div className="grid gap-px border-b border-slate-800 bg-slate-900 sm:grid-cols-4">
+        <UtilityStation
+          label="Agents"
+          detail={String(runningAgents) + ' active · ' + String(desks.length) + ' observed'}
+          tone={runningAgents ? 'emerald' : 'cyan'}
+        />
+        <UtilityStation
+          label="BullMQ"
+          detail={String(queue.waiting) + ' waiting · ' + String(queue.active) + ' active · ' + String(queue.failed) + ' failed'}
+          tone={queue.failed ? 'rose' : queue.active ? 'emerald' : 'cyan'}
+        />
+        <UtilityStation
+          label="OpenClaw"
+          detail={String(intents.length) + ' observed intents'}
+          tone={intents.length ? 'emerald' : 'cyan'}
+        />
+        <UtilityStation
+          label="Policy"
+          detail={policyViolations ? String(policyViolations) + ' recent violations' : 'no recent violations'}
+          tone={policyViolations ? 'rose' : 'emerald'}
+        />
+      </div>
+
+      <div
+        className="relative min-h-[720px] p-5 lg:p-7"
+        style={{
+          backgroundColor: '#101010',
+          backgroundImage:
+            'linear-gradient(45deg, rgba(255,255,255,.025) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,.025) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,.025) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.025) 75%)',
+          backgroundSize: '48px 48px',
+          backgroundPosition: '0 0, 0 24px, 24px -24px, -24px 0px',
+        }}
+      >
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-2 bg-blue-900/50" />
+        <div className="pointer-events-none absolute left-3 top-1/2 hidden -translate-y-1/2 lg:block">
+          <div className="mb-8 h-20 w-10 rounded-t-full border border-blue-300/40 bg-blue-400/80" />
+          <Plant />
+        </div>
+        <div className="pointer-events-none absolute bottom-4 right-4 hidden lg:block">
+          <Plant />
+        </div>
+
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-600">
+                Agent HQ
+              </div>
+              <div className="text-sm font-semibold text-slate-300">Live workspace</div>
+            </div>
+            <div className="font-mono text-[9px] text-slate-600">
+              click an agent to inspect evidence
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {[0, 1, 2, 3].map((slot) =>
+              desks[slot] ? (
+                <Desk
+                  key={desks[slot].id}
+                  desk={desks[slot]}
+                  index={slot}
+                  onSelect={() => setSelected(desks[slot].id)}
+                />
+              ) : (
+                <EmptyDesk key={slot} label="available" />
+              ),
+            )}
+          </div>
+
+          <div className="my-6 grid items-center gap-5 lg:grid-cols-[1fr_1.15fr_1fr]">
+            <div className="grid gap-3">
+              {intents.slice(0, 2).map((intent) => (
+                <button
+                  type="button"
+                  key={intent.id}
+                  onClick={() => setSelected(intent.id)}
+                  className={cn(
+                    'rounded-sm border bg-black/40 p-3 text-left transition hover:bg-black/60',
+                    statusClass(intent.lifecycle),
+                  )}
+                >
+                  <div className="font-mono text-[9px] uppercase tracking-[0.14em]">
+                    task terminal
+                  </div>
+                  <div className="mt-1 truncate text-xs text-slate-200">{intent.task}</div>
+                  <div className="mt-1 font-mono text-[9px] text-slate-600">
+                    {(intent.stage ?? 'stage UNKNOWN') + ' · ' + intent.requestId.slice(0, 10)}
+                  </div>
+                </button>
+              ))}
+              {!intents.length ? (
+                <UtilityStation label="Task terminals" detail="No active OpenClaw intent evidence" />
+              ) : null}
+            </div>
+
+            <BuildCouncil
+              activeIntents={intents.filter(
+                (intent) => intent.lifecycle === 'running' || intent.lifecycle === 'thinking',
+              )}
+            />
+
+            <div className="grid gap-3">
+              <UtilityStation
+                label="Orchestrator"
+                detail={orchestrator ? orchestrator.mode + ' · ' + orchestrator.role : 'evidence UNKNOWN'}
+                tone={orchestrator ? 'emerald' : 'amber'}
+              />
+              <UtilityStation
+                label="Completed"
+                detail={String(queue.completed) + ' queue jobs completed'}
+                tone="cyan"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {[4, 5, 6, 7].map((slot) =>
+              desks[slot] ? (
+                <Desk
+                  key={desks[slot].id}
+                  desk={desks[slot]}
+                  index={slot}
+                  onSelect={() => setSelected(desks[slot].id)}
+                />
+              ) : (
+                <EmptyDesk key={slot} label="available" />
+              ),
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 bg-black/40 px-4 py-3 font-mono text-[9px] uppercase tracking-[0.12em] text-slate-600">
+        <span>Evidence-backed office · no synthetic RUNNING state</span>
+        <span>
+          running {runningAgents} · queued {queue.waiting} · failed {queue.failed}
+        </span>
+      </div>
+    </div>
   );
 }
