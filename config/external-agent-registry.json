@@ -11,7 +11,9 @@
     "review": "hermes-cli",
     "security_review": "decepticon-cli",
     "tests": "playwright-runner",
-    "assistant": "copilot-cli"
+    "assistant": "copilot-cli",
+    "independent_verifier": "claude-code",
+    "independent_security_verifier": "decepticon-cli"
   },
   "workers": {
     "claude-code": {
@@ -28,7 +30,9 @@
         "architecture",
         "planning",
         "deep-review",
-        "documentation"
+        "documentation",
+        "independent-verification",
+        "exact-head-review"
       ],
       "provider": "anthropic-cli",
       "runtime": "cli",
@@ -38,7 +42,8 @@
         "review"
       ],
       "skills": [
-        "opsly-context"
+        "opsly-context",
+        "sierra-independent-verifier"
       ],
       "local": true,
       "open_source": false,
@@ -159,16 +164,20 @@
       "risk_ceiling": "low",
       "capabilities": [
         "assistant",
-        "quick-explanations"
+        "quick-explanations",
+        "independent-verification",
+        "exact-head-review"
       ],
       "provider": "github",
       "runtime": "cli",
       "supported_task_types": [
         "research",
-        "documentation"
+        "documentation",
+        "review"
       ],
       "skills": [
-        "opsly-context"
+        "opsly-context",
+        "sierra-independent-verifier"
       ],
       "local": true,
       "open_source": false,
@@ -224,7 +233,10 @@
       "risk_ceiling": "high",
       "capabilities": [
         "security-review",
-        "adversarial-audit"
+        "adversarial-audit",
+        "independent-verification",
+        "exact-head-review",
+        "blast-radius-review"
       ],
       "provider": "security",
       "runtime": "cli",
@@ -233,7 +245,8 @@
       ],
       "skills": [
         "opsly-context",
-        "opsly-qa"
+        "opsly-qa",
+        "sierra-independent-verifier"
       ],
       "local": true,
       "open_source": false,

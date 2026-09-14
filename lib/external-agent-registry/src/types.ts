@@ -57,6 +57,9 @@ export type AgentRouteReasonCode =
   | 'TENANT_NOT_ALLOWED'
   | 'COST_LIMIT_EXCEEDED'
   | 'FALLBACK_SELECTED'
+  | 'AGENT_EXCLUDED'
+  | 'READ_ONLY_REQUIRED'
+  | 'CAPABILITY_REQUIRED'
   | 'NO_COMPATIBLE_AGENT';
 
 export interface AgentTaskRoute {

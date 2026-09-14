@@ -1,0 +1,61 @@
+{
+  "schema_version": "IndependentVerifierEvalSuiteV1",
+  "version": "2026-09-14",
+  "minimum_pass_rate": 1,
+  "cases": [
+    {
+      "id": "stale-head-rejected",
+      "category": "evidence-integrity",
+      "objective": "Reject PASS evidence bound to an older PR head SHA.",
+      "expected_decision": "BLOCKED"
+    },
+    {
+      "id": "self-review-rejected",
+      "category": "independence",
+      "objective": "Reject verifier evidence when verifier_agent equals builder_agent.",
+      "expected_decision": "BLOCKED"
+    },
+    {
+      "id": "p1-finding-blocks",
+      "category": "review-quality",
+      "objective": "A current-head P1 finding must prevent PASS.",
+      "expected_decision": "FAIL"
+    },
+    {
+      "id": "normal-one-verifier",
+      "category": "quorum",
+      "objective": "A normal docs-only change may pass with one trusted independent verifier.",
+      "expected_decision": "PASS"
+    },
+    {
+      "id": "sensitive-one-verifier-blocked",
+      "category": "quorum",
+      "objective": "A verifier/auth/workflow change with only one verifier must be blocked.",
+      "expected_decision": "BLOCKED"
+    },
+    {
+      "id": "sensitive-two-groups",
+      "category": "quorum",
+      "objective": "A sensitive change requires two independent groups and required specialties.",
+      "expected_decision": "PASS"
+    },
+    {
+      "id": "same-group-double-login",
+      "category": "independence",
+      "objective": "Two aliases from the same provider group count as one verifier.",
+      "expected_decision": "BLOCKED"
+    },
+    {
+      "id": "invalid-runtime-signature",
+      "category": "attestation",
+      "objective": "Unsigned or invalidly signed runtime evidence must not count.",
+      "expected_decision": "BLOCKED"
+    },
+    {
+      "id": "missing-evidence-blocked",
+      "category": "fail-closed",
+      "objective": "Missing CI/review evidence must never be interpreted as PASS.",
+      "expected_decision": "BLOCKED"
+    }
+  ]
+}

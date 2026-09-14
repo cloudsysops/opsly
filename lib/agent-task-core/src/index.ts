@@ -5,7 +5,13 @@ export {
   safeParseAgentTaskEnvelope,
   type BuildAgentTaskEnvelopeInput,
 } from './envelope.js';
-export { assignAgentTask, type AssignAgentTaskInput, type AssignAgentTaskResult } from './assign.js';
+export {
+  assignAgentTask,
+  assignIndependentVerifierTask,
+  type AssignAgentTaskInput,
+  type AssignAgentTaskResult,
+  type AssignIndependentVerifierTaskInput,
+} from './assign.js';
 export { inferTaskType, AGENT_TASK_TYPES } from './infer-task-type.js';
 export {
   evaluateAgentTaskPolicy,

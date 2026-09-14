@@ -30,4 +30,7 @@ export {
   type RouteExternalWorkerInput,
 } from './routing.js';
 
-export { routeAgentTask } from './task-routing.js';
+export {
+  routeAgentTask,
+  type RouteAgentTaskOptions,
+} from './task-routing.js';

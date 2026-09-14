@@ -16,13 +16,30 @@ function routingIntent(taskType: AgentTaskEnvelopeV1['task_type']): string {
   return 'assistant';
 }
 
+export interface RouteAgentTaskOptions {
+  excludeAgents?: string[];
+  requireReadOnly?: boolean;
+  requiredCapabilities?: string[];
+}
+
 function compatible(
   registry: ExternalAgentRegistryFile,
   id: ExternalWorkerId,
-  task: AgentTaskEnvelopeV1
+  task: AgentTaskEnvelopeV1,
+  options: RouteAgentTaskOptions
 ): { ok: true; reasons: AgentRouteReasonCode[] } | { ok: false; reason: AgentRouteReasonCode } {
   const entry = registry.workers[id];
   if (!entry?.enabled) return { ok: false, reason: 'AGENT_DISABLED' };
+  if ((options.excludeAgents ?? []).includes(id) || (options.excludeAgents ?? []).includes(entry.opsly_job_type)) {
+    return { ok: false, reason: 'AGENT_EXCLUDED' };
+  }
+  if (options.requireReadOnly === true && entry.write_access) {
+    return { ok: false, reason: 'READ_ONLY_REQUIRED' };
+  }
+  const requiredCapabilities = options.requiredCapabilities ?? [];
+  if (requiredCapabilities.some((capability) => !entry.capabilities.includes(capability))) {
+    return { ok: false, reason: 'CAPABILITY_REQUIRED' };
+  }
   if (task.constraints.open_source_only && !entry.open_source) {
     return { ok: false, reason: 'OPEN_SOURCE_REQUIRED' };
   }
@@ -47,7 +64,8 @@ function compatible(
 /** Deterministic task routing. It never calls an LLM. */
 export function routeAgentTask(
   registry: ExternalAgentRegistryFile,
-  task: AgentTaskEnvelopeV1
+  task: AgentTaskEnvelopeV1,
+  options: RouteAgentTaskOptions = {}
 ): AgentTaskRoute {
   const requested = task.requested_agent?.trim();
   const requestedRegistryId = requested
@@ -71,7 +89,7 @@ export function routeAgentTask(
   let rationale_codes: AgentRouteReasonCode[] = ['NO_COMPATIBLE_AGENT'];
 
   for (const candidate of candidates) {
-    const result = compatible(registry, candidate, task);
+    const result = compatible(registry, candidate, task, options);
     if (!result.ok) {
       rejected_candidates.push({ agent: candidate, reason: result.reason });
       continue;

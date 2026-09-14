@@ -6,7 +6,7 @@
 # Repository administration must require the "opsly-independent-review"
 # status in branch protection/rulesets after this workflow lands.
 
-name: Trusted independent review
+name: Sierra qualified independent review
 
 on:
   pull_request_target:
@@ -38,7 +38,15 @@ jobs:
           github.event.action == 'deleted' ||
           github.actor == 'chatgpt-codex-connector[bot]' ||
           github.actor == 'github-copilot[bot]' ||
-          github.actor == 'copilot-pull-request-reviewer[bot]'
+          github.actor == 'copilot-pull-request-reviewer[bot]' ||
+          (
+            contains(github.event.comment.body, 'opsly-independent-verifier-v1') &&
+            (
+              github.event.comment.author_association == 'OWNER' ||
+              github.event.comment.author_association == 'MEMBER' ||
+              github.event.comment.author_association == 'COLLABORATOR'
+            )
+          )
         )
       )
     runs-on: ubuntu-latest
@@ -79,6 +87,7 @@ jobs:
           PR_NUMBER: ${{ steps.pr.outputs.number }}
           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
           PR_AUTHOR: ${{ steps.pr.outputs.author }}
+          SIERRA_VERIFIER_SIGNING_KEY: ${{ secrets.SIERRA_VERIFIER_SIGNING_KEY }}
         shell: bash
         run: |
           set -euo pipefail
@@ -87,10 +96,13 @@ jobs:
           # do not execute a missing evaluator and do not fabricate a success.
           # The workflow itself is therefore non-authoritative until main
           # contains check-independent-review.mjs.
-          if [ ! -f scripts/ci/check-independent-review.mjs ]; then
-            echo "::error::Independent review evaluator is not present on trusted base SHA"
-            exit 1
-          fi
+          for required in             scripts/ci/check-independent-review.mjs             scripts/ci/lib/independent-verifier-policy.mjs             config/independent-verifier-policy.json
+          do
+            if [ ! -f "$required" ]; then
+              echo "::error::Qualified verifier trust input missing from trusted base SHA: $required"
+              exit 1
+            fi
+          done
 
           set +e
           node scripts/ci/check-independent-review.mjs             --repo "$GITHUB_REPOSITORY"             --pr "$PR_NUMBER"             --head "$HEAD_SHA"             --author "$PR_AUTHOR"             > independent-review.json 2>&1
@@ -101,10 +113,10 @@ jobs:
 
           if [ "$rc" -eq 0 ]; then
             state="success"
-            description="Independent review verified for final head SHA"
+            description="Qualified verifier quorum satisfied for final head SHA"
           else
             state="failure"
-            description="Independent review missing, stale, or has blocking findings"
+            description="Qualified verifier quorum missing, stale, or blocking"
           fi
 
           gh api --method POST             "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA"             -f state="$state"             -f context="opsly-independent-review"             -f description="$description"

@@ -125,3 +125,53 @@ describe('external-agent-registry', () => {
     expect(result.rationale_codes).toContain('CAPABILITY_MATCH');
   });
 });
+
+
+  it('routes independent verifier away from builder and onto a read-only verifier-capable runtime', async () => {
+    const registry = await loadExternalAgentRegistry(REPO_ROOT);
+    const task = {
+      schema_version: 'AgentTaskEnvelopeV1' as const,
+      request_id: 'req-independent-review',
+      correlation_id: 'corr-independent-review',
+      tenant_slug: 'opsly-internal',
+      task_type: 'review' as const,
+      task: 'verify exact head',
+      requested_agent: 'claude-code',
+      selected_agent: 'local_claude',
+      skills: ['sierra-independent-verifier'],
+      constraints: {
+        open_source_only: false,
+        local_only: true,
+        browser_allowed: false,
+        network_allowed: false,
+        write_allowed: false,
+        file_scope: [],
+        max_tokens: 1200,
+      },
+      execution_mode: 'dry_run' as const,
+      source: 'test',
+      actor: 'test',
+      created_at: new Date().toISOString(),
+      timeout_ms: 120000,
+      max_attempts: 1,
+      budget: { max_tokens: 1200 },
+      metadata: {},
+      fallback_agents: [],
+    };
+
+    const result = routeAgentTask(registry, task, {
+      excludeAgents: ['claude-code'],
+      requireReadOnly: true,
+      requiredCapabilities: ['independent-verification'],
+    });
+
+    expect(result.selected_agent).not.toBe('claude-code');
+    expect(result.selected_agent).toBeTruthy();
+    const selected = registry.workers[result.selected_agent!];
+    expect(selected?.write_access).toBe(false);
+    expect(selected?.capabilities).toContain('independent-verification');
+    expect(result.rejected_candidates).toContainEqual({
+      agent: 'claude-code',
+      reason: 'AGENT_EXCLUDED',
+    });
+  });
