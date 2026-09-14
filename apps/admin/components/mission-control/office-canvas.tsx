@@ -13,11 +13,23 @@ import { mapIntentToLifecycle, mapTeamToLifecycle } from '@/lib/mission-control-
 import { useMissionControlOfficeStore } from '@/stores/mission-control-office-store';
 import { cn } from '@/lib/utils';
 
+export type OfficeAgentRuntime = {
+  id: string;
+  enabled: boolean;
+  opsly_job_type: string | null;
+  runtime_state: 'LIVE' | 'UNHEALTHY' | 'UNREACHABLE' | 'UNKNOWN';
+  dispatch_eligible: boolean;
+  dispatch_blocker: string | null;
+};
+
 type AgentDesk = {
   id: string;
   name: string;
   lifecycle: AgentLifecycleStatus;
   task: string | null;
+  role: string | null;
+  dispatchEligible: boolean | null;
+  blocker: string | null;
   completed: number;
   failed: number;
 };
@@ -34,6 +46,7 @@ export type OfficeCanvasProps = {
   orchestrator: OrchestratorStatus | undefined;
   teams: AgentTeam[];
   openClaw: OpenClawSnapshot | undefined;
+  agents?: OfficeAgentRuntime[];
 };
 
 const AGENT_PALETTES = [
@@ -136,6 +149,11 @@ function Desk({
           <div className={cn('text-[9px] uppercase tracking-[0.12em]', statusClass(desk.lifecycle))}>
             {desk.lifecycle}
           </div>
+          {desk.role ? (
+            <div className="max-w-28 truncate font-mono text-[8px] text-slate-600">
+              {desk.role}
+            </div>
+          ) : null}
         </div>
       </div>
     </button>
@@ -215,21 +233,46 @@ function UtilityStation({
   );
 }
 
-export function OfficeCanvas({ orchestrator, teams, openClaw }: OfficeCanvasProps) {
+export function OfficeCanvas({ orchestrator, teams, openClaw, agents = [] }: OfficeCanvasProps) {
   const setSelected = useMissionControlOfficeStore((s) => s.setSelectedNodeId);
 
-  const desks = useMemo<AgentDesk[]>(
-    () =>
-      teams.slice(0, 8).map((team) => ({
-        id: 'team-' + team.name,
-        name: team.name,
-        lifecycle: mapTeamToLifecycle(team),
-        task: team.lastTask,
-        completed: team.completedTasks,
-        failed: team.failedTasks,
-      })),
-    [teams],
-  );
+  const desks = useMemo<AgentDesk[]>(() => {
+    if (agents.length > 0) {
+      return agents.slice(0, 8).map((agent) => {
+        const lifecycle: AgentLifecycleStatus =
+          agent.runtime_state === 'LIVE'
+            ? 'running'
+            : agent.runtime_state === 'UNHEALTHY'
+              ? 'failed'
+              : agent.runtime_state === 'UNREACHABLE'
+                ? 'blocked'
+                : 'idle';
+        return {
+          id: 'agent-' + agent.id,
+          name: agent.id,
+          lifecycle,
+          task: agent.runtime_state === 'LIVE' ? agent.opsly_job_type : null,
+          role: agent.opsly_job_type,
+          dispatchEligible: agent.dispatch_eligible,
+          blocker: agent.dispatch_blocker,
+          completed: 0,
+          failed: agent.runtime_state === 'UNHEALTHY' ? 1 : 0,
+        };
+      });
+    }
+
+    return teams.slice(0, 8).map((team) => ({
+      id: 'team-' + team.name,
+      name: team.name,
+      lifecycle: mapTeamToLifecycle(team),
+      task: team.lastTask,
+      role: 'agent team',
+      dispatchEligible: null,
+      blocker: null,
+      completed: team.completedTasks,
+      failed: team.failedTasks,
+    }));
+  }, [agents, teams]);
 
   const intents = useMemo<IntentDesk[]>(() => {
     const source: OpenClawIntentRuntime[] = openClaw?.intents_in_progress?.length
@@ -255,7 +298,7 @@ export function OfficeCanvas({ orchestrator, teams, openClaw }: OfficeCanvasProp
     <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#080808] shadow-2xl shadow-black/50">
       <div className="grid gap-px border-b border-slate-800 bg-slate-900 sm:grid-cols-4">
         <UtilityStation
-          label="Agents"
+          label={agents.length ? 'Agent fleet' : 'Agent teams'}
           detail={String(runningAgents) + ' active · ' + String(desks.length) + ' observed'}
           tone={runningAgents ? 'emerald' : 'cyan'}
         />
