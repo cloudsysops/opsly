@@ -18,10 +18,11 @@ export function containsProtectedSurface(values, protectedPatterns) {
 
 export function evaluateRepairRequest(request, policy, evidence = {}) {
   const reasons = [];
-  const failureClass = normalizedFailureClass(request?.failure_class);
+  const requestedFailureClass = normalizedFailureClass(request?.failure_class);
+  const failureClass = normalizedFailureClass(evidence?.verified_failure_class);
   const action = String(request?.action || '').trim();
   const expectedHeadSha = String(request?.expected_head_sha || '').trim();
-  const runAttempt = Number(evidence?.run_attempt ?? 1);
+  const runAttempt = Number(evidence?.run_attempt);
 
   if (!request?.work_id) reasons.push('missing work_id');
   if (!Number.isInteger(Number(request?.pr_number)) || Number(request?.pr_number) <= 0) {
@@ -29,10 +30,18 @@ export function evaluateRepairRequest(request, policy, evidence = {}) {
   }
   if (!expectedHeadSha) reasons.push('missing expected_head_sha');
   if (!action) reasons.push('missing action');
+  if (!failureClass) reasons.push('missing verified failure classification');
+  if (requestedFailureClass && failureClass && requestedFailureClass !== failureClass) {
+    reasons.push('requested failure_class does not match verified failure evidence');
+  }
   if (!Number.isInteger(runAttempt) || runAttempt <= 0) {
     reasons.push('invalid workflow run_attempt evidence');
   } else if (runAttempt > Number(policy?.max_auto_attempts ?? 0)) {
     reasons.push('auto repair attempt limit reached');
+  }
+
+  if ((policy?.manual_only_failure_classes || []).includes(failureClass)) {
+    reasons.push(`failure class ${failureClass} is manual-only`);
   }
 
   const allowedActions = policy?.auto_actions?.[failureClass] || [];
@@ -44,26 +53,29 @@ export function evaluateRepairRequest(request, policy, evidence = {}) {
     reasons.push(`action ${action} is explicitly forbidden`);
   }
 
-  if (evidence.current_head_sha && evidence.current_head_sha !== expectedHeadSha) {
+  if (!evidence.current_head_sha) {
+    reasons.push('missing current head sha evidence');
+  } else if (evidence.current_head_sha !== expectedHeadSha) {
     reasons.push('head sha changed since repair request');
   }
 
-  if (evidence.run_head_sha && evidence.run_head_sha !== expectedHeadSha) {
+  if (!evidence.run_head_sha) {
+    reasons.push('missing workflow run head sha evidence');
+  } else if (evidence.run_head_sha !== expectedHeadSha) {
     reasons.push('workflow run head sha does not match repair head');
   }
-  if (
-    Number.isInteger(Number(evidence.run_pr_number)) &&
-    Number(evidence.run_pr_number) !== Number(request?.pr_number)
-  ) {
+  if (!Number.isInteger(Number(evidence.run_pr_number))) {
+    reasons.push('missing workflow run pull request binding');
+  } else if (Number(evidence.run_pr_number) !== Number(request?.pr_number)) {
     reasons.push('workflow run is not bound to requested pull request');
   }
-  if (evidence.run_event && evidence.run_event !== 'pull_request') {
+  if (evidence.run_event !== 'pull_request') {
     reasons.push('workflow run event is not pull_request');
   }
-  if (evidence.run_status && evidence.run_status !== 'completed') {
+  if (evidence.run_status !== 'completed') {
     reasons.push('workflow run is not completed');
   }
-  if (evidence.run_conclusion && evidence.run_conclusion !== 'failure') {
+  if (evidence.run_conclusion !== 'failure') {
     reasons.push('workflow run is not failed');
   }
 
@@ -72,9 +84,6 @@ export function evaluateRepairRequest(request, policy, evidence = {}) {
       [
         ...(request?.affected_paths || []),
         ...(evidence.files || []),
-        evidence.title,
-        evidence.body,
-        evidence.branch,
       ],
       policy?.protected_patterns || [],
     )
