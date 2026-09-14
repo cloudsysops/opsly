@@ -11,6 +11,7 @@ export type {
 export {
   ExternalAgentRegistrySchema,
   ExternalWorkerEntrySchema,
+  ExternalWorkerGithubQueuePolicySchema,
 } from './types.js';
 
 export {
