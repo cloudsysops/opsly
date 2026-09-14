@@ -49,6 +49,7 @@ const navSections = [
       { href: '/agents', label: 'Agent Teams', icon: Activity },
       { href: '/agents-team', label: 'Agents Config', icon: Activity },
       { href: '/mission-control/office', label: 'Mission Control', icon: LayoutGrid },
+      { href: '/mission-control/workstreams', label: 'Workstreams', icon: Network },
       { href: '/mission-control/local-runtime', label: 'Local Runtime', icon: Wrench },
       { href: '/openclaw/ide', label: 'IDE Octopus', icon: Code2 },
       { href: '/openclaw-governance', label: 'OpenClaw Governance', icon: Gavel },
