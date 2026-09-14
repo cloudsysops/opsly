@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "mode": "bounded-auto-repair",
+  "max_auto_attempts": 1,
+  "require_expected_head_sha": true,
+  "auto_actions": {
+    "INFRA/TRANSIENT": [
+      "rerun_failed_jobs"
+    ]
+  },
+  "manual_only_failure_classes": [
+    "CODE",
+    "POLICY/GATE",
+    "UPSTREAM DEPENDENCY",
+    "RUNTIME UNAVAILABLE",
+    "EVIDENCE INSUFFICIENT",
+    "BLOCKED_ACCESS"
+  ],
+  "protected_patterns": [
+    "peskids",
+    "production",
+    "n8n",
+    "doppler",
+    "dns",
+    "traefik",
+    "supabase/migrations/",
+    "/migrations/",
+    "apps/orchestrator/",
+    "packages/agent-task-core/",
+    "packages/git-branch-orchestrator/",
+    "infra/docker-compose",
+    ".github/workflows/deploy",
+    ".github/workflows/production-change-window",
+    "/prod/",
+    "prod-"
+  ],
+  "forbidden_actions": [
+    "merge",
+    "deploy",
+    "rotate_secret",
+    "mutate_production_data",
+    "change_dns",
+    "change_routing",
+    "run_migration",
+    "modify_n8n_side_effects"
+  ]
+}
