@@ -1,10 +1,19 @@
 #!/usr/bin/env node
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {
+  collectQualifiedVerifierEvidence,
+  evaluateQualifiedVerifierQuorum,
+  requiredVerifierPolicy,
+} from './lib/independent-verifier-policy.mjs';
+
 'use strict';
 
 const CLEAN_REVIEW_PHRASES = [
   "Codex Review: Didn't find any major issues.",
   'did not find any major issues',
   "didn't find any major issues",
+  'No unresolved review issues were identified.',
 ];
 
 const DEFAULT_REVIEW_BOTS = [
@@ -33,7 +42,7 @@ export function extractReviewedCommit(body) {
   return match?.[1] ?? null;
 }
 
-function isCleanBotReviewBody(body) {
+export function isCleanBotReviewBody(body) {
   const lower = String(body || '').toLowerCase();
   return CLEAN_REVIEW_PHRASES.some((phrase) => lower.includes(phrase.toLowerCase()));
 }
@@ -156,6 +165,153 @@ export function evaluateIndependentReview({
   };
 }
 
+export function evaluateQualifiedIndependentReview({
+  reviews = [],
+  reviewComments = [],
+  issueComments = [],
+  files = [],
+  headSha,
+  author,
+  allowedBots = DEFAULT_REVIEW_BOTS,
+  policy = {},
+}) {
+  const legacy = evaluateIndependentReview({
+    reviews,
+    reviewComments,
+    issueComments,
+    headSha,
+    author,
+    allowedBots,
+  });
+
+  const hardBlockingLegacy =
+    !legacy.ok &&
+    (
+      legacy.reason.startsWith('current_head_finding:') ||
+      legacy.reason.startsWith('current_head_review_finding:') ||
+      legacy.reason.startsWith('changes_requested_by:')
+    );
+
+  if (hardBlockingLegacy) {
+    return {
+      ok: false,
+      status: 'FAIL',
+      reason: legacy.reason,
+      risk: 'UNKNOWN',
+      required_quorum: null,
+      observed_quorum: 0,
+      verifier_groups: [],
+      sensitive_surfaces: [],
+    };
+  }
+
+  const requirement = requiredVerifierPolicy(files, policy);
+  const qualifiedEvidence = collectQualifiedVerifierEvidence({
+    reviews,
+    issueComments,
+    headSha,
+    author,
+    policy,
+    commitMatches,
+    extractReviewedCommit,
+    isCleanReviewBody: isCleanBotReviewBody,
+  });
+  const qualified = evaluateQualifiedVerifierQuorum({
+    evidence: qualifiedEvidence,
+    requirement,
+  });
+
+  const base = {
+    risk: requirement.sensitive ? 'SENSITIVE' : 'NORMAL',
+    required_quorum: requirement.quorum,
+    observed_quorum: qualified.observed_quorum ?? 0,
+    verifier_groups: qualified.verifier_groups ?? [],
+    verifier_agents: qualified.verifier_agents ?? [],
+    required_specialties: requirement.required_specialties,
+    covered_specialties: qualified.covered_specialties ?? [],
+    missing_specialties: qualified.missing_specialties ?? [],
+    sensitive_surfaces: requirement.surfaces,
+  };
+
+  if (qualified.ok) {
+    return {
+      ok: true,
+      status: 'PASS',
+      reason: qualified.reason,
+      ...base,
+    };
+  }
+
+  if (
+    qualified.reason.startsWith('qualified_verifier_fail:') ||
+    qualified.reason.startsWith('qualified_verifier_blocked:')
+  ) {
+    return {
+      ok: false,
+      status: qualified.status,
+      reason: qualified.reason,
+      ...base,
+    };
+  }
+
+  if (requirement.sensitive) {
+    return {
+      ok: false,
+      status: 'BLOCKED',
+      reason: qualified.reason,
+      ...base,
+    };
+  }
+
+  if (legacy.ok) {
+    if (
+      legacy.reason.startsWith('approved_review:') &&
+      policy.allow_trusted_human_breakglass_for_normal === true
+    ) {
+      return {
+        ok: true,
+        status: 'PASS',
+        reason: 'normal_human_breakglass:' + legacy.reason.slice('approved_review:'.length),
+        ...base,
+      };
+    }
+
+    if (
+      (
+        legacy.reason.startsWith('clean_bot_review:') ||
+        legacy.reason.startsWith('clean_bot_comment:')
+      ) &&
+      policy.allow_legacy_clean_review_for_normal === true
+    ) {
+      return {
+        ok: true,
+        status: 'PASS',
+        reason: 'normal_legacy_qualified_review:' + legacy.reason,
+        ...base,
+      };
+    }
+  }
+
+  return {
+    ok: false,
+    status: 'BLOCKED',
+    reason: qualified.reason || 'no_qualified_independent_verifier',
+    ...base,
+  };
+}
+
+async function loadVerifierPolicy() {
+  const policyPath = path.resolve(
+    process.env.INDEPENDENT_VERIFIER_POLICY || 'config/independent-verifier-policy.json'
+  );
+  const raw = JSON.parse(await fs.readFile(policyPath, 'utf8'));
+  if (raw?.schema_version !== 'IndependentVerifierPolicyV1') {
+    throw new Error('Invalid independent verifier policy schema');
+  }
+  return raw;
+}
+
+
 async function fetchAll(repo, endpoint, token) {
   const results = [];
   const maxPages = 100;
@@ -213,19 +369,23 @@ async function main() {
     .map((value) => value.trim())
     .filter(Boolean);
 
-  const [reviews, reviewComments, issueComments] = await Promise.all([
+  const [reviews, reviewComments, issueComments, files, policy] = await Promise.all([
     fetchAll(args.repo, `pulls/${args.pr}/reviews`, token),
     fetchAll(args.repo, `pulls/${args.pr}/comments`, token),
     fetchAll(args.repo, `issues/${args.pr}/comments`, token),
+    fetchAll(args.repo, `pulls/${args.pr}/files`, token),
+    loadVerifierPolicy(),
   ]);
 
-  const decision = evaluateIndependentReview({
+  const decision = evaluateQualifiedIndependentReview({
     reviews,
     reviewComments,
     issueComments,
+    files,
     headSha: args.head,
     author: args.author,
     allowedBots,
+    policy,
   });
 
   console.log(
