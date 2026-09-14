@@ -22,6 +22,7 @@ export function buildPostMergeCleanupPlan({ cleanupInventory, workstreams, merge
         work_id: workId,
         claim_id: claim.claim_id,
         action: 'RELEASE_CLAIM_CANDIDATE',
+        canonical_release: 'apps/orchestrator/src/task-claim-store.ts#releaseTaskDispatchClaim',
         reason: 'work is reported merged but dispatch claim is still active',
       };
     })
@@ -35,6 +36,7 @@ export function buildPostMergeCleanupPlan({ cleanupInventory, workstreams, merge
       create_new_branch_cleaner: false,
       canonical_branch_cleaner: 'scripts/git-branch-cleanup.sh',
       mutate_claims: false,
+      canonical_claim_release: 'apps/orchestrator/src/task-claim-store.ts#releaseTaskDispatchClaim',
     },
     branch_cleanup_candidates: branches,
     claim_release_candidates: claims,
