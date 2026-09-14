@@ -30,7 +30,9 @@
  *                              Mismo contrato que lib/content-studio/src/llm/client.ts
  *                              (GatewayClient): POST /v1/chat.
  *   OPSLY_GITHUB_REPO       — default cloudsysops/opsly
- *   OPSLY_REVIEW_TENANT     — tenant_slug para el gateway, default "platform"
+ *   OPSLY_REVIEW_TENANT     — tenant_slug para el gateway, default "opsly-ci-review"
+ *                              (perfil hybrid propio en Doppler, no comparte
+ *                              free-always con el resto de 'platform')
  *
  * Uso:
  *   node scripts/ci/backend-independent-review.mjs --dry-run           # no escribe nada, solo lee
@@ -52,7 +54,14 @@ const POST_TOKEN =
   (process.env.OPSLY_REVIEW_BOT_TOKEN ?? '').trim() || (process.env.GITHUB_TOKEN ?? '').trim();
 const READ_TOKEN = POST_TOKEN;
 const GATEWAY_URL = process.env.LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
-const TENANT_SLUG = process.env.OPSLY_REVIEW_TENANT ?? 'platform';
+// Dedicado, no 'platform' — ese tenant_slug lo comparte todo el sistema de
+// agentes internos (orchestrator, ValidationWorker, CursorWorker, etc.) bajo
+// perfil free-always (solo Ollama, nunca cloud). Este tenant tiene su propio
+// override AI_PROFILE_OPSLY_CI_REVIEW=hybrid en Doppler (aprobado
+// explícitamente para este uso) para poder caer a un proveedor cloud cuando
+// Ollama esté pausado (p. ej. modo gaming en config/pc-gamer-schedule.json)
+// — sin abrirle gasto cloud a ningún otro flujo que use 'platform'.
+const TENANT_SLUG = process.env.OPSLY_REVIEW_TENANT ?? 'opsly-ci-review';
 
 const CLEAN_PHRASE = "Codex Review: Didn't find any major issues.";
 
