@@ -38,7 +38,15 @@ jobs:
           github.event.action == 'deleted' ||
           github.actor == 'chatgpt-codex-connector[bot]' ||
           github.actor == 'github-copilot[bot]' ||
-          github.actor == 'copilot-pull-request-reviewer[bot]'
+          github.actor == 'copilot-pull-request-reviewer[bot]' ||
+          (
+            contains(github.event.comment.body, 'opsly-independent-verifier-v1') &&
+            (
+              github.event.comment.author_association == 'OWNER' ||
+              github.event.comment.author_association == 'MEMBER' ||
+              github.event.comment.author_association == 'COLLABORATOR'
+            )
+          )
         )
       )
     runs-on: ubuntu-latest
@@ -79,6 +87,7 @@ jobs:
           PR_NUMBER: ${{ steps.pr.outputs.number }}
           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
           PR_AUTHOR: ${{ steps.pr.outputs.author }}
+          SIERRA_VERIFIER_SIGNING_KEY: ${{ secrets.SIERRA_VERIFIER_SIGNING_KEY }}
         shell: bash
         run: |
           set -euo pipefail
