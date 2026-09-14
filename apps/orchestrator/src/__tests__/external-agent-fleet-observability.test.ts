@@ -116,6 +116,27 @@ describe('external agent fleet observability', () => {
     expect(hermes?.dispatch_blocker).toBe('runtime_unreachable');
   });
 
+  it('treats a declared but missing endpoint override as UNKNOWN instead of assuming loopback', async () => {
+    const configured = registry();
+    configured.workers['hermes-cli'] = {
+      ...configured.workers['hermes-cli'],
+      endpoint_env: 'OPSLY_HERMES_AGENT_URL',
+    };
+
+    const fetchImpl = vi.fn(async () => new Response(null, { status: 200 })) as typeof fetch;
+    const rows = await buildExternalAgentFleetSnapshot(configured, fetchImpl);
+    const hermes = rows.find((row) => row.worker_id === 'hermes-cli');
+
+    expect(resolveExternalAgentHealthUrl(configured.workers['hermes-cli'])).toBeNull();
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(hermes).toMatchObject({
+      runtime_state: 'UNKNOWN',
+      dispatch_eligible: false,
+      dispatch_blocker: 'runtime_unknown',
+      health_source: null,
+    });
+  });
+
   it('uses environment endpoint override when configured', () => {
     vi.stubEnv('OPSLY_HERMES_AGENT_URL', 'http://hermes.internal:5007/');
     const entry = {
