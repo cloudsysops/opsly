@@ -2,7 +2,14 @@ import type { RouteContext } from '../router.js';
 import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, randomUUID } from '../utils.js';
 import { enqueueJob } from '../../queue.js';
 import type { OrchestratorJob } from '../../types.js';
-import { getTerminalSession, stopTerminalSession, listTerminalSessions, readTerminalSessionOutput } from '../../workers/terminal-session-store.js';
+import {
+  getTerminalSession,
+  stopTerminalSession,
+  listTerminalSessions,
+  listAllTerminalSessions,
+  readTerminalSessionOutput,
+} from '../../workers/terminal-session-store.js';
+import { readProcessResourceUsage } from '../../workers/process-resource-usage.js';
 import { jsonResponse, errorResponse } from '../router.js';
 
 export async function handleStartTerminalTask(ctx: RouteContext): Promise<void> {
@@ -148,4 +155,47 @@ export async function handleTerminalSessionStop(ctx: RouteContext): Promise<void
     return;
   }
   jsonResponse(ctx.res, 200, { success: true, agent_id: agentId, session_id: sessionId, status: 'stopped' });
+}
+
+
+export async function handleTerminalResourceSnapshot(ctx: RouteContext): Promise<void> {
+  if (!verifyPlatformAdminToken(ctx.req)) {
+    errorResponse(ctx.res, 401, 'unauthorized');
+    return;
+  }
+
+  const sessions = listAllTerminalSessions().filter(
+    (session) => session.status === 'running' || session.status === 'queued'
+  );
+
+  const rows = await Promise.all(
+    sessions.map(async (session) => {
+      const usage =
+        typeof session.pid === 'number'
+          ? await readProcessResourceUsage(session.pid)
+          : { pid: session.pid ?? null, cpu_pct: null, rss_mb: null, elapsed: null };
+
+      return {
+        agent_id: session.agent_id,
+        tenant_slug: session.tenant_slug,
+        session_id: session.session_id,
+        process_label: session.process_label ?? null,
+        objective: session.objective ?? null,
+        status: session.status,
+        pid: session.pid ?? null,
+        cpu_pct: usage.cpu_pct,
+        rss_mb: usage.rss_mb,
+        elapsed: usage.elapsed,
+        current_command: session.current_command ?? null,
+        started_at: session.started_at,
+      };
+    })
+  );
+
+  jsonResponse(ctx.res, 200, {
+    schema_version: 'AgentResourceSnapshotV1',
+    generated_at: new Date().toISOString(),
+    source: 'terminal-session-store+ps',
+    sessions: rows,
+  });
 }

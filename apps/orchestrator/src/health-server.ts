@@ -27,6 +27,7 @@ import {
   handleTerminalListSessions,
   handleTerminalSessionOutput,
   handleTerminalSessionStop,
+  handleTerminalResourceSnapshot,
   handleLocalControlMode,
   handleLocalState,
   handleLocalQueueHealth,
@@ -117,6 +118,7 @@ function buildRouter(): Router {
   r.get('/internal/terminal/:agentId/session/:sessionId/output', handleTerminalSessionOutput);
   r.post('/internal/terminal/:agentId/session/:sessionId/stop', handleTerminalSessionStop);
   r.post('/internal/terminal/stop/:agentId', handleTerminalStop);
+  r.get('/internal/terminal/resources', handleTerminalResourceSnapshot);
 
   r.get('/internal/runtime/health', handleRuntimeHealth);
   r.get('/internal/runtime/sessions', handleRuntimeListSessions);

@@ -155,6 +155,12 @@ export function listTerminalSessions(agentId: string): TerminalSessionRecord[] {
     .sort((a, b) => b.started_at.localeCompare(a.started_at));
 }
 
+export function listAllTerminalSessions(): TerminalSessionRecord[] {
+  return Array.from(sessions.values())
+    .flatMap((agentSessions) => Array.from(agentSessions.values()).map((runtime) => runtime.record))
+    .sort((a, b) => b.started_at.localeCompare(a.started_at));
+}
+
 export function readTerminalSessionOutput(
   agentId: string,
   sessionId: string,

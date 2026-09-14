@@ -34,6 +34,37 @@ describe('compute-worker-snapshot', () => {
     ).toBe('BUSY');
   });
 
+  it('preserves heartbeat resource metrics without fabricating missing values', () => {
+    const snap = buildComputeWorkerSnapshot(
+      {
+        'pc-gamer-openclaw-01': JSON.stringify({
+          at: '2026-09-07T02:59:40Z',
+          cpuLoadPct: 44,
+          dockerContainers: 6,
+          ramFreeGb: 18,
+          ramTotalGb: 32,
+          gpuUtilizationPct: 71,
+          vramGb: 16.3,
+          vramUsedGb: 8.1,
+          temperatureC: 67,
+          activeJobs: 1,
+        }),
+      },
+      {},
+      now,
+    );
+    expect(snap.workers[0]).toMatchObject({
+      cpuLoadPct: 44,
+      dockerContainers: 6,
+      ramFreeGb: 18,
+      ramTotalGb: 32,
+      gpuUtilizationPct: 71,
+      vramUsedGb: 8.1,
+      temperatureC: 67,
+      activeJobs: 1,
+    });
+  });
+
   it('shows the registered gamer as OFFLINE when there is no heartbeat', () => {
     const snap = buildComputeWorkerSnapshot({}, {}, now);
     expect(snap.workers[0]?.workerId).toBe('pc-gamer-openclaw-01');

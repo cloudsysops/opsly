@@ -21,6 +21,7 @@ type ComputeWorker = {
   lastHeartbeat: string | null;
   gpuModel?: string;
   vramGb?: number;
+  dockerContainers?: number;
 };
 
 type ComputePayload = {
@@ -144,7 +145,7 @@ export function SystemTopologyPanel({ runtime, compute, compact = false }: Props
       host: worker.hostname,
       type: 'compute worker',
       state: worker.status,
-      detail: `${worker.activeJobs} jobs${worker.gpuModel ? ` · ${worker.gpuModel}` : ''}`,
+      detail: `${worker.activeJobs} jobs · Docker ${worker.dockerContainers ?? 'UNKNOWN'}${worker.gpuModel ? ` · ${worker.gpuModel}` : ''}`,
     })),
   ];
 

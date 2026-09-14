@@ -31,6 +31,12 @@ export interface ComputeHeartbeat {
   gpuModel?: string;
   vramGb?: number;
   vramUsedGb?: number;
+  gpuUtilizationPct?: number;
+  ramGb?: number;
+  ramFreeGb?: number;
+  ramTotalGb?: number;
+  cpuLoadPct?: number;
+  dockerContainers?: number;
   diskFreeGb?: number;
   activeJobs?: number;
   temperatureC?: number;
@@ -104,6 +110,14 @@ export function buildComputeWorkerSnapshot(
     gpuVendor?: string;
     gpuModel?: string;
     vramGb?: number;
+    vramUsedGb?: number;
+    gpuUtilizationPct?: number;
+    ramGb?: number;
+    ramFreeGb?: number;
+    ramTotalGb?: number;
+    cpuLoadPct?: number;
+    dockerContainers?: number;
+    temperatureC?: number;
     diskFreeGb?: number;
     activeJobs: number;
     lastHeartbeat: string | null;
@@ -130,6 +144,14 @@ export function buildComputeWorkerSnapshot(
       gpuVendor: heartbeat?.gpuVendor ?? worker.gpuVendor,
       gpuModel: heartbeat?.gpuModel ?? worker.gpuModel,
       vramGb: heartbeat?.vramGb ?? worker.vramGb,
+      vramUsedGb: heartbeat?.vramUsedGb,
+      gpuUtilizationPct: heartbeat?.gpuUtilizationPct,
+      ramGb: heartbeat?.ramGb,
+      ramFreeGb: heartbeat?.ramFreeGb,
+      ramTotalGb: heartbeat?.ramTotalGb ?? heartbeat?.ramGb,
+      cpuLoadPct: heartbeat?.cpuLoadPct,
+      dockerContainers: heartbeat?.dockerContainers,
+      temperatureC: heartbeat?.temperatureC,
       diskFreeGb: heartbeat?.diskFreeGb,
       activeJobs: heartbeat?.activeJobs ?? 0,
       lastHeartbeat: heartbeat?.at ?? null,
