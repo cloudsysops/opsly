@@ -37,7 +37,7 @@ export function ComputeWorkersPanel() {
   const { data, error } = useSWR<ComputeWorkersPayload>(
     `${baseUrl}/api/admin/compute-workers`,
     fetcher,
-    { refreshInterval: 10000 },
+    { refreshInterval: 10000 }
   );
   const workers = data?.workers ?? [];
   const videoQueue = data?.queues?.['content-video'];
@@ -53,7 +53,10 @@ export function ComputeWorkersPanel() {
       </div>
       {error ? <p className="text-sm text-red-400">Failed to load compute workers.</p> : null}
       {workers.map((worker) => (
-        <article key={worker.workerId} className="rounded-md border border-zinc-800 bg-black/40 p-3">
+        <article
+          key={worker.workerId}
+          className="rounded-md border border-zinc-800 bg-black/40 p-3"
+        >
           <div className="flex items-center justify-between gap-3">
             <p className="font-mono text-sm text-zinc-200">{worker.hostname}</p>
             <p className={`text-xs font-semibold ${statusClass(worker.status)}`}>{worker.status}</p>
@@ -66,7 +69,9 @@ export function ComputeWorkersPanel() {
           <p className="mt-1 text-xs text-zinc-500">
             last heartbeat{' '}
             {worker.lastHeartbeat ? new Date(worker.lastHeartbeat).toLocaleTimeString() : 'none'}
-            {worker.capabilities.length > 0 ? ` · ${worker.capabilities.slice(0, 4).join(', ')}` : ''}
+            {worker.capabilities.length > 0
+              ? ` · ${worker.capabilities.slice(0, 4).join(', ')}`
+              : ''}
           </p>
         </article>
       ))}
