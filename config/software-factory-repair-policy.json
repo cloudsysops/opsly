@@ -26,5 +26,12 @@
     "run_migration",
     "modify_n8n_side_effects"
   ],
-  "protected_policy_path": "config/pr-reconciliation-policy.json"
+  "protected_policy_path": "config/pr-reconciliation-policy.json",
+  "trusted_apply_root_env": "OPSLY_SAFE_REPAIR_TRUSTED_ROOT",
+  "canonical_repository": "cloudsysops/opsly",
+  "transient_conclusions": [
+    "timed_out",
+    "startup_failure",
+    "stale"
+  ]
 }
