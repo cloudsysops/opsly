@@ -37,10 +37,24 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
+      # github.event.pull_request.base.sha is the webhook payload's snapshot,
+      # not guaranteed to reflect main's true current tip when an unrelated
+      # PR merged moments earlier (observed lag in run 34905594688: checked
+      # out an old commit instead of the just-merged fix). Resolve live,
+      # same pattern trusted-independent-review.yml already uses.
+      - name: Resolve current base SHA
+        id: base
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha="$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} --jq '.base.sha')"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
       - name: Checkout trusted base (reviewer script only — never PR-head code)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ steps.base.outputs.sha }}
           fetch-depth: 1
           persist-credentials: false
 
