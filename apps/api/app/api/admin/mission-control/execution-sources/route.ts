@@ -21,6 +21,17 @@ function resolveRepoRoot(): string {
   return cwd;
 }
 
+
+export function detectCanonicalDispatchAdmission(queueSubmitter: string): boolean {
+  return (
+    queueSubmitter.includes("dispatch_contract_version: 'dispatch-claim-v1'") &&
+    queueSubmitter.includes('/api/local/prompt-submit') &&
+    queueSubmitter.includes("'x-autonomy-approved': 'true'") &&
+    queueSubmitter.includes('conflict_key: String(meta.conflict_key)') &&
+    queueSubmitter.includes('workstream: String(meta.workstream)')
+  );
+}
+
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireAdminAccess(request);
   if (authError) return authError;
@@ -28,7 +39,6 @@ export async function GET(request: Request): Promise<Response> {
   const root = resolveRepoRoot();
   const registryPath = join(root, 'config', 'external-agent-registry.json');
   const queueSubmitterPath = join(root, 'scripts', 'ops', 'github-agent-queue-submit.mjs');
-  const admissionPath = join(root, 'scripts', 'ops', 'lib', 'github-agent-queue-admission.mjs');
   const handoffPath = join(root, 'scripts', 'ops', 'interactive-agent-handoff.mjs');
 
   try {
@@ -49,10 +59,7 @@ export async function GET(request: Request): Promise<Response> {
       }))
       .sort((a, b) => a.id.localeCompare(b.id));
 
-    const registryDrivenAdmission =
-      existsSync(admissionPath) &&
-      queueSubmitter.includes('loadGovernedAgentRegistry(root)') &&
-      queueSubmitter.includes('resolveGovernedAgent(meta, registry)');
+    const registryDrivenAdmission = detectCanonicalDispatchAdmission(queueSubmitter);
 
     return NextResponse.json({
       schema_version: 'MissionControlExecutionSourcesV1',
