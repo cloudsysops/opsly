@@ -126,7 +126,7 @@ export async function createSwimMissionAssignment(
       .maybeSingle();
 
     if (!existing.error && existing.data) {
-      result = { data: existing.data, error: null } as typeof result;
+      result = { data: existing.data, error: null } as unknown as typeof result;
     }
   }
 
