@@ -37,7 +37,15 @@ in_night_window() {
   if [[ "${FORCE}" == "1" ]]; then
     return 0
   fi
-  node scripts/ci/check-production-change-window.mjs --check-now
+  # NIGHT_MERGE_SCHEDULE_GRACE_UNTIL_HOUR: only set by the schedule-triggered
+  # run in night-merge.yml, to absorb GitHub Actions delaying the `schedule`
+  # trigger under high CI load (see #1548) without loosening the strict
+  # window used everywhere else, including workflow_dispatch here.
+  if [[ -n "${NIGHT_MERGE_SCHEDULE_GRACE_UNTIL_HOUR:-}" ]]; then
+    node scripts/ci/check-production-change-window.mjs --check-now --grace-until-hour "${NIGHT_MERGE_SCHEDULE_GRACE_UNTIL_HOUR}"
+  else
+    node scripts/ci/check-production-change-window.mjs --check-now
+  fi
 }
 
 notify() {

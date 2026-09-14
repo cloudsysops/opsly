@@ -66,8 +66,17 @@ jobs:
         run: |
           set -euo pipefail
           chmod +x scripts/ci/night-merge-and-verify.sh
-          # schedule always forces window check; workflow_dispatch may set force
+          # schedule always forces the real window check; workflow_dispatch may set force.
           if [ "${{ github.event_name }}" = "schedule" ]; then
             export NIGHT_MERGE_FORCE=0
+            # GitHub Actions can delay a `schedule` trigger by hours under high concurrent
+            # CI load (confirmed #1548: cron fires 06:00 UTC / 01:00 Bogota, but the run
+            # itself started 06:21 Bogota — after the window's own 06:00 close). This is
+            # still unambiguously tonight's scheduled run, just late, not an arbitrary
+            # daytime request — so give it a bounded grace (up to 09:00 Bogota) rather
+            # than silently missing every night the Actions queue is backed up. Does NOT
+            # apply to workflow_dispatch, which stays on the strict window unless a human
+            # explicitly passes force=true.
+            export NIGHT_MERGE_SCHEDULE_GRACE_UNTIL_HOUR=9
           fi
           ./scripts/ci/night-merge-and-verify.sh

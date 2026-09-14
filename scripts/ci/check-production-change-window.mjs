@@ -5,10 +5,20 @@
  *
  * Usage:
  *   node scripts/ci/check-production-change-window.mjs --check-now
+ *   node scripts/ci/check-production-change-window.mjs --check-now --grace-until-hour 9
  *   node scripts/ci/check-production-change-window.mjs --paths apps/peskids/x.ts docs/a.md
  *   node scripts/ci/check-production-change-window.mjs --mode deploy [--force]
  *   FORCE_DAYTIME=1 | HOTFIX_PROD=1 | SAFE_DAYTIME=1 | NIGHT_MERGE=1 (env overrides for CI)
  *   NIGHT_MERGE=1 only relaxes PR checks (queue for 01:00 bot); never deploy.
+ *
+ * --grace-until-hour <N> only widens --check-now's own window end to hour N
+ * (America/Bogota, still exclusive). Scoped to --check-now alone — --paths and
+ * --mode deploy always use the strict 22:00–06:00 window, unaffected. Exists
+ * because GitHub Actions can delay a `schedule` trigger by hours under high
+ * concurrent CI load (see #1548): the cron fires at exactly 01:00 Bogota, so a
+ * late-but-same-night re-check of "are we still in a defensible window" is a
+ * different question from "is this an arbitrary daytime request", which is
+ * what the strict window exists to gate.
  */
 'use strict';
 
@@ -53,7 +63,7 @@ const SAFE_DAYTIME_MATCHERS = [
   /\.md$/i,
 ];
 
-function bogotaParts(date = new Date()) {
+export function bogotaParts(date = new Date()) {
   const fmt = new Intl.DateTimeFormat('en-US', {
     timeZone: TIME_ZONE,
     hour: 'numeric',
@@ -69,9 +79,9 @@ function bogotaParts(date = new Date()) {
   return { hour, stamp: `${parts.year}-${parts.month}-${parts.day} ${String(hour).padStart(2, '0')}:xx ${TIME_ZONE}` };
 }
 
-function isNightWindow(date = new Date()) {
+export function isNightWindow(date = new Date(), endHour = WINDOW_END_HOUR) {
   const { hour } = bogotaParts(date);
-  return hour >= WINDOW_START_HOUR || hour < WINDOW_END_HOUR;
+  return hour >= WINDOW_START_HOUR || hour < endHour;
 }
 
 function normalizePath(p) {
@@ -94,7 +104,7 @@ function isProdImpactPath(path) {
   return PROD_IMPACT_PATH_MATCHERS.some((re) => re.test(p));
 }
 
-function classifyPaths(paths) {
+export function classifyPaths(paths) {
   const normalized = [...new Set(paths.map(normalizePath).filter(Boolean))];
   const prod = normalized.filter(isProdImpactPath);
   const unsafe = normalized.filter((p) => !isSafeDaytimePath(p));
@@ -109,18 +119,26 @@ function truthy(v) {
   return s === '1' || s === 'true' || s === 'yes' || s === 'on';
 }
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const out = {
     checkNow: false,
     mode: 'pr',
     force: false,
     paths: [],
+    graceUntilHour: null,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--check-now') out.checkNow = true;
     else if (a === '--force') out.force = true;
-    else if (a === '--mode') {
+    else if (a === '--grace-until-hour') {
+      const n = Number(argv[i + 1]);
+      if (!Number.isInteger(n) || n < 0 || n > 23) {
+        throw new Error(`--grace-until-hour must be an integer 0-23, got: ${argv[i + 1]}`);
+      }
+      out.graceUntilHour = n;
+      i += 1;
+    } else if (a === '--mode') {
       out.mode = argv[i + 1] || 'pr';
       i += 1;
     } else if (a === '--paths') {
@@ -138,7 +156,6 @@ function parseArgs(argv) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const night = isNightWindow();
   const { stamp } = bogotaParts();
   const nightMergeQueued = truthy(process.env.NIGHT_MERGE);
   const force =
@@ -148,20 +165,25 @@ function main() {
     truthy(process.env.SAFE_DAYTIME);
 
   if (args.checkNow) {
+    const endHour = args.graceUntilHour ?? WINDOW_END_HOUR;
+    const nightWithGrace = isNightWindow(new Date(), endHour);
     console.log(
       JSON.stringify(
         {
           timezone: TIME_ZONE,
           window: `${WINDOW_START_HOUR}:00–${WINDOW_END_HOUR}:00`,
+          grace_window: args.graceUntilHour != null ? `${WINDOW_START_HOUR}:00–${endHour}:00` : null,
           now: stamp,
-          in_night_window: night,
+          in_night_window: nightWithGrace,
         },
         null,
         2
       )
     );
-    process.exit(night ? 0 : 1);
+    process.exit(nightWithGrace ? 0 : 1);
   }
+
+  const night = isNightWindow();
 
   if (args.mode === 'deploy') {
     if (night || force) {
@@ -216,4 +238,6 @@ function main() {
   process.exit(1);
 }
 
-main();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}
