@@ -21,6 +21,8 @@ No mezclar cambios de agentes activos ni subir secretos, PII, cachés o renders.
 
 Aplica a **todos** los agentes (Cursor, Claude, OpenCode, Copilot, Jules, workers). Estas reglas ganan sobre “terminar la tarea”.
 
+**Ownership obligatorio de workspace:** cada tarea posee su `branch + worktree + PR + session_id`. El agente dueño debe ejecutar el cleanup al terminar; no puede borrar recursos de otro agente. Antes de cleanup: PR cerrado/mergeado, sesión detenida, worktree limpio y 0 commits únicos fuera de `main`. Si cualquiera falla: preservar y reportar, nunca forzar. Comando owner: `npm run opsly:agent-cleanup -- --session-id <id>`; janitor central: `npm run opsly:agent-cleanup:janitor`. Ambos son dry-run salvo `--apply`.
+
 **Prohibido (no ejecutar nunca):**
 - `git push origin main` / `git push --no-verify` / `git commit --no-verify` / `--no-gpg-sign`
 - `git push --force` o `--force-with-lease` a `main`
