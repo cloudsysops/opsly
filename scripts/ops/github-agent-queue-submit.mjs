@@ -2,6 +2,10 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {
+  loadGovernedAgentRegistry,
+  resolveGovernedAgent,
+} from './lib/github-agent-queue-admission.mjs';
 
 function parseScalar(raw = '') {
   const value = raw.trim();
@@ -42,38 +46,6 @@ function requireBooleanField(meta, key) {
   }
 }
 
-async function loadGovernedAgentRegistry(root) {
-  const registryPath = path.join(root, 'config', 'external-agent-registry.json');
-  const raw = await fs.readFile(registryPath, 'utf8');
-  const registry = JSON.parse(raw);
-  if (!registry || typeof registry !== 'object' || !registry.workers || typeof registry.workers !== 'object') {
-    throw new Error('external-agent-registry is missing a valid workers map');
-  }
-  return registry;
-}
-
-function resolveGovernedAgent(meta, registry) {
-  const requested = String(meta.agent).trim();
-  const match = Object.entries(registry.workers).find(([workerId, entry]) => {
-    return workerId === requested || entry?.opsly_job_type === requested;
-  });
-  if (!match) throw new Error(`agent "${requested}" is not registered in external-agent-registry`);
-
-  const [workerId, entry] = match;
-  if (entry.enabled !== true) throw new Error(`agent "${requested}" is registered but disabled`);
-  if (entry.local !== true) throw new Error(`agent "${requested}" is not eligible for governed local dispatch`);
-  if (entry.kind !== 'external-binary') {
-    throw new Error(`agent "${requested}" has unsupported runtime kind: ${entry.kind || 'unknown'}`);
-  }
-  if (entry.adapter !== 'agent-binary-http-bridge') {
-    throw new Error(`agent "${requested}" has unsupported adapter: ${entry.adapter || 'unknown'}`);
-  }
-  if (typeof entry.opsly_job_type !== 'string' || !entry.opsly_job_type.startsWith('local_')) {
-    throw new Error(`agent "${requested}" has invalid opsly_job_type`);
-  }
-  return { workerId, opslyJobType: entry.opsly_job_type };
-}
-
 function listField(value) {
   if (Array.isArray(value)) return value.map(String).map((v) => v.trim()).filter(Boolean);
   if (typeof value !== 'string' || value.trim() === '') return [];
@@ -100,6 +72,7 @@ function assertSafe(meta) {
     'status',
     'priority',
     'agent',
+    'task_type',
     'owner',
     'environment',
     'cost_class',
@@ -183,9 +156,9 @@ if (!token) throw new Error('PLATFORM_ADMIN_TOKEN is required');
 
 const content = await fs.readFile(absolute, 'utf8');
 const { meta, body } = parseFrontmatter(content);
+assertSafe(meta);
 const registry = await loadGovernedAgentRegistry(root);
 const governedAgent = resolveGovernedAgent(meta, registry);
-assertSafe(meta);
 if (!body) throw new Error('workpack body must not be empty');
 
 const sha = process.env.GITHUB_SHA || crypto.createHash('sha256').update(content).digest('hex').slice(0, 12);
@@ -207,6 +180,9 @@ const payload = {
     github_run_id: process.env.GITHUB_RUN_ID || null,
     workpack_id: meta.id,
     registry_worker_id: governedAgent.workerId,
+    registry_provider: governedAgent.provider,
+    registry_cost_class: governedAgent.costClass,
+    task_type: governedAgent.taskType,
     workpack_file: file,
     dispatch_contract_version: 'dispatch-claim-v1',
     workstream: String(meta.workstream),
