@@ -202,13 +202,31 @@ async function submitReview(pr, verdict, token) {
   const body = clean
     ? `${CLEAN_PHRASE}\n\nReviewed commit: \`${pr.head.sha}\``
     : `${verdict}\n\nReviewed commit: \`${pr.head.sha}\``;
-  return gh(`repos/${REPO}/pulls/${pr.number}/reviews`, {
+  await gh(`repos/${REPO}/pulls/${pr.number}/reviews`, {
     token,
     method: 'POST',
     body: {
       commit_id: pr.head.sha,
       body,
       event: clean ? 'APPROVE' : 'REQUEST_CHANGES',
+    },
+  });
+
+  // GitHub does not fire pull_request_review (or any) events for actions
+  // taken with the default GITHUB_TOKEN — it's an anti-recursion guard, so
+  // trusted-independent-review.yml would never re-run to notice this review
+  // and flip the opsly-independent-review status. Set it ourselves instead
+  // of depending on that re-trigger (confirmed live: zero pull_request_review
+  // runs appeared for several minutes after a real APPROVE landed on the PR).
+  await gh(`repos/${REPO}/statuses/${pr.head.sha}`, {
+    token,
+    method: 'POST',
+    body: {
+      state: clean ? 'success' : 'failure',
+      context: 'opsly-independent-review',
+      description: clean
+        ? 'Independent review verified for final head SHA'
+        : 'Independent review missing, stale, or has blocking findings',
     },
   });
 }
