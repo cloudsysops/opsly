@@ -12,12 +12,19 @@ const reconciliationPath = arg('--reconciliation');
 const policyPath = arg('--policy', 'config/software-factory-telemetry-policy.json');
 const output = arg('--out', 'software-factory-telemetry.json');
 
-if (!workstreamsPath || !reconciliationPath) {
-  throw new Error('usage: software-factory-telemetry.mjs --workstreams <json> --reconciliation <json> [--out file]');
+if (!reconciliationPath) {
+  throw new Error('usage: software-factory-telemetry.mjs [--workstreams <json>] --reconciliation <json> [--out file]');
 }
 
 const [workstreams, reconciliation, policy] = await Promise.all([
-  fs.readFile(workstreamsPath, 'utf8').then(JSON.parse),
+  workstreamsPath
+    ? fs.readFile(workstreamsPath, 'utf8').then(JSON.parse)
+    : Promise.resolve({
+        claims_observed: false,
+        runtime_sessions_observed: false,
+        github_observed: false,
+        github_evidence_complete: false,
+      }),
   fs.readFile(reconciliationPath, 'utf8').then(JSON.parse),
   fs.readFile(policyPath, 'utf8').then(JSON.parse),
 ]);
