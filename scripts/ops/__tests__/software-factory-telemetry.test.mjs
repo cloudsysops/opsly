@@ -202,3 +202,22 @@ test('empty but explicitly observed evidence remains valid', () => {
   assert.equal(snapshot.metrics.evidenced_pull_requests, 0);
   assert.equal(snapshot.metrics.verifier_coverage, null);
 });
+
+
+test('does not count READY when verifier or checks are not PASS', () => {
+  const workstreams = completeWorkstreams();
+  workstreams.pull_requests = [
+    { request_id: 'a', verifier: 'PASS', check_state: 'PASS', merge_readiness: 'READY' },
+    { request_id: 'b', verifier: 'UNKNOWN', check_state: 'PASS', merge_readiness: 'READY' },
+    { request_id: 'c', verifier: 'PASS', check_state: 'FAIL', merge_readiness: 'READY' },
+  ];
+
+  const snapshot = buildFactoryTelemetry({
+    workstreams,
+    reconciliation: { mode: 'READ_ONLY', pullRequests: [] },
+    policy,
+  });
+
+  assert.equal(snapshot.metrics.merge_ready, 1);
+  assert.equal(snapshot.metrics.merge_ready_ratio, 0.3333);
+});
