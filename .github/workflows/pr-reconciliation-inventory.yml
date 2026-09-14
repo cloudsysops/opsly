@@ -105,6 +105,12 @@ jobs:
           const cleanupPlan = JSON.parse(fs.readFileSync('software-factory-cleanup-plan.json', 'utf8'));
           console.log(`Branch cleanup candidates (read-only): **${cleanup.cleanupCandidateCount}** / ${cleanup.totalBranches}`);
           console.log(`Post-merge supervised candidates: **${cleanupPlan.branch_cleanup_candidates.length}**`);
+          console.log(`Claim cleanup evidence: **${cleanupPlan.evidence.claims.status}**`);
+          if (cleanupPlan.evidence.claims.status === 'UNKNOWN') {
+            console.log('Claim release candidates are intentionally unavailable until canonical claim + merged-work evidence is supplied.');
+          } else {
+            console.log(`Claim release review candidates: **${cleanupPlan.claim_release_candidates.length}**`);
+          }
           console.log('');
           console.log('## Safety invariants');
           console.log('- Read-only inventory/workpack/envelope/cleanup preparation');
