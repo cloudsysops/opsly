@@ -133,23 +133,18 @@ async function readProtectionPatterns(): Promise<string[] | null> {
 }
 
 function protectionState(
-  pull: Record<string, unknown>,
-  body: string,
-  branch: string | null,
   files: Array<Record<string, unknown>>,
   patterns: string[] | null,
   filesComplete: boolean,
 ): GitHubWorkItem['protection_state'] {
   if (!patterns || !filesComplete) return 'UNKNOWN';
-  const candidates = [
-    asString(pull.title) || '',
-    body,
-    branch || '',
-    ...files.map((file) => asString(file.filename) || ''),
-  ].map((value) => value.toLowerCase());
+  const filenames = files
+    .map((file) => asString(file.filename))
+    .filter((value): value is string => Boolean(value))
+    .map((value) => value.toLowerCase());
 
   return patterns.some((pattern) =>
-    candidates.some((candidate) => candidate.includes(pattern)),
+    filenames.some((filename) => filename.includes(pattern)),
   )
     ? 'PROTECTED'
     : 'CLEAR';
@@ -167,6 +162,37 @@ async function githubJson(path: string): Promise<unknown> {
   return response.json();
 }
 
+async function githubPagedArray(
+  path: string,
+  expectedCount: number | null = null,
+): Promise<{ items: Array<Record<string, unknown>>; complete: boolean }> {
+  const items: Array<Record<string, unknown>> = [];
+  for (let page = 1; page <= 20; page += 1) {
+    const separator = path.includes('?') ? '&' : '?';
+    const raw = await githubJson(`${path}${separator}per_page=100&page=${page}`);
+    if (!Array.isArray(raw)) {
+      throw new Error(`GitHub API returned non-array page for ${path}`);
+    }
+    const batch = raw.filter(
+      (item): item is Record<string, unknown> => typeof item === 'object' && item !== null,
+    );
+    if (batch.length !== raw.length) {
+      throw new Error(`GitHub API returned malformed array item for ${path}`);
+    }
+    items.push(...batch);
+    if (expectedCount !== null && items.length >= expectedCount) {
+      return { items, complete: items.length === expectedCount };
+    }
+    if (batch.length < 100) {
+      return {
+        items,
+        complete: expectedCount === null ? true : items.length === expectedCount,
+      };
+    }
+  }
+  return { items, complete: false };
+}
+
 function parseEvidenceMarker(body: string): Marker | null {
   const match = body.match(/<!--\s*opsly-work-evidence-v1\s*([\s\S]*?)-->/i);
   if (!match?.[1]) return null;
@@ -178,9 +204,19 @@ function parseEvidenceMarker(body: string): Marker | null {
   }
 }
 
-function fallbackWorkId(body: string): string | null {
+function fallbackBodyField(body: string, label: string): string | null {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\function fallbackWorkId(body: string): string | null {
   const task = body.match(/(?:Task-Id|Work ID):\s*`?([^\n`]+)`?/i);
   return task?.[1]?.trim() || null;
+}
+
+function fallbackTransport');
+  const match = body.match(new RegExp(`(?:^|\\n)-?\\s*${escaped}:\\s*\\`?([^\\n\\`]+)\\`?`, 'i'));
+  return match?.[1]?.trim() || null;
+}
+
+function fallbackWorkId(body: string): string | null {
+  return fallbackBodyField(body, 'Task-Id') || fallbackBodyField(body, 'Work ID');
 }
 
 function fallbackTransport(body: string): GitHubWorkItem['transport'] {
@@ -366,15 +402,14 @@ async function readGithubWork(): Promise<{
         let checksPayload: Record<string, unknown> | null = null;
         let files: Array<Record<string, unknown>> = [];
         let filesObserved = false;
+        let filesComplete = false;
+        let enrichmentComplete = false;
 
         if (canEnrich && headSha) {
-          const [detailResult, statusResult, checksResult, filesResult] = await Promise.allSettled([
+          const [detailResult, statusResult, checksResult] = await Promise.allSettled([
             githubJson(`/repos/${repository}/pulls/${String(pull.number)}`),
             githubJson(`/repos/${repository}/commits/${headSha}/status`),
             githubJson(`/repos/${repository}/commits/${headSha}/check-runs?per_page=100`),
-            protectionPatterns
-              ? githubJson(`/repos/${repository}/pulls/${String(pull.number)}/files?per_page=100`)
-              : Promise.resolve([]),
           ]);
           detail =
             detailResult.status === 'fulfilled' &&
@@ -394,11 +429,27 @@ async function readGithubWork(): Promise<{
             checksResult.value !== null
               ? (checksResult.value as Record<string, unknown>)
               : null;
-          filesObserved =
-            filesResult.status === 'fulfilled' && Array.isArray(filesResult.value);
-          files = filesObserved
-            ? (filesResult.value as Array<Record<string, unknown>>)
-            : [];
+          enrichmentComplete =
+            detailResult.status === 'fulfilled' &&
+            statusResult.status === 'fulfilled' &&
+            checksResult.status === 'fulfilled';
+
+          const changedFiles =
+            typeof detail?.changed_files === 'number' ? detail.changed_files : null;
+          if (protectionPatterns && changedFiles !== null) {
+            try {
+              const filesResult = await githubPagedArray(
+                `/repos/${repository}/pulls/${String(pull.number)}/files`,
+                changedFiles,
+              );
+              filesObserved = true;
+              files = filesResult.items;
+              filesComplete = filesResult.complete;
+            } catch {
+              filesObserved = false;
+              filesComplete = false;
+            }
+          }
         }
 
         const checks = checkState(statusPayload, checksPayload);
@@ -407,20 +458,9 @@ async function readGithubWork(): Promise<{
           typeof detail?.mergeable === 'boolean' ? detail.mergeable : null;
         const mergeableState = asString(detail?.mergeable_state);
         const draft = pull.draft === true;
-        const changedFiles =
-          typeof detail?.changed_files === 'number' ? detail.changed_files : null;
-        const filesComplete =
-          filesObserved && changedFiles !== null && changedFiles <= files.length;
         const protection =
           canEnrich && protectionPatterns
-            ? protectionState(
-                pull,
-                body,
-                branch,
-                files,
-                protectionPatterns,
-                filesComplete,
-              )
+            ? protectionState(files, protectionPatterns, filesObserved && filesComplete)
             : ('UNKNOWN' as const);
         const merge = mergeDecision({
           draft,
@@ -438,10 +478,11 @@ async function readGithubWork(): Promise<{
             : fallbackTransport(body);
 
         return {
+          item: {
           work_id: workId,
-          agent_id: asString(marker?.agent_id),
-          workstream: asString(marker?.workstream),
-          conflict_key: asString(marker?.conflict_key),
+          agent_id: asString(marker?.agent_id) || fallbackBodyField(body, 'Worker'),
+          workstream: asString(marker?.workstream) || fallbackBodyField(body, 'Workstream'),
+          conflict_key: asString(marker?.conflict_key) || fallbackBodyField(body, 'Conflict-Key'),
           transport,
           pr_number: Number(pull.number),
           pr_url: asString(pull.html_url) || '',
@@ -455,17 +496,28 @@ async function readGithubWork(): Promise<{
           mergeable,
           protection_state: protection,
           blocker: merge.blocker,
-        } satisfies GitHubWorkItem;
+          } satisfies GitHubWorkItem,
+          complete:
+            enrichmentComplete &&
+            (!protectionPatterns || (filesObserved && filesComplete)),
+        };
       }),
     );
+
+    const enrichedItems = items.map((result) => result.item);
+    const enrichmentEvidenceComplete = items.every((result) => result.complete);
 
     githubCache = {
       expires_at: Date.now() + GITHUB_CACHE_MS,
       observed: true,
-      complete: githubEvidenceComplete,
-      items,
+      complete: githubEvidenceComplete && enrichmentEvidenceComplete,
+      items: enrichedItems,
     };
-    return { observed: true, complete: githubEvidenceComplete, items };
+    return {
+      observed: true,
+      complete: githubEvidenceComplete && enrichmentEvidenceComplete,
+      items: enrichedItems,
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     githubCache = {
@@ -503,12 +555,16 @@ async function readRuntimeSessions(): Promise<{
     }
 
     const sessions = payload.sessions
-      .map((raw): RuntimeSessionSnapshot | null => {
-        if (typeof raw !== 'object' || raw === null) return null;
+      .map((raw): RuntimeSessionSnapshot => {
+        if (typeof raw !== 'object' || raw === null) {
+          throw new Error('runtime sessions contained a malformed entry');
+        }
         const item = raw as Record<string, unknown>;
         const sessionId = asString(item.sessionId);
         const agentId = asString(item.agentId);
-        if (!sessionId || !agentId) return null;
+        if (!sessionId || !agentId) {
+          throw new Error('runtime sessions contained an entry without sessionId/agentId');
+        }
         const rawStatus = asString(item.status) || 'unknown';
         const known = new Set([
           'created',
@@ -529,8 +585,7 @@ async function readRuntimeSessions(): Promise<{
           branch: asString(item.branch),
           last_seen_at: asString(item.lastSeenAt),
         };
-      })
-      .filter((item): item is RuntimeSessionSnapshot => item !== null);
+      });
 
     return { observed: true, sessions };
   } catch (error) {
@@ -604,21 +659,22 @@ async function readDispatchClaims(): Promise<{
         'COUNT',
         '200',
       ])) as unknown;
-      if (!Array.isArray(raw) || raw.length < 2) break;
+      if (!Array.isArray(raw) || raw.length < 2) {
+        throw new Error('dispatch claim scan returned malformed evidence');
+      }
       cursor = String(raw[0]);
       const batch = Array.isArray(raw[1]) ? raw[1].map(String) : [];
       keys.push(...batch);
     } while (cursor !== '0' && keys.length < 1000);
 
-    if (cursor !== '0') {
+    if (cursor !== '0' || keys.length > 1000) {
       throw new Error(
         'dispatch claim scan exceeded 1000 keys; refusing partial ownership evidence',
       );
     }
 
     const stringKeys = keys
-      .filter((key) => key !== `${CLAIM_PREFIX}:repository:path-index`)
-      .slice(0, 1000);
+      .filter((key) => key !== `${CLAIM_PREFIX}:repository:path-index`);
 
     if (stringKeys.length === 0) {
       return { observed: true, claims: [], completed_tombstones: 0 };
@@ -637,9 +693,13 @@ async function readDispatchClaims(): Promise<{
     >();
 
     for (const value of values) {
-      if (!value) continue;
+      if (!value) {
+        throw new Error('dispatch claim value disappeared during observation');
+      }
       const parsed = parseClaimValue(value);
-      if (!parsed) continue;
+      if (!parsed) {
+        throw new Error('dispatch claim contained malformed evidence');
+      }
       const current = grouped.get(parsed.claim_id) ?? {
         task_id: parsed.task_id,
         workstream: parsed.workstream,
