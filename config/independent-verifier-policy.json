@@ -21,7 +21,13 @@
         "ci",
         "ownership",
         "blast-radius"
-      ]
+      ],
+      "qualification": {
+        "status": "qualified",
+        "eval_suite": "2026-09-14",
+        "minimum_pass_rate": 1,
+        "basis": "exact-head review behavior + repository verifier policy tests"
+      }
     },
     "copilot-pull-request-reviewer[bot]": {
       "profile_id": "sierra-verifier-copilot-v1",
@@ -35,7 +41,13 @@
         "ci",
         "ownership",
         "blast-radius"
-      ]
+      ],
+      "qualification": {
+        "status": "qualified",
+        "eval_suite": "2026-09-14",
+        "minimum_pass_rate": 1,
+        "basis": "exact-head review behavior + repository verifier policy tests"
+      }
     },
     "github-copilot[bot]": {
       "profile_id": "sierra-verifier-copilot-v1",
@@ -49,7 +61,13 @@
         "ci",
         "ownership",
         "blast-radius"
-      ]
+      ],
+      "qualification": {
+        "status": "qualified",
+        "eval_suite": "2026-09-14",
+        "minimum_pass_rate": 1,
+        "basis": "exact-head review behavior + repository verifier policy tests"
+      }
     }
   },
   "sensitive_surfaces": [
@@ -127,7 +145,13 @@
         "ci",
         "ownership",
         "blast-radius"
-      ]
+      ],
+      "qualification": {
+        "status": "qualified",
+        "eval_suite": "2026-09-14",
+        "minimum_pass_rate": 1,
+        "basis": "read-only verifier skill + deterministic routing/attestation eval suite"
+      }
     },
     "decepticon-cli": {
       "profile_id": "sierra-verifier-decepticon-runtime-v1",
@@ -139,7 +163,13 @@
         "security",
         "ci",
         "blast-radius"
-      ]
+      ],
+      "qualification": {
+        "status": "qualified",
+        "eval_suite": "2026-09-14",
+        "minimum_pass_rate": 1,
+        "basis": "read-only verifier skill + deterministic routing/attestation eval suite"
+      }
     },
     "copilot-cli": {
       "profile_id": "sierra-verifier-copilot-runtime-v1",
@@ -151,7 +181,13 @@
         "architecture",
         "ci",
         "ownership"
-      ]
+      ],
+      "qualification": {
+        "status": "qualified",
+        "eval_suite": "2026-09-14",
+        "minimum_pass_rate": 1,
+        "basis": "read-only verifier skill + deterministic routing/attestation eval suite"
+      }
     }
   },
   "signed_runtime_evidence": {
