@@ -96,6 +96,7 @@ export async function collectOpslyTopSnapshot(options = {}) {
     workstreams: '/api/admin/mission-control/factory-workstreams',
     sources: '/api/admin/mission-control/execution-sources',
     orchestrator: '/api/admin/mission-control/orchestrator',
+    agentResources: '/api/admin/mission-control/agent-resources',
   };
 
   const entries = await Promise.all(
@@ -110,6 +111,14 @@ export async function collectOpslyTopSnapshot(options = {}) {
   const workstreams = sourceResults.workstreams.data || {};
   const sources = sourceResults.sources.data || {};
   const orchestrator = sourceResults.orchestrator.data || {};
+  const agentResources = sourceResults.agentResources.data || {};
+  const resourceByAgent = new Map();
+  for (const row of agentResources.sessions || []) {
+    const existing = resourceByAgent.get(row.agent_id);
+    if (!existing || String(row.started_at || '') > String(existing.started_at || '')) {
+      resourceByAgent.set(row.agent_id, row);
+    }
+  }
 
   const runtimeSessions = Array.isArray(workstreams.runtime_sessions) ? workstreams.runtime_sessions : [];
   const activeByAgent = new Map();
@@ -161,6 +170,10 @@ export async function collectOpslyTopSnapshot(options = {}) {
 
   const agents = (sources.registered_workers || []).map((worker) => {
     const session = activeByAgent.get(worker.id);
+    const resource =
+      resourceByAgent.get(worker.id) ||
+      resourceByAgent.get(String(worker.id).replace(/-cli$|-ide$/i, '')) ||
+      null;
     return {
       id: worker.id,
       runtime_state: worker.runtime_state ?? 'UNKNOWN',
@@ -170,6 +183,10 @@ export async function collectOpslyTopSnapshot(options = {}) {
       session_state: session?.status ?? 'IDLE',
       work_id: session?.work_id ?? null,
       branch: session?.branch ?? null,
+      pid: resource?.pid ?? null,
+      cpu_pct: resource?.cpu_pct ?? null,
+      rss_mb: resource?.rss_mb ?? null,
+      elapsed: resource?.elapsed ?? null,
     };
   });
 
@@ -267,7 +284,7 @@ export function renderOpslyTop(snapshot, options = {}) {
 
   lines.push('');
   lines.push(`${c.bold}AGENTS${c.reset}`);
-  lines.push('AGENT              RUNTIME      DISPATCH     SESSION          WORK');
+  lines.push('AGENT              RUNTIME      DISPATCH     SESSION          CPU      RAM       WORK');
   for (const a of snapshot.agents) {
     lines.push(
       [
@@ -275,6 +292,8 @@ export function renderOpslyTop(snapshot, options = {}) {
         stateCell(a.runtime_state, 12, useColor),
         stateCell(a.dispatch, 12, useColor),
         stateCell(a.session_state, 16, useColor),
+        fit(pct(a.cpu_pct), 8),
+        fit(a.rss_mb == null ? 'UNKNOWN' : `${a.rss_mb.toFixed(0)}MB`, 9),
         fit(a.work_id || a.blocker || '—', 32),
       ].join(' '),
     );
