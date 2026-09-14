@@ -1,3 +1,29 @@
+export function classifyVerifiedFailure(jobs, policy = {}) {
+  if (!Array.isArray(jobs) || jobs.length === 0) return 'UNKNOWN';
+
+  for (const job of jobs) {
+    const status = String(job?.status || '').toLowerCase();
+    const conclusion = String(job?.conclusion || '').toLowerCase();
+    if (status !== 'completed' || !conclusion) return 'UNKNOWN';
+  }
+
+  const failed = jobs.filter((job) => {
+    const conclusion = String(job?.conclusion || '').toLowerCase();
+    return !['success', 'neutral', 'skipped'].includes(conclusion);
+  });
+  if (failed.length === 0) return 'UNKNOWN';
+
+  const transient = new Set(
+    Array.isArray(policy?.transient_conclusions)
+      ? policy.transient_conclusions.map((value) => String(value).toLowerCase())
+      : ['timed_out', 'startup_failure', 'stale'],
+  );
+
+  return failed.every((job) => transient.has(String(job?.conclusion || '').toLowerCase()))
+    ? 'INFRA_TRANSIENT'
+    : 'UNKNOWN';
+}
+
 export const AUTO_FAILURE_CLASS = 'INFRA_TRANSIENT';
 
 export function normalizedFailureClass(value) {
