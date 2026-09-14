@@ -1,11 +1,20 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { evaluateRepairRequest } from './lib/software-factory-repair-policy.mjs';
 
-const CANONICAL_POLICY_PATH = path.resolve('config/software-factory-repair-policy.json');
-const CANONICAL_PROTECTED_POLICY_PATH = path.resolve('config/pr-reconciliation-policy.json');
+const CANONICAL_REPOSITORY = 'cloudsysops/opsly';
+const TRUSTED_ROOT_ENV = 'OPSLY_SAFE_REPAIR_TRUSTED_ROOT';
 const REPAIR_LOCK_TTL_SECONDS = 24 * 60 * 60;
+
+function resolveTrustedApplyRoot() {
+  const value = process.env[TRUSTED_ROOT_ENV]?.trim();
+  if (!value) {
+    throw new Error(`${TRUSTED_ROOT_ENV} is required for --apply; invoke Safe Repair from a trusted base checkout`);
+  }
+  return path.resolve(value);
+}
 
 function parseArgs(argv) {
   const args = { request: null, policy: 'config/software-factory-repair-policy.json', apply: false };
@@ -21,13 +30,27 @@ function parseArgs(argv) {
 
 const args = parseArgs(process.argv);
 const request = JSON.parse(await fs.readFile(args.request, 'utf8'));
-const requestedPolicyPath = path.resolve(args.policy);
-if (args.apply && requestedPolicyPath !== CANONICAL_POLICY_PATH) {
+
+const trustedRoot = args.apply ? resolveTrustedApplyRoot() : process.cwd();
+const canonicalPolicyPath = path.join(trustedRoot, 'config/software-factory-repair-policy.json');
+const canonicalProtectedPolicyPath = path.join(trustedRoot, 'config/pr-reconciliation-policy.json');
+const canonicalExecutorPath = path.join(trustedRoot, 'scripts/ops/software-factory-safe-repair.mjs');
+
+if (args.apply) {
+  const invokedPath = path.resolve(fileURLToPath(import.meta.url));
+  if (invokedPath !== path.resolve(canonicalExecutorPath)) {
+    throw new Error('--apply must execute the Safe Repair script from OPSLY_SAFE_REPAIR_TRUSTED_ROOT');
+  }
+}
+
+const requestedPolicyPath = args.apply ? canonicalPolicyPath : path.resolve(args.policy);
+if (args.apply && path.resolve(requestedPolicyPath) !== path.resolve(canonicalPolicyPath)) {
   throw new Error('--apply requires the canonical software-factory repair policy');
 }
+
 const policy = JSON.parse(await fs.readFile(requestedPolicyPath, 'utf8'));
 const protectedPolicyPath = args.apply
-  ? CANONICAL_PROTECTED_POLICY_PATH
+  ? canonicalProtectedPolicyPath
   : path.resolve(String(policy.protected_policy_path || 'config/pr-reconciliation-policy.json'));
 const protectedPolicy = JSON.parse(await fs.readFile(protectedPolicyPath, 'utf8'));
 const canonicalProtectedPatterns = protectedPolicy?.protected?.patterns;
@@ -35,9 +58,8 @@ if (!Array.isArray(canonicalProtectedPatterns) || canonicalProtectedPatterns.len
   throw new Error('canonical protected-surface policy is missing or empty');
 }
 policy.protected_patterns = canonicalProtectedPatterns;
-const canonicalRepository = process.env.GITHUB_REPOSITORY || 'cloudsysops/opsly';
-const repository = request.repository || canonicalRepository;
-if (args.apply && repository !== canonicalRepository) {
+const repository = request.repository || CANONICAL_REPOSITORY;
+if (args.apply && repository !== CANONICAL_REPOSITORY) {
   throw new Error('--apply is restricted to the canonical repository');
 }
 const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
@@ -61,7 +83,9 @@ async function gh(path, init = {}) {
     throw new Error(`GitHub API ${response.status} for ${path}: ${body.slice(0, 500)}`);
   }
   if (response.status === 204) return null;
-  return response.json();
+  const text = await response.text();
+  if (!text.trim()) return null;
+  return JSON.parse(text);
 }
 
 async function ghPaged(path, expectedCount = null) {
@@ -110,14 +134,28 @@ async function ghRunJobs(runId) {
   throw new Error('workflow run jobs pagination incomplete');
 }
 
-function classifyVerifiedFailure(jobs) {
-  const failed = jobs.filter((job) => {
+function classifyVerifiedFailure(jobs, policy) {
+  if (!Array.isArray(jobs) || jobs.length === 0) return 'UNKNOWN';
+
+  for (const job of jobs) {
     const status = String(job?.status || '').toLowerCase();
     const conclusion = String(job?.conclusion || '').toLowerCase();
-    return status === 'completed' && conclusion && !['success', 'neutral', 'skipped'].includes(conclusion);
+    if (status !== 'completed' || !conclusion) return 'UNKNOWN';
+  }
+
+  const failed = jobs.filter((job) => {
+    const conclusion = String(job?.conclusion || '').toLowerCase();
+    return !['success', 'neutral', 'skipped'].includes(conclusion);
   });
   if (failed.length === 0) return 'UNKNOWN';
-  const transient = new Set(['timed_out', 'cancelled', 'startup_failure', 'stale']);
+
+  const transient = new Set(
+    Array.isArray(policy?.transient_conclusions)
+      ? policy.transient_conclusions.map((value) => String(value).toLowerCase())
+      : ['timed_out', 'startup_failure', 'stale'],
+  );
+  // 'cancelled' is intentionally not auto-transient: it may be operator or
+  // cancel-in-progress behavior rather than infrastructure failure.
   return failed.every((job) => transient.has(String(job?.conclusion || '').toLowerCase()))
     ? 'INFRA_TRANSIENT'
     : 'UNKNOWN';
@@ -127,7 +165,11 @@ async function acquireRepairLock(repository, runId, runAttempt, workId) {
   const redisUrl = process.env.REDIS_URL?.trim();
   if (!redisUrl) throw new Error('REDIS_URL is required for --apply idempotency');
   const { createClient } = await import('redis');
-  const client = createClient({ url: redisUrl });
+  const redisPassword = process.env.REDIS_PASSWORD?.trim();
+  const client = createClient({
+    url: redisUrl,
+    ...(redisPassword ? { password: redisPassword } : {}),
+  });
   await client.connect();
   const key = `opsly:safe-repair:v1:${repository}:${runId}:${runAttempt}`;
   const result = await client.set(
@@ -163,7 +205,7 @@ const files = await ghPaged(
   changedFiles,
 );
 const runAttempt = Number(run?.run_attempt);
-const verifiedFailureClass = classifyVerifiedFailure(jobs);
+const verifiedFailureClass = classifyVerifiedFailure(jobs, policy);
 const runPullNumbers = Array.isArray(run?.pull_requests)
   ? run.pull_requests.map((item) => Number(item?.number)).filter(Number.isInteger)
   : [];
@@ -177,6 +219,9 @@ const decision = evaluateRepairRequest(request, policy, {
   run_conclusion: run?.conclusion || null,
   run_attempt: runAttempt,
   verified_failure_class: verifiedFailureClass,
+  pr_title: pull?.title || '',
+  pr_body: pull?.body || '',
+  head_ref: pull?.head?.ref || '',
 });
 
 if (!runPullNumbers.includes(prNumber)) {
@@ -227,10 +272,13 @@ if (decision.allowed && args.apply) {
       throw new Error('workflow run eligibility changed before safe repair mutation');
     }
 
+    // From this point onward the mutation outcome can become ambiguous on a
+    // transport failure after GitHub accepted the request. Preserve the claim
+    // in every such case; a supervisor must reconcile before another attempt.
+    keepLock = true;
     await gh(`/repos/${owner}/${repo}/actions/runs/${runId}/rerun-failed-jobs`, {
       method: 'POST',
     });
-    keepLock = true;
     result.applied = true;
     result.applied_at = new Date().toISOString();
   } finally {
