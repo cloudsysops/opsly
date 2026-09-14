@@ -9,16 +9,31 @@ const TRUST_RANK = new Map([
 export const STRUCTURED_VERIFIER_MARKER = 'opsly-independent-verifier-v1';
 
 function normalizePath(value) {
-  return String(value || '').replaceAll('\\\\', '/').replace(/^\\.\\//, '');
+  return String(value || '').replaceAll('\\', '/').replace(/^\.\//, '');
 }
 
 function globToRegExp(pattern) {
-  const source = normalizePath(pattern)
-    .replace(/[.+^$\\{\\}()|[\\]\\\\]/g, '\\\\$&')
-    .replaceAll('**', '___DOUBLE_STAR___')
-    .replaceAll('*', '[^/]*')
-    .replaceAll('___DOUBLE_STAR___', '.*');
-  return new RegExp('^' + source + '$', 'i');
+  const input = normalizePath(pattern);
+  let source = '^';
+
+  for (let index = 0; index < input.length; index += 1) {
+    const char = input[index];
+    if (char === '*') {
+      if (input[index + 1] === '*') {
+        source += '.*';
+        index += 1;
+      } else {
+        source += '[^/]*';
+      }
+      continue;
+    }
+
+    if ('\\.^$+?()[]{}|'.includes(char)) source += '\\' + char;
+    else source += char;
+  }
+
+  source += '$';
+  return new RegExp(source, 'i');
 }
 
 export function pathMatchesPattern(filePath, pattern) {
@@ -57,8 +72,9 @@ export function classifySensitiveSurfaces(files = [], policy = {}) {
 
 export function extractStructuredVerifierEvidence(body) {
   const text = String(body || '');
-  const marker = STRUCTURED_VERIFIER_MARKER.replace(/[.*+?^$\\{\\}()|[\\]\\\\]/g, '\\\\$&');
-  const match = text.match(new RegExp('<!--\\\\s*' + marker + '\\\\s*([\\\\s\\\\S]*?)-->', 'i'));
+  const match = text.match(
+    /<!--\s*opsly-independent-verifier-v1\s*([\s\S]*?)-->/i
+  );
   if (!match) return null;
 
   try {
@@ -138,7 +154,7 @@ export function collectQualifiedVerifierEvidence({
 
     if (!reviewedSha || !commitMatches(headSha, reviewedSha)) continue;
     if (!['PASS', 'FAIL', 'BLOCKED'].includes(decision)) continue;
-    if (decision === 'PASS' && findings.some((finding) => /\\bP[012]\\b/i.test(finding))) {
+    if (decision === 'PASS' && findings.some((finding) => /\bP[012]\b/i.test(finding))) {
       decision = 'FAIL';
     }
 
@@ -173,12 +189,18 @@ export function evaluateQualifiedVerifierQuorum({
   evidence = [],
   requirement,
 }) {
-  const negative = evidence.find((item) => item.decision === 'FAIL' || item.decision === 'BLOCKED');
+  const negative = evidence.find(
+    (item) => item.decision === 'FAIL' || item.decision === 'BLOCKED'
+  );
   if (negative) {
     return {
       ok: false,
       status: negative.decision,
-      reason: 'qualified_verifier_' + negative.decision.toLowerCase() + ':' + negative.login,
+      reason:
+        'qualified_verifier_' +
+        negative.decision.toLowerCase() +
+        ':' +
+        negative.login,
       observed_quorum: 0,
       verifier_groups: [],
       covered_specialties: [],
@@ -189,7 +211,9 @@ export function evaluateQualifiedVerifierQuorum({
   const byGroup = new Map();
   for (const item of passes) {
     if (!item.independence_group) continue;
-    if (!byGroup.has(item.independence_group)) byGroup.set(item.independence_group, item);
+    if (!byGroup.has(item.independence_group)) {
+      byGroup.set(item.independence_group, item);
+    }
   }
 
   const selected = [...byGroup.values()];
