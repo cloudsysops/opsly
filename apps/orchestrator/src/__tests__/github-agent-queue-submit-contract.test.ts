@@ -19,8 +19,20 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).not.toMatch(/spawn\(/);
   });
 
+  it('uses the canonical external-agent-registry instead of a hardcoded runtime allowlist', () => {
+    expect(source).toContain("path.join(root, 'config', 'external-agent-registry.json')");
+    expect(source).toContain('Object.entries(registry.workers)');
+    expect(source).toContain("entry.enabled !== true");
+    expect(source).toContain("entry.local !== true");
+    expect(source).toContain("entry.kind !== 'external-binary'");
+    expect(source).toContain("entry.adapter !== 'agent-binary-http-bridge'");
+    expect(source).toContain("entry.opsly_job_type.startsWith('local_')");
+    expect(source).toContain('agent: governedAgent.opslyJobType');
+    expect(source).toContain('registry_worker_id: governedAgent.workerId');
+    expect(source).not.toContain("new Set(['local_opencode', 'local_hermes', 'local_openclaw'])");
+  });
+
   it('is fail-closed to approved zero-cost governed local runtimes', () => {
-    expect(source).toContain("new Set(['local_opencode', 'local_hermes', 'local_openclaw'])");
     expect(source).toContain("['free','free_with_quota']");
     expect(source).toContain('estimated_cost_usd must be exactly 0');
     expect(source).toContain('requires_pr=true is not eligible for autonomous GitHub dispatch yet');
@@ -28,8 +40,10 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('production_deploy=true is forbidden');
     expect(source).toContain('paid_infra_required=true is forbidden');
     expect(source).toContain("agent_role: 'review'");
-    expect(source).toContain('agent: String(meta.agent)');
     expect(source).toContain('requires_pr: false');
+    expect(source).toContain('is not registered in external-agent-registry');
+    expect(source).toContain('is registered but disabled');
+    expect(source).toContain('is not eligible for governed local dispatch');
   });
 
   it('requires explicit boolean safety flags so YAML comments cannot bypass policy', () => {

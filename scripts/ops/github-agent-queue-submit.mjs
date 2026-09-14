@@ -42,6 +42,38 @@ function requireBooleanField(meta, key) {
   }
 }
 
+async function loadGovernedAgentRegistry(root) {
+  const registryPath = path.join(root, 'config', 'external-agent-registry.json');
+  const raw = await fs.readFile(registryPath, 'utf8');
+  const registry = JSON.parse(raw);
+  if (!registry || typeof registry !== 'object' || !registry.workers || typeof registry.workers !== 'object') {
+    throw new Error('external-agent-registry is missing a valid workers map');
+  }
+  return registry;
+}
+
+function resolveGovernedAgent(meta, registry) {
+  const requested = String(meta.agent).trim();
+  const match = Object.entries(registry.workers).find(([workerId, entry]) => {
+    return workerId === requested || entry?.opsly_job_type === requested;
+  });
+  if (!match) throw new Error(`agent "${requested}" is not registered in external-agent-registry`);
+
+  const [workerId, entry] = match;
+  if (entry.enabled !== true) throw new Error(`agent "${requested}" is registered but disabled`);
+  if (entry.local !== true) throw new Error(`agent "${requested}" is not eligible for governed local dispatch`);
+  if (entry.kind !== 'external-binary') {
+    throw new Error(`agent "${requested}" has unsupported runtime kind: ${entry.kind || 'unknown'}`);
+  }
+  if (entry.adapter !== 'agent-binary-http-bridge') {
+    throw new Error(`agent "${requested}" has unsupported adapter: ${entry.adapter || 'unknown'}`);
+  }
+  if (typeof entry.opsly_job_type !== 'string' || !entry.opsly_job_type.startsWith('local_')) {
+    throw new Error(`agent "${requested}" has invalid opsly_job_type`);
+  }
+  return { workerId, opslyJobType: entry.opsly_job_type };
+}
+
 function listField(value) {
   if (Array.isArray(value)) return value.map(String).map((v) => v.trim()).filter(Boolean);
   if (typeof value !== 'string' || value.trim() === '') return [];
@@ -81,12 +113,6 @@ function assertSafe(meta) {
     requireBooleanField(meta, key);
   }
 
-  const allowedAgents = new Set(['local_opencode', 'local_hermes', 'local_openclaw']);
-  if (!allowedAgents.has(String(meta.agent))) {
-    throw new Error(
-      'GitHub Agent Queue permits only governed local_opencode, local_hermes, or local_openclaw'
-    );
-  }
   if (!['pending','ready'].includes(String(meta.status))) {
     throw new Error('status must be pending or ready');
   }
@@ -157,6 +183,8 @@ if (!token) throw new Error('PLATFORM_ADMIN_TOKEN is required');
 
 const content = await fs.readFile(absolute, 'utf8');
 const { meta, body } = parseFrontmatter(content);
+const registry = await loadGovernedAgentRegistry(root);
+const governedAgent = resolveGovernedAgent(meta, registry);
 assertSafe(meta);
 if (!body) throw new Error('workpack body must not be empty');
 
@@ -167,7 +195,7 @@ const payload = {
   tenant_slug: 'local',
   request_id: requestId,
   idempotency_key: requestId,
-  agent: String(meta.agent),
+  agent: governedAgent.opslyJobType,
   agent_role: 'review',
   max_steps: Number(meta.max_steps || 6),
   goal: String(meta.title || meta.id),
@@ -178,6 +206,7 @@ const payload = {
     github_repository: process.env.GITHUB_REPOSITORY || null,
     github_run_id: process.env.GITHUB_RUN_ID || null,
     workpack_id: meta.id,
+    registry_worker_id: governedAgent.workerId,
     workpack_file: file,
     dispatch_contract_version: 'dispatch-claim-v1',
     workstream: String(meta.workstream),
