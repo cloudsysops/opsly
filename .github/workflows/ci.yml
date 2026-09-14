@@ -344,6 +344,9 @@ jobs:
             scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs \
             scripts/ops/__tests__/mac-ephemeral-runtime.test.mjs
 
+      - name: Independent review gate policy tests
+        run: node --test scripts/ci/__tests__/independent-review-gate.test.mjs
+
       - name: Peskids Docker next-build flags (no --webpack on Next 15.5)
         run: bash scripts/ci/check-peskids-docker-build-flags.sh
 
