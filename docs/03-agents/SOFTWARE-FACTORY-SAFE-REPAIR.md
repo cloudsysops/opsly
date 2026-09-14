@@ -54,3 +54,19 @@ Safe Repair uses the canonical Mission Control blocker taxonomy:
 `CODE | INFRA_TRANSIENT | POLICY_GATE | UPSTREAM_DEPENDENCY | RUNTIME_UNAVAILABLE | EVIDENCE_INSUFFICIENT | BLOCKED_ACCESS`.
 
 Legacy separators such as `infra/transient` are normalized to `INFRA_TRANSIENT` at the boundary so older evidence can be consumed without creating a second vocabulary.
+
+
+## Mutation serialization and verified classification
+
+For `--apply`, Safe Repair is pinned to the canonical repair policy and protected-surface policy; caller-selected policy files are rejected.
+
+The failure class used for authorization is **not trusted from the request**. The executor derives `INFRA_TRANSIENT` only when GitHub's complete workflow-job evidence shows exclusively transient terminal conclusions. A generic job `failure`, incomplete job listing, missing run attempt, missing SHA, or ambiguous classification is manual-only.
+
+Before calling GitHub's rerun mutation, the executor:
+
+1. acquires a Redis idempotency lock keyed by repository + run + run attempt;
+2. re-reads the pull request and workflow run;
+3. verifies exact head SHA, PR binding, run attempt, event, terminal failure state;
+4. invokes `rerun-failed-jobs` only if all evidence is unchanged.
+
+The successful lock remains for a bounded TTL so concurrent invocations cannot consume the same automatic repair attempt twice. This is an idempotency lock in the existing Redis control plane, not a second task store or scheduler.
