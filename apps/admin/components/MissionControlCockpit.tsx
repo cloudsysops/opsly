@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 
 import { ComputeWorkersPanel } from '@/components/ComputeWorkersPanel';
+import { SystemTopologyPanel } from '@/components/mission-control/SystemTopologyPanel';
 import { WorkstreamsExecutionPanel } from '@/components/mission-control/WorkstreamsExecutionPanel';
 import {
   LocalNodesPanel,
@@ -75,59 +76,6 @@ function MetricCard({
       <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500">{label}</div>
       <div className="mt-2 font-mono text-3xl font-semibold">{value}</div>
       <div className="mt-1 text-xs text-slate-500">{detail}</div>
-    </div>
-  );
-}
-
-function NodeChip({
-  name,
-  role,
-  online,
-  detail,
-}: {
-  name: string;
-  role: string;
-  online: boolean;
-  detail: string;
-}) {
-  return (
-    <div className={`rounded-xl border p-3 ${tone(online)}`}>
-      <div className="flex items-center justify-between gap-2">
-        <div>
-          <div className="font-mono text-sm font-semibold text-slate-100">{name}</div>
-          <div className="text-[11px] text-slate-500">{role}</div>
-        </div>
-        <span className={`h-2.5 w-2.5 rounded-full ${online ? 'bg-emerald-400' : 'bg-rose-400'}`} />
-      </div>
-      <div className="mt-2 text-[11px] text-slate-400">{detail}</div>
-    </div>
-  );
-}
-
-function CloudChip({
-  name,
-  role,
-  state,
-}: {
-  name: string;
-  role: string;
-  state: 'connected' | 'configured' | 'planned';
-}) {
-  const connected = state === 'connected';
-  const configured = state === 'configured';
-  return (
-    <div
-      className={`rounded-xl border p-3 ${
-        connected
-          ? 'border-emerald-500/40 bg-emerald-500/10'
-          : configured
-            ? 'border-cyan-500/30 bg-cyan-500/10'
-            : 'border-slate-700 bg-slate-900/70'
-      }`}
-    >
-      <div className="font-mono text-sm text-slate-100">{name}</div>
-      <div className="text-[11px] text-slate-500">{role}</div>
-      <div className="mt-2 text-[10px] uppercase tracking-[0.18em] text-slate-400">{state}</div>
     </div>
   );
 }
@@ -228,10 +176,17 @@ export function MissionControlCockpit() {
   const policyViolations = snapshot.summary.policy_violations;
 
   const healthyIdle = snapshot.summary.healthy_idle;
-  const orchestratorSourceAvailable =
-    snapshot.sources.find((source) => source.id === 'orchestrator')?.available === true;
-  const localNodeOnline = nodes.length > 0 && nodes.every((node) => node.redisConnected);
   const gamerOnline = computeWorkers.some((worker) => worker.status !== 'OFFLINE');
+  const availableSources = snapshot.sources.filter((source) => source.available).length;
+  const sourceCoverage = `${availableSources}/${snapshot.sources.length}`;
+  const commandState =
+    healthyIdle === null
+      ? 'PARTIAL'
+      : policyViolations > 0
+        ? 'ATTENTION'
+        : healthyIdle
+          ? 'READY'
+          : 'EXECUTING';
 
   const activity = [
     ...(openClawData?.intents ?? []).slice(0, 5).map((intent) => ({
@@ -249,41 +204,88 @@ export function MissionControlCockpit() {
   ].slice(0, 8);
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100">
-      <div className="mx-auto max-w-[1800px] p-4 lg:p-6">
-        <header className="mb-5 flex flex-col gap-4 border-b border-cyan-500/15 pb-5 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="digital-readout text-3xl font-semibold tracking-[0.16em] text-cyan-100 md:text-4xl">
-                MISSION CONTROL
-              </h1>
-              <span className="rounded-md border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-xs font-semibold text-emerald-300">
-                LIVE
-              </span>
+    <div className="min-h-screen bg-[#02050d] text-slate-100 [background-image:radial-gradient(circle_at_20%_0%,rgba(34,211,238,.08),transparent_32%),radial-gradient(circle_at_85%_8%,rgba(139,92,246,.07),transparent_28%),linear-gradient(rgba(34,211,238,.025)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,.025)_1px,transparent_1px)] [background-size:auto,auto,32px_32px,32px_32px]">
+      <div className="mx-auto max-w-[1900px] p-4 lg:p-6">
+        <header className="mb-4 overflow-hidden rounded-2xl border border-cyan-500/20 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,.12),transparent_34%),linear-gradient(135deg,rgba(2,6,23,.98),rgba(7,12,28,.96))] p-4 shadow-2xl shadow-cyan-950/20 lg:p-5">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+              <div className="mb-2 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.2em]">
+                <span className="text-cyan-400">Opsly / Sierra Control</span>
+                <span className="text-slate-700">•</span>
+                <span className="text-violet-300">OpenClaw-style cockpit</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="digital-readout text-3xl font-semibold tracking-[0.14em] text-cyan-100 md:text-4xl">
+                  MISSION CONTROL
+                </h1>
+                <span className={`rounded-md border px-2.5 py-1 text-[10px] font-bold tracking-[0.14em] ${
+                  commandState === 'READY'
+                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                    : commandState === 'EXECUTING'
+                      ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300'
+                      : commandState === 'ATTENTION'
+                        ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
+                        : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+                }`}>
+                  {commandState}
+                </span>
+              </div>
+              <p className="mt-2 max-w-3xl text-xs text-slate-400">
+                One operational surface for factory progress, agents, queues, machines, Docker and runtime evidence.
+              </p>
             </div>
-            <p className="mt-2 text-xs uppercase tracking-[0.22em] text-cyan-400/80">
-              Opsly · real runtime orchestration · OpenClaw compatible
-            </p>
-          </div>
 
-          <div className="flex flex-wrap gap-2 text-xs">
-            <Link href="/mission-control/workstreams" className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-cyan-200 hover:border-cyan-400/60">
-              Workstreams
-            </Link>
-            <Link href="/mission-control/office" className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50">
-              Office
-            </Link>
-            <Link href="/mission-control/chat" className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50">
-              Chat
-            </Link>
-            <Link href="/mission-control/foundation" className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50">
-              Foundation
-            </Link>
-            <Link href="/mission-control/incubation" className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50">
-              Incubation
-            </Link>
+            <div className="grid grid-cols-2 gap-2 text-[10px] sm:grid-cols-4">
+              <div className="rounded-lg border border-slate-800 bg-black/25 px-3 py-2">
+                <div className="uppercase tracking-[0.14em] text-slate-600">sources</div>
+                <div className="mt-1 font-mono text-cyan-200">{sourceCoverage}</div>
+              </div>
+              <div className="rounded-lg border border-slate-800 bg-black/25 px-3 py-2">
+                <div className="uppercase tracking-[0.14em] text-slate-600">queue</div>
+                <div className="mt-1 font-mono text-violet-200">{queueWaiting + queueActive}</div>
+              </div>
+              <div className="rounded-lg border border-slate-800 bg-black/25 px-3 py-2">
+                <div className="uppercase tracking-[0.14em] text-slate-600">runtimes</div>
+                <div className="mt-1 font-mono text-emerald-200">{aiRuntimeCount ?? 'UNKNOWN'}</div>
+              </div>
+              <div className="rounded-lg border border-slate-800 bg-black/25 px-3 py-2">
+                <div className="uppercase tracking-[0.14em] text-slate-600">violations</div>
+                <div className={`mt-1 font-mono ${policyViolations ? 'text-rose-300' : 'text-emerald-300'}`}>
+                  {policyViolations}
+                </div>
+              </div>
+            </div>
           </div>
         </header>
+
+        <nav aria-label="Mission Control command deck" className="mb-5 grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+          {[
+            ['/mission-control/workstreams', 'WORKSTREAMS', 'claims · PRs · evidence', 'cyan'],
+            ['/mission-control/system', 'SYSTEM', 'hosts · Docker · topology', 'violet'],
+            ['/openclaw/ide', 'OPENCLAW IDE', 'sessions · terminal · MCP', 'emerald'],
+            ['/mission-control/office', 'OFFICE', 'visual agent HQ', 'amber'],
+            ['/mission-control/chat', 'CHAT', 'operator channel', 'cyan'],
+          ].map(([href, label, detail, accent]) => (
+            <Link
+              key={href}
+              href={href}
+              className={`group rounded-xl border bg-slate-950/80 px-3 py-3 transition hover:-translate-y-0.5 ${
+                accent === 'violet'
+                  ? 'border-violet-500/25 hover:border-violet-400/60'
+                  : accent === 'emerald'
+                    ? 'border-emerald-500/25 hover:border-emerald-400/60'
+                    : accent === 'amber'
+                      ? 'border-amber-500/25 hover:border-amber-400/60'
+                      : 'border-cyan-500/25 hover:border-cyan-400/60'
+              }`}
+            >
+              <div className="font-mono text-xs font-semibold tracking-[0.12em] text-slate-200 group-hover:text-white">
+                {label}
+              </div>
+              <div className="mt-1 text-[10px] text-slate-600">{detail}</div>
+            </Link>
+          ))}
+        </nav>
 
         <section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-7">
           <MetricCard label="Agents running" value={onlineTeams} detail={`${teams.length} historical team records`} accent="cyan" />
@@ -317,6 +319,10 @@ export function MissionControlCockpit() {
           />
         </section>
 
+        <div className="mb-5">
+          <SystemTopologyPanel runtime={runtimeData} compute={computeData} compact />
+        </div>
+
         <section className="mb-5 rounded-2xl border border-cyan-500/15 bg-slate-950/55 p-4">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -340,134 +346,55 @@ export function MissionControlCockpit() {
           <WorkstreamsExecutionPanel />
         </section>
 
-        <section className="grid gap-5 xl:grid-cols-[1.65fr_1fr]">
-          <div className="rounded-2xl border border-cyan-500/20 bg-slate-950/75 p-4 shadow-2xl shadow-cyan-950/20">
-            <div className="mb-4 flex items-center justify-between gap-3">
+        <section className="grid gap-4 xl:grid-cols-3">
+          <div className="rounded-2xl border border-violet-500/20 bg-slate-950/75 p-4">
+            <div className="mb-3 flex items-center justify-between">
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Live topology</h2>
-                <p className="text-xs text-slate-500">Only current API/runtime evidence is shown as connected.</p>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-violet-400/70">Execution</div>
+                <h2 className="mt-1 text-sm font-semibold uppercase tracking-[0.16em] text-slate-200">Queue & runtimes</h2>
               </div>
-              <div className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.14em] ${tone(localNodeOnline)}`}>
-                {localNodeOnline ? 'control path healthy' : 'partial telemetry'}
-              </div>
+              <span className="font-mono text-xs text-violet-300">{queueWaiting + queueActive} open</span>
             </div>
-
-            <div className="grid gap-4 lg:grid-cols-[1fr_1.15fr_1fr]">
-              <div className="space-y-3">
-                <NodeChip
-                  name="VPS / Control Plane"
-                  role="BullMQ · policy · orchestrator"
-                  online={orchestratorSourceAvailable}
-                  detail={orchestratorData ? `mode ${orchestratorData.mode} · role ${orchestratorData.role}` : 'not reporting'}
-                />
-                {nodes.map((node) => (
-                  <NodeChip
-                    key={node.id}
-                    name={node.hostname}
-                    role="Mac/local execution node"
-                    online={node.redisConnected}
-                    detail={`CPU ${node.cpuPercent}% · RAM ${node.ramPercent}% · tmux ${node.tmuxSessions.length}`}
-                  />
-                ))}
-                {computeWorkers.map((worker) => (
-                  <NodeChip
-                    key={worker.workerId}
-                    name={worker.hostname}
-                    role="PC Gamer / compute worker"
-                    online={worker.status !== 'OFFLINE'}
-                    detail={`${worker.status} · active jobs ${worker.activeJobs}${worker.gpuModel ? ` · ${worker.gpuModel}` : ''}`}
-                  />
-                ))}
-              </div>
-
-              <div className="relative flex min-h-[360px] items-center justify-center overflow-hidden rounded-2xl border border-cyan-500/20 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.16),transparent_38%),linear-gradient(180deg,rgba(15,23,42,.9),rgba(2,6,23,.95))]">
-                <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(34,211,238,.1)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,.1)_1px,transparent_1px)] [background-size:28px_28px]" />
-                <div className="absolute h-72 w-72 rounded-full border border-cyan-500/20" />
-                <div className="absolute h-56 w-56 rounded-full border border-violet-500/20" />
-                <div className="absolute h-40 w-40 rounded-full border border-emerald-500/20" />
-                <div className="relative z-10 w-44 rounded-2xl border border-cyan-400/50 bg-slate-950/95 p-5 text-center shadow-[0_0_60px_rgba(34,211,238,.2)]">
-                  <div className="digital-readout text-lg text-cyan-200">OPSLY</div>
-                  <div className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">Control Plane</div>
-                  <div className="mt-4 grid grid-cols-2 gap-2 text-[10px]">
-                    <div className="rounded border border-violet-500/30 bg-violet-500/10 p-2 text-violet-200">BullMQ</div>
-                    <div className="rounded border border-cyan-500/30 bg-cyan-500/10 p-2 text-cyan-200">Policy</div>
-                    <div className="rounded border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-200">Session Mgr</div>
-                    <div className="rounded border border-amber-500/30 bg-amber-500/10 p-2 text-amber-200">Evidence</div>
-                  </div>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 flex flex-wrap justify-center gap-2 text-[10px] text-slate-500">
-                  <span>AgentTaskEnvelopeV1</span><span>→</span><span>tmux ephemeral</span><span>→</span><span>real runtime</span><span>→</span><span>teardown</span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <CloudChip name="Supabase" role="transactional data" state="connected" />
-                <CloudChip name="Cloudflare R2" role="evidence / artifacts" state="planned" />
-                <CloudChip name="GCP BigQuery" role="analytics / telemetry" state="planned" />
-                <CloudChip name="GCP Cloud Run" role="stateless integrations" state="planned" />
-                <CloudChip name="Oracle DR" role="backup observer" state="planned" />
-                <CloudChip name="AWS" role="optional integrations" state="planned" />
-              </div>
-            </div>
+            {snapshot.queues.slice(0, 7).map((queue) => (
+              <QueueRow key={queue.queue} name={queue.queue} waiting={queue.waiting} active={queue.active} failed={queue.failed} />
+            ))}
+            {snapshot.queues.length === 0 ? <div className="py-3 text-xs text-slate-500">Queue evidence UNKNOWN.</div> : null}
           </div>
 
-          <div className="space-y-5">
-            <div className="rounded-2xl border border-violet-500/20 bg-slate-950/75 p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Queue & runtimes</h2>
-                  <p className="text-xs text-slate-500">BullMQ and ephemeral execution state.</p>
-                </div>
-                <span className="font-mono text-xs text-violet-300">{queueWaiting + queueActive} open</span>
+          <div className="rounded-2xl border border-emerald-500/20 bg-slate-950/75 p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-emerald-400/70">Runtime</div>
+                <h2 className="mt-1 text-sm font-semibold uppercase tracking-[0.16em] text-slate-200">Health invariant</h2>
               </div>
-              {snapshot.queues.slice(0, 7).map((queue) => (
-                <QueueRow
-                  key={queue.queue}
-                  name={queue.queue}
-                  waiting={queue.waiting}
-                  active={queue.active}
-                  failed={queue.failed}
-                />
-              ))}
-              {snapshot.queues.length === 0 ? (
-                <div className="py-3 text-xs text-slate-500">Queue evidence UNKNOWN.</div>
-              ) : null}
+              <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold ${tone(healthyIdle === true, healthyIdle === false)}`}>
+                {healthyIdle === null ? 'UNKNOWN' : healthyIdle ? 'HEALTHY IDLE' : 'ACTIVE'}
+              </span>
             </div>
-
-            <div className="rounded-2xl border border-emerald-500/20 bg-slate-950/75 p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Runtime health</h2>
-                  <p className="text-xs text-slate-500">Healthy idle is a first-class invariant.</p>
-                </div>
-                <span
-                  className={`rounded-full border px-2 py-1 text-[10px] font-semibold ${tone(
-                    healthyIdle === true,
-                    healthyIdle === false,
-                  )}`}
-                >
-                  {healthyIdle === null ? 'UNKNOWN' : healthyIdle ? 'HEALTHY IDLE' : 'ACTIVE'}
-                </span>
-              </div>
-              <div className="grid gap-2 text-xs">
-                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">AI runtimes</span><span className="font-mono text-slate-200">{aiRuntimeCount ?? 'UNKNOWN'}</span></div>
-                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">tmux sessions</span><span className="font-mono text-slate-200">{tmuxSessionCount ?? 'UNKNOWN'}</span></div>
-                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">OpenClaw in progress</span><span className="font-mono text-slate-200">{openClawRunning}</span></div>
-                <div className="flex justify-between py-2"><span className="text-slate-500">policy violations</span><span className={`font-mono ${policyViolations ? 'text-rose-300' : 'text-emerald-300'}`}>{policyViolations}</span></div>
-              </div>
+            <div className="grid gap-2 text-xs">
+              <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">AI runtimes</span><span className="font-mono text-slate-200">{aiRuntimeCount ?? 'UNKNOWN'}</span></div>
+              <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">tmux sessions</span><span className="font-mono text-slate-200">{tmuxSessionCount ?? 'UNKNOWN'}</span></div>
+              <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">OpenClaw intents</span><span className="font-mono text-slate-200">{openClawRunning}</span></div>
+              <div className="flex justify-between py-2"><span className="text-slate-500">policy violations</span><span className={`font-mono ${policyViolations ? 'text-rose-300' : 'text-emerald-300'}`}>{policyViolations}</span></div>
             </div>
+            <Link href="/openclaw/ide" className="mt-4 block rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-center text-[10px] uppercase tracking-[0.14em] text-emerald-300 hover:border-emerald-400/50">
+              Open runtime console →
+            </Link>
+          </div>
 
-            <div className="rounded-2xl border border-cyan-500/20 bg-slate-950/75 p-4">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">System activity</h2>
-              <div className="mt-3 space-y-2">
-                {activity.length ? activity.map((row, index) => (
-                  <div key={`${row.label}-${index}`} className="rounded-lg border border-slate-800/80 bg-black/20 p-2 text-xs">
-                    <div className={`font-mono ${row.tone}`}>{row.label}</div>
-                    <div className="mt-1 text-[11px] text-slate-500">{row.meta}</div>
-                    {row.when ? <div className="text-[10px] text-slate-600">{new Date(row.when).toLocaleTimeString()}</div> : null}
-                  </div>
-                )) : <div className="text-xs text-slate-500">No live activity reported yet.</div>}
-              </div>
+          <div className="rounded-2xl border border-cyan-500/20 bg-slate-950/75 p-4">
+            <div className="mb-3">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-400/70">Feed</div>
+              <h2 className="mt-1 text-sm font-semibold uppercase tracking-[0.16em] text-slate-200">System activity</h2>
+            </div>
+            <div className="space-y-2">
+              {activity.length ? activity.map((row, index) => (
+                <div key={`${row.label}-${index}`} className="rounded-lg border border-slate-800/80 bg-black/20 p-2 text-xs">
+                  <div className={`font-mono ${row.tone}`}>{row.label}</div>
+                  <div className="mt-1 text-[11px] text-slate-500">{row.meta}</div>
+                  {row.when ? <div className="text-[10px] text-slate-600">{new Date(row.when).toLocaleTimeString()}</div> : null}
+                </div>
+              )) : <div className="text-xs text-slate-500">No live activity reported yet.</div>}
             </div>
           </div>
         </section>
