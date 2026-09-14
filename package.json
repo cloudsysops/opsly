@@ -212,7 +212,9 @@
     "test:pc-gamer-opencode": "node --test scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs",
     "opsly:local-openclaw-service": "OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 OPSLY_CLI_AGENT=openclaw PORT=5012 tsx scripts/cli-agent-service.ts",
     "opsly:agent-handoff": "node scripts/ops/interactive-agent-handoff.mjs",
-    "test:agent-handoff": "node --test scripts/ops/__tests__/interactive-agent-handoff.test.mjs"
+    "test:agent-handoff": "node --test scripts/ops/__tests__/interactive-agent-handoff.test.mjs",
+    "opsly:agent-cleanup": "tsx scripts/ops/agent-workspace-janitor.ts",
+    "opsly:agent-cleanup:janitor": "tsx scripts/ops/agent-workspace-janitor.ts --janitor"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
