@@ -169,7 +169,7 @@ function source(
   id: string,
   endpoint: string,
   available: boolean,
-  observedAt: string | null,
+  observedAt: string | null
 ): MissionControlSourceV1 {
   return {
     id,
@@ -185,7 +185,7 @@ function runtimeState(node: RuntimeNodeInputV1): MissionControlNodeStateV1 {
 }
 
 function computeState(
-  status: 'ONLINE' | 'BUSY' | 'DEGRADED' | 'OFFLINE',
+  status: 'ONLINE' | 'BUSY' | 'DEGRADED' | 'OFFLINE'
 ): MissionControlNodeStateV1 {
   if (status === 'ONLINE' || status === 'BUSY') return 'ONLINE';
   return status;
@@ -247,7 +247,7 @@ function unknownIntelligence(): MissionControlIntelligenceV1 {
  * schedules work, grants approvals, or fabricates heartbeats.
  */
 export function buildMissionControlSnapshotV1(
-  input: BuildMissionControlSnapshotV1Input,
+  input: BuildMissionControlSnapshotV1Input
 ): MissionControlSnapshotV1 {
   const now = input.now ?? new Date().toISOString();
   const orchestratorAvailable =
@@ -260,32 +260,27 @@ export function buildMissionControlSnapshotV1(
       'orchestrator',
       '/api/admin/mission-control/orchestrator',
       orchestratorAvailable,
-      orchestratorAvailable ? now : null,
+      orchestratorAvailable ? now : null
     ),
     source(
       'teams',
       '/api/admin/mission-control/teams',
       Boolean(input.teams),
-      input.teams?.generated_at ?? null,
+      input.teams?.generated_at ?? null
     ),
     source(
       'openclaw',
       '/api/admin/mission-control/openclaw',
       Boolean(input.openclaw),
-      input.openclaw?.generated_at ?? null,
+      input.openclaw?.generated_at ?? null
     ),
     source(
       'runtime',
       '/api/runtime/nodes/status',
       Boolean(input.runtime?.ok),
-      input.runtime?.timestamp ?? null,
+      input.runtime?.timestamp ?? null
     ),
-    source(
-      'compute',
-      '/api/admin/compute-workers',
-      Boolean(input.compute),
-      now,
-    ),
+    source('compute', '/api/admin/compute-workers', Boolean(input.compute), now),
   ];
 
   const machines: MissionControlNodeV1[] = [];
@@ -301,8 +296,7 @@ export function buildMissionControlSnapshotV1(
       redis_connected: node.redisConnected,
       gpu_available: node.gpuAvailable,
       active_jobs: null,
-      active_sessions:
-        node.tmuxSessions?.filter((session) => session.running).length ?? null,
+      active_sessions: node.tmuxSessions?.filter((session) => session.running).length ?? null,
       last_heartbeat: input.runtime?.timestamp ?? null,
       runtime: null,
       model: null,
@@ -319,7 +313,9 @@ export function buildMissionControlSnapshotV1(
       confidence: 'REAL',
       redis_connected: null,
       gpu_available:
-        worker.gpuVendor !== undefined || worker.gpuModel !== undefined || worker.vramGb !== undefined
+        worker.gpuVendor !== undefined ||
+        worker.gpuModel !== undefined ||
+        worker.vramGb !== undefined
           ? true
           : null,
       active_jobs: worker.activeJobs,
@@ -395,7 +391,8 @@ export function buildMissionControlSnapshotV1(
       access_required: /401|403|unauthor|forbidden|permission|secret/i.test(message)
         ? 'authorized read access to the existing source'
         : null,
-      next_safe_action: 'Restore or authorize the canonical read-only source; do not mock the signal.',
+      next_safe_action:
+        'Restore or authorize the canonical read-only source; do not mock the signal.',
       evidence_required: ['successful source probe', 'fresh timestamp/run evidence'],
       source_id: key,
     });
@@ -422,7 +419,8 @@ export function buildMissionControlSnapshotV1(
       title: 'Runtime node snapshot unavailable',
       resource: '/api/runtime/nodes/status',
       access_required: null,
-      next_safe_action: 'Repair the runtime status probe and rerun it; keep node state UNKNOWN meanwhile.',
+      next_safe_action:
+        'Repair the runtime status probe and rerun it; keep node state UNKNOWN meanwhile.',
       evidence_required: ['ok=true runtime snapshot', 'fresh runtime timestamp'],
       source_id: 'runtime',
     });
