@@ -77,14 +77,13 @@ type FactoryWorkstreamsPayload = {
 
 async function fetchJson<T>(url: string): Promise<T> {
   const token = await getSessionAuthToken();
-  const adminToken = process.env.NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN?.trim() ?? '';
-  const headers = new Headers({ Accept: 'application/json' });
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-  } else if (adminToken) {
-    headers.set('Authorization', `Bearer ${adminToken}`);
-    headers.set('x-admin-token', adminToken);
+  if (!token) {
+    throw new Error('authenticated admin session required');
   }
+  const headers = new Headers({
+    Accept: 'application/json',
+    Authorization: `Bearer ${token}`,
+  });
 
   const response = await fetch(url, { headers });
   if (!response.ok) {
