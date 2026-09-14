@@ -47,8 +47,10 @@ test('detects a merged work item whose dispatch claim is still active', () => {
       work_id: 'work-1',
       claim_id: 'claim-1',
       action: 'RELEASE_CLAIM_CANDIDATE',
+      canonical_release: 'apps/orchestrator/src/task-claim-store.ts#releaseTaskDispatchClaim',
       reason: 'work is reported merged but dispatch claim is still active',
     },
   ]);
   assert.equal(plan.invariants.mutate_claims, false);
+  assert.match(plan.invariants.canonical_claim_release, /releaseTaskDispatchClaim/);
 });
