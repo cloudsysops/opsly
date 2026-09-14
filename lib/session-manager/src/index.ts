@@ -2,6 +2,11 @@ import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 
 import {
+  getBranchByName,
+  updateBranchEntry,
+} from '@intcloudsysops/git-branch-orchestrator';
+
+import {
   appendSessionLog,
   listStoredSessions,
   loadSession,
@@ -100,6 +105,31 @@ export async function createSession(input: CreateSessionInput): Promise<RuntimeS
     status: running ? 'running' : 'failed',
     lastCommand: input.initialCommand,
   });
+
+  if (input.branch?.trim()) {
+    const tenantSlug =
+      input.tenantSlug?.trim() ||
+      process.env.OPSLY_DEFAULT_TENANT_SLUG?.trim() ||
+      'intcloudsysops';
+    try {
+      const entry = await getBranchByName(tenantSlug, input.branch.trim());
+      if (entry) {
+        await updateBranchEntry(tenantSlug, entry.id, {
+          session_id: sessionId,
+          worktree_path: workspace,
+          cleanup_owner: entry.cleanup_owner ?? entry.worker_id,
+          cleanup_state: entry.status === 'pr_open' ? 'PR_OPEN' : 'ACTIVE',
+          cleanup_blocker: undefined,
+        });
+      }
+    } catch (error) {
+      await appendSessionLog(
+        sessionId,
+        `branch ownership bind failed branch=${input.branch} error=${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
   await appendSessionLog(sessionId, `session created agent=${input.agentId} job=${input.jobId ?? '-'}`);
   return updated;
 }
