@@ -29,7 +29,12 @@
       "infra/docker-compose",
       ".github/workflows/night-merge",
       ".github/workflows/production-change-window",
-      ".github/workflows/validate-doppler"
+      ".github/workflows/validate-doppler",
+      "lib/agent-task-core/",
+      "lib/git-branch-orchestrator/",
+      "config/pr-reconciliation-policy.json",
+      ".github/workflows/trusted-independent-review",
+      "scripts/ci/check-independent-review.mjs"
     ],
     "allowAutoReconcile": false,
     "allowAutoMerge": false,
