@@ -55,10 +55,17 @@ jobs:
           RECONCILIATION_CLEANUP: pr-reconciliation-cleanup-candidates.json
         run: node scripts/ops/pr-reconciliation-cleanup-candidates.mjs
 
+      - name: Build post-merge cleanup plan
+        run: |
+          node scripts/ops/software-factory-cleanup-plan.mjs \
+            --cleanup pr-reconciliation-cleanup-candidates.json \
+            --out software-factory-cleanup-plan.json
+
       - name: Validate reconciliation contracts
         run: |
           node --test scripts/ops/__tests__/pr-reconciliation-agent-envelopes.test.mjs
           node --test scripts/ops/__tests__/pr-reconciliation-cleanup-candidates.test.mjs
+          node --test scripts/ops/__tests__/software-factory-cleanup-plan.test.mjs
 
       - name: Publish reconciliation artifacts
         uses: actions/upload-artifact@v4
@@ -69,6 +76,7 @@ jobs:
             pr-reconciliation-workpacks.json
             pr-reconciliation-agent-envelopes.json
             pr-reconciliation-cleanup-candidates.json
+            software-factory-cleanup-plan.json
           if-no-files-found: error
           retention-days: 7
 
@@ -94,7 +102,9 @@ jobs:
           console.log(`Actionable supervised workpacks: **${workpacks.count}**`);
           console.log(`Prepared AgentTaskEnvelopeV1 tasks: **${envelopes.count}**`);
           console.log(`Recommended maximum parallel workers: **${workpacks.maxParallelismRecommendation}**`);
+          const cleanupPlan = JSON.parse(fs.readFileSync('software-factory-cleanup-plan.json', 'utf8'));
           console.log(`Branch cleanup candidates (read-only): **${cleanup.cleanupCandidateCount}** / ${cleanup.totalBranches}`);
+          console.log(`Post-merge supervised candidates: **${cleanupPlan.branch_cleanup_candidates.length}**`);
           console.log('');
           console.log('## Safety invariants');
           console.log('- Read-only inventory/workpack/envelope/cleanup preparation');
