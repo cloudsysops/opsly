@@ -102,3 +102,27 @@ test('fails closed on non-canonical cleanup inventory', () => {
     /canonical READ_ONLY/,
   );
 });
+
+
+test('marks claim evidence UNKNOWN instead of implying zero candidates when artifacts are absent', () => {
+  const plan = buildPostMergeCleanupPlan({
+    cleanupInventory: inventory(),
+  });
+
+  assert.equal(plan.evidence.claims.status, 'UNKNOWN');
+  assert.match(plan.evidence.claims.reason, /were not supplied/);
+  assert.deepEqual(plan.claim_release_candidates, []);
+  assert.equal(plan.invariants.missing_claim_evidence_authorizes_release, false);
+});
+
+test('marks claim evidence OBSERVED only when both canonical inputs are supplied', () => {
+  const plan = buildPostMergeCleanupPlan({
+    cleanupInventory: { mode: 'READ_ONLY', candidates: [] },
+    workstreams: { active_claims: [] },
+    mergedWork: [],
+  });
+
+  assert.equal(plan.evidence.claims.status, 'OBSERVED');
+  assert.equal(plan.evidence.claims.active_claims_observed, 0);
+  assert.equal(plan.evidence.claims.merged_work_observed, 0);
+});
