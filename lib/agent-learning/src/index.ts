@@ -1,6 +1,10 @@
 export type {
   TrustLevel,
   ReviewDecision,
+  VerifierSpecialty,
+  IndependentVerifierDecision,
+  VerifierQualification,
+  IndependentVerifierEvidence,
   CanonicalTaskId,
   AgentLearningProfile,
   ExecutionEvidence,
