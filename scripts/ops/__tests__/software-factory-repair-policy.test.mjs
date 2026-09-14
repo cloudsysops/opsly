@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  classifyVerifiedFailure,
   containsProtectedSurface,
   evaluateRepairRequest,
 } from '../lib/software-factory-repair-policy.mjs';
@@ -186,4 +187,39 @@ test('protects the repair authorization policies themselves', () => {
     assert.equal(decision.allowed, false);
     assert.match(decision.reasons.join(' '), /protected surface/);
   }
+});
+
+
+test('verified failure classification requires complete terminal job evidence', () => {
+  const p = { transient_conclusions: ['timed_out', 'startup_failure', 'stale'] };
+  assert.equal(
+    classifyVerifiedFailure(
+      [
+        { status: 'completed', conclusion: 'timed_out' },
+        { status: 'queued', conclusion: null },
+      ],
+      p,
+    ),
+    'UNKNOWN',
+  );
+  assert.equal(
+    classifyVerifiedFailure([{ status: 'completed', conclusion: 'timed_out' }], p),
+    'INFRA_TRANSIENT',
+  );
+});
+
+test('cancelled jobs are not automatically classified as infrastructure transient', () => {
+  const p = { transient_conclusions: ['timed_out', 'startup_failure', 'stale'] };
+  assert.equal(
+    classifyVerifiedFailure([{ status: 'completed', conclusion: 'cancelled' }], p),
+    'UNKNOWN',
+  );
+});
+
+test('code failures remain unknown/manual for Safe Repair', () => {
+  const p = { transient_conclusions: ['timed_out', 'startup_failure', 'stale'] };
+  assert.equal(
+    classifyVerifiedFailure([{ status: 'completed', conclusion: 'failure' }], p),
+    'UNKNOWN',
+  );
 });
