@@ -10,6 +10,7 @@ import {
   type RuntimeNodesPayload,
 } from '@/components/LocalNodesPanel';
 import { getBaseUrl } from '@/lib/api-client';
+import { buildMissionControlSnapshotV1 } from '@/lib/mission-control-read-model-v1';
 import type {
   AgentTeamsResponse,
   OpenClawSnapshot,
@@ -32,7 +33,16 @@ type ComputeWorkersPayload = {
   queues?: Record<string, { waiting: number; active: number; failed: number }>;
 };
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+const fetcher = async <T,>(url: string): Promise<T> => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    const detail = await response.text().catch(() => '');
+    throw new Error(
+      `${response.status} ${response.statusText}${detail ? `: ${detail.slice(0, 200)}` : ''}`,
+    );
+  }
+  return (await response.json()) as T;
+};
 
 function tone(ok: boolean, warn = false): string {
   if (ok) return 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300';
@@ -145,56 +155,80 @@ function QueueRow({
 export function MissionControlCockpit() {
   const baseUrl = useMemo(() => getBaseUrl(), []);
 
-  const { data: orchestratorData } = useSWR<OrchestratorStatus>(
+  const { data: orchestratorData, error: orchestratorError } = useSWR<OrchestratorStatus>(
     `${baseUrl}/api/admin/mission-control/orchestrator`,
     fetcher,
     { refreshInterval: 5000 },
   );
-  const { data: openClawData } = useSWR<OpenClawSnapshot>(
+  const { data: openClawData, error: openClawError } = useSWR<OpenClawSnapshot>(
     `${baseUrl}/api/admin/mission-control/openclaw`,
     fetcher,
     { refreshInterval: 3000 },
   );
-  const { data: teamsData } = useSWR<AgentTeamsResponse>(
+  const { data: teamsData, error: teamsError } = useSWR<AgentTeamsResponse>(
     `${baseUrl}/api/admin/mission-control/teams`,
     fetcher,
     { refreshInterval: 10000 },
   );
-  const { data: runtimeData } = useSWR<RuntimeNodesPayload>(
+  const { data: runtimeData, error: runtimeError } = useSWR<RuntimeNodesPayload>(
     `${baseUrl}/api/runtime/nodes/status`,
     fetcher,
     { refreshInterval: 5000 },
   );
-  const { data: computeData } = useSWR<ComputeWorkersPayload>(
+  const { data: computeData, error: computeError } = useSWR<ComputeWorkersPayload>(
     `${baseUrl}/api/admin/compute-workers`,
     fetcher,
     { refreshInterval: 10000 },
   );
 
-  const queueWaiting = orchestratorData?.queue.waiting ?? 0;
-  const queueActive = orchestratorData?.queue.active ?? 0;
-  const queueFailed = orchestratorData?.queue.failed ?? 0;
+  const snapshot = useMemo(
+    () =>
+      buildMissionControlSnapshotV1({
+        orchestrator: orchestratorData,
+        teams: teamsData,
+        openclaw: openClawData,
+        runtime: runtimeData,
+        compute: computeData,
+        source_errors: {
+          orchestrator: orchestratorError instanceof Error ? orchestratorError.message : undefined,
+          teams: teamsError instanceof Error ? teamsError.message : undefined,
+          openclaw: openClawError instanceof Error ? openClawError.message : undefined,
+          runtime: runtimeError instanceof Error ? runtimeError.message : undefined,
+          compute: computeError instanceof Error ? computeError.message : undefined,
+        },
+      }),
+    [
+      orchestratorData,
+      teamsData,
+      openClawData,
+      runtimeData,
+      computeData,
+      orchestratorError,
+      teamsError,
+      openClawError,
+      runtimeError,
+      computeError,
+    ],
+  );
+
+  const queueWaiting = snapshot.summary.queue_waiting;
+  const queueActive = snapshot.summary.queue_active;
   const nodes = runtimeData?.nodes ?? [];
   const computeWorkers = computeData?.workers ?? [];
-  const aiRuntimeCount = runtimeData?.sessionSummary?.running ?? 0;
-  const tmuxSessionCount = runtimeData?.sessionCount ?? 0;
+  const aiRuntimeCount = snapshot.summary.active_runtime_sessions;
+  const tmuxSessionCount = runtimeData ? (runtimeData.sessionCount ?? 0) : null;
   const workerCount = Object.keys(orchestratorData?.workers ?? {}).length;
   const activeWorkerCount = Object.values(orchestratorData?.workers ?? {}).filter(
     (worker) => worker.active > 0,
   ).length;
   const teams = teamsData?.teams ?? [];
-  const onlineTeams = teams.filter((team) => team.status === 'active').length;
+  const onlineTeams = snapshot.summary.agents_running;
   const openClawRunning = openClawData?.intents_in_progress.length ?? 0;
-  const policyViolations = openClawData?.recent_policy_violations.length ?? 0;
+  const policyViolations = snapshot.summary.policy_violations;
 
-  const healthyIdle =
-    aiRuntimeCount === 0 &&
-    tmuxSessionCount === 0 &&
-    queueActive === 0 &&
-    policyViolations === 0;
-
-  const runtimeQueues = runtimeData?.queues ?? [];
-  const totalDepth = runtimeQueues.reduce((sum, q) => sum + q.depth, 0);
+  const healthyIdle = snapshot.summary.healthy_idle;
+  const orchestratorSourceAvailable =
+    snapshot.sources.find((source) => source.id === 'orchestrator')?.available === true;
   const localNodeOnline = nodes.length > 0 && nodes.every((node) => node.redisConnected);
   const gamerOnline = computeWorkers.some((worker) => worker.status !== 'OFFLINE');
 
@@ -248,13 +282,35 @@ export function MissionControlCockpit() {
         </header>
 
         <section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-7">
-          <MetricCard label="Agents online" value={onlineTeams} detail={`${teams.length} team records`} accent="cyan" />
-          <MetricCard label="AI runtimes" value={aiRuntimeCount} detail={healthyIdle ? 'healthy idle' : 'runtime activity detected'} accent="emerald" />
-          <MetricCard label="Tasks in queue" value={queueWaiting + totalDepth} detail={`${queueActive} active`} accent="violet" />
+          <MetricCard label="Agents running" value={onlineTeams} detail={`${teams.length} historical team records`} accent="cyan" />
+          <MetricCard
+            label="AI runtimes"
+            value={aiRuntimeCount ?? 'UNKNOWN'}
+            detail={
+              healthyIdle === null
+                ? 'runtime evidence unavailable'
+                : healthyIdle
+                  ? 'healthy idle'
+                  : 'runtime activity detected'
+            }
+            accent="emerald"
+          />
+          <MetricCard label="Tasks in queue" value={queueWaiting} detail={`${queueActive} active`} accent="violet" />
           <MetricCard label="Workers" value={workerCount} detail={`${activeWorkerCount} active now`} accent="amber" />
-          <MetricCard label="tmux sessions" value={tmuxSessionCount} detail="ephemeral runtime sessions" accent="cyan" />
+          <MetricCard label="tmux sessions" value={tmuxSessionCount ?? 'UNKNOWN'} detail="ephemeral runtime sessions" accent="cyan" />
           <MetricCard label="OpenClaw intents" value={openClawRunning} detail={`${policyViolations} recent violations`} accent={policyViolations > 0 ? 'rose' : 'emerald'} />
-          <MetricCard label="System" value={healthyIdle ? 'IDLE' : 'BUSY'} detail={healthyIdle ? '0 AI runtimes is healthy' : 'work in progress'} accent={healthyIdle ? 'emerald' : 'amber'} />
+          <MetricCard
+            label="System"
+            value={healthyIdle === null ? 'UNKNOWN' : healthyIdle ? 'IDLE' : 'BUSY'}
+            detail={
+              healthyIdle === null
+                ? 'insufficient runtime evidence'
+                : healthyIdle
+                  ? '0 AI runtimes is healthy'
+                  : 'work in progress'
+            }
+            accent={healthyIdle === null ? 'amber' : healthyIdle ? 'emerald' : 'amber'}
+          />
         </section>
 
         <section className="grid gap-5 xl:grid-cols-[1.65fr_1fr]">
@@ -274,7 +330,7 @@ export function MissionControlCockpit() {
                 <NodeChip
                   name="VPS / Control Plane"
                   role="BullMQ · policy · orchestrator"
-                  online={Boolean(orchestratorData)}
+                  online={orchestratorSourceAvailable}
                   detail={orchestratorData ? `mode ${orchestratorData.mode} · role ${orchestratorData.role}` : 'not reporting'}
                 />
                 {nodes.map((node) => (
@@ -337,10 +393,18 @@ export function MissionControlCockpit() {
                 </div>
                 <span className="font-mono text-xs text-violet-300">{queueWaiting + queueActive} open</span>
               </div>
-              <QueueRow name="orchestrator" waiting={queueWaiting} active={queueActive} failed={queueFailed} />
-              {runtimeQueues.slice(0, 6).map((queue) => (
-                <QueueRow key={queue.name} name={queue.name} waiting={queue.waiting} active={queue.active} failed={queue.failed} />
+              {snapshot.queues.slice(0, 7).map((queue) => (
+                <QueueRow
+                  key={queue.queue}
+                  name={queue.queue}
+                  waiting={queue.waiting}
+                  active={queue.active}
+                  failed={queue.failed}
+                />
               ))}
+              {snapshot.queues.length === 0 ? (
+                <div className="py-3 text-xs text-slate-500">Queue evidence UNKNOWN.</div>
+              ) : null}
             </div>
 
             <div className="rounded-2xl border border-emerald-500/20 bg-slate-950/75 p-4">
@@ -349,13 +413,18 @@ export function MissionControlCockpit() {
                   <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Runtime health</h2>
                   <p className="text-xs text-slate-500">Healthy idle is a first-class invariant.</p>
                 </div>
-                <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold ${tone(healthyIdle, !healthyIdle)}`}>
-                  {healthyIdle ? 'HEALTHY IDLE' : 'ACTIVE'}
+                <span
+                  className={`rounded-full border px-2 py-1 text-[10px] font-semibold ${tone(
+                    healthyIdle === true,
+                    healthyIdle === false,
+                  )}`}
+                >
+                  {healthyIdle === null ? 'UNKNOWN' : healthyIdle ? 'HEALTHY IDLE' : 'ACTIVE'}
                 </span>
               </div>
               <div className="grid gap-2 text-xs">
-                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">AI runtimes</span><span className="font-mono text-slate-200">{aiRuntimeCount}</span></div>
-                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">tmux sessions</span><span className="font-mono text-slate-200">{tmuxSessionCount}</span></div>
+                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">AI runtimes</span><span className="font-mono text-slate-200">{aiRuntimeCount ?? 'UNKNOWN'}</span></div>
+                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">tmux sessions</span><span className="font-mono text-slate-200">{tmuxSessionCount ?? 'UNKNOWN'}</span></div>
                 <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">OpenClaw in progress</span><span className="font-mono text-slate-200">{openClawRunning}</span></div>
                 <div className="flex justify-between py-2"><span className="text-slate-500">policy violations</span><span className={`font-mono ${policyViolations ? 'text-rose-300' : 'text-emerald-300'}`}>{policyViolations}</span></div>
               </div>
@@ -421,7 +490,10 @@ export function MissionControlCockpit() {
 
         <footer className="mt-5 flex flex-col gap-2 border-t border-cyan-500/10 py-4 text-[10px] uppercase tracking-[0.16em] text-slate-600 sm:flex-row sm:items-center sm:justify-between">
           <span>Multi-cloud · multi-runtime · one control plane</span>
-          <span>{gamerOnline ? 'compute online' : 'compute not reporting'} · {healthyIdle ? 'ready for work' : 'work executing'}</span>
+          <span>
+            {gamerOnline ? 'compute online' : 'compute not reporting'} ·{' '}
+            {healthyIdle === null ? 'runtime state unknown' : healthyIdle ? 'ready for work' : 'work executing'}
+          </span>
         </footer>
       </div>
     </div>
