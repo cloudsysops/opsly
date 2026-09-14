@@ -2,13 +2,20 @@ import type { BranchCleanupState } from './types.js';
 
 export interface BranchCleanupEvidence {
   hasOpenPr: boolean;
+  openPrEvidenceAvailable: boolean;
   worktreePresent: boolean;
   worktreeClean: boolean;
   sessionAlive: boolean;
+  sessionEvidenceComplete: boolean;
   mergedIntoMain: boolean;
+  mergedPrVerified: boolean;
   explicitlySuperseded: boolean;
   uniqueCommitsVsMain: number | null;
   ownershipVerified: boolean;
+  branchRefsConsistent: boolean;
+  registryLifecycleEligible: boolean;
+  protectedBranch: boolean;
+  duplicateBranchOwnership: boolean;
 }
 
 export interface BranchCleanupDecision {
@@ -17,15 +24,35 @@ export interface BranchCleanupDecision {
   reason: string;
 }
 
+function blocked(reason: string): BranchCleanupDecision {
+  return {
+    state: 'CLEANUP_BLOCKED',
+    destructiveCleanupAllowed: false,
+    reason,
+  };
+}
+
 export function classifyBranchCleanup(
   evidence: BranchCleanupEvidence,
 ): BranchCleanupDecision {
+  if (evidence.protectedBranch) {
+    return blocked('protected_branch');
+  }
+
+  if (evidence.duplicateBranchOwnership) {
+    return blocked('duplicate_branch_ownership');
+  }
+
   if (!evidence.ownershipVerified) {
-    return {
-      state: 'CLEANUP_BLOCKED',
-      destructiveCleanupAllowed: false,
-      reason: 'ownership_not_verified',
-    };
+    return blocked('ownership_not_verified');
+  }
+
+  if (!evidence.sessionEvidenceComplete) {
+    return blocked('session_evidence_missing');
+  }
+
+  if (!evidence.openPrEvidenceAvailable) {
+    return blocked('open_pr_evidence_unavailable');
   }
 
   if (evidence.hasOpenPr) {
@@ -34,6 +61,10 @@ export function classifyBranchCleanup(
       destructiveCleanupAllowed: false,
       reason: 'open_pr',
     };
+  }
+
+  if (!evidence.registryLifecycleEligible) {
+    return blocked('registry_lifecycle_not_terminal');
   }
 
   if (evidence.sessionAlive) {
@@ -45,10 +76,20 @@ export function classifyBranchCleanup(
   }
 
   if (evidence.worktreePresent && !evidence.worktreeClean) {
+    return blocked('dirty_worktree');
+  }
+
+  if (!evidence.branchRefsConsistent) {
+    return blocked('local_remote_ref_mismatch');
+  }
+
+  // A verified merged PR is durable merge evidence and supports squash merges,
+  // where the source commits are intentionally not ancestors of main.
+  if (evidence.mergedPrVerified) {
     return {
-      state: 'CLEANUP_BLOCKED',
-      destructiveCleanupAllowed: false,
-      reason: 'dirty_worktree',
+      state: 'MERGED_PENDING_CLEANUP',
+      destructiveCleanupAllowed: true,
+      reason: 'verified_merged_pr',
     };
   }
 
@@ -79,11 +120,7 @@ export function classifyBranchCleanup(
     };
   }
 
-  return {
-    state: 'CLEANUP_BLOCKED',
-    destructiveCleanupAllowed: false,
-    reason: 'insufficient_cleanup_evidence',
-  };
+  return blocked('insufficient_cleanup_evidence');
 }
 
 export function cleanupStateIsTerminal(state: BranchCleanupState): boolean {
