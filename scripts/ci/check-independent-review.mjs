@@ -5,6 +5,7 @@ import {
   collectQualifiedVerifierEvidence,
   evaluateQualifiedVerifierQuorum,
   requiredVerifierPolicy,
+  verifyRuntimeVerifierEvidence,
 } from './lib/independent-verifier-policy.mjs';
 
 'use strict';
@@ -174,6 +175,7 @@ export function evaluateQualifiedIndependentReview({
   author,
   allowedBots = DEFAULT_REVIEW_BOTS,
   policy = {},
+  runtimeSigningKey = '',
 }) {
   const legacy = evaluateIndependentReview({
     reviews,
@@ -215,6 +217,8 @@ export function evaluateQualifiedIndependentReview({
     commitMatches,
     extractReviewedCommit,
     isCleanReviewBody: isCleanBotReviewBody,
+    verifyRuntimeEvidence: (evidence) =>
+      verifyRuntimeVerifierEvidence(evidence, runtimeSigningKey),
   });
   const qualified = evaluateQualifiedVerifierQuorum({
     evidence: qualifiedEvidence,
@@ -386,6 +390,7 @@ async function main() {
     author: args.author,
     allowedBots,
     policy,
+    runtimeSigningKey: process.env.SIERRA_VERIFIER_SIGNING_KEY || '',
   });
 
   console.log(
