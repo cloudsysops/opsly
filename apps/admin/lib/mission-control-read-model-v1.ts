@@ -1,5 +1,6 @@
 import type {
   AgentTeamsResponse,
+  HermesMetricsSnapshot,
   OpenClawSnapshot,
   OrchestratorStatus,
 } from './mission-control-types';
@@ -158,10 +159,11 @@ export type BuildMissionControlSnapshotV1Input = {
   orchestrator?: OrchestratorStatus;
   teams?: AgentTeamsResponse;
   openclaw?: OpenClawSnapshot;
+  hermes?: HermesMetricsSnapshot;
   runtime?: RuntimeNodesInputV1;
   compute?: ComputeWorkersInputV1;
   source_errors?: Partial<
-    Record<'orchestrator' | 'teams' | 'openclaw' | 'runtime' | 'compute', string>
+    Record<'orchestrator' | 'teams' | 'openclaw' | 'hermes' | 'runtime' | 'compute', string>
   >;
 };
 
@@ -273,6 +275,12 @@ export function buildMissionControlSnapshotV1(
       '/api/admin/mission-control/openclaw',
       Boolean(input.openclaw),
       input.openclaw?.generated_at ?? null,
+    ),
+    source(
+      'task-coordinator',
+      '/api/hermes/metrics',
+      input.hermes?.ok === true,
+      now,
     ),
     source(
       'runtime',
