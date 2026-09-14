@@ -79,6 +79,13 @@ jobs:
           PR_NUMBER: ${{ steps.pr.outputs.number }}
           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
           PR_AUTHOR: ${{ steps.pr.outputs.author }}
+          # github-actions[bot] is trusted here specifically because it is only
+          # ever the poster for scripts/ci/backend-independent-review.mjs
+          # (.github/workflows/backend-independent-review.yml), which itself
+          # only runs the reviewer logic from the trusted base SHA and calls
+          # our own LLM Gateway over an ephemeral Tailscale join — never
+          # executes PR-head code. Do not add it here for any other purpose.
+          INDEPENDENT_REVIEW_BOTS: "chatgpt-codex-connector[bot],github-copilot[bot],copilot-pull-request-reviewer[bot],github-actions[bot]"
         shell: bash
         run: |
           set -euo pipefail
