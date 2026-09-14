@@ -46,6 +46,8 @@ Aplica a **todos** los agentes (Cursor, Claude, OpenCode, Copilot, Jules, worker
 
 **Ownership gate obligatorio para trabajo de agentes:** antes de crear rama, worktree o ejecutar una tarea write-capable, el task debe tener un `DispatchClaimV1` adquirido por el Orchestrator. Invariante: **NO CLAIM → NO BRANCH → NO WORKTREE → NO EXECUTION**. Cada workpack gobernado declara `workstream` + `conflict_key`; `semantic_scope` y `affected_paths` refinan detección. `JOIN_EXISTING` = unirse/revisar/esperar al dueño actual; `ALREADY_DONE` = no rehacer; `CONFLICT_BLOCKED` = no iniciar trabajo paralelo. El Git Branch Orchestrator puede planear sin claim, pero no materializar una rama de agente sin evidencia de claim ligada al request. Nunca crear un segundo task store u otro scheduler para resolver esto.
 
+**Machine claim obligatorio para acceso directo a workers físicos:** cualquier operación fuera del Orchestrator que toque una máquina compartida (por ejemplo PC Gamer vía SSH/reconnect) debe adquirir y mantener el `machine-claim` canónico en Redis durante toda la sesión. Si el claim no puede adquirirse o renovarse, abortar. No existe bypass seguro para continuar sin lock. Esto complementa `DispatchClaimV1`; no lo reemplaza ni crea otro scheduler/task store.
+
 **Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
 ## ⚠️ Control de costos
