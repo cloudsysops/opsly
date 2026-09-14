@@ -3,7 +3,7 @@
 // Safe to print. No secrets. nvidia-smi is optional.
 
 import { execFileSync } from 'node:child_process';
-import { hostname as osHostname, freemem, totalmem, cpus } from 'node:os';
+import { hostname as osHostname, freemem, totalmem, cpus, loadavg } from 'node:os';
 
 function numberFrom(text) {
   const n = Number(String(text ?? '').trim());
@@ -14,15 +14,16 @@ function queryNvidia() {
   try {
     const raw = execFileSync(
       'nvidia-smi',
-      ['--query-gpu=name,memory.total,memory.used,temperature.gpu', '--format=csv,noheader,nounits'],
+      ['--query-gpu=name,memory.total,memory.used,utilization.gpu,temperature.gpu', '--format=csv,noheader,nounits'],
       { encoding: 'utf8', timeout: 2500 },
     );
-    const [name, total, used, temp] = raw.trim().split(',') ?? [];
+    const [name, total, used, utilization, temp] = raw.trim().split(',') ?? [];
     return {
       gpuVendor: 'nvidia',
       gpuModel: name?.trim() || 'unknown',
       vramGb: total ? Math.round((Number(total) / 1024) * 10) / 10 : undefined,
       vramUsedGb: used ? Math.round((Number(used) / 1024) * 10) / 10 : undefined,
+      gpuUtilizationPct: numberFrom(utilization),
       temperatureC: numberFrom(temp),
     };
   } catch {
@@ -58,6 +59,10 @@ function defaultCapabilities() {
 
 export function buildHeartbeatPayload(env = process.env) {
   const gpu = queryNvidia();
+  const cpuCount = cpus().length || 1;
+  const totalRamGb = Math.round(totalmem() / 1024 / 1024 / 1024);
+  const freeRamGb = Math.round(freemem() / 1024 / 1024 / 1024);
+  const cpuLoadPct = Math.min(100, Math.round((loadavg()[0] / cpuCount) * 100));
   return {
     workerId: env.WORKER_ID || 'pc-gamer-openclaw-01',
     hostname: env.HOSTNAME || osHostname(),
@@ -67,9 +72,12 @@ export function buildHeartbeatPayload(env = process.env) {
     gpuModel: gpu.gpuModel,
     vramGb: gpu.vramGb ?? numberFrom(env.WORKER_VRAM_GB),
     vramUsedGb: gpu.vramUsedGb,
-    ramGb: Math.round(totalmem() / 1024 / 1024 / 1024),
-    ramFreeGb: Math.round(freemem() / 1024 / 1024 / 1024),
-    cpuCores: cpus().length,
+    gpuUtilizationPct: gpu.gpuUtilizationPct,
+    ramGb: totalRamGb,
+    ramTotalGb: totalRamGb,
+    ramFreeGb: freeRamGb,
+    cpuLoadPct,
+    cpuCores: cpuCount,
     diskFreeGb: diskFreeGb(),
     activeJobs: numberFrom(env.WORKER_ACTIVE_JOBS) ?? 0,
     temperatureC: gpu.temperatureC,
