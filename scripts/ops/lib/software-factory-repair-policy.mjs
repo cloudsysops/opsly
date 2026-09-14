@@ -23,6 +23,7 @@ export function evaluateRepairRequest(request, policy, evidence = {}) {
   const action = String(request?.action || '').trim();
   const expectedHeadSha = String(request?.expected_head_sha || '').trim();
   const runAttempt = Number(evidence?.run_attempt);
+  const maxAttempts = Number(policy?.max_auto_attempts);
 
   if (!request?.work_id) reasons.push('missing work_id');
   if (!Number.isInteger(Number(request?.pr_number)) || Number(request?.pr_number) <= 0) {
@@ -34,9 +35,13 @@ export function evaluateRepairRequest(request, policy, evidence = {}) {
   if (requestedFailureClass && failureClass && requestedFailureClass !== failureClass) {
     reasons.push('requested failure_class does not match verified failure evidence');
   }
+  if (!Number.isInteger(maxAttempts) || maxAttempts < 0) {
+    reasons.push('invalid max_auto_attempts policy');
+  }
+
   if (!Number.isInteger(runAttempt) || runAttempt <= 0) {
     reasons.push('invalid workflow run_attempt evidence');
-  } else if (runAttempt > Number(policy?.max_auto_attempts ?? 0)) {
+  } else if (Number.isInteger(maxAttempts) && maxAttempts >= 0 && runAttempt > maxAttempts) {
     reasons.push('auto repair attempt limit reached');
   }
 
@@ -84,6 +89,9 @@ export function evaluateRepairRequest(request, policy, evidence = {}) {
       [
         ...(request?.affected_paths || []),
         ...(evidence.files || []),
+        evidence.pr_title || '',
+        evidence.pr_body || '',
+        evidence.head_ref || '',
       ],
       policy?.protected_patterns || [],
     )
