@@ -5,6 +5,7 @@ const CLEAN_REVIEW_PHRASES = [
   "Codex Review: Didn't find any major issues.",
   'did not find any major issues',
   "didn't find any major issues",
+  'No unresolved review issues were identified.',
 ];
 
 const DEFAULT_REVIEW_BOTS = [
