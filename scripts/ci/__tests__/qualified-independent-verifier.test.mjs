@@ -19,9 +19,11 @@ const policy = JSON.parse(
   )
 );
 
+let reviewId = 0;
 function cleanReview(login, commitId = head, body = "Codex Review: Didn't find any major issues.") {
+  reviewId += 1;
   return {
-    id: Math.floor(Math.random() * 100000) + 1,
+    id: reviewId,
     state: 'COMMENTED',
     commit_id: commitId,
     submitted_at: '2026-09-14T16:00:00Z',
