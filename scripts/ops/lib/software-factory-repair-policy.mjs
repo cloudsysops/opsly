@@ -1,7 +1,11 @@
-export const AUTO_FAILURE_CLASS = 'INFRA/TRANSIENT';
+export const AUTO_FAILURE_CLASS = 'INFRA_TRANSIENT';
 
 export function normalizedFailureClass(value) {
-  return String(value || '').trim().toUpperCase();
+  return String(value || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
 }
 
 export function containsProtectedSurface(values, protectedPatterns) {
