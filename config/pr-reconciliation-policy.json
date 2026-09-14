@@ -34,7 +34,16 @@
       "lib/git-branch-orchestrator/",
       "config/pr-reconciliation-policy.json",
       ".github/workflows/trusted-independent-review",
-      "scripts/ci/check-independent-review.mjs"
+      "scripts/ci/check-independent-review.mjs",
+      "lib/session-manager/",
+      "lib/external-agent-registry/",
+      "config/external-agent-registry.json",
+      "apps/admin/app/mission-control/",
+      "apps/admin/components/mission-control/",
+      "apps/admin/lib/mission-control",
+      "apps/api/app/api/admin/mission-control/",
+      "scripts/ops/machine-claim.mjs",
+      "scripts/ops/lib/machine-claim.mjs"
     ],
     "allowAutoReconcile": false,
     "allowAutoMerge": false,
