@@ -205,14 +205,12 @@ function parseEvidenceMarker(body: string): Marker | null {
 }
 
 function fallbackBodyField(body: string, label: string): string | null {
-  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\function fallbackWorkId(body: string): string | null {
-  const task = body.match(/(?:Task-Id|Work ID):\s*`?([^\n`]+)`?/i);
-  return task?.[1]?.trim() || null;
-}
-
-function fallbackTransport');
-  const match = body.match(new RegExp(`(?:^|\\n)-?\\s*${escaped}:\\s*\\`?([^\\n\\`]+)\\`?`, 'i'));
-  return match?.[1]?.trim() || null;
+  const escaped = label.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const pattern = new RegExp(
+    '(?:^|\\n)-?\\s*' + escaped + ':\\s*`?([^\\n`]+)`?',
+    'i',
+  );
+  return body.match(pattern)?.[1]?.trim() || null;
 }
 
 function fallbackWorkId(body: string): string | null {
@@ -220,10 +218,9 @@ function fallbackWorkId(body: string): string | null {
 }
 
 function fallbackTransport(body: string): GitHubWorkItem['transport'] {
-  if (/Dispatch-Claim:\s*(?!none\b)[^\n]+/i.test(body)) return 'autonomous';
+  if (/Dispatch-Claim:\\s*(?!none\\b)[^\\n]+/i.test(body)) return 'autonomous';
   return 'unknown';
 }
-
 function checkState(
   statusPayload: Record<string, unknown> | null,
   checksPayload: Record<string, unknown> | null,
