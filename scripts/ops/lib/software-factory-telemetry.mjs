@@ -149,7 +149,12 @@ export function buildFactoryTelemetry({ workstreams = {}, reconciliation = {}, p
     ? prs.filter((pr) => ['PASS', 'FAIL', 'BLOCKED'].includes(String(pr?.verifier || ''))).length
     : null;
   const ready = githubObserved
-    ? prs.filter((pr) => pr?.merge_readiness === 'READY').length
+    ? prs.filter(
+        (pr) =>
+          pr?.merge_readiness === 'READY' &&
+          pr?.verifier === 'PASS' &&
+          pr?.check_state === 'PASS',
+      ).length
     : null;
   const blocked = githubObserved
     ? prs.filter(
