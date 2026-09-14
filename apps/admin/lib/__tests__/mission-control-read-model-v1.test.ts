@@ -197,3 +197,23 @@ test('duplicate queue observations keep one coherent tuple instead of field maxi
   );
   assert.equal(snapshot.summary.queue_waiting + snapshot.summary.queue_active, 2);
 });
+
+
+test('tracks Hermes coordinator telemetry as a distinct source without fabricating a running external Hermes agent', () => {
+  const snapshot = buildMissionControlSnapshotV1({
+    now: '2026-09-13T16:00:00.000Z',
+    hermes: {
+      ok: true,
+      tasks_by_state: { queued: 2, completed: 4 },
+      metrics: [],
+      workflows: [{ workflow_id: 'wf-1', name: 'coordinator', status: 'active' }],
+      audit_recent: [],
+      errors: {},
+    },
+  });
+
+  const source = snapshot.sources.find((item) => item.id === 'task-coordinator');
+  assert.equal(source?.available, true);
+  assert.equal(source?.endpoint, '/api/hermes/metrics');
+  assert.equal(snapshot.agents.some((agent) => agent.agent_id === 'hermes-cli'), false);
+});
