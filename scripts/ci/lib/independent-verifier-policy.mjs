@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from 'node:crypto';
 const TRUST_RANK = new Map([
   ['observe', 0],
   ['shadow', 1],
@@ -86,6 +87,44 @@ export function extractStructuredVerifierEvidence(body) {
   }
 }
 
+
+export function runtimeEvidenceSigningPayload(evidence = {}) {
+  return JSON.stringify({
+    schema_version: String(evidence.schema_version || ''),
+    head_sha: String(evidence.head_sha || ''),
+    decision: String(evidence.decision || '').toUpperCase(),
+    verifier_agent: String(evidence.verifier_agent || ''),
+    builder_agent: String(evidence.builder_agent || ''),
+    execution_id: String(evidence.execution_id || ''),
+    specialties_checked: Array.isArray(evidence.specialties_checked)
+      ? evidence.specialties_checked.map(String).sort()
+      : [],
+    findings: Array.isArray(evidence.findings) ? evidence.findings.map(String) : [],
+    checks: Array.isArray(evidence.checks) ? evidence.checks.map(String) : [],
+    reviewed_at: String(evidence.reviewed_at || ''),
+  });
+}
+
+export function signRuntimeVerifierEvidence(evidence, key) {
+  if (!key) throw new Error('runtime verifier signing key is required');
+  return createHmac('sha256', key)
+    .update(runtimeEvidenceSigningPayload(evidence))
+    .digest('hex');
+}
+
+export function verifyRuntimeVerifierEvidence(evidence, key) {
+  if (!key || !evidence || typeof evidence !== 'object') return false;
+  const signature = String(evidence.signature || '').toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(signature)) return false;
+
+  const expected = signRuntimeVerifierEvidence(evidence, key);
+  const actualBuffer = Buffer.from(signature, 'hex');
+  const expectedBuffer = Buffer.from(expected, 'hex');
+  if (actualBuffer.length !== expectedBuffer.length) return false;
+  return timingSafeEqual(actualBuffer, expectedBuffer);
+}
+
+
 export function requiredVerifierPolicy(files = [], policy = {}) {
   const surfaces = classifySensitiveSurfaces(files, policy);
   const sensitive = surfaces.length > 0;
@@ -124,18 +163,70 @@ export function collectQualifiedVerifierEvidence({
   commitMatches,
   extractReviewedCommit,
   isCleanReviewBody,
+  verifyRuntimeEvidence,
 }) {
   const profiles = policy?.verifier_profiles ?? {};
+  const runtimeProfiles = policy?.runtime_verifier_profiles ?? {};
   const minimumTrust = policy?.minimum_trust_level ?? 'trusted';
   const all = [];
 
   for (const entry of [...reviews, ...issueComments]) {
     const login = entry?.user?.login;
+    const structured = extractStructuredVerifierEvidence(entry?.body);
+
+    if (
+      structured?.verifier_agent &&
+      typeof verifyRuntimeEvidence === 'function' &&
+      verifyRuntimeEvidence(structured)
+    ) {
+      const runtimeProfile = runtimeProfiles[structured.verifier_agent];
+      if (
+        runtimeProfile &&
+        trustAtLeast(runtimeProfile.trust_level, minimumTrust) &&
+        structured.builder_agent &&
+        structured.builder_agent !== structured.verifier_agent
+      ) {
+        let runtimeDecision = String(structured.decision || '').toUpperCase();
+        const runtimeFindings = Array.isArray(structured.findings)
+          ? structured.findings.map(String)
+          : [];
+        if (
+          runtimeDecision === 'PASS' &&
+          runtimeFindings.some((finding) => /\bP[012]\b/i.test(finding))
+        ) {
+          runtimeDecision = 'FAIL';
+        }
+        if (
+          ['PASS', 'FAIL', 'BLOCKED'].includes(runtimeDecision) &&
+          commitMatches(headSha, structured.head_sha)
+        ) {
+          all.push({
+            login: login || 'signed-runtime-relay',
+            profile_id: runtimeProfile.profile_id,
+            agent_id: runtimeProfile.agent_id,
+            model_family: runtimeProfile.model_family,
+            trust_level: runtimeProfile.trust_level,
+            independence_group: runtimeProfile.independence_group,
+            specialties: Array.isArray(runtimeProfile.specialties)
+              ? runtimeProfile.specialties.map(String)
+              : [],
+            decision: runtimeDecision,
+            findings: runtimeFindings,
+            evidence_type: 'signed_runtime',
+            reviewed_sha: structured.head_sha,
+            execution_id: structured.execution_id || null,
+            order: actorTimestamp(entry),
+            identity_key: 'runtime:' + runtimeProfile.agent_id,
+          });
+        }
+      }
+      continue;
+    }
+
     const profile = profiles[login];
     if (!login || !profile || login === author) continue;
     if (!trustAtLeast(profile.trust_level, minimumTrust)) continue;
 
-    const structured = extractStructuredVerifierEvidence(entry?.body);
     let reviewedSha = null;
     let decision = null;
     let evidenceType = null;
@@ -171,18 +262,20 @@ export function collectQualifiedVerifierEvidence({
       evidence_type: evidenceType,
       reviewed_sha: reviewedSha,
       order: actorTimestamp(entry),
+      identity_key: 'github:' + login,
     });
   }
 
-  const latestByActor = new Map();
+  const latestByIdentity = new Map();
   for (const evidence of all) {
-    const previous = latestByActor.get(evidence.login);
+    const key = evidence.identity_key || evidence.login;
+    const previous = latestByIdentity.get(key);
     if (!previous || evidence.order >= previous.order) {
-      latestByActor.set(evidence.login, evidence);
+      latestByIdentity.set(key, evidence);
     }
   }
 
-  return [...latestByActor.values()];
+  return [...latestByIdentity.values()];
 }
 
 export function evaluateQualifiedVerifierQuorum({
