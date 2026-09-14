@@ -49,6 +49,15 @@ for (const [login, profile] of Object.entries(policy?.verifier_profiles ?? {})) 
   if (!Array.isArray(profile.specialties) || profile.specialties.length === 0) {
     errors.push('GitHub verifier has no specialties: ' + login);
   }
+  if (profile.qualification?.status !== 'qualified') {
+    errors.push('GitHub verifier is not qualified: ' + login);
+  }
+  if (profile.qualification?.eval_suite !== suite.version) {
+    errors.push('GitHub verifier qualification is stale: ' + login);
+  }
+  if (Number(profile.qualification?.minimum_pass_rate) < Number(suite.minimum_pass_rate)) {
+    errors.push('GitHub verifier qualification pass rate is below policy: ' + login);
+  }
 }
 
 for (const [id, profile] of Object.entries(policy?.runtime_verifier_profiles ?? {})) {
@@ -60,6 +69,15 @@ for (const [id, profile] of Object.entries(policy?.runtime_verifier_profiles ?? 
   }
   if (!Array.isArray(profile.specialties) || profile.specialties.length === 0) {
     errors.push('runtime verifier has no specialties: ' + id);
+  }
+  if (profile.qualification?.status !== 'qualified') {
+    errors.push('runtime verifier is not qualified: ' + id);
+  }
+  if (profile.qualification?.eval_suite !== suite.version) {
+    errors.push('runtime verifier qualification is stale: ' + id);
+  }
+  if (Number(profile.qualification?.minimum_pass_rate) < Number(suite.minimum_pass_rate)) {
+    errors.push('runtime verifier qualification pass rate is below policy: ' + id);
   }
 }
 
