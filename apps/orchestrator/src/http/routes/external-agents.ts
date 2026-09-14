@@ -30,19 +30,20 @@ function joinHealthUrl(base: string, healthEndpoint?: string): string {
 }
 
 export function resolveExternalAgentHealthUrl(entry: ExternalWorkerEntry): string | null {
-  const envUrl =
-    entry.endpoint_env && typeof process.env[entry.endpoint_env] === 'string'
-      ? process.env[entry.endpoint_env]?.trim()
-      : '';
+  if (entry.endpoint_env) {
+    const envUrl =
+      typeof process.env[entry.endpoint_env] === 'string'
+        ? process.env[entry.endpoint_env]?.trim()
+        : '';
+    if (!envUrl) return null;
+    return joinHealthUrl(envUrl, entry.health_endpoint);
+  }
 
-  const base =
-    envUrl ||
-    (entry.bridge_port && entry.local
-      ? `http://127.0.0.1:${entry.bridge_port}`
-      : '');
+  if (entry.bridge_port && entry.local) {
+    return joinHealthUrl(`http://127.0.0.1:${entry.bridge_port}`, entry.health_endpoint);
+  }
 
-  if (!base) return null;
-  return joinHealthUrl(base, entry.health_endpoint);
+  return null;
 }
 
 function dispatchAdmissionBlocker(entry: ExternalWorkerEntry): string | null {
