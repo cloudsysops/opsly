@@ -92,7 +92,7 @@ test('enforces max automatic repair attempts', () => {
       attempt: 1,
     },
     policy,
-    { current_head_sha: 'abc', files: [] },
+    { current_head_sha: 'abc', files: [], run_attempt: 2 },
   );
   assert.equal(decision.allowed, false);
   assert.match(decision.reasons.join(' '), /attempt limit/);
@@ -114,4 +114,56 @@ test('normalizes legacy separators into the Mission Control failure taxonomy', (
   );
   assert.equal(decision.failure_class, 'INFRA_TRANSIENT');
   assert.equal(decision.allowed, true);
+});
+
+
+test('blocks a workflow run from another head even when the PR head is unchanged', () => {
+  const decision = evaluateRepairRequest(
+    {
+      work_id: 'sf-run-head',
+      pr_number: 16,
+      expected_head_sha: 'abc',
+      failure_class: 'INFRA_TRANSIENT',
+      action: 'rerun_failed_jobs',
+    },
+    policy,
+    {
+      current_head_sha: 'abc',
+      files: [],
+      run_head_sha: 'def',
+      run_pr_number: 16,
+      run_event: 'pull_request',
+      run_status: 'completed',
+      run_conclusion: 'failure',
+      run_attempt: 1,
+    },
+  );
+  assert.equal(decision.allowed, false);
+  assert.match(decision.reasons.join(' '), /run head sha/);
+});
+
+test('blocks non-PR and non-failed workflow runs', () => {
+  const decision = evaluateRepairRequest(
+    {
+      work_id: 'sf-run-event',
+      pr_number: 17,
+      expected_head_sha: 'abc',
+      failure_class: 'INFRA_TRANSIENT',
+      action: 'rerun_failed_jobs',
+    },
+    policy,
+    {
+      current_head_sha: 'abc',
+      files: [],
+      run_head_sha: 'abc',
+      run_pr_number: 17,
+      run_event: 'workflow_dispatch',
+      run_status: 'completed',
+      run_conclusion: 'success',
+      run_attempt: 1,
+    },
+  );
+  assert.equal(decision.allowed, false);
+  assert.match(decision.reasons.join(' '), /not pull_request/);
+  assert.match(decision.reasons.join(' '), /not failed/);
 });
