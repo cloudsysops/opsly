@@ -7,7 +7,7 @@ import {
 
 const policy = {
   max_auto_attempts: 1,
-  auto_actions: { 'INFRA/TRANSIENT': ['rerun_failed_jobs'] },
+  auto_actions: { 'INFRA_TRANSIENT': ['rerun_failed_jobs'] },
   protected_patterns: ['peskids', 'production', 'n8n', 'supabase/migrations/'],
   forbidden_actions: ['merge', 'deploy'],
 };
@@ -18,7 +18,7 @@ test('allows one bounded transient CI rerun on an unchanged non-protected head',
       work_id: 'sf-1',
       pr_number: 10,
       expected_head_sha: 'abc',
-      failure_class: 'INFRA/TRANSIENT',
+      failure_class: 'infra/transient',
       action: 'rerun_failed_jobs',
       attempt: 0,
       affected_paths: ['apps/admin/page.tsx'],
@@ -53,7 +53,7 @@ test('blocks protected product and production surfaces', () => {
       work_id: 'sf-3',
       pr_number: 12,
       expected_head_sha: 'abc',
-      failure_class: 'INFRA/TRANSIENT',
+      failure_class: 'infra/transient',
       action: 'rerun_failed_jobs',
       attempt: 0,
     },
@@ -70,7 +70,7 @@ test('blocks stale repair requests after the PR head moves', () => {
       work_id: 'sf-4',
       pr_number: 13,
       expected_head_sha: 'old',
-      failure_class: 'INFRA/TRANSIENT',
+      failure_class: 'infra/transient',
       action: 'rerun_failed_jobs',
       attempt: 0,
     },
@@ -87,7 +87,7 @@ test('enforces max automatic repair attempts', () => {
       work_id: 'sf-5',
       pr_number: 14,
       expected_head_sha: 'abc',
-      failure_class: 'INFRA/TRANSIENT',
+      failure_class: 'infra/transient',
       action: 'rerun_failed_jobs',
       attempt: 1,
     },
@@ -96,4 +96,22 @@ test('enforces max automatic repair attempts', () => {
   );
   assert.equal(decision.allowed, false);
   assert.match(decision.reasons.join(' '), /attempt limit/);
+});
+
+
+test('normalizes legacy separators into the Mission Control failure taxonomy', () => {
+  const decision = evaluateRepairRequest(
+    {
+      work_id: 'sf-legacy',
+      pr_number: 15,
+      expected_head_sha: 'abc',
+      failure_class: 'infra/transient',
+      action: 'rerun_failed_jobs',
+      attempt: 0,
+    },
+    policy,
+    { current_head_sha: 'abc', files: [] },
+  );
+  assert.equal(decision.failure_class, 'INFRA_TRANSIENT');
+  assert.equal(decision.allowed, true);
 });
