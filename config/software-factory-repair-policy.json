@@ -4,16 +4,16 @@
   "max_auto_attempts": 1,
   "require_expected_head_sha": true,
   "auto_actions": {
-    "INFRA/TRANSIENT": [
+    "INFRA_TRANSIENT": [
       "rerun_failed_jobs"
     ]
   },
   "manual_only_failure_classes": [
     "CODE",
-    "POLICY/GATE",
-    "UPSTREAM DEPENDENCY",
-    "RUNTIME UNAVAILABLE",
-    "EVIDENCE INSUFFICIENT",
+    "POLICY_GATE",
+    "UPSTREAM_DEPENDENCY",
+    "RUNTIME_UNAVAILABLE",
+    "EVIDENCE_INSUFFICIENT",
     "BLOCKED_ACCESS"
   ],
   "protected_patterns": [
