@@ -21,6 +21,9 @@ export type AssignAgentTaskInput = {
   repoRoot?: string;
   registry?: ExternalAgentRegistryFile;
   policyOptions?: EvaluatePolicyOptions;
+  excludedAgents?: string[];
+  requireReadOnlyAgent?: boolean;
+  requiredCapabilities?: string[];
 };
 
 export type AssignAgentTaskResult = {
@@ -71,7 +74,11 @@ export async function assignAgentTask(input: AssignAgentTaskInput): Promise<Assi
     executionMode: input.executionMode ?? 'dry_run',
   });
 
-  const route = routeAgentTask(registry, draft);
+  const route = routeAgentTask(registry, draft, {
+    excludeAgents: input.excludedAgents,
+    requireReadOnly: input.requireReadOnlyAgent,
+    requiredCapabilities: input.requiredCapabilities,
+  });
   if (!route.selected_agent) {
     throw new Error(
       `No compatible agent for task_type=${taskType}: ${route.rationale_codes.join(',')}`
@@ -101,6 +108,9 @@ export async function assignAgentTask(input: AssignAgentTaskInput): Promise<Assi
     metadata: {
       registry_worker_id: route.selected_agent,
       rationale_codes: route.rationale_codes,
+      excluded_agents: input.excludedAgents ?? [],
+      required_capabilities: input.requiredCapabilities ?? [],
+      require_read_only_agent: input.requireReadOnlyAgent ?? false,
     },
   });
 
@@ -114,4 +124,32 @@ export async function assignAgentTask(input: AssignAgentTaskInput): Promise<Assi
     rationale_codes: route.rationale_codes,
     rejected_candidates: route.rejected_candidates,
   };
+}
+
+
+export type AssignIndependentVerifierTaskInput = Omit<
+  AssignAgentTaskInput,
+  'taskType' | 'writeAllowed' | 'excludedAgents' | 'requireReadOnlyAgent' | 'requiredCapabilities'
+> & {
+  builderAgent: string;
+};
+
+export async function assignIndependentVerifierTask(
+  input: AssignIndependentVerifierTaskInput
+): Promise<AssignAgentTaskResult> {
+  const builderAgent = input.builderAgent.trim();
+  if (!builderAgent) {
+    throw new Error('builderAgent is required for independent verifier routing');
+  }
+
+  return assignAgentTask({
+    ...input,
+    taskType: 'review',
+    requestedAgent: input.requestedAgent ?? 'claude-code',
+    writeAllowed: false,
+    skills: [...(input.skills ?? []), 'sierra-independent-verifier'],
+    excludedAgents: [builderAgent],
+    requireReadOnlyAgent: true,
+    requiredCapabilities: ['independent-verification'],
+  });
 }
