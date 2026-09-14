@@ -26,8 +26,8 @@ BRANCH="${PC_GAMER_BRANCH:-main}"
 MACHINE_CLAIM_NAME="${PC_GAMER_MACHINE_CLAIM_NAME:-pc-gamer}"
 MACHINE_CLAIM_HOLDER="${MACHINE_CLAIM_HOLDER:-${USER:-unknown}@$(hostname -s 2>/dev/null || echo local)-$$}"
 MACHINE_CLAIM_TTL="${MACHINE_CLAIM_TTL:-900}"
-MACHINE_CLAIM_SKIP="${MACHINE_CLAIM_SKIP:-false}"
 MACHINE_CLAIM_HELD=false
+MACHINE_CLAIM_HEARTBEAT_PID=""
 
 for arg in "$@"; do
   case "$arg" in
@@ -70,14 +70,9 @@ run() {
 }
 
 acquire_machine_claim() {
-  if [[ "$MACHINE_CLAIM_SKIP" == "true" ]]; then
-    echo "[reconnect] MACHINE_CLAIM_SKIP=true — proceeding WITHOUT mutual exclusion, at your own risk" >&2
-    return 0
-  fi
   if [[ -z "${REDIS_URL:-}" ]]; then
     echo "[reconnect] ERROR: REDIS_URL is required to claim exclusive access to $MACHINE_CLAIM_NAME" >&2
     echo "[reconnect]   run this via: doppler run --project ops-intcloudsysops --config prd -- $0 ..." >&2
-    echo "[reconnect]   (or set MACHINE_CLAIM_SKIP=true to proceed unsafely — two agents can then race and thrash the machine, as happened 2026-09-13/14)" >&2
     return 1
   fi
   local result
@@ -88,13 +83,36 @@ acquire_machine_claim() {
   fi
   echo "[reconnect] machine claim acquired: $result"
   MACHINE_CLAIM_HELD=true
-  trap 'release_machine_claim' EXIT
+  start_machine_claim_heartbeat
+  trap 'release_machine_claim' EXIT INT TERM
   return 0
 }
 
+start_machine_claim_heartbeat() {
+  local interval=$(( MACHINE_CLAIM_TTL / 3 ))
+  (( interval < 30 )) && interval=30
+  (
+    while true; do
+      sleep "$interval"
+      if ! node "$SCRIPT_DIR/machine-claim.mjs" acquire --machine "$MACHINE_CLAIM_NAME" --holder "$MACHINE_CLAIM_HOLDER" --ttl "$MACHINE_CLAIM_TTL" >/dev/null; then
+        echo "[reconnect] ERROR: lost machine claim for $MACHINE_CLAIM_NAME; refusing further work" >&2
+        kill -TERM "$" 2>/dev/null || true
+        exit 1
+      fi
+    done
+  ) &
+  MACHINE_CLAIM_HEARTBEAT_PID=$!
+}
+
 release_machine_claim() {
+  if [[ -n "$MACHINE_CLAIM_HEARTBEAT_PID" ]]; then
+    kill "$MACHINE_CLAIM_HEARTBEAT_PID" >/dev/null 2>&1 || true
+    wait "$MACHINE_CLAIM_HEARTBEAT_PID" 2>/dev/null || true
+    MACHINE_CLAIM_HEARTBEAT_PID=""
+  fi
   [[ "$MACHINE_CLAIM_HELD" == "true" ]] || return 0
   node "$SCRIPT_DIR/machine-claim.mjs" release --machine "$MACHINE_CLAIM_NAME" --holder "$MACHINE_CLAIM_HOLDER" >/dev/null 2>&1 || true
+  MACHINE_CLAIM_HELD=false
 }
 
 wait_ssh() {
