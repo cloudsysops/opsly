@@ -57,6 +57,25 @@ export type OpenClawSnapshot = {
   generated_at: string;
 };
 
+export type HermesMetricsSnapshot = {
+  ok: boolean;
+  tasks_by_state: Record<string, number>;
+  metrics: Array<Record<string, unknown>>;
+  workflows: Array<{
+    workflow_id?: string;
+    name?: string;
+    status?: string;
+    updated_at?: string;
+  }>;
+  audit_recent: Array<Record<string, unknown>>;
+  errors: {
+    state?: string;
+    metrics?: string;
+    workflows?: string;
+    audit?: string;
+  };
+};
+
 export type PoppingSubagentRiskLevel = 'low' | 'medium' | 'high';
 
 export type PoppingSubagentRole = {
