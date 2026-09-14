@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { NextResponse } from 'next/server';
 import { requireAdminAccess } from '../../../../../lib/auth';
+import { detectCanonicalDispatchAdmission } from '../../../../../lib/mission-control-execution-source-admission';
 
 function resolveRepoRoot(): string {
   const cwd = process.cwd();
@@ -21,16 +22,6 @@ function resolveRepoRoot(): string {
   return cwd;
 }
 
-
-export function detectCanonicalDispatchAdmission(queueSubmitter: string): boolean {
-  return (
-    queueSubmitter.includes("dispatch_contract_version: 'dispatch-claim-v1'") &&
-    queueSubmitter.includes('/api/local/prompt-submit') &&
-    queueSubmitter.includes("'x-autonomy-approved': 'true'") &&
-    queueSubmitter.includes('conflict_key: String(meta.conflict_key)') &&
-    queueSubmitter.includes('workstream: String(meta.workstream)')
-  );
-}
 
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireAdminAccess(request);
