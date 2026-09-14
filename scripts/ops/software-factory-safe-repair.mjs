@@ -1,8 +1,15 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { execFile } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { evaluateRepairRequest } from './lib/software-factory-repair-policy.mjs';
+import { promisify } from 'node:util';
+import {
+  classifyVerifiedFailure,
+  evaluateRepairRequest,
+} from './lib/software-factory-repair-policy.mjs';
+
+const execFileAsync = promisify(execFile);
 
 const CANONICAL_REPOSITORY = 'cloudsysops/opsly';
 const TRUSTED_ROOT_ENV = 'OPSLY_SAFE_REPAIR_TRUSTED_ROOT';
@@ -15,6 +22,26 @@ function resolveTrustedApplyRoot() {
   }
   return path.resolve(value);
 }
+
+async function assertTrustedMainCheckout(root) {
+  const [head, main, status] = await Promise.all([
+    execFileAsync('git', ['-C', root, 'rev-parse', 'HEAD']).then(({ stdout }) => stdout.trim()),
+    execFileAsync('git', ['-C', root, 'rev-parse', 'origin/main']).then(({ stdout }) => stdout.trim()),
+    execFileAsync('git', ['-C', root, 'status', '--porcelain']).then(({ stdout }) => stdout.trim()),
+  ]);
+
+  if (!/^[0-9a-f]{40}$/i.test(head) || !/^[0-9a-f]{40}$/i.test(main)) {
+    throw new Error('trusted Safe Repair checkout lacks valid git SHA evidence');
+  }
+  if (head !== main) {
+    throw new Error('OPSLY_SAFE_REPAIR_TRUSTED_ROOT must be checked out exactly at origin/main');
+  }
+  if (status) {
+    throw new Error('OPSLY_SAFE_REPAIR_TRUSTED_ROOT must be a clean worktree');
+  }
+  return head;
+}
+
 
 function parseArgs(argv) {
   const args = { request: null, policy: 'config/software-factory-repair-policy.json', apply: false };
@@ -41,6 +68,7 @@ if (args.apply) {
   if (invokedPath !== path.resolve(canonicalExecutorPath)) {
     throw new Error('--apply must execute the Safe Repair script from OPSLY_SAFE_REPAIR_TRUSTED_ROOT');
   }
+  await assertTrustedMainCheckout(trustedRoot);
 }
 
 const requestedPolicyPath = args.apply ? canonicalPolicyPath : path.resolve(args.policy);
@@ -132,33 +160,6 @@ async function ghRunJobs(runId) {
     if (payload.jobs.length < 100) break;
   }
   throw new Error('workflow run jobs pagination incomplete');
-}
-
-function classifyVerifiedFailure(jobs, policy) {
-  if (!Array.isArray(jobs) || jobs.length === 0) return 'UNKNOWN';
-
-  for (const job of jobs) {
-    const status = String(job?.status || '').toLowerCase();
-    const conclusion = String(job?.conclusion || '').toLowerCase();
-    if (status !== 'completed' || !conclusion) return 'UNKNOWN';
-  }
-
-  const failed = jobs.filter((job) => {
-    const conclusion = String(job?.conclusion || '').toLowerCase();
-    return !['success', 'neutral', 'skipped'].includes(conclusion);
-  });
-  if (failed.length === 0) return 'UNKNOWN';
-
-  const transient = new Set(
-    Array.isArray(policy?.transient_conclusions)
-      ? policy.transient_conclusions.map((value) => String(value).toLowerCase())
-      : ['timed_out', 'startup_failure', 'stale'],
-  );
-  // 'cancelled' is intentionally not auto-transient: it may be operator or
-  // cancel-in-progress behavior rather than infrastructure failure.
-  return failed.every((job) => transient.has(String(job?.conclusion || '').toLowerCase()))
-    ? 'INFRA_TRANSIENT'
-    : 'UNKNOWN';
 }
 
 async function acquireRepairLock(repository, runId, runAttempt, workId) {
