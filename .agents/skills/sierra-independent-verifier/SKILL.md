@@ -49,3 +49,14 @@ Decision must be one of:
 - `BLOCKED` — evidence is missing, stale, incomplete, or independence is not established.
 
 For findings, use severity prefixes `P0`, `P1`, or `P2` and give file/line/evidence when available.
+
+## Signed runtime handback
+
+When running as an Opsly runtime verifier (for example `claude-code`), the result must be signed before it can count as trusted runtime evidence.
+
+1. Include `verifier_agent`, `builder_agent`, `execution_id`, exact `head_sha`, decision, findings and checks.
+2. Run `node scripts/ops/sign-independent-verifier-evidence.mjs evidence.json`.
+3. Relay the emitted marker into the PR.
+
+The signer requires `SIERRA_VERIFIER_SIGNING_KEY`. Never print or include the key itself.
+If the key is unavailable, return `BLOCKED`; unsigned runtime evidence does not satisfy sensitive quorum.
