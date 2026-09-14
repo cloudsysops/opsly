@@ -9,8 +9,11 @@ Only a single **failed GitHub Actions rerun** is automatically eligible, and onl
 - failure class is `INFRA_TRANSIENT`;
 - action is `rerun_failed_jobs`;
 - PR head still equals the requested `expected_head_sha`;
-- affected paths are outside protected surfaces;
-- the automatic attempt budget is not exhausted.
+- affected paths are outside the **canonical** protected-surface policy in `config/pr-reconciliation-policy.json`;
+- the workflow run belongs to the requested PR and exact final head SHA;
+- the workflow run is a completed failed `pull_request` run;
+- the automatic attempt budget is derived from GitHub's real `run_attempt`, not caller input;
+- PR files are paginated to completion; incomplete protection evidence fails closed.
 
 Everything else is blocked for another governed lane.
 
@@ -37,7 +40,6 @@ Everything else is blocked for another governed lane.
   "failure_class": "INFRA_TRANSIENT",
   "action": "rerun_failed_jobs",
   "run_id": 456,
-  "attempt": 0,
   "affected_paths": ["apps/admin"]
 }
 ```
