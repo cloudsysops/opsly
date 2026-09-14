@@ -20,8 +20,8 @@ export function evaluateRepairRequest(request, policy, evidence = {}) {
   const reasons = [];
   const failureClass = normalizedFailureClass(request?.failure_class);
   const action = String(request?.action || '').trim();
-  const attempt = Number(request?.attempt ?? 0);
   const expectedHeadSha = String(request?.expected_head_sha || '').trim();
+  const runAttempt = Number(evidence?.run_attempt ?? 1);
 
   if (!request?.work_id) reasons.push('missing work_id');
   if (!Number.isInteger(Number(request?.pr_number)) || Number(request?.pr_number) <= 0) {
@@ -29,7 +29,11 @@ export function evaluateRepairRequest(request, policy, evidence = {}) {
   }
   if (!expectedHeadSha) reasons.push('missing expected_head_sha');
   if (!action) reasons.push('missing action');
-  if (attempt >= Number(policy?.max_auto_attempts ?? 0)) reasons.push('auto repair attempt limit reached');
+  if (!Number.isInteger(runAttempt) || runAttempt <= 0) {
+    reasons.push('invalid workflow run_attempt evidence');
+  } else if (runAttempt > Number(policy?.max_auto_attempts ?? 0)) {
+    reasons.push('auto repair attempt limit reached');
+  }
 
   const allowedActions = policy?.auto_actions?.[failureClass] || [];
   if (!allowedActions.includes(action)) {
@@ -42,6 +46,25 @@ export function evaluateRepairRequest(request, policy, evidence = {}) {
 
   if (evidence.current_head_sha && evidence.current_head_sha !== expectedHeadSha) {
     reasons.push('head sha changed since repair request');
+  }
+
+  if (evidence.run_head_sha && evidence.run_head_sha !== expectedHeadSha) {
+    reasons.push('workflow run head sha does not match repair head');
+  }
+  if (
+    Number.isInteger(Number(evidence.run_pr_number)) &&
+    Number(evidence.run_pr_number) !== Number(request?.pr_number)
+  ) {
+    reasons.push('workflow run is not bound to requested pull request');
+  }
+  if (evidence.run_event && evidence.run_event !== 'pull_request') {
+    reasons.push('workflow run event is not pull_request');
+  }
+  if (evidence.run_status && evidence.run_status !== 'completed') {
+    reasons.push('workflow run is not completed');
+  }
+  if (evidence.run_conclusion && evidence.run_conclusion !== 'failure') {
+    reasons.push('workflow run is not failed');
   }
 
   if (
