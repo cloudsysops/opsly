@@ -133,3 +133,72 @@ test('does not pretend persistent learning exists', () => {
   assert.equal(snapshot.learning_state.adaptive_routing, false);
   assert.equal(snapshot.learning_state.canonical_task_ids_visible, null);
 });
+
+
+test('malformed workstream arrays fail closed and suppress derived recommendations', () => {
+  const bad = completeWorkstreams();
+  bad.active_claims = [{ nope: 'missing-work-id' }];
+  bad.runtime_sessions = [{ status: 'teleporting' }];
+  bad.pull_requests = [{ verifier: 'MAYBE', check_state: 'PASS', merge_readiness: 'READY' }];
+
+  const snapshot = buildFactoryTelemetry({
+    workstreams: bad,
+    reconciliation: reconciliation(),
+    policy,
+  });
+
+  assert.equal(snapshot.confidence, 'PARTIAL');
+  assert.equal(snapshot.sources.claims_observed, false);
+  assert.equal(snapshot.sources.runtime_sessions_observed, false);
+  assert.equal(snapshot.sources.github_observed, false);
+  assert.equal(snapshot.metrics.active_claims, null);
+  assert.equal(snapshot.metrics.live_runtime_sessions, null);
+  assert.equal(snapshot.metrics.verifier_coverage, null);
+  assert.equal(
+    snapshot.recommendations.some((item) => item.id === 'raise-verifier-coverage'),
+    false,
+  );
+});
+
+test('producer source errors propagate and prevent COMPLETE confidence', () => {
+  const workstreams = {
+    ...completeWorkstreams(),
+    source_errors: ['github page 2 fetch failed'],
+  };
+  const recon = {
+    ...reconciliation(),
+    source_errors: ['inventory producer returned partial data'],
+  };
+
+  const snapshot = buildFactoryTelemetry({
+    workstreams,
+    reconciliation: recon,
+    policy,
+  });
+
+  assert.equal(snapshot.confidence, 'PARTIAL');
+  assert.ok(snapshot.source_errors.includes('github page 2 fetch failed'));
+  assert.ok(snapshot.source_errors.includes('inventory producer returned partial data'));
+});
+
+test('empty but explicitly observed evidence remains valid', () => {
+  const snapshot = buildFactoryTelemetry({
+    workstreams: {
+      claims_observed: true,
+      runtime_sessions_observed: true,
+      github_observed: true,
+      github_evidence_complete: true,
+      active_claims: [],
+      completed_claim_tombstones: 0,
+      runtime_sessions: [],
+      pull_requests: [],
+    },
+    reconciliation: { mode: 'READ_ONLY', pullRequests: [] },
+    policy,
+  });
+
+  assert.equal(snapshot.confidence, 'COMPLETE');
+  assert.equal(snapshot.metrics.active_claims, 0);
+  assert.equal(snapshot.metrics.evidenced_pull_requests, 0);
+  assert.equal(snapshot.metrics.verifier_coverage, null);
+});
