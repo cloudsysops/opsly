@@ -7,6 +7,35 @@ export type TrustLevel =
 
 export type ReviewDecision = 'approved' | 'request_changes' | 'needs_human';
 
+export type VerifierSpecialty =
+  | 'architecture'
+  | 'security'
+  | 'ci'
+  | 'ownership'
+  | 'blast-radius';
+
+export type IndependentVerifierDecision = 'PASS' | 'FAIL' | 'BLOCKED';
+
+export type VerifierQualification = {
+  profile_id: string;
+  agent_id: string;
+  model_family: string;
+  trust_level: TrustLevel;
+  independence_group: string;
+  specialties: VerifierSpecialty[];
+};
+
+export type IndependentVerifierEvidence = {
+  schema_version: 'IndependentVerifierEvidenceV1';
+  head_sha: string;
+  decision: IndependentVerifierDecision;
+  specialties_checked: VerifierSpecialty[];
+  findings: string[];
+  checks: string[];
+  reviewed_at: string;
+};
+
+
 /** Canonical task identity = AgentTaskEnvelopeV1.request_id */
 export type CanonicalTaskId = string;
 
