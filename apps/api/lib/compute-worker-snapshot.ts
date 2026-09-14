@@ -21,7 +21,10 @@ export interface ComputeWorkersRegistry {
     vramBusyThresholdPct?: number;
     heartbeatStaleSec?: number;
   };
-  jobTypes: Record<string, { queue: string; requires?: string[]; minVramGb?: number; status?: string }>;
+  jobTypes: Record<
+    string,
+    { queue: string; requires?: string[]; minVramGb?: number; status?: string }
+  >;
   workers: ComputeWorkerRecord[];
 }
 
@@ -92,7 +95,7 @@ export function classifyComputeStatus(input: {
 export function buildComputeWorkerSnapshot(
   heartbeats: Record<string, string | null>,
   queues: Record<string, { waiting: number; active: number; completed: number; failed: number }>,
-  now = new Date(),
+  now = new Date()
 ): {
   rule: string;
   generatedAt: string;
