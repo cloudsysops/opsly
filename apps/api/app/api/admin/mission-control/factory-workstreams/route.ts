@@ -205,9 +205,8 @@ function parseEvidenceMarker(body: string): Marker | null {
 }
 
 function fallbackBodyField(body: string, label: string): string | null {
-  const escaped = label.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
   const pattern = new RegExp(
-    '(?:^|\\n)-?\\s*' + escaped + ':\\s*`?([^\\n`]+)`?',
+    '(?:^|\\n)-?\\s*' + label + ':\\s*`?([^\\n`]+)`?',
     'i',
   );
   return body.match(pattern)?.[1]?.trim() || null;
@@ -218,7 +217,7 @@ function fallbackWorkId(body: string): string | null {
 }
 
 function fallbackTransport(body: string): GitHubWorkItem['transport'] {
-  if (/Dispatch-Claim:\\s*(?!none\\b)[^\\n]+/i.test(body)) return 'autonomous';
+  if (/Dispatch-Claim:\s*(?!none\b)[^\n]+/i.test(body)) return 'autonomous';
   return 'unknown';
 }
 function checkState(
