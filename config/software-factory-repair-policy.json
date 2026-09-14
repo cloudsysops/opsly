@@ -16,24 +16,6 @@
     "EVIDENCE_INSUFFICIENT",
     "BLOCKED_ACCESS"
   ],
-  "protected_patterns": [
-    "peskids",
-    "production",
-    "n8n",
-    "doppler",
-    "dns",
-    "traefik",
-    "supabase/migrations/",
-    "/migrations/",
-    "apps/orchestrator/",
-    "packages/agent-task-core/",
-    "packages/git-branch-orchestrator/",
-    "infra/docker-compose",
-    ".github/workflows/deploy",
-    ".github/workflows/production-change-window",
-    "/prod/",
-    "prod-"
-  ],
   "forbidden_actions": [
     "merge",
     "deploy",
@@ -43,5 +25,6 @@
     "change_routing",
     "run_migration",
     "modify_n8n_side_effects"
-  ]
+  ],
+  "protected_policy_path": "config/pr-reconciliation-policy.json"
 }
