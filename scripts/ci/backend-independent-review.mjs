@@ -130,9 +130,14 @@ async function fetchDiff(pr, token) {
 }
 
 /**
- * Un solo call al LLM Gateway, mismo contrato que
- * lib/content-studio/src/llm/client.ts (GatewayClient.review):
- * POST /v1/chat { tenant_slug, system, messages, max_tokens, model, feature }.
+ * Un solo call al LLM Gateway. Contrato real (no el de
+ * lib/content-studio/src/llm/client.ts, que apunta a /v1/chat — esa ruta no
+ * existe en el server; ver apps/llm-gateway/src/health-server.ts):
+ * POST /v1/text { tenant_slug, prompt, system, task_type, request_id, feature }
+ * → { content, llm: {...}, request_id }
+ * (apps/llm-gateway/src/text-completion-route.ts). Nota: esta ruta fuerza
+ * routing_bias=cost / model=cheap del lado del servidor — no hay forma de
+ * pedir un modelo específico por este endpoint hoy.
  */
 async function reviewWithGateway({ pr, diff, failingChecks }) {
   const system = [
@@ -147,7 +152,7 @@ async function reviewWithGateway({ pr, diff, failingChecks }) {
     'real, usa el formato 1.',
   ].join('\n');
 
-  const user = [
+  const prompt = [
     `PR #${pr.number}: ${pr.title}`,
     failingChecks.length
       ? `Checks de CI en rojo ahora mismo: ${failingChecks.join(', ')}`
@@ -157,15 +162,14 @@ async function reviewWithGateway({ pr, diff, failingChecks }) {
     diff,
   ].join('\n');
 
-  const resp = await fetch(`${GATEWAY_URL}/v1/chat`, {
+  const resp = await fetch(`${GATEWAY_URL}/v1/text`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       tenant_slug: TENANT_SLUG,
+      prompt,
       system,
-      messages: [{ role: 'user', content: user }],
-      max_tokens: 1200,
-      model: 'sonnet',
+      task_type: 'review',
       skip_repo_context: true,
       feature: 'independent_review',
       request_id: `backend-independent-review:${pr.number}:${pr.head.sha.slice(0, 8)}`,
@@ -263,6 +267,8 @@ async function main() {
       verdict = await reviewWithGateway({ pr, diff, failingChecks: failing });
     } catch (error) {
       console.error(`#${pr.number} error generando review: ${error.message}`);
+      // No dejar que CI reporte "success" cuando en realidad no se posteó nada.
+      process.exitCode = 1;
       continue;
     }
 
