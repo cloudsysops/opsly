@@ -350,6 +350,7 @@ jobs:
         run: |
           node --check scripts/ops/independent-verifier-workpack.mjs
           node --check scripts/ops/sign-independent-verifier-evidence.mjs
+          node scripts/ci/validate-independent-verifier-qualification.mjs
           node --test scripts/ci/__tests__/independent-review-gate.test.mjs scripts/ci/__tests__/qualified-independent-verifier.test.mjs
 
       - name: Peskids Docker next-build flags (no --webpack on Next 15.5)
