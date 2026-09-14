@@ -45,6 +45,17 @@ export function trustAtLeast(actual, minimum) {
   return (TRUST_RANK.get(String(actual)) ?? -1) >= (TRUST_RANK.get(String(minimum)) ?? 99);
 }
 
+export function verifierProfileIsQualified(profile, policy = {}) {
+  if (!profile || typeof profile !== 'object') return false;
+  if (!trustAtLeast(profile.trust_level, policy.minimum_trust_level ?? 'trusted')) return false;
+  if (profile.qualification?.status !== 'qualified') return false;
+  const expectedSuite = String(policy.qualification_eval_suite || '');
+  if (!expectedSuite) return false;
+  if (profile.qualification?.eval_suite !== expectedSuite) return false;
+  const requiredPassRate = Number(profile.qualification?.minimum_pass_rate);
+  return Number.isFinite(requiredPassRate) && requiredPassRate >= 1;
+}
+
 export function classifySensitiveSurfaces(files = [], policy = {}) {
   const paths = files
     .map((file) => normalizePath(typeof file === 'string' ? file : file?.filename))
@@ -183,6 +194,7 @@ export function collectQualifiedVerifierEvidence({
       if (
         runtimeProfile &&
         trustAtLeast(runtimeProfile.trust_level, minimumTrust) &&
+        verifierProfileIsQualified(runtimeProfile, policy) &&
         structured.builder_agent &&
         structured.builder_agent !== structured.verifier_agent
       ) {
@@ -226,6 +238,7 @@ export function collectQualifiedVerifierEvidence({
     const profile = profiles[login];
     if (!login || !profile || login === author) continue;
     if (!trustAtLeast(profile.trust_level, minimumTrust)) continue;
+    if (!verifierProfileIsQualified(profile, policy)) continue;
 
     let reviewedSha = null;
     let decision = null;
