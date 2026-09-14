@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
         '@redis/graph',
         '@redis/json',
         '@redis/search',
-        '@redis/time-series',
+        '@redis/time-series'
       );
     }
     config.resolve.extensionAlias = {
