@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import { evaluateRepairRequest } from './lib/software-factory-repair-policy.mjs';
+
+const CANONICAL_POLICY_PATH = path.resolve('config/software-factory-repair-policy.json');
+const CANONICAL_PROTECTED_POLICY_PATH = path.resolve('config/pr-reconciliation-policy.json');
+const REPAIR_LOCK_TTL_SECONDS = 24 * 60 * 60;
 
 function parseArgs(argv) {
   const args = { request: null, policy: 'config/software-factory-repair-policy.json', apply: false };
@@ -16,17 +21,25 @@ function parseArgs(argv) {
 
 const args = parseArgs(process.argv);
 const request = JSON.parse(await fs.readFile(args.request, 'utf8'));
-const policy = JSON.parse(await fs.readFile(args.policy, 'utf8'));
-const protectedPolicyPath = String(
-  policy.protected_policy_path || 'config/pr-reconciliation-policy.json'
-);
+const requestedPolicyPath = path.resolve(args.policy);
+if (args.apply && requestedPolicyPath !== CANONICAL_POLICY_PATH) {
+  throw new Error('--apply requires the canonical software-factory repair policy');
+}
+const policy = JSON.parse(await fs.readFile(requestedPolicyPath, 'utf8'));
+const protectedPolicyPath = args.apply
+  ? CANONICAL_PROTECTED_POLICY_PATH
+  : path.resolve(String(policy.protected_policy_path || 'config/pr-reconciliation-policy.json'));
 const protectedPolicy = JSON.parse(await fs.readFile(protectedPolicyPath, 'utf8'));
 const canonicalProtectedPatterns = protectedPolicy?.protected?.patterns;
 if (!Array.isArray(canonicalProtectedPatterns) || canonicalProtectedPatterns.length === 0) {
   throw new Error('canonical protected-surface policy is missing or empty');
 }
 policy.protected_patterns = canonicalProtectedPatterns;
-const repository = request.repository || process.env.GITHUB_REPOSITORY || 'cloudsysops/opsly';
+const canonicalRepository = process.env.GITHUB_REPOSITORY || 'cloudsysops/opsly';
+const repository = request.repository || canonicalRepository;
+if (args.apply && repository !== canonicalRepository) {
+  throw new Error('--apply is restricted to the canonical repository');
+}
 const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const [owner, repo] = repository.split('/');
 
@@ -51,16 +64,82 @@ async function gh(path, init = {}) {
   return response.json();
 }
 
-async function ghPaged(path) {
+async function ghPaged(path, expectedCount = null) {
   const values = [];
   for (let page = 1; page <= 100; page += 1) {
     const separator = path.includes('?') ? '&' : '?';
     const batch = await gh(`${path}${separator}per_page=100&page=${page}`);
     if (!Array.isArray(batch)) throw new Error(`expected array from GitHub endpoint ${path}`);
     values.push(...batch);
-    if (batch.length < 100) return values;
+    if (expectedCount !== null && values.length >= expectedCount) {
+      if (values.length !== expectedCount) {
+        throw new Error(`GitHub file count mismatch for ${path}`);
+      }
+      return values;
+    }
+    if (batch.length < 100) {
+      if (expectedCount !== null && values.length !== expectedCount) {
+        throw new Error(
+          `GitHub file listing incomplete: observed ${values.length}, expected ${expectedCount}`
+        );
+      }
+      return values;
+    }
   }
   throw new Error(`GitHub pagination exceeded safe cap for ${path}; refusing incomplete repair evidence`);
+}
+
+async function ghRunJobs(runId) {
+  const jobs = [];
+  let expectedCount = null;
+  for (let page = 1; page <= 20; page += 1) {
+    const payload = await gh(
+      `/repos/${owner}/${repo}/actions/runs/${runId}/jobs?per_page=100&page=${page}`
+    );
+    if (!payload || !Array.isArray(payload.jobs) || !Number.isInteger(Number(payload.total_count))) {
+      throw new Error('workflow run jobs returned incomplete evidence');
+    }
+    if (expectedCount === null) expectedCount = Number(payload.total_count);
+    jobs.push(...payload.jobs);
+    if (jobs.length >= expectedCount) {
+      if (jobs.length !== expectedCount) throw new Error('workflow run jobs count mismatch');
+      return jobs;
+    }
+    if (payload.jobs.length < 100) break;
+  }
+  throw new Error('workflow run jobs pagination incomplete');
+}
+
+function classifyVerifiedFailure(jobs) {
+  const failed = jobs.filter((job) => {
+    const status = String(job?.status || '').toLowerCase();
+    const conclusion = String(job?.conclusion || '').toLowerCase();
+    return status === 'completed' && conclusion && !['success', 'neutral', 'skipped'].includes(conclusion);
+  });
+  if (failed.length === 0) return 'UNKNOWN';
+  const transient = new Set(['timed_out', 'cancelled', 'startup_failure', 'stale']);
+  return failed.every((job) => transient.has(String(job?.conclusion || '').toLowerCase()))
+    ? 'INFRA_TRANSIENT'
+    : 'UNKNOWN';
+}
+
+async function acquireRepairLock(repository, runId, runAttempt, workId) {
+  const redisUrl = process.env.REDIS_URL?.trim();
+  if (!redisUrl) throw new Error('REDIS_URL is required for --apply idempotency');
+  const { createClient } = await import('redis');
+  const client = createClient({ url: redisUrl });
+  await client.connect();
+  const key = `opsly:safe-repair:v1:${repository}:${runId}:${runAttempt}`;
+  const result = await client.set(
+    key,
+    JSON.stringify({ work_id: workId, acquired_at: new Date().toISOString() }),
+    { NX: true, EX: REPAIR_LOCK_TTL_SECONDS },
+  );
+  if (result !== 'OK') {
+    await client.disconnect().catch(() => undefined);
+    throw new Error('safe repair already claimed/applied for this workflow run attempt');
+  }
+  return { client, key };
 }
 
 const prNumber = Number(request.pr_number);
@@ -69,27 +148,35 @@ if (!Number.isInteger(runId) || runId <= 0) {
   throw new Error('run_id is required for rerun_failed_jobs');
 }
 
-const [pull, files, run] = await Promise.all([
+const [pull, run, jobs] = await Promise.all([
   gh(`/repos/${owner}/${repo}/pulls/${prNumber}`),
-  ghPaged(`/repos/${owner}/${repo}/pulls/${prNumber}/files`),
   gh(`/repos/${owner}/${repo}/actions/runs/${runId}`),
+  ghRunJobs(runId),
 ]);
 
+const changedFiles = Number(pull?.changed_files);
+if (!Number.isInteger(changedFiles) || changedFiles < 0) {
+  throw new Error('pull request changed_files evidence is missing');
+}
+const files = await ghPaged(
+  `/repos/${owner}/${repo}/pulls/${prNumber}/files`,
+  changedFiles,
+);
+const runAttempt = Number(run?.run_attempt);
+const verifiedFailureClass = classifyVerifiedFailure(jobs);
 const runPullNumbers = Array.isArray(run?.pull_requests)
   ? run.pull_requests.map((item) => Number(item?.number)).filter(Number.isInteger)
   : [];
 const decision = evaluateRepairRequest(request, policy, {
   current_head_sha: pull?.head?.sha || null,
-  title: pull?.title || '',
-  body: pull?.body || '',
-  branch: pull?.head?.ref || '',
   files: files.map((file) => file.filename),
   run_head_sha: run?.head_sha || null,
   run_pr_number: runPullNumbers.length === 1 ? runPullNumbers[0] : null,
   run_event: run?.event || null,
   run_status: run?.status || null,
   run_conclusion: run?.conclusion || null,
-  run_attempt: Number(run?.run_attempt ?? 1),
+  run_attempt: runAttempt,
+  verified_failure_class: verifiedFailureClass,
 });
 
 if (!runPullNumbers.includes(prNumber)) {
@@ -111,9 +198,47 @@ if (decision.allowed && args.apply) {
   if (decision.action !== 'rerun_failed_jobs') {
     throw new Error(`unsupported safe repair action: ${decision.action}`);
   }
-  await gh(`/repos/${owner}/${repo}/actions/runs/${runId}/rerun-failed-jobs`, { method: 'POST' });
-  result.applied = true;
-  result.applied_at = new Date().toISOString();
+
+  const lock = await acquireRepairLock(repository, runId, runAttempt, request.work_id);
+  let keepLock = false;
+  try {
+    const [latestPull, latestRun] = await Promise.all([
+      gh(`/repos/${owner}/${repo}/pulls/${prNumber}`),
+      gh(`/repos/${owner}/${repo}/actions/runs/${runId}`),
+    ]);
+    const latestPullNumbers = Array.isArray(latestRun?.pull_requests)
+      ? latestRun.pull_requests.map((item) => Number(item?.number)).filter(Number.isInteger)
+      : [];
+    if (latestPull?.head?.sha !== request.expected_head_sha) {
+      throw new Error('pull request head changed before safe repair mutation');
+    }
+    if (latestRun?.head_sha !== request.expected_head_sha) {
+      throw new Error('workflow run head changed before safe repair mutation');
+    }
+    if (Number(latestRun?.run_attempt) !== runAttempt) {
+      throw new Error('workflow run attempt changed before safe repair mutation');
+    }
+    if (
+      latestRun?.event !== 'pull_request' ||
+      latestRun?.status !== 'completed' ||
+      latestRun?.conclusion !== 'failure' ||
+      !latestPullNumbers.includes(prNumber)
+    ) {
+      throw new Error('workflow run eligibility changed before safe repair mutation');
+    }
+
+    await gh(`/repos/${owner}/${repo}/actions/runs/${runId}/rerun-failed-jobs`, {
+      method: 'POST',
+    });
+    keepLock = true;
+    result.applied = true;
+    result.applied_at = new Date().toISOString();
+  } finally {
+    if (!keepLock) {
+      await lock.client.del(lock.key).catch(() => undefined);
+    }
+    await lock.client.disconnect().catch(() => undefined);
+  }
 }
 
 process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
