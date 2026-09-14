@@ -164,8 +164,224 @@ export function WorkstreamsExecutionPanel() {
     [factoryData, sourcesData],
   );
 
+  const audit = useMemo(() => {
+    const running = projection.activities.filter((activity) => activity.state === 'RUNNING').length;
+    const claimed = projection.activities.filter((activity) => activity.state === 'CLAIMED').length;
+    const review = projection.activities.filter((activity) => activity.state === 'REVIEW').length;
+    const mergeReady = projection.activities.filter(
+      (activity) => activity.state === 'MERGE_READY',
+    ).length;
+    const blocked = projection.activities.filter(
+      (activity) => activity.state === 'BLOCKED' || activity.state === 'ERROR',
+    ).length;
+
+    const liveWorkers =
+      sourcesData?.registered_workers.filter((worker) => worker.runtime_state === 'LIVE').length ?? 0;
+    const eligibleWorkers =
+      sourcesData?.registered_workers.filter((worker) => worker.dispatch_eligible).length ?? 0;
+    const policyLocked =
+      sourcesData?.registered_workers.filter(
+        (worker) => worker.runtime_state === 'LIVE' && !worker.enabled,
+      ).length ?? 0;
+
+    const observedSignals = [
+      sourcesData?.registry_driven_admission === true,
+      sourcesData?.handoff_available === true,
+      sourcesData?.runtime_fleet_observed === true,
+      factoryData?.claims_observed === true,
+      factoryData?.runtime_sessions_observed === true,
+      factoryData?.github_observed === true,
+    ].filter(Boolean).length;
+
+    const verifierObserved =
+      factoryData?.pull_requests.some(
+        (pr) =>
+          pr.verifier !== 'UNKNOWN' ||
+          pr.check_state !== 'UNKNOWN' ||
+          pr.merge_readiness !== 'UNKNOWN',
+      ) ?? false;
+
+    const sourceErrors = [
+      sourcesData?.runtime_fleet_error,
+      sourcesData?.error,
+      ...(factoryData?.errors ?? []),
+      sourcesError instanceof Error ? sourcesError.message : null,
+      factoryError instanceof Error ? factoryError.message : null,
+    ].filter((value): value is string => Boolean(value));
+
+    const state =
+      blocked > 0 || sourceErrors.length > 0
+        ? 'ATTENTION'
+        : running > 0 || claimed > 0 || review > 0
+          ? 'ADVANCING'
+          : mergeReady > 0
+            ? 'READY'
+            : observedSignals >= 5
+              ? 'STABLE'
+              : 'PARTIAL';
+
+    const nextActions: string[] = [];
+    if (sourcesData?.registry_driven_admission !== true) {
+      nextActions.push('Complete registry-driven autonomous admission.');
+    }
+    if (sourcesData?.handoff_available !== true) {
+      nextActions.push('Complete the governed human-relay handoff.');
+    }
+    if (sourcesData?.runtime_fleet_observed !== true) {
+      nextActions.push('Restore the external-agent fleet probe.');
+    }
+    if (factoryData?.runtime_sessions_observed !== true) {
+      nextActions.push('Restore live runtime-session evidence.');
+    }
+    if (blocked > 0) {
+      nextActions.push(`Repair ${blocked} blocked/error work item${blocked === 1 ? '' : 's'} within safe policy.`);
+    }
+    if (mergeReady > 0) {
+      nextActions.push(`Advance ${mergeReady} merge-ready item${mergeReady === 1 ? '' : 's'} through governed merge.`);
+    }
+    if (!verifierObserved) {
+      nextActions.push('Wire independent verifier evidence into the live factory read model.');
+    }
+    nextActions.push('Add persistent factory telemetry/history to close the learning loop.');
+
+    return {
+      running,
+      claimed,
+      review,
+      mergeReady,
+      blocked,
+      liveWorkers,
+      eligibleWorkers,
+      policyLocked,
+      observedSignals,
+      verifierObserved,
+      sourceErrors,
+      state,
+      nextActions: [...new Set(nextActions)].slice(0, 6),
+    };
+  }, [factoryData, factoryError, projection.activities, sourcesData, sourcesError]);
+
   return (
     <div className="space-y-5">
+      <section className="rounded-2xl border border-cyan-500/20 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,.10),transparent_36%),rgba(2,6,23,.78)] p-4">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.24em] text-cyan-400/70">
+              Sierra Control · live factory audit
+            </div>
+            <h2 className="mt-1 text-xl font-semibold text-slate-100">
+              System evolution
+            </h2>
+            <p className="mt-1 max-w-3xl text-xs text-slate-500">
+              One evidence-backed summary of whether the factory is observing, executing,
+              verifying and safely advancing work.
+            </p>
+          </div>
+          <div
+            className={`rounded-full border px-3 py-1 font-mono text-xs font-semibold ${
+              audit.state === 'ADVANCING' || audit.state === 'READY' || audit.state === 'STABLE'
+                ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                : audit.state === 'ATTENTION'
+                  ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
+                  : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+            }`}
+          >
+            {audit.state}
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+          {[
+            ['Signals', `${audit.observedSignals}/6`, 'observed control signals'],
+            ['Live agents', audit.liveWorkers, 'runtime health observed'],
+            ['Eligible', audit.eligibleWorkers, 'autonomous dispatch'],
+            ['Running', audit.running, 'evidenced sessions'],
+            ['Claimed', audit.claimed, 'owned work'],
+            ['Review', audit.review, 'GitHub lifecycle'],
+            ['Merge ready', audit.mergeReady, 'verified advancement'],
+            ['Blocked', audit.blocked, audit.policyLocked ? `${audit.policyLocked} policy locked` : 'needs repair'],
+          ].map(([label, value, detail]) => (
+            <div key={String(label)} className="rounded-xl border border-slate-800 bg-black/20 p-3">
+              <div className="text-[9px] uppercase tracking-[0.16em] text-slate-600">{label}</div>
+              <div className="mt-1 font-mono text-2xl font-semibold text-slate-100">{value}</div>
+              <div className="mt-1 text-[10px] text-slate-600">{detail}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 grid gap-4 xl:grid-cols-[1fr_1.25fr]">
+          <div className="rounded-xl border border-slate-800 bg-black/20 p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">
+              Improvement loop
+            </h3>
+            <div className="mt-3 grid gap-2 text-xs">
+              {[
+                [
+                  'Observe',
+                  audit.observedSignals >= 5 ? 'REAL' : 'PARTIAL',
+                  `${audit.observedSignals}/6 canonical signals available`,
+                ],
+                [
+                  'Verify',
+                  audit.verifierObserved ? 'REAL' : 'UNKNOWN',
+                  audit.verifierObserved
+                    ? 'GitHub/verifier evidence is present'
+                    : 'Verifier evidence is not yet visible',
+                ],
+                [
+                  'Repair',
+                  'BOUNDED',
+                  'Safe fixes only; protected mutations remain gated',
+                ],
+                [
+                  'Learn',
+                  'NOT WIRED',
+                  'Persistent factory telemetry/history is the remaining feedback layer',
+                ],
+              ].map(([name, status, detail]) => (
+                <div key={name} className="grid grid-cols-[70px_90px_1fr] gap-3 border-b border-slate-900 py-2 last:border-b-0">
+                  <span className="text-slate-400">{name}</span>
+                  <span
+                    className={`font-mono ${
+                      status === 'REAL'
+                        ? 'text-emerald-300'
+                        : status === 'BOUNDED'
+                          ? 'text-cyan-300'
+                          : status === 'PARTIAL'
+                            ? 'text-amber-300'
+                            : 'text-slate-500'
+                    }`}
+                  >
+                    {status}
+                  </span>
+                  <span className="text-slate-600">{detail}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-800 bg-black/20 p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">
+              Next safe actions
+            </h3>
+            <div className="mt-3 space-y-2">
+              {audit.nextActions.map((action, index) => (
+                <div key={action} className="flex gap-3 text-xs">
+                  <span className="font-mono text-cyan-400">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="text-slate-400">{action}</span>
+                </div>
+              ))}
+            </div>
+            {audit.sourceErrors.length ? (
+              <div className="mt-4 rounded-lg border border-rose-500/20 bg-rose-500/5 p-3 text-[11px] text-rose-300">
+                {audit.sourceErrors.length} telemetry/source blocker
+                {audit.sourceErrors.length === 1 ? '' : 's'} currently require attention.
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </section>
+
       <section>
         <div className="mb-3">
           <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">

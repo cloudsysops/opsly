@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 
 import { ComputeWorkersPanel } from '@/components/ComputeWorkersPanel';
+import { WorkstreamsExecutionPanel } from '@/components/mission-control/WorkstreamsExecutionPanel';
 import {
   LocalNodesPanel,
   type RuntimeNodesPayload,
@@ -266,6 +267,9 @@ export function MissionControlCockpit() {
           </div>
 
           <div className="flex flex-wrap gap-2 text-xs">
+            <Link href="/mission-control/workstreams" className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-cyan-200 hover:border-cyan-400/60">
+              Workstreams
+            </Link>
             <Link href="/mission-control/office" className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50">
               Office
             </Link>
@@ -311,6 +315,29 @@ export function MissionControlCockpit() {
             }
             accent={healthyIdle === null ? 'amber' : healthyIdle ? 'emerald' : 'amber'}
           />
+        </section>
+
+        <section className="mb-5 rounded-2xl border border-cyan-500/15 bg-slate-950/55 p-4">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.22em] text-cyan-400/70">
+                Software Factory
+              </div>
+              <h2 className="mt-1 text-lg font-semibold text-slate-100">
+                Audit & evolution
+              </h2>
+              <p className="text-xs text-slate-500">
+                Workstreams, agent fleet, evidence, blockers and the next safe improvements.
+              </p>
+            </div>
+            <Link
+              href="/mission-control/workstreams"
+              className="text-xs text-cyan-300 hover:text-cyan-200"
+            >
+              Full workstream view →
+            </Link>
+          </div>
+          <WorkstreamsExecutionPanel />
         </section>
 
         <section className="grid gap-5 xl:grid-cols-[1.65fr_1fr]">
