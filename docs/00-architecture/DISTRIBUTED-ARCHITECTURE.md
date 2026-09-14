@@ -49,7 +49,7 @@ Si **migras** servicios al worker y los expones por Traefik en el VPS, añade **
 | Destino  | Ejemplo                                            |
 | -------- | -------------------------------------------------- |
 | VPS      | `100.120.151.91` (verificar en `tailscale status`) |
-| Mac 2011 | `100.80.41.29` (`opsly-worker`)                    |
+| Mac 2011 | `100.74.88.103` (`opsly-worker`)                    |
 
 **Redis:** usar la URL completa con contraseña desde Doppler / `.env.worker` (no pegar en chat).
 

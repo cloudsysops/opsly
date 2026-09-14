@@ -27,7 +27,7 @@ class HealthMonitor:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(
-                    "http://100.80.41.29:11434/api/tags",
+                    "http://100.74.88.103:11434/api/tags",
                     timeout=aiohttp.ClientTimeout(total=5)
                 ) as resp:
                     if resp.status == 200:

@@ -20,14 +20,14 @@ Documento **canónico** para que agentes (Cursor, Claude, automatismos) y person
 | Destino                                   | Usuario SSH                                  | IP / nombre Tailscale                           | Uso típico                                                                       |
 | ----------------------------------------- | -------------------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------- |
 | **VPS** (control plane, `/opt/opsly`)     | **`vps-dragon`**                             | `100.120.151.91` (Tailscale)                    | Docker plataforma, Traefik, API, Redis, deploy                                   |
-| **Worker Ubuntu** (Mac 2011, datos plane) | **`opslyquantum`**                           | `100.80.41.29` o `opsly-worker.<suffix>.ts.net` | Ollama, orchestrator `worker-enabled`, repo `~/opsly`, Decepticon/RTK en usuario |
+| **Worker Ubuntu** (Mac 2011, datos plane) | **`opslyquantum`**                           | `100.74.88.103` o `opsly-worker.<suffix>.ts.net` | Ollama, orchestrator `worker-enabled`, repo `~/opsly`, Decepticon/RTK en usuario |
 | **Mac principal** (desarrollo)            | **`cboteros`** (ejemplo; el tuyo puede otro) | `opsly-admin` / `100.89.38.3`                   | Cursor, clon del repo; **no** es el usuario del worker                           |
 
 Comandos de referencia:
 
 ```bash
 ssh vps-dragon@100.120.151.91
-ssh opslyquantum@100.80.41.29
+ssh pc-gamer@100.74.88.103
 # Con MagicDNS (sustituir suffix):
 # ssh opslyquantum@opsly-worker.<suffix>.ts.net
 ```
@@ -46,7 +46,7 @@ Lo que debe quedar claro es **otro**: cuando el agente (o un script) ejecute **`
 
 - Usuario en el **VPS:** `vps-dragon`.
 - Salida hacia el worker: conectarse como **`opslyquantum@`** al worker (Tailscale).
-- En el VPS desplegado suele existir la clave **`~/.ssh/vps_to_nodes`** (par dedicado); el alias SSH **`opsly-mac2011-ip`** apunta a `opslyquantum@100.80.41.29` con esa clave.
+- En el VPS desplegado suele existir la clave **`~/.ssh/vps_to_nodes`** (par dedicado); el alias SSH **`opsly-mac2011-ip`** apunta a `pc-gamer@100.74.88.103` con esa clave.
 
 Detalle y endurecimiento: [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md).
 

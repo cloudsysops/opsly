@@ -18,7 +18,7 @@ const STRATEGIES = {
     name: 'LLM Cost Reducer',
     nodes: [
       { name: 'Usage Threshold', type: 'n8n-nodes-base.webhook', path: 'usage-alert' },
-      { name: 'Route to Ollama', type: 'n8n-nodes-base.httpRequest', url: 'http://100.80.41.29:11434/api/generate' },
+      { name: 'Route to Ollama', type: 'n8n-nodes-base.httpRequest', url: 'http://100.74.88.103:11434/api/generate' },
       { name: 'Log Savings', type: 'n8n-nodes-base.supabase', table: 'platform.usage_events' }
     ]
   },

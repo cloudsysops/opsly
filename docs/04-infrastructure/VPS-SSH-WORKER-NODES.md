@@ -22,10 +22,10 @@ Ejemplo de prueba:
 
 ```bash
 ssh -i ~/.ssh/vps_to_nodes -o IdentitiesOnly=yes \
-  opslyquantum@100.80.41.29 "hostname"
+  pc-gamer@100.74.88.103 "hostname"
 ```
 
-Opcional en `~/.ssh/config` del VPS: host **`opsly-mac2011-ip`** → `HostName 100.80.41.29`, `User opslyquantum`, `IdentityFile ~/.ssh/vps_to_nodes`.
+Opcional en `~/.ssh/config` del VPS: host **`opsly-mac2011-ip`** → `HostName 100.74.88.103`, `User opslyquantum`, `IdentityFile ~/.ssh/vps_to_nodes`.
 
 Los pasos siguientes usan el nombre **`id_ed25519_opsly_nodes`** como plantilla para **nuevas** instalaciones; si ya tenéis `vps_to_nodes`, **no** dupliquéis claves: reutilizad el mismo par.
 
@@ -90,7 +90,7 @@ Ejemplo con IP típica de worker (ver `docs/TAILSCALE-NOMENCLATURA.md`):
 
 ```bash
 ssh -i ~/.ssh/id_ed25519_opsly_nodes -o IdentitiesOnly=yes \
-  opslyquantum@100.80.41.29 "hostname"
+  pc-gamer@100.74.88.103 "hostname"
 ```
 
 ## 4. Config SSH en el VPS (opcional)
@@ -99,7 +99,7 @@ ssh -i ~/.ssh/id_ed25519_opsly_nodes -o IdentitiesOnly=yes \
 
 ```sshconfig
 Host opsly-worker
-    HostName 100.80.41.29
+    HostName 100.74.88.103
     User opslyquantum
     IdentityFile ~/.ssh/id_ed25519_opsly_nodes
     IdentitiesOnly yes

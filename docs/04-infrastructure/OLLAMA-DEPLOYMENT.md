@@ -11,9 +11,9 @@ tags:
 
 ## Overview
 
-This document describes the deployment and operational procedures for ADR-024: using Ollama running on a local Mac (2011, IP: 100.80.41.29) as the primary LLM provider with cloud fallback.
+This document describes the deployment and operational procedures for ADR-024: using Ollama running on a local PC Gamer (100.74.88.103) as the primary LLM provider with cloud fallback.
 
-**Architecture Decision Record:** [`docs/adr/ADR-024-ollama-local-primary-llm.md`](./adr/ADR-024-ollama-local-primary-llm.md)
+**Architecture Decision Record:** [`docs/adr/ADR-024-ollama-local-worker-primary.md`](./adr/ADR-024-ollama-local-worker-primary.md)
 
 ## Infrastructure Layout
 
@@ -43,7 +43,7 @@ This document describes the deployment and operational procedures for ADR-024: u
         │ Tailscale VPN (100.x.x.x)
         │
 ┌───────▼──────────────────────────────────────────────────────┐
-│ Local Mac 2011 (100.80.41.29) — Ollama Primary              │
+│ Local PC Gamer (100.74.88.103) — Ollama Primary              │
 ├────────────────────────────────────────────────────────────── │
 │ ┌──────────────────────────────────┐                         │
 │ │ Ollama Service (localhost:11434) │                         │
@@ -62,7 +62,7 @@ This document describes the deployment and operational procedures for ADR-024: u
 
 ```bash
 # Ollama Endpoint (Mac 2011 on Tailscale)
-OLLAMA_URL=http://100.80.41.29:11434
+OLLAMA_URL=http://100.74.88.103:11434
 OLLAMA_MODEL=llama3.2
 
 # Health Daemon Configuration (LLM Gateway)
@@ -97,7 +97,7 @@ The LLM Gateway's HealthDaemon runs every 30 seconds and:
 1. **Checks Ollama availability:**
 
    ```
-   GET http://100.80.41.29:11434/api/tags HTTP/1.1
+   GET http://100.74.88.103:11434/api/tags HTTP/1.1
    Timeout: 3s
    ```
 
@@ -119,7 +119,7 @@ From VPS:
 
 ```bash
 # Check Ollama directly
-curl -v http://100.80.41.29:11434/api/tags
+curl -v http://100.74.88.103:11434/api/tags
 
 # Check health daemon status in Redis
 redis-cli GET llm_gateway:health:llama_local
@@ -260,13 +260,13 @@ npm run test --workspace=@intcloudsysops/api -- --grep "ollama-demo"
 
 ```bash
 # Check Mac 2011 SSH connection
-ssh -i ~/.ssh/tailscale jkbotero@100.80.41.29 "ps aux | grep ollama"
+ssh -i ~/.ssh/tailscale jkbotero@100.74.88.103 "ps aux | grep ollama"
 
 # Check Ollama logs
-ssh -i ~/.ssh/tailscale jkbotero@100.80.41.29 "tail -50 ~/.ollama/logs/server.log"
+ssh -i ~/.ssh/tailscale jkbotero@100.74.88.103 "tail -50 ~/.ollama/logs/server.log"
 
 # Check Mac's network
-ssh -i ~/.ssh/tailscale jkbotero@100.80.41.29 \
+ssh -i ~/.ssh/tailscale jkbotero@100.74.88.103 \
   "netstat -an | grep 11434 | head -5"
 ```
 
@@ -282,10 +282,10 @@ ssh -i ~/.ssh/tailscale jkbotero@100.80.41.29 \
 
 ```bash
 # Check Mac CPU/Memory
-ssh -i ~/.ssh/tailscale jkbotero@100.80.41.29 "top -l1"
+ssh -i ~/.ssh/tailscale jkbotero@100.74.88.103 "top -l1"
 
 # Check network latency
-ping 100.80.41.29
+ping 100.74.88.103
 ```
 
 **Solutions:**
@@ -300,10 +300,10 @@ ping 100.80.41.29
 
 ```bash
 # From VPS
-docker exec infra-app-1 curl -v http://100.80.41.29:11434/api/tags
+docker exec infra-app-1 curl -v http://100.74.88.103:11434/api/tags
 
 # Check routing
-docker exec infra-app-1 traceroute 100.80.41.29
+docker exec infra-app-1 traceroute 100.74.88.103
 
 # Check DNS
 docker exec infra-app-1 nslookup ollama.tailscale.local

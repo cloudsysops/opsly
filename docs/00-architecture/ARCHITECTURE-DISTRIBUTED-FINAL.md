@@ -10,7 +10,7 @@ tags:
 # Arquitectura distribuida — Opsly (objetivo)
 
 > **Alcance:** diseño objetivo para aliviar el VPS (disco/RAM) moviendo **carga pesada de inferencia y workers** a un nodo secundario (p. ej. **Mac 2011 + Ubuntu** en Tailscale). Alineado con `docs/HEAVY-SERVICES-DECISION.md` y `config/opsly.config.json`.  
-> **IPs de ejemplo** (Tailscale): VPS `100.120.151.91`, worker `100.80.41.29` — verificar con `tailscale status` antes de operar.
+> **IPs de ejemplo** (Tailscale): VPS `100.120.151.91`, worker `100.74.88.103` — verificar con `tailscale status` antes de operar.
 
 ## Diagrama general
 
@@ -116,7 +116,7 @@ La ruta exacta depende de si el orchestrator y el LLM Gateway siguen en el VPS o
 ### Tailscale
 
 - **VPS:** IP Tailscale del host (ej. `100.120.151.91`).
-- **Worker:** `100.80.41.29` (`opsly-worker`).
+- **Worker:** `100.74.88.103` (`opsly-worker`).
 
 ### Seguridad
 

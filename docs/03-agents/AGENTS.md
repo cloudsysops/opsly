@@ -411,7 +411,7 @@ node scripts/load-skills.js show opsly-api
 **ADR-024 (Ollama worker):** [`docs/adr/ADR-024-ollama-local-worker-primary.md`](docs/adr/ADR-024-ollama-local-worker-primary.md) — ✅ **VALIDADO Y COMPLETADO** (2026-04-20). Checklist:
 
 - ✅ Doppler vars: `OLLAMA_URL`, `OLLAMA_MODEL`, `LLM_GATEWAY_EXPORT_BIND`, `REDIS_EXPORT_BIND` documentados
-- ✅ Ollama local: Mac 2011 worker (100.80.41.29:11434) con modelos nemotron-3-nano + llama3.2 verificados
+- ✅ Ollama local: Mac 2011 worker (100.74.88.103:11434) con modelos nemotron-3-nano + llama3.2 verificados
 - ✅ Health Daemon: Implementado en `apps/llm-gateway/src/health-daemon.ts` — checks cada 30s, Redis TTL 300s, circuit breaker 3 fallos
 - ✅ LLM Gateway metering: `request_id` + `tenant_slug` en todas las llamadas `logUsage()` (tracer correlativo)
 - ✅ Orchestrator tests: 25 test suites, 137 tests PASSED (includes health-worker, plan-execute-engine, reflection-engine, oar-react-intent)
@@ -475,7 +475,7 @@ Validación: npm run type-check; tests del workspace tocado
 **Checklist de validación:**
 
 - ✅ **Variables Doppler prd configuradas:**
-  - OLLAMA_URL=http://100.80.41.29:11434 (Mac 2011 worker)
+  - OLLAMA_URL=http://100.74.88.103:11434 (Mac 2011 worker)
   - OLLAMA_MODEL=llama3.2
 - ✅ **LLM Gateway routing implementado:**
   - Health daemon checks `/api/tags` endpoint en Ollama (3s timeout)
@@ -1020,7 +1020,7 @@ ssh vps-dragon@100.120.151.91 "cd /opt/opsly && \
   echo 'OPSLY_ORCHESTRATOR_MODE=queue-only' >> .env"
 
 # FASE 4: Validación
-ssh vps-dragon@100.120.151.91 "curl -sf --max-time 5 http://100.80.41.29:11434/api/tags"
+ssh vps-dragon@100.120.151.91 "curl -sf --max-time 5 http://100.74.88.103:11434/api/tags"
 
 # Detalle: docs/PLAN-OLLAMA-WORKER-2026-04-14.md
 ```

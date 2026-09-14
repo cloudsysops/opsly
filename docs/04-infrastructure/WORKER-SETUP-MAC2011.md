@@ -1,11 +1,18 @@
 ---
-status: draft
+status: deprecated
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-09-13
 type: infrastructure
 tags:
   - opsly/infrastructure
 ---
+
+# Worker Opsly — Mac 2011 (Ubuntu) — OBSOLETO
+
+> **Deprecated (2026-09-13):** la Mac 2011 ya no está en la red Tailscale
+> (fuera hace meses). El worker con Ollama local ahora es el **PC Gamer**
+> (`100.74.88.103`, Tailscale host `pc-gamer`). Ver
+> `docs/04-infrastructure/PC-GAMER-WORKER.md` para el setup vigente.
 
 # Worker Opsly — Mac 2011 (Ubuntu) controlado desde la Mac principal (opsly-admin)
 

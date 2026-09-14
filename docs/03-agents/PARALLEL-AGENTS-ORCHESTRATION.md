@@ -208,7 +208,7 @@ redis-cli -n 0 ZRANGE bull:openclaw:pending 0 -1 WITHSCORES
 # Specific component
 curl -sf http://127.0.0.1:3010/health | jq .
 curl -sf http://127.0.0.1:3011/health | jq .
-curl -sf http://100.80.41.29:11434/api/tags | jq .
+curl -sf http://100.74.88.103:11434/api/tags | jq .
 ```
 
 ---

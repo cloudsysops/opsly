@@ -2,7 +2,7 @@
 # Prueba SSH desde el host actual (típicamente el VPS) hacia un worker usando la clave opsly.
 #
 # Uso (en el VPS, tras autorizar la clave en el worker):
-#   ./scripts/vps-ssh-verify.sh opslyquantum@100.80.41.29
+#   ./scripts/vps-ssh-verify.sh pc-gamer@100.74.88.103
 #
 # Variables:
 #   OPSLY_SSH_NODES_KEY default ~/.ssh/id_ed25519_opsly_nodes

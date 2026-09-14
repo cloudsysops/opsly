@@ -25,7 +25,7 @@ Decepticon es una herramienta de **red team** autónoma. **No** la uses contra s
 
 ## Estado validado en worker (referencia)
 
-Comprobaciones puntuales vía SSH (`opslyquantum@100.80.41.29`):
+Comprobaciones puntuales vía SSH (`pc-gamer@100.74.88.103`):
 
 | Comprobación          | Resultado típico                                                                                                                                                          |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -73,7 +73,7 @@ docker compose version
 1. SSH al worker (desde la Mac principal, con Tailscale activo):
 
    ```bash
-   ssh opslyquantum@100.80.41.29
+   ssh pc-gamer@100.74.88.103
    # o el alias definido en ~/.ssh/config (p. ej. opsly-worker)
    ```
 
@@ -107,7 +107,7 @@ docker compose version
 
    ```bash
    # Desde la Mac principal
-   ssh -L 3000:127.0.0.1:3000 opslyquantum@100.80.41.29
+   ssh -L 3000:127.0.0.1:3000 pc-gamer@100.74.88.103
    # Luego abrir http://127.0.0.1:3000 en el navegador local
    ```
 
@@ -168,7 +168,7 @@ Cabeceras y cuerpo alineados a Opsly: `tenant_slug`, `request_id` (ver [`AGENTS.
 ./scripts/check-decepticon-worker.sh --dry-run
 ```
 
-Variables: `DECEPTICON_WORKER_SSH` (destino SSH completo, p. ej. `opslyquantum@100.80.41.29`), o `WORKER_USER` + `WORKER_TAILSCALE_NAME` como en [`verify-platform-smoke.sh`](../scripts/verify-platform-smoke.sh). Si el hostname MagicDNS no resuelve desde tu máquina (p. ej. sin Tailscale activo en el cliente), fuerza IP: `DECEPTICON_WORKER_SSH=opslyquantum@100.80.41.29 ./scripts/check-decepticon-worker.sh`.
+Variables: `DECEPTICON_WORKER_SSH` (destino SSH completo, p. ej. `pc-gamer@100.74.88.103`), o `WORKER_USER` + `WORKER_TAILSCALE_NAME` como en [`verify-platform-smoke.sh`](../scripts/verify-platform-smoke.sh). Si el hostname MagicDNS no resuelve desde tu máquina (p. ej. sin Tailscale activo en el cliente), fuerza IP: `DECEPTICON_WORKER_SSH=pc-gamer@100.74.88.103 ./scripts/check-decepticon-worker.sh`.
 
 ---
 

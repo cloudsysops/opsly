@@ -187,7 +187,7 @@ El bridge conecta los scripts Python con el orchestrator BullMQ existente:
 
 - Reutiliza workers en `apps/orchestrator/src/workers/`
 - Conecta con LLM Gateway en `apps/llm-gateway/`
-- Usa Ollama en Mac 2011 (100.80.41.29:11434)
+- Usa Ollama en Mac 2011 (100.74.88.103:11434)
 
 ## Estado del Proyecto
 

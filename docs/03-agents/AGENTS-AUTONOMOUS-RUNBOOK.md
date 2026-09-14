@@ -1,5 +1,5 @@
 ---
-status: deprecated
+status: draft
 owner: operations
 last_review: 2026-05-24
 type: agent-doc
@@ -7,7 +7,7 @@ tags:
   - opsly/agents
 ---
 
-# Deprecated: persistent autonomous agent loops
+# Runbook: agentes OpenClaw en modo autónomo
 
 **Autónomo** aquí significa: **cola BullMQ `openclaw` siempre consumida** por el orchestrator en modo **worker** (`OPSLY_ORCHESTRATOR_MODE=worker-enabled`), con **Redis** del VPS y **LLM Gateway** alcanzable (Ollama u otros proveedores según `OLLAMA_URL`).
 
@@ -84,7 +84,7 @@ Si `systemctl is-active opsly-worker` muestra `activating`, espera unos segundos
 Stack distribuido (VPS + worker): [`verify-distributed-stack.sh`](../scripts/verify-distributed-stack.sh) — ajusta `WORKER_SSH` si tu host no es `opsly-mac2011`:
 
 ```bash
-WORKER_SSH=opslyquantum@100.80.41.29 ./scripts/verify-distributed-stack.sh
+WORKER_SSH=pc-gamer@100.74.88.103 ./scripts/verify-distributed-stack.sh
 ```
 
 ---
@@ -102,27 +102,34 @@ Configuración declarativa del equipo (roles, presupuestos, herramientas): [`con
 
 ---
 
-## 6.1 Persistent autopilot — disabled
+## 6.1 Autopilot continuo (Hermes + Ollama squad + smoke)
 
-The previous `nohup`/PID-file loop is deprecated and disabled.
+Para dejar agentes trabajando en bucle sin intervención manual:
 
-Canonical execution is now:
+```bash
+# Arranca en background (nohup + pid file en logs/)
+TENANT_SLUG=smiletripcare \
+GOAL="Mantener plataforma multi-agente estable y eficiente" \
+PLAN=business \
+INTERVAL_SECONDS=300 \
+./scripts/start-agents-autopilot.sh
 
-```text
-AgentTask
-→ policy / node authorization
-→ capability routing
-→ Session Manager
-→ opsly-task-<id>-<role>
-→ real external CLI/runtime
-→ evidence
-→ tmux teardown
+# Estado
+./scripts/status-agents-autopilot.sh
+
+# Stop limpio
+./scripts/stop-agents-autopilot.sh
 ```
 
-Only infrastructure remains persistent: BullMQ workers, prompt watchers, authenticated HTTP bridges and heartbeats.
+El loop (`scripts/agents-autopilot.sh`) ejecuta por ciclo:
 
-See [EXTERNAL-RUNTIME-POLICY.md](./EXTERNAL-RUNTIME-POLICY.md).
+1. `npm run hermes:tick --workspace=@intcloudsysops/orchestrator`
+2. `npx tsx scripts/enqueue-ollama-squad.ts ...`
+3. `./scripts/test-worker-e2e.sh <tenant> --notify` (si `ENABLE_WORKER_SMOKE=true`)
 
+Por defecto usa `doppler run --project ops-intcloudsysops --config prd` si la CLI está disponible.
+
+---
 
 ## 7. Tras cada `git pull` en el worker
 

@@ -16,7 +16,7 @@ Tres conceptos distintos: **hostname del SO** (`/etc/hostname`), **nombre en Tai
 | Rol                                | Nombre en Tailscale = base MagicDNS | IP 100.x (referencia) | SSH (usuario remoto)                                                          |
 | ---------------------------------- | ----------------------------------- | --------------------- | ----------------------------------------------------------------------------- |
 | Mac principal (Cursor, repo)       | **`opsly-admin`**                   | `100.89.38.3`         | `ssh opsly-admin` → usuario local típico **`cboteros`** (ver plantilla abajo) |
-| Worker Ubuntu (orchestrator, etc.) | **`opsly-worker`**                  | `100.80.41.29`        | `ssh opsly-worker` → **`opslyquantum`**                                       |
+| Worker Ubuntu (orchestrator, etc.) | **`opsly-worker`**                  | `100.74.88.103`        | `ssh opsly-worker` → **`opslyquantum`**                                       |
 | VPS Opsly                          | `vps-dragon`                        | `100.120.151.91`      | `ssh vps-dragon` → **`vps-dragon`**                                           |
 
 **Qué usuario usar en cada `ssh` (agentes):** [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md) — no hace falta cambiar el usuario de la Mac; sí usar el usuario remoto correcto en el comando.
@@ -81,7 +81,7 @@ ssh opsly-worker "hostname && uname -a"
 ## Repo
 
 - Worker remoto: **`docs/WORKER-SETUP-MAC2011.md`**.
-- Scripts con flag `--mac2011-ip`: es la **IP LAN / Tailscale del worker** (`100.80.41.29` típico), no la de la Mac principal.
+- Scripts con flag `--mac2011-ip`: es la **IP LAN / Tailscale del worker** (`100.74.88.103` típico), no la de la Mac principal.
 
 ---
 

@@ -11,12 +11,12 @@
       "notes": "Mac principal / Cursor"
     },
     {
-      "name": "opsly-worker",
-      "host": "100.80.41.29",
-      "user": "opslyquantum",
+      "name": "pc-gamer",
+      "host": "100.74.88.103",
+      "user": "pc-gamer",
       "role": "worker",
       "status": "active",
-      "notes": "Mac 2011 Ubuntu por Tailscale"
+      "notes": "PC Gamer Windows + WSL Ubuntu (worker GPU / Ollama)"
     },
     {
       "name": "vps-dragon",

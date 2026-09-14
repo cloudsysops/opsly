@@ -10,7 +10,7 @@
 # Uso:
 #   ./scripts/vps-ssh-bootstrap-from-admin.sh \
 #     --vps vps-dragon@100.120.151.91 \
-#     --worker opslyquantum@100.80.41.29
+#     --worker pc-gamer@100.74.88.103
 #   ./scripts/vps-ssh-bootstrap-from-admin.sh --dry-run --vps ... --worker ...
 #
 set -euo pipefail

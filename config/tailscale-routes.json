@@ -11,11 +11,11 @@
       "compose_relative": "infra/docker-compose.platform.yml"
     },
     "worker": {
-      "name": "opsly-worker",
-      "tailscale_ipv4": "100.80.41.29",
-      "ssh_user": "opslyquantum",
-      "ssh_spec": "opslyquantum@100.80.41.29",
-      "notes": "Mac 2011 Ubuntu; MagicDNS: ver config/worker-tailscale.env.example"
+      "name": "pc-gamer",
+      "tailscale_ipv4": "100.74.88.103",
+      "ssh_user": "pc-gamer",
+      "ssh_spec": "pc-gamer@100.74.88.103",
+      "notes": "PC Gamer Windows + WSL Ubuntu (worker GPU / Ollama local)"
     }
   }
 }

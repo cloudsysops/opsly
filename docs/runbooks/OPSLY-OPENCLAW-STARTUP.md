@@ -162,7 +162,7 @@ ssh opsly-mac2011 "hostname && docker ps --format '{{.Names}}\t{{.Status}}' | gr
 ssh opsly-mac2011 "curl -sf http://127.0.0.1:11434/api/tags | head -c 500"
 ```
 
-`opsly-worker` puede fallar si MagicDNS `opsly-worker.taile4fe40.ts.net` no resuelve. Usar `opsly-mac2011` (`100.80.41.29`) hasta corregir Tailscale DNS o `~/.ssh/config`.
+`opsly-worker` puede fallar si MagicDNS `opsly-worker.taile4fe40.ts.net` no resuelve. Usar `opsly-mac2011` (`100.74.88.103`) hasta corregir Tailscale DNS o `~/.ssh/config`.
 
 ## LLM Gateway
 

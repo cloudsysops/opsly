@@ -20,7 +20,7 @@ tags:
 ```bash
 # SIEMPRE por Tailscale — nunca IP pública
 ssh vps-dragon@100.120.151.91          # control plane
-ssh opslyquantum@100.80.41.29          # worker Ubuntu (opsly-mac2011)
+ssh pc-gamer@100.74.88.103          # worker Ubuntu (opsly-mac2011)
 
 # IP pública del VPS: solo en Doppler / panel DNS (nunca en git). SSH bloqueado por UFW.
 ```
