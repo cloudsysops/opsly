@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { detectCanonicalDispatchAdmission } from './route';
+import { detectCanonicalDispatchAdmission } from '../../../../../lib/mission-control-execution-source-admission';
 
 describe('Mission Control execution-source admission probe', () => {
   it('recognizes the current dispatch-claim-v1 contract', () => {
