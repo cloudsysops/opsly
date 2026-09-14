@@ -45,9 +45,71 @@ function validateReconciliation(reconciliation) {
   return { observed: true, pullRequests: reconciliation.pullRequests, error: null };
 }
 
-function validateWorkstreamArray(workstreams, key) {
-  const value = workstreams?.[key];
-  return Array.isArray(value) ? value : [];
+const SESSION_STATES = new Set([
+  'created',
+  'running',
+  'waiting_approval',
+  'checkpointed',
+  'resumable',
+  'stopped',
+  'failed',
+]);
+
+const VERIFIER_STATES = new Set(['PASS', 'FAIL', 'BLOCKED', 'UNKNOWN']);
+const CHECK_STATES = new Set(['PASS', 'FAIL', 'PENDING', 'UNKNOWN']);
+const MERGE_STATES = new Set(['READY', 'BLOCKED', 'UNKNOWN']);
+
+function validateClaims(value) {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        item &&
+        typeof item === 'object' &&
+        typeof item.work_id === 'string' &&
+        item.work_id.trim().length > 0,
+    )
+  );
+}
+
+function validateSessions(value) {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        item &&
+        typeof item === 'object' &&
+        SESSION_STATES.has(String(item.status || '')),
+    )
+  );
+}
+
+function validatePullRequests(value) {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => {
+      if (!item || typeof item !== 'object') return false;
+      const verifier = String(item.verifier || 'UNKNOWN');
+      const checkState = String(item.check_state || 'UNKNOWN');
+      const mergeReadiness = String(item.merge_readiness || 'UNKNOWN');
+      if (!VERIFIER_STATES.has(verifier)) return false;
+      if (!CHECK_STATES.has(checkState)) return false;
+      if (!MERGE_STATES.has(mergeReadiness)) return false;
+      if (
+        item.request_id !== undefined &&
+        (typeof item.request_id !== 'string' || item.request_id.trim().length === 0)
+      ) {
+        return false;
+      }
+      return true;
+    })
+  );
+}
+
+function producerErrors(source) {
+  return Array.isArray(source?.source_errors)
+    ? source.source_errors.filter((item) => typeof item === 'string' && item.trim().length > 0)
+    : [];
 }
 
 export function buildFactoryTelemetry({ workstreams = {}, reconciliation = {}, policy = {} }) {
@@ -61,18 +123,18 @@ export function buildFactoryTelemetry({ workstreams = {}, reconciliation = {}, p
   };
 
   const claimsObserved =
-    workstreams?.claims_observed === true && Array.isArray(workstreams?.active_claims);
+    workstreams?.claims_observed === true && validateClaims(workstreams?.active_claims);
   const runtimeObserved =
     workstreams?.runtime_sessions_observed === true &&
-    Array.isArray(workstreams?.runtime_sessions);
+    validateSessions(workstreams?.runtime_sessions);
   const githubObserved =
     workstreams?.github_observed === true &&
     workstreams?.github_evidence_complete === true &&
-    Array.isArray(workstreams?.pull_requests);
+    validatePullRequests(workstreams?.pull_requests);
 
-  const claims = claimsObserved ? validateWorkstreamArray(workstreams, 'active_claims') : [];
-  const sessions = runtimeObserved ? validateWorkstreamArray(workstreams, 'runtime_sessions') : [];
-  const prs = githubObserved ? validateWorkstreamArray(workstreams, 'pull_requests') : [];
+  const claims = claimsObserved ? workstreams.active_claims : [];
+  const sessions = runtimeObserved ? workstreams.runtime_sessions : [];
+  const prs = githubObserved ? workstreams.pull_requests : [];
 
   const reconciliationState = validateReconciliation(reconciliation);
   const reconciliationPrs = reconciliationState.pullRequests;
@@ -219,7 +281,12 @@ export function buildFactoryTelemetry({ workstreams = {}, reconciliation = {}, p
     github_observed: githubObserved,
     reconciliation_observed: reconciliationState.observed,
   };
-  const complete = Object.values(sources).every(Boolean);
+
+  const upstreamErrors = [
+    ...producerErrors(workstreams),
+    ...producerErrors(reconciliation),
+  ];
+  const complete = Object.values(sources).every(Boolean) && upstreamErrors.length === 0;
 
   return {
     schema_version: 'SoftwareFactoryTelemetrySnapshotV1',
@@ -231,6 +298,7 @@ export function buildFactoryTelemetry({ workstreams = {}, reconciliation = {}, p
       ...(runtimeObserved ? [] : ['runtime-session evidence unavailable or malformed']),
       ...(githubObserved ? [] : ['GitHub evidence unavailable, partial, or malformed']),
       ...(reconciliationState.error ? [reconciliationState.error] : []),
+      ...upstreamErrors,
     ],
     metrics,
     recommendations,
