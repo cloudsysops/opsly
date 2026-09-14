@@ -1,0 +1,117 @@
+{
+  "schema_version": "IndependentVerifierPolicyV1",
+  "updated_at": "2026-09-14",
+  "principle": "Builder and verifier are separate. Normal changes need one qualified verifier. Sensitive changes need two independent verifier groups. Missing evidence fails closed.",
+  "minimum_trust_level": "trusted",
+  "normal_quorum": 1,
+  "sensitive_quorum": 2,
+  "allow_legacy_clean_review_for_normal": true,
+  "allow_trusted_human_breakglass_for_normal": true,
+  "allow_trusted_human_breakglass_for_sensitive": false,
+  "verifier_profiles": {
+    "chatgpt-codex-connector[bot]": {
+      "profile_id": "sierra-verifier-codex-v1",
+      "agent_id": "codex-independent-verifier",
+      "model_family": "codex",
+      "trust_level": "trusted",
+      "independence_group": "openai-codex",
+      "specialties": [
+        "architecture",
+        "security",
+        "ci",
+        "ownership",
+        "blast-radius"
+      ]
+    },
+    "copilot-pull-request-reviewer[bot]": {
+      "profile_id": "sierra-verifier-copilot-v1",
+      "agent_id": "copilot-independent-verifier",
+      "model_family": "github-copilot",
+      "trust_level": "trusted",
+      "independence_group": "github-copilot",
+      "specialties": [
+        "architecture",
+        "security",
+        "ci",
+        "ownership",
+        "blast-radius"
+      ]
+    },
+    "github-copilot[bot]": {
+      "profile_id": "sierra-verifier-copilot-v1",
+      "agent_id": "copilot-independent-verifier",
+      "model_family": "github-copilot",
+      "trust_level": "trusted",
+      "independence_group": "github-copilot",
+      "specialties": [
+        "architecture",
+        "security",
+        "ci",
+        "ownership",
+        "blast-radius"
+      ]
+    }
+  },
+  "sensitive_surfaces": [
+    {
+      "id": "verifier-trust-chain",
+      "patterns": [
+        "scripts/ci/check-independent-review.mjs",
+        "scripts/ci/lib/independent-verifier-policy.mjs",
+        "scripts/ci/__tests__/qualified-independent-verifier.test.mjs",
+        "config/independent-verifier-policy.json",
+        ".github/workflows/trusted-independent-review.yml"
+      ],
+      "quorum": 2,
+      "required_specialties": [
+        "security",
+        "ci"
+      ]
+    },
+    {
+      "id": "governance-and-autofix-policy",
+      "patterns": [
+        "config/pr-reconciliation-policy.json",
+        "config/software-factory-repair-policy.json",
+        "scripts/ops/software-factory-safe-repair.mjs",
+        ".github/workflows/**"
+      ],
+      "quorum": 2,
+      "required_specialties": [
+        "ci",
+        "blast-radius"
+      ]
+    },
+    {
+      "id": "auth-secrets-routing",
+      "patterns": [
+        "**/auth/**",
+        "**/*auth*",
+        "**/*secret*",
+        "infra/**",
+        "**/*traefik*",
+        "**/*dns*"
+      ],
+      "quorum": 2,
+      "required_specialties": [
+        "security",
+        "blast-radius"
+      ]
+    },
+    {
+      "id": "production-data-side-effects",
+      "patterns": [
+        "**/migrations/**",
+        "**/*migration*",
+        "**/n8n/**",
+        "**/*n8n*",
+        "apps/peskids/**"
+      ],
+      "quorum": 2,
+      "required_specialties": [
+        "security",
+        "blast-radius"
+      ]
+    }
+  ]
+}
