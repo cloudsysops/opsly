@@ -124,3 +124,24 @@ node scripts/ops/independent-verifier-workpack.mjs <PR> <40-char-head-sha> <buil
 The workpack points the reviewer at the
 `sierra-independent-verifier` skill and provides the canonical evidence
 marker.
+
+## Signed runtime evidence
+
+A local/external Opsly verifier runtime can participate without owning a GitHub bot identity.
+
+The runtime produces `IndependentVerifierEvidenceV1` and signs the canonical payload with HMAC-SHA256 using `SIERRA_VERIFIER_SIGNING_KEY`.
+The trusted GitHub workflow verifies the signature using the secret from the base repository. PR-head code never receives the secret.
+
+This allows a read-only `claude-code` verifier to be relayed through GitHub without trusting the relay account itself.
+
+```text
+Claude verifier
+   ↓ read-only exact-head review
+signed IndependentVerifierEvidenceV1
+   ↓
+trusted GitHub workflow
+   ↓ verify HMAC from base
+anthropic-claude independence group
+```
+
+Invalid, stale, unsigned, or self-review runtime evidence does not count.
