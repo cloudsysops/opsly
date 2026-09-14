@@ -331,6 +331,18 @@ A governed execution should eventually answer:
 
 Do not persist raw secrets or unrestricted raw prompts as evidence.
 
+## Branch / worktree ownership and teardown
+
+Agent execution also owns its Git workspace lifecycle. The canonical identity chain is:
+
+`request_id / job_id → session_id → worker_id → branch → worktree → PR → cleanup_state`
+
+The Branch Registry is the durable owner record. Session Manager supplies runtime/workspace evidence. Cleanup must reuse the existing Git control plane; it is not a second orchestrator.
+
+Destructive cleanup is allowed only when all applicable evidence agrees: no open PR, no live owning session, clean worktree, verified owner, and the branch is fully contained in `origin/main` (or explicitly superseded with zero unique commits).
+
+Unknown ownership, missing GitHub evidence, dirty worktrees, or unique commits fail closed. The owner agent cleans its own resources; the janitor only reconciles abandoned residue using the same classifier.
+
 ## Related docs
 
 - [Current automation map](CURRENT-AUTOMATION-MAP.md)
