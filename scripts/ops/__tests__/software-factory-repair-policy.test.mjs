@@ -22,7 +22,10 @@ const policy = {
     'n8n',
     'supabase/migrations/',
     'scripts/ops/software-factory-safe-repair.mjs',
+    'config/pr-reconciliation-policy.json',
+    'config/software-factory-repair-policy.json',
   ],
+  transient_conclusions: ['timed_out', 'startup_failure', 'stale'],
   forbidden_actions: ['merge', 'deploy'],
 };
 
@@ -150,4 +153,37 @@ test('blocks wrong PR binding, event, status or conclusion', () => {
   assert.match(reasons, /not pull_request/);
   assert.match(reasons, /not completed/);
   assert.match(reasons, /not failed/);
+});
+
+
+test('fails closed on malformed max_auto_attempts policy', () => {
+  const malformed = { ...policy, max_auto_attempts: 'not-a-number' };
+  const decision = evaluateRepairRequest(request(), malformed, evidence());
+  assert.equal(decision.allowed, false);
+  assert.match(decision.reasons.join(' '), /invalid max_auto_attempts/);
+});
+
+test('includes PR metadata in protected-surface evaluation', () => {
+  const decision = evaluateRepairRequest(
+    request(),
+    policy,
+    evidence({ pr_title: 'production hotfix', pr_body: '', head_ref: 'feat/safe' }),
+  );
+  assert.equal(decision.allowed, false);
+  assert.match(decision.reasons.join(' '), /protected surface/);
+});
+
+test('protects the repair authorization policies themselves', () => {
+  for (const filename of [
+    'config/pr-reconciliation-policy.json',
+    'config/software-factory-repair-policy.json',
+  ]) {
+    const decision = evaluateRepairRequest(
+      request({ affected_paths: [filename] }),
+      policy,
+      evidence({ files: [filename] }),
+    );
+    assert.equal(decision.allowed, false);
+    assert.match(decision.reasons.join(' '), /protected surface/);
+  }
 });
