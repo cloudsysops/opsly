@@ -13,6 +13,7 @@ import { getBaseUrl } from '@/lib/api-client';
 import { buildMissionControlSnapshotV1 } from '@/lib/mission-control-read-model-v1';
 import type {
   AgentTeamsResponse,
+  HermesMetricsSnapshot,
   OpenClawSnapshot,
   OrchestratorStatus,
 } from '@/lib/mission-control-types';
@@ -165,6 +166,11 @@ export function MissionControlCockpit() {
     fetcher,
     { refreshInterval: 3000 },
   );
+  const { data: hermesData, error: hermesError } = useSWR<HermesMetricsSnapshot>(
+    `${baseUrl}/api/hermes/metrics`,
+    fetcher,
+    { refreshInterval: 10000 },
+  );
   const { data: teamsData, error: teamsError } = useSWR<AgentTeamsResponse>(
     `${baseUrl}/api/admin/mission-control/teams`,
     fetcher,
@@ -187,12 +193,14 @@ export function MissionControlCockpit() {
         orchestrator: orchestratorData,
         teams: teamsData,
         openclaw: openClawData,
+        hermes: hermesData,
         runtime: runtimeData,
         compute: computeData,
         source_errors: {
           orchestrator: orchestratorError instanceof Error ? orchestratorError.message : undefined,
           teams: teamsError instanceof Error ? teamsError.message : undefined,
           openclaw: openClawError instanceof Error ? openClawError.message : undefined,
+          hermes: hermesError instanceof Error ? hermesError.message : undefined,
           runtime: runtimeError instanceof Error ? runtimeError.message : undefined,
           compute: computeError instanceof Error ? computeError.message : undefined,
         },
@@ -201,11 +209,13 @@ export function MissionControlCockpit() {
       orchestratorData,
       teamsData,
       openClawData,
+      hermesData,
       runtimeData,
       computeData,
       orchestratorError,
       teamsError,
       openClawError,
+      hermesError,
       runtimeError,
       computeError,
     ],
@@ -225,6 +235,13 @@ export function MissionControlCockpit() {
   const onlineTeams = snapshot.summary.agents_running;
   const openClawRunning = openClawData?.intents_in_progress.length ?? 0;
   const policyViolations = snapshot.summary.policy_violations;
+  const coordinatorTasks = Object.values(hermesData?.tasks_by_state ?? {}).reduce(
+    (sum, value) => sum + Number(value || 0),
+    0,
+  );
+  const coordinatorWorkflows = hermesData?.workflows.length ?? 0;
+  const coordinatorAvailable =
+    snapshot.sources.find((source) => source.id === 'task-coordinator')?.available === true;
 
   const healthyIdle = snapshot.summary.healthy_idle;
   const orchestratorSourceAvailable =
@@ -281,7 +298,7 @@ export function MissionControlCockpit() {
           </div>
         </header>
 
-        <section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-7">
+        <section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-8">
           <MetricCard label="Agents running" value={onlineTeams} detail={`${teams.length} historical team records`} accent="cyan" />
           <MetricCard
             label="AI runtimes"
@@ -299,6 +316,12 @@ export function MissionControlCockpit() {
           <MetricCard label="Workers" value={workerCount} detail={`${activeWorkerCount} active now`} accent="amber" />
           <MetricCard label="tmux sessions" value={tmuxSessionCount ?? 'UNKNOWN'} detail="ephemeral runtime sessions" accent="cyan" />
           <MetricCard label="OpenClaw intents" value={openClawRunning} detail={`${policyViolations} recent violations`} accent={policyViolations > 0 ? 'rose' : 'emerald'} />
+          <MetricCard
+            label="Task Coordinator"
+            value={coordinatorAvailable ? coordinatorTasks : 'UNKNOWN'}
+            detail={coordinatorAvailable ? `${coordinatorWorkflows} workflows · Hermes legacy store` : 'Hermes coordinator telemetry unavailable'}
+            accent={coordinatorAvailable ? 'cyan' : 'amber'}
+          />
           <MetricCard
             label="System"
             value={healthyIdle === null ? 'UNKNOWN' : healthyIdle ? 'IDLE' : 'BUSY'}
@@ -426,6 +449,7 @@ export function MissionControlCockpit() {
                 <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">AI runtimes</span><span className="font-mono text-slate-200">{aiRuntimeCount ?? 'UNKNOWN'}</span></div>
                 <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">tmux sessions</span><span className="font-mono text-slate-200">{tmuxSessionCount ?? 'UNKNOWN'}</span></div>
                 <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">OpenClaw in progress</span><span className="font-mono text-slate-200">{openClawRunning}</span></div>
+                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">Task Coordinator</span><span className={`font-mono ${coordinatorAvailable ? 'text-emerald-300' : 'text-amber-300'}`}>{coordinatorAvailable ? 'OBSERVED' : 'UNKNOWN'}</span></div>
                 <div className="flex justify-between py-2"><span className="text-slate-500">policy violations</span><span className={`font-mono ${policyViolations ? 'text-rose-300' : 'text-emerald-300'}`}>{policyViolations}</span></div>
               </div>
             </div>
@@ -489,7 +513,7 @@ export function MissionControlCockpit() {
         </section>
 
         <footer className="mt-5 flex flex-col gap-2 border-t border-cyan-500/10 py-4 text-[10px] uppercase tracking-[0.16em] text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-          <span>Multi-cloud · multi-runtime · one control plane</span>
+<span>Multi-cloud · OpenClaw · Hermes · multi-runtime · one control plane</span>
           <span>
             {gamerOnline ? 'compute online' : 'compute not reporting'} ·{' '}
             {healthyIdle === null ? 'runtime state unknown' : healthyIdle ? 'ready for work' : 'work executing'}
