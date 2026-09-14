@@ -27,6 +27,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  statuses: write
 
 concurrency:
   group: backend-independent-review-${{ github.repository }}-${{ github.event.pull_request.number }}
