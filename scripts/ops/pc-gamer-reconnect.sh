@@ -84,7 +84,8 @@ acquire_machine_claim() {
   echo "[reconnect] machine claim acquired: $result"
   MACHINE_CLAIM_HELD=true
   start_machine_claim_heartbeat
-  trap 'release_machine_claim' EXIT INT TERM
+  trap 'release_machine_claim' EXIT
+  trap 'release_machine_claim; exit 130' INT TERM
   return 0
 }
 
