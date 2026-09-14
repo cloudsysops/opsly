@@ -2,57 +2,121 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildFactoryTelemetry } from '../lib/software-factory-telemetry.mjs';
 
-test('computes factory flow and verifier coverage from evidence', () => {
+const policy = {
+  verifier_coverage_target: 0.9,
+  blocked_ratio_warn: 0.2,
+  conflicted_pr_warn: 1,
+  behind_pr_warn: 3,
+  failed_check_warn: 1,
+  merge_ready_backlog_warn: 5,
+};
+
+function completeWorkstreams() {
+  return {
+    claims_observed: true,
+    runtime_sessions_observed: true,
+    github_observed: true,
+    github_evidence_complete: true,
+    active_claims: [{ work_id: 'a' }, { work_id: 'b' }],
+    completed_claim_tombstones: 4,
+    runtime_sessions: [
+      { status: 'running' },
+      { status: 'checkpointed' },
+      { status: 'stopped' },
+      { status: 'waiting_approval' },
+    ],
+    pull_requests: [
+      { request_id: 'req-1', verifier: 'PASS', check_state: 'PASS', merge_readiness: 'READY' },
+      { request_id: 'req-2', verifier: 'BLOCKED', check_state: 'PASS', merge_readiness: 'UNKNOWN' },
+      { request_id: 'req-3', verifier: 'UNKNOWN', check_state: 'FAIL', merge_readiness: 'UNKNOWN' },
+      { verifier: 'UNKNOWN', check_state: 'PENDING', merge_readiness: 'UNKNOWN' },
+    ],
+  };
+}
+
+function reconciliation() {
+  return {
+    mode: 'READ_ONLY',
+    pullRequests: [
+      { lane: 'MERGE_READY' },
+      { lane: 'CHECK_FAILED' },
+      { lane: 'CONFLICTED' },
+    ],
+  };
+}
+
+test('computes complete factory scorecard with merge-ready ratio and checkpointed sessions', () => {
   const snapshot = buildFactoryTelemetry({
-    workstreams: {
-      claims_observed: true,
-      runtime_sessions_observed: true,
-      github_observed: true,
-      active_claims: [{ work_id: 'a' }, { work_id: 'b' }],
-      completed_claim_tombstones: 4,
-      runtime_sessions: [
-        { status: 'running' },
-        { status: 'stopped' },
-        { status: 'waiting_approval' },
-      ],
-      pull_requests: [
-        { verifier: 'PASS', merge_readiness: 'READY' },
-        { verifier: 'UNKNOWN', merge_readiness: 'BLOCKED' },
-      ],
-    },
-    reconciliation: {
-      mode: 'READ_ONLY',
-      pullRequests: [
-        { lane: 'MERGE_READY' },
-        { lane: 'CHECK_FAILED' },
-        { lane: 'CONFLICTED' },
-      ],
-    },
-    policy: {
-      verifier_coverage_target: 0.9,
-      blocked_ratio_warn: 0.2,
-      conflicted_pr_warn: 1,
-      failed_check_warn: 1,
-      merge_ready_backlog_warn: 5,
-    },
+    workstreams: completeWorkstreams(),
+    reconciliation: reconciliation(),
+    policy,
   });
 
+  assert.equal(snapshot.confidence, 'COMPLETE');
   assert.equal(snapshot.metrics.active_claims, 2);
-  assert.equal(snapshot.metrics.live_runtime_sessions, 2);
+  assert.equal(snapshot.metrics.live_runtime_sessions, 3);
   assert.equal(snapshot.metrics.verifier_coverage, 0.5);
+  assert.equal(snapshot.metrics.merge_ready, 1);
+  assert.equal(snapshot.metrics.merge_ready_ratio, 0.25);
+  assert.equal(snapshot.metrics.blocked, 2);
+  assert.equal(snapshot.metrics.blocked_ratio, 0.5);
   assert.equal(snapshot.metrics.reconciliation.check_failed, 1);
   assert.ok(snapshot.recommendations.some((item) => item.id === 'raise-verifier-coverage'));
   assert.ok(snapshot.recommendations.some((item) => item.id === 'repair-failing-checks'));
-  assert.equal(snapshot.learning_state.status, 'OBSERVE_AND_RECOMMEND');
-  assert.equal(snapshot.learning_state.canonical_owner, '@intcloudsysops/agent-learning');
+  assert.ok(snapshot.recommendations.some((item) => item.id === 'propagate-canonical-learning-identity'));
+});
+
+test('partial Mission Control evidence produces null metrics and no GitHub-derived actions', () => {
+  const workstreams = completeWorkstreams();
+  workstreams.github_evidence_complete = false;
+  const snapshot = buildFactoryTelemetry({
+    workstreams,
+    reconciliation: reconciliation(),
+    policy,
+  });
+
+  assert.equal(snapshot.confidence, 'PARTIAL');
+  assert.equal(snapshot.sources.github_observed, false);
+  assert.equal(snapshot.metrics.verifier_coverage, null);
+  assert.equal(snapshot.metrics.merge_ready_ratio, null);
+  assert.equal(snapshot.metrics.blocked_ratio, null);
   assert.equal(
-    snapshot.learning_state.canonical_task_identity,
-    'AgentTaskEnvelopeV1.request_id',
+    snapshot.recommendations.some((item) => item.id === 'raise-verifier-coverage'),
+    false,
   );
-  assert.ok(
-    snapshot.recommendations.some(
-      (item) => item.id === 'propagate-canonical-learning-identity',
-    ),
+  assert.equal(
+    snapshot.recommendations.some((item) => item.id === 'reduce-blocked-work'),
+    false,
+  );
+  assert.ok(snapshot.recommendations.some((item) => item.id === 'repair-failing-checks'));
+});
+
+test('malformed reconciliation evidence is marked unavailable and cannot drive actions', () => {
+  const snapshot = buildFactoryTelemetry({
+    workstreams: completeWorkstreams(),
+    reconciliation: {
+      mode: 'READ_ONLY',
+      pullRequests: [{ lane: 'NOT_A_CANONICAL_LANE' }],
+    },
+    policy,
+  });
+  assert.equal(snapshot.sources.reconciliation_observed, false);
+  assert.equal(snapshot.metrics.reconciliation, null);
+  assert.equal(
+    snapshot.recommendations.some((item) => item.id === 'repair-failing-checks'),
+    false,
+  );
+});
+
+test('invalid policy thresholds fail closed', () => {
+  assert.throws(
+    () =>
+      buildFactoryTelemetry({
+        workstreams: completeWorkstreams(),
+        reconciliation: reconciliation(),
+        policy: { ...policy, blocked_ratio_warn: 2 },
+      }),
+    /invalid telemetry policy threshold/,
   );
 });
 
@@ -60,10 +124,12 @@ test('does not pretend persistent learning exists', () => {
   const snapshot = buildFactoryTelemetry({
     workstreams: {},
     reconciliation: {},
-    policy: {},
+    policy,
   });
+  assert.equal(snapshot.confidence, 'PARTIAL');
   assert.equal(snapshot.learning_state.persistent_history, false);
   assert.equal(snapshot.learning_state.continuous_durable_export, false);
   assert.equal(snapshot.learning_state.mission_control_scorecards, false);
   assert.equal(snapshot.learning_state.adaptive_routing, false);
+  assert.equal(snapshot.learning_state.canonical_task_ids_visible, null);
 });
