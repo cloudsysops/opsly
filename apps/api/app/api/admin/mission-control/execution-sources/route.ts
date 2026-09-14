@@ -28,6 +28,7 @@ export async function GET(request: Request): Promise<Response> {
   const root = resolveRepoRoot();
   const registryPath = join(root, 'config', 'external-agent-registry.json');
   const queueSubmitterPath = join(root, 'scripts', 'ops', 'github-agent-queue-submit.mjs');
+  const admissionPath = join(root, 'scripts', 'ops', 'lib', 'github-agent-queue-admission.mjs');
   const handoffPath = join(root, 'scripts', 'ops', 'interactive-agent-handoff.mjs');
 
   try {
@@ -49,8 +50,9 @@ export async function GET(request: Request): Promise<Response> {
       .sort((a, b) => a.id.localeCompare(b.id));
 
     const registryDrivenAdmission =
-      queueSubmitter.includes('external-agent-registry.json') &&
-      queueSubmitter.includes('resolveGovernedAgent');
+      existsSync(admissionPath) &&
+      queueSubmitter.includes('loadGovernedAgentRegistry(root)') &&
+      queueSubmitter.includes('resolveGovernedAgent(meta, registry)');
 
     return NextResponse.json({
       schema_version: 'MissionControlExecutionSourcesV1',
