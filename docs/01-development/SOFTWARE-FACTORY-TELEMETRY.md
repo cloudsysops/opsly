@@ -48,3 +48,14 @@ The remaining integration gaps are therefore explicit:
 3. add continuous durable eval/evidence export.
 
 Until those exist, Telemetry reports `OBSERVE_AND_RECOMMEND` and never claims adaptive learning.
+
+
+## Evidence confidence
+
+Every snapshot is `COMPLETE` or `PARTIAL`.
+
+GitHub-derived ratios and recommendations are emitted only when the Mission Control source explicitly reports complete GitHub evidence. Reconciliation-derived recommendations are emitted only when the inventory is canonical `READ_ONLY` evidence and every PR has a recognized lane.
+
+Unavailable or malformed sources produce `null` metrics rather than synthetic zeroes. A checkpointed runtime session counts as live while its ephemeral session still exists.
+
+The scheduled PR Reconciliation workflow publishes a reconciliation-only telemetry artifact even when live Mission Control evidence is unavailable. That artifact is intentionally `PARTIAL`; it may recommend from reconciliation evidence but cannot infer runtime/verifier health.
