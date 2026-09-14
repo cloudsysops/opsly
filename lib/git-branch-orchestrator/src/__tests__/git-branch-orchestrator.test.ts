@@ -113,6 +113,7 @@ describe('git-branch-orchestrator', () => {
         task_id: 'claimed-write',
         workstream: 'ownership-gate',
       },
+      verify_dispatch_claim: async () => true,
       materialize_git: true,
     });
 
