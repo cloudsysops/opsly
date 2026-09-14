@@ -9,6 +9,7 @@ import {
   extractStructuredVerifierEvidence,
   pathMatchesPattern,
   requiredVerifierPolicy,
+  signRuntimeVerifierEvidence,
 } from '../lib/independent-verifier-policy.mjs';
 
 const head = '9491d6028d1234567890abcdefabcdefabcdef12';
@@ -265,4 +266,153 @@ test('structured evidence marker parses only the canonical schema', () => {
     ),
     null
   );
+});
+
+
+test('signed Claude runtime plus Copilot satisfies sensitive quorum', () => {
+  const key = 'test-signing-key';
+  const runtimeEvidence = {
+    schema_version: 'IndependentVerifierEvidenceV1',
+    head_sha: head,
+    decision: 'PASS',
+    verifier_agent: 'claude-code',
+    builder_agent: 'opencode',
+    execution_id: 'exec-claude-1',
+    specialties_checked: ['architecture', 'security', 'ci', 'ownership', 'blast-radius'],
+    findings: [],
+    checks: ['diff', 'CI', 'security'],
+    reviewed_at: '2026-09-14T16:30:00Z',
+  };
+  runtimeEvidence.signature = signRuntimeVerifierEvidence(runtimeEvidence, key);
+
+  const marker = [
+    '<!-- opsly-independent-verifier-v1',
+    JSON.stringify(runtimeEvidence),
+    '-->',
+  ].join('\n');
+
+  const decision = evaluateQualifiedIndependentReview({
+    headSha: head,
+    author: 'builder-user',
+    reviews: [
+      cleanReview(
+        'copilot-pull-request-reviewer[bot]',
+        head,
+        'No unresolved review issues were identified.'
+      ),
+    ],
+    issueComments: [
+      {
+        id: 501,
+        created_at: '2026-09-14T16:30:00Z',
+        user: { login: 'trusted-relay' },
+        author_association: 'OWNER',
+        body: marker,
+      },
+    ],
+    files: [{ filename: 'scripts/ci/check-independent-review.mjs' }],
+    policy,
+    runtimeSigningKey: key,
+  });
+
+  assert.equal(decision.ok, true);
+  assert.equal(decision.status, 'PASS');
+  assert.equal(decision.observed_quorum, 2);
+  assert.deepEqual(
+    new Set(decision.verifier_groups),
+    new Set(['anthropic-claude', 'github-copilot'])
+  );
+});
+
+test('invalid runtime signature does not satisfy verifier quorum', () => {
+  const runtimeEvidence = {
+    schema_version: 'IndependentVerifierEvidenceV1',
+    head_sha: head,
+    decision: 'PASS',
+    verifier_agent: 'claude-code',
+    builder_agent: 'opencode',
+    execution_id: 'exec-claude-bad',
+    specialties_checked: ['architecture', 'security', 'ci', 'ownership', 'blast-radius'],
+    findings: [],
+    checks: ['diff'],
+    reviewed_at: '2026-09-14T16:31:00Z',
+    signature: '0'.repeat(64),
+  };
+
+  const marker = [
+    '<!-- opsly-independent-verifier-v1',
+    JSON.stringify(runtimeEvidence),
+    '-->',
+  ].join('\n');
+
+  const decision = evaluateQualifiedIndependentReview({
+    headSha: head,
+    author: 'builder-user',
+    reviews: [
+      cleanReview(
+        'copilot-pull-request-reviewer[bot]',
+        head,
+        'No unresolved review issues were identified.'
+      ),
+    ],
+    issueComments: [
+      {
+        id: 502,
+        created_at: '2026-09-14T16:31:00Z',
+        user: { login: 'trusted-relay' },
+        author_association: 'OWNER',
+        body: marker,
+      },
+    ],
+    files: [{ filename: 'scripts/ci/check-independent-review.mjs' }],
+    policy,
+    runtimeSigningKey: 'real-key',
+  });
+
+  assert.equal(decision.ok, false);
+  assert.equal(decision.status, 'BLOCKED');
+  assert.equal(decision.observed_quorum, 1);
+});
+
+test('signed runtime self-review does not count', () => {
+  const key = 'test-signing-key';
+  const runtimeEvidence = {
+    schema_version: 'IndependentVerifierEvidenceV1',
+    head_sha: head,
+    decision: 'PASS',
+    verifier_agent: 'claude-code',
+    builder_agent: 'claude-code',
+    execution_id: 'exec-self-review',
+    specialties_checked: ['architecture', 'security', 'ci', 'ownership', 'blast-radius'],
+    findings: [],
+    checks: ['diff'],
+    reviewed_at: '2026-09-14T16:32:00Z',
+  };
+  runtimeEvidence.signature = signRuntimeVerifierEvidence(runtimeEvidence, key);
+
+  const marker = [
+    '<!-- opsly-independent-verifier-v1',
+    JSON.stringify(runtimeEvidence),
+    '-->',
+  ].join('\n');
+
+  const decision = evaluateQualifiedIndependentReview({
+    headSha: head,
+    author: 'builder-user',
+    issueComments: [
+      {
+        id: 503,
+        created_at: '2026-09-14T16:32:00Z',
+        user: { login: 'trusted-relay' },
+        author_association: 'OWNER',
+        body: marker,
+      },
+    ],
+    files: [{ filename: 'docs/README.md' }],
+    policy,
+    runtimeSigningKey: key,
+  });
+
+  assert.equal(decision.ok, false);
+  assert.equal(decision.observed_quorum, 0);
 });
