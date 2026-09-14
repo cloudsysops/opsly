@@ -145,15 +145,16 @@ describe('machine-claim: getClaimStatus', () => {
   });
 });
 
-
 describe('pc-gamer reconnect machine-claim contract', () => {
-  it('fails closed, renews the lease, and has no unsafe skip switch', () => {
+  it('fails closed, renews the lease, and terminates the owner process if the lease is lost', () => {
     const source = fs.readFileSync(
       path.resolve(process.cwd(), 'scripts/ops/pc-gamer-reconnect.sh'),
       'utf8'
     );
     assert.match(source, /start_machine_claim_heartbeat/);
     assert.match(source, /machine-claim\.mjs" acquire/);
+    assert.match(source, /kill -TERM "\$\$"/);
+    assert.doesNotMatch(source, /kill -TERM "\$"/);
     assert.match(source, /trap 'release_machine_claim; exit 130' INT TERM/);
     assert.doesNotMatch(source, /MACHINE_CLAIM_SKIP/);
   });
