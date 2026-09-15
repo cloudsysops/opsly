@@ -49,6 +49,8 @@ export interface CreateSessionInput {
   workspace: string;
   branch?: string;
   initialCommand?: string;
+  /** Explicit tmux session name for bounded task runtimes. Must already be normalized. */
+  tmuxSessionName?: string;
 }
 
 export interface SendCommandInput {

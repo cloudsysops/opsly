@@ -38,14 +38,17 @@ main() {
   check_file "config/knowledge-index.json"
   check_file ".opsly/superagents/bootstrap-chain.txt"
 
-  if [[ -f runtime/logs/agents-autopilot.pid ]]; then
-    if ./scripts/status-agents-autopilot.sh >/dev/null 2>&1; then
-      pass "autopilot: running"
-    else
-      warn "autopilot: stale pid/logs"
-    fi
+  check_cmd tmux
+  check_file "docs/03-agents/EXTERNAL-RUNTIME-POLICY.md"
+
+  if tmux list-sessions -F '#{session_name}' 2>/dev/null | grep -q '^opsly-task-'; then
+    pass "ephemeral task sessions: active"
   else
-    warn "autopilot: not started (runtime/logs/agents-autopilot.pid missing)"
+    pass "ephemeral task sessions: none active (healthy idle state)"
+  fi
+
+  if [[ -f runtime/logs/agents-autopilot.pid ]]; then
+    warn "legacy autopilot pid file exists; run ./scripts/stop-agents-autopilot.sh to clean it"
   fi
 
   if command -v code >/dev/null 2>&1; then

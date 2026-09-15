@@ -1,0 +1,30 @@
+{
+  "name": "@intcloudsysops/agent-learning",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent Lab learning layer: evidence, review attach, trust, scorecards — keyed by canonical AgentTask request_id. Not a task registry.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@intcloudsysops/types": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.12",
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.8"
+  }
+}

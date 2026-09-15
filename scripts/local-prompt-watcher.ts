@@ -490,16 +490,34 @@ class LocalPromptWatcher {
   }
 
   private async pollJob(jobId: string): Promise<JobStatusResponse | null> {
+    const url = `${this.orchestratorUrl}/api/job-status/${encodeURIComponent(jobId)}`;
     for (let attempt = 1; attempt <= this.pollAttempts; attempt += 1) {
-      const response = await fetch(`${this.orchestratorUrl}/api/job-status/${encodeURIComponent(jobId)}`, {
-        headers: { Authorization: `Bearer ${this.adminToken}` },
-      });
+      let response: Response;
+      try {
+        response = await fetch(url, {
+          headers: { Authorization: `Bearer ${this.adminToken}` },
+        });
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err);
+        console.warn(
+          `[LocalPromptWatcher] job-status fetch error (${attempt}/${this.pollAttempts}) ${jobId}: ${detail}`,
+        );
+        await sleep(this.pollIntervalMs);
+        continue;
+      }
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(`job-status auth failed HTTP ${response.status} for ${jobId}`);
+      }
       if (response.ok) {
         const status = (await response.json()) as JobStatusResponse;
         const normalized = normalizeStatus(status.status ?? status.state);
         if (normalized === 'completed' || normalized === 'failed') {
           return status;
         }
+      } else if (response.status !== 404) {
+        console.warn(
+          `[LocalPromptWatcher] job-status HTTP ${response.status} (${attempt}/${this.pollAttempts}) ${jobId}`,
+        );
       }
       await sleep(this.pollIntervalMs);
     }

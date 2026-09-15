@@ -7,6 +7,7 @@ import { AgentServiceRegistry } from '../lib/agent/agent-service-registry.js';
 
 const originalCwd = process.cwd();
 const originalConfig = process.env.OPSLY_AGENT_SERVICES_CONFIG;
+const originalOpenClawAcceptance = process.env.OPSLY_OPENCLAW_ACCEPTANCE_ENABLED;
 
 afterEach(() => {
   process.chdir(originalCwd);
@@ -14,6 +15,11 @@ afterEach(() => {
     delete process.env.OPSLY_AGENT_SERVICES_CONFIG;
   } else {
     process.env.OPSLY_AGENT_SERVICES_CONFIG = originalConfig;
+  }
+  if (originalOpenClawAcceptance === undefined) {
+    delete process.env.OPSLY_OPENCLAW_ACCEPTANCE_ENABLED;
+  } else {
+    process.env.OPSLY_OPENCLAW_ACCEPTANCE_ENABLED = originalOpenClawAcceptance;
   }
 });
 
@@ -46,5 +52,37 @@ describe('AgentServiceRegistry config resolution', () => {
     const service = await registry.getService('opencode');
 
     expect(service?.url).toBe('http://127.0.0.1:5004');
+  });
+
+
+  it('keeps OpenClaw disabled unless the explicit acceptance gate is set', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'opsly-openclaw-registry-'));
+    const configPath = path.join(root, 'agent-services.yaml');
+    await writeFile(
+      configPath,
+      [
+        'services:',
+        '  local_openclaw:',
+        '    enabled: false',
+        '    endpoint: http://127.0.0.1:5012',
+        '    type: http',
+        'defaults:',
+        '  default_agent: opencode',
+        '  fallback_chain:',
+        '    - opencode',
+        '',
+      ].join('\n'),
+      'utf-8',
+    );
+
+    process.env.OPSLY_AGENT_SERVICES_CONFIG = configPath;
+    delete process.env.OPSLY_OPENCLAW_ACCEPTANCE_ENABLED;
+
+    const disabled = new AgentServiceRegistry();
+    expect(await disabled.getService('openclaw')).toBeNull();
+
+    process.env.OPSLY_OPENCLAW_ACCEPTANCE_ENABLED = 'true';
+    const acceptance = new AgentServiceRegistry();
+    expect((await acceptance.getService('openclaw'))?.url).toBe('http://127.0.0.1:5012');
   });
 });

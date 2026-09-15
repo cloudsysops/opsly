@@ -1,0 +1,16 @@
+{
+  "id": "mission-control-openclaw-2026-09-11",
+  "title": "Opsly Mission Control — OpenClaw cockpit",
+  "created_at": "2026-09-11",
+  "category": "dashboard",
+  "status": "implemented-reference",
+  "implementation_path": "apps/admin/components/MissionControlCockpit.tsx",
+  "route": "/mission-control",
+  "source": "ChatGPT image generation",
+  "related_issues": [
+    1225,
+    1222,
+    1223
+  ],
+  "notes": "The generated PNG is the visual design reference. Runtime UI must display only real telemetry; planned services remain explicitly planned."
+}
