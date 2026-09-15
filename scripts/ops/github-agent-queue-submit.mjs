@@ -6,6 +6,7 @@ import {
   loadGovernedAgentRegistry,
   resolveGovernedAgent,
 } from './lib/github-agent-queue-admission.mjs';
+import { buildAgentTaskEnvelope } from '@intcloudsysops/agent-task-core';
 
 function parseScalar(raw = '') {
   const value = raw.trim();
@@ -164,6 +165,30 @@ if (!body) throw new Error('workpack body must not be empty');
 const sha = process.env.GITHUB_SHA || crypto.createHash('sha256').update(content).digest('hex').slice(0, 12);
 const requestId = `ghq-${safeIdSegment(meta.id)}-${sha.slice(0, 12)}`;
 
+// Build the real AgentTaskEnvelopeV1 instead of only carrying task_type as
+// loose context metadata. Without this, /api/local/prompt-submit never sees
+// b.agent_task, evaluateAgentTaskPolicy() never runs, and a sensitive
+// task_type (browser/infra) gets zero approval-gate enforcement server-side
+// — the frontmatter's own requires_approval field is the only thing
+// standing between a workpack and dispatch, and nothing cross-checks it
+// against what the task_type actually demands. Sending a real envelope lets
+// the canonical policy engine (lib/agent-task-core/src/policy.ts) make that
+// call instead of trusting the workpack author's word for it.
+const agentTaskEnvelope = buildAgentTaskEnvelope({
+  task: String(meta.title || meta.id),
+  tenantSlug: 'local',
+  taskType: governedAgent.taskType,
+  selectedAgent: governedAgent.opslyJobType,
+  requestId,
+  executionMode: 'enqueue',
+  localOnly: true,
+  writeAllowed: false,
+  networkAllowed: false,
+  source: 'github-agent-queue',
+  actor: 'system',
+  metadata: { workpack_id: meta.id, registry_worker_id: governedAgent.workerId },
+});
+
 const payload = {
   tenant_slug: 'local',
   request_id: requestId,
@@ -173,6 +198,7 @@ const payload = {
   max_steps: Number(meta.max_steps || 6),
   goal: String(meta.title || meta.id),
   prompt_body: body,
+  agent_task: agentTaskEnvelope,
   context: {
     source: 'github-agent-queue',
     github_sha: sha,

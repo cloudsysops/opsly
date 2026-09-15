@@ -31,6 +31,17 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).not.toContain("new Set(['local_opencode', 'local_hermes', 'local_openclaw'])");
   });
 
+  it('sends the validated task_type through a real AgentTaskEnvelopeV1, not only as context metadata', () => {
+    // Without agent_task in the request body, /api/local/prompt-submit never
+    // sees it and evaluateAgentTaskPolicy() never runs — the validated
+    // task_type would sit unused in context, and a sensitive task_type
+    // (browser/infra) would get zero approval-gate enforcement server-side.
+    expect(source).toContain("from '@intcloudsysops/agent-task-core'");
+    expect(source).toContain('buildAgentTaskEnvelope(');
+    expect(source).toContain('taskType: governedAgent.taskType');
+    expect(source).toContain('agent_task: agentTaskEnvelope');
+  });
+
   it('keeps the queue zero-cost and non-mutating at the workpack boundary', () => {
     expect(source).toContain("['free','free_with_quota']");
     expect(source).toContain('estimated_cost_usd must be exactly 0');
@@ -100,7 +111,11 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('OPSLY_ORCHESTRATOR_URL is required');
     expect(source).toContain('PLATFORM_ADMIN_TOKEN is required');
     expect(source).not.toMatch(/dp\.st\./);
-    expect(source).not.toMatch(/sk-[A-Za-z0-9]/);
+    // Real provider keys run 20+ chars after "sk-" with no separator
+    // (sk-ant-..., sk-proj-...); a short bound here false-positives on
+    // legitimate package names that happen to contain "sk-" (e.g.
+    // "agent-task-core" -> "...ta[sk-co]re").
+    expect(source).not.toMatch(/sk-[A-Za-z0-9]{20,}/);
   });
 });
 
@@ -197,5 +212,18 @@ describe('GitHub Agent Queue executable registry admission', () => {
     expect(() => resolveGovernedAgent(meta(), {
       workers: { 'hermes-cli': worker({ local: false }) },
     })).toThrow(/not eligible for governed local dispatch/);
+  });
+
+  it('fails closed when opsly_job_type resolves to more than one worker', () => {
+    const registry = {
+      workers: {
+        'hermes-cli': worker({ opsly_job_type: 'local_hermes' }),
+        'hermes-cli-2': worker({ opsly_job_type: 'local_hermes' }),
+      },
+    };
+    // .find() would silently pick 'hermes-cli' and dispatch there without
+    // anyone deciding that on purpose — must refuse instead.
+    expect(() => resolveGovernedAgent(meta({ agent: 'local_hermes' }), registry))
+      .toThrow(/registered by more than one worker/);
   });
 });

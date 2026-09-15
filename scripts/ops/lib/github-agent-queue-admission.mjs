@@ -10,13 +10,24 @@ export function resolveGovernedAgent(meta, registry) {
   let workerId = requested;
   let entry = workers[workerId];
   if (!entry) {
-    const match = Object.entries(workers).find(([, candidate]) => {
+    // Resolve by opsly_job_type only when it names exactly one worker.
+    // A duplicate opsly_job_type across entries makes "which worker actually
+    // runs this" ambiguous — .find() would silently pick whichever happens
+    // to be first, which is not a decision this admission gate is allowed
+    // to make quietly. Fail closed instead.
+    const matches = Object.entries(workers).filter(([, candidate]) => {
       return candidate?.opsly_job_type === requested;
     });
-    if (!match) {
+    if (matches.length === 0) {
       throw new Error(`agent "${requested}" is not registered in external-agent-registry`);
     }
-    [workerId, entry] = match;
+    if (matches.length > 1) {
+      const ids = matches.map(([id]) => id).join(', ');
+      throw new Error(
+        `agent "${requested}" (opsly_job_type) is registered by more than one worker (${ids}) — ambiguous, refusing to dispatch`
+      );
+    }
+    [workerId, entry] = matches[0];
   }
 
   if (entry.enabled !== true) {
