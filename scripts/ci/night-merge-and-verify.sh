@@ -9,7 +9,12 @@ PLATFORM_DOMAIN="${PLATFORM_DOMAIN:-op-sly.com}"
 SMOKE_API_URL="${SMOKE_API_URL:-https://api.${PLATFORM_DOMAIN}/api/health}"
 # Prod Peskids is www.peskids.com — peskids.op-sly.com is a 308, not the live site.
 SMOKE_PESKIDS_URL="${SMOKE_PESKIDS_URL:-https://www.peskids.com/api/health}"
-DEPLOY_WAIT_SECONDS="${DEPLOY_WAIT_SECONDS:-1500}"
+# 1500s (25min) was too short — two consecutive live runs on 2026-09-14/15
+# timed out and triggered a false-alarm rollback while Deploy was still
+# genuinely in_progress; the first one actually finished at ~50min total.
+# 3000s still isn't a hard guarantee, but matches observed reality instead
+# of an arbitrary guess.
+DEPLOY_WAIT_SECONDS="${DEPLOY_WAIT_SECONDS:-3000}"
 DEPLOY_DISPATCH_AFTER_SECONDS="${DEPLOY_DISPATCH_AFTER_SECONDS:-120}"
 DRY_RUN="${DRY_RUN:-0}"
 FORCE="${NIGHT_MERGE_FORCE:-0}"
