@@ -1,0 +1,60 @@
+# PR doctor — cuando un PR falla CI de verdad (lint/build/secret-scan/tests,
+# no production-change-window ni opsly-independent-review), despacha un fix
+# a la cola real de agentes vía POST /api/local/prompt-submit en el
+# orchestrator — sin fijar qué agente lo toma (agent-task-core enruta al
+# primero disponible, mismo principio que
+# apps/orchestrator/src/agents/executor-router.ts).
+#
+# Por qué ubuntu-latest + Tailscale efímero: cloudsysops/opsly es repo
+# público, un runner self-hosted no puede registrarse aquí (ver
+# github-agent-queue.yml). El orchestrator solo es alcanzable por la red
+# interna (http://100.120.151.91:3011).
+#
+# Idempotencia: scripts/ci/pr-doctor.mjs revisa si ya hay un comentario
+# "PR Doctor: fix dispatched for <sha>" antes de despachar de nuevo.
+
+name: PR doctor
+
+on:
+  pull_request_target:
+    types: [synchronize, opened, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-doctor-${{ github.repository }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  doctor:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout trusted base (script only — never PR-head code)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Join tailnet (ephemeral, this job only)
+        uses: tailscale/github-action@v3
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run PR doctor
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          OPSLY_ORCHESTRATOR_URL: http://100.120.151.91:3011
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
+          OPSLY_GITHUB_REPO: ${{ github.repository }}
+        run: |
+          node scripts/ci/pr-doctor.mjs --pr "${{ github.event.pull_request.number }}"
