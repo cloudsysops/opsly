@@ -1,0 +1,85 @@
+{
+  "name": "opsly-revenue-agent",
+  "version": "1.0.0",
+  "description": "Governed Revenue Agent skill for opportunity qualification, matching, attribution and commission reconciliation.",
+  "triggers": [
+    "revenue agent",
+    "Revenue OS",
+    "commission",
+    "attribution",
+    "referral",
+    "affiliate",
+    "partner",
+    "provider matching",
+    "deal scout",
+    "health travel",
+    "turismo salud",
+    "commerce deals"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "intent": {
+        "type": "string",
+        "enum": [
+          "scout",
+          "qualify",
+          "match",
+          "followup-draft",
+          "attribute",
+          "commission-review"
+        ]
+      },
+      "tenantSlug": {
+        "type": "string"
+      },
+      "opportunityRef": {
+        "type": "string"
+      },
+      "referralRef": {
+        "type": "string"
+      },
+      "context": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "intent",
+      "tenantSlug"
+    ],
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "decision": {
+        "type": "string"
+      },
+      "selectedRefs": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "confidence": {
+        "type": "number"
+      },
+      "blockers": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "nextAction": {
+        "type": "string"
+      }
+    }
+  },
+  "crossReferences": [
+    "opsly-context",
+    "opsly-modularity",
+    "opsly-supabase",
+    "opsly-researcher",
+    "opsly-qa"
+  ]
+}

@@ -7,9 +7,11 @@ tenant: peskids
 
 # Peskids — Open Source CRM Migration
 
+> **CANONICAL STATUS — 2026-09:** Migration is complete at the architecture level. **Twenty is the active/canonical CRM direction. GoHighLevel is EOL and appears below only as historical migration context. Do not re-enable GHL or add new GHL paths.** See ADR-042.
+
 Plan canónico para migrar de **GoHighLevel (GHL)** hacia un stack híbrido **WhatsApp-first** con herramientas open source, **sin romper producción**.
 
-**Principios:** no reemplazar todo de una; GHL sigue como fallback; un solo write path por entidad; WhatsApp automático solo con aprobación humana; Peskids Admin no duplica CRM completo.
+**Current principles:** Twenty is canonical; Supabase remains operational source for Peskids domain state; one write path per entity; WhatsApp automation stays approval-first; Peskids Admin must not duplicate Twenty CRM UX.
 
 **Estado del documento:** `GATE_1_RECOVERED` (2026-07-06) · adapters preparados (`ADAPTERS_READY_NO_RUNTIME_CHANGE`).
 
