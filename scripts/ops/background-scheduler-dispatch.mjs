@@ -85,8 +85,8 @@ function buildCostMetadata(candidate) {
 function requestIdFor(candidate) {
   const suffix = crypto.randomBytes(4).toString('hex');
   return `background-${candidate.id}-${Date.now()}-${suffix}`
-    .replace(/[^a-zA-Z0-9._:-]/g, '-')
-    .slice(0, 160);
+    .replace(/[^a-zA-Z0-9_-]/g, '-')
+    .slice(0, 128);
 }
 
 export async function runBackgroundScheduler(options = {}) {
@@ -163,6 +163,16 @@ export async function runBackgroundScheduler(options = {}) {
         decision: 'COST_GATE_BLOCKED',
         executed: false,
         cost_gate: costGate,
+      };
+    }
+
+    if (candidate.requiresPr) {
+      return {
+        ...preview,
+        decision: 'WRITE_APPROVAL_REQUIRED',
+        executed: false,
+        cost_gate: costGate,
+        blockers: ['WRITE_CAPABLE_BACKGROUND_TASK_REQUIRES_TYPED_APPROVAL'],
       };
     }
 
@@ -282,7 +292,30 @@ export async function runBackgroundScheduler(options = {}) {
       };
     }
 
-    const jobId = String(responseBody.job_id ?? responseBody.request_id ?? requestId);
+    if (
+      responseBody.prepared_only === true ||
+      responseBody.job_id === null ||
+      responseBody.job_id === undefined
+    ) {
+      state.tasks[candidate.id] = {
+        ...state.tasks[candidate.id],
+        status: 'failed',
+        failed_at: new Date().toISOString(),
+        error: 'prepared-only response; task was not enqueued',
+        response: responseBody,
+      };
+      await writeJsonAtomic(stateFile, state);
+      return {
+        ...preview,
+        decision: 'PREPARED_ONLY',
+        executed: false,
+        cost_gate: costGate,
+        request_id: requestId,
+        response: responseBody,
+      };
+    }
+
+    const jobId = String(responseBody.job_id);
     state.tasks[candidate.id] = {
       ...state.tasks[candidate.id],
       status: 'submitted',
@@ -309,7 +342,7 @@ export async function runBackgroundScheduler(options = {}) {
             ...state.tasks[candidate.id],
             status: normalized,
             completed_at: new Date().toISOString(),
-            result: lastBody.result ?? lastBody.output ?? null,
+            result: lastBody.returnvalue ?? lastBody.result ?? lastBody.output ?? null,
             error: lastBody.error ?? null,
           };
           await writeJsonAtomic(stateFile, state);
@@ -394,6 +427,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     'COST_GATE_BLOCKED',
     'EXECUTION_NODE_UNSUPPORTED',
     'EXECUTION_DISABLED',
+    'WRITE_APPROVAL_REQUIRED',
+    'PREPARED_ONLY',
   ].includes(report.decision)) {
     process.exitCode = 1;
   }

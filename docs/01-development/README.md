@@ -26,6 +26,7 @@ Roadmap vivo, planificación, sprints, estado de producto y handoffs de desarrol
 - [`DOCUMENTATION-LIFECYCLE.md`](DOCUMENTATION-LIFECYCLE.md) — wiki: plan, pruebas, docs, NotebookLM/Obsidian/Graphyfi
 - [`AGENT-RUNTIME-STATUS-2026-09-12.md`](AGENT-RUNTIME-STATUS-2026-09-12.md) — snapshot operativo del runtime, blockers y E2E Gamer
 - [`AGENT-PROMPT-QUEUE.md`](AGENT-PROMPT-QUEUE.md) — guía canónica de task sources y ejecución gobernada
+- [`CREATOR-OS-MVP-EXECUTION-MAP.md`](CREATOR-OS-MVP-EXECUTION-MAP.md) — fases #1342–#1351, dependencias y gate de validación antes de Opsly Arena
 - `ROADMAP.md`
 - `VISION.md`
 - `IMPLEMENTATION-IA-LAYER.md`
