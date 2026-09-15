@@ -20,6 +20,7 @@ import {
   orchestratorQueue,
 } from './queue.js';
 import { closeCircuitBreakerRedis } from './resilience/circuit-breaker.js';
+import { startDispatchClaimHeartbeatLoop } from './task-claim-store.js';
 import { closeJobStateStore } from './state/store.js';
 import { OpslyCortex } from './cortex.js';
 import { TeamManager } from './teams/TeamManager.js';
@@ -99,7 +100,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const cleanup: AsyncCleanup[] = [];
   const allowlist = parseWorkerAllowlist();
   const allow = (key: string): boolean => isWorkerAllowed(key, allowlist);
-  const localAgentUnifiedOnly = process.env.OPSLY_LOCAL_AGENT_UNIFIED_ONLY === 'true';
+  const localAgentUnifiedOnly = process.env.OPSLY_LOCAL_AGENT_UNIFIED_ONLY !== 'false';
   const superOrchestratorWorkerEnabled =
     process.env.OPSLY_SUPER_ORCHESTRATOR_WORKER_ENABLED === 'true';
 
@@ -281,9 +282,13 @@ async function main(): Promise<void> {
   let autonomousScheduler: AutonomousScheduler | undefined;
   let cursorCopilotBridge: CursorCopilotBridge | undefined;
   let opslyCortex: OpslyCortex | undefined;
+  const stopDispatchClaimHeartbeat = startDispatchClaimHeartbeatLoop();
   const cleanupTasks: AsyncCleanup[] = [
     async () => {
       stopHeartbeat();
+    },
+    async () => {
+      stopDispatchClaimHeartbeat();
     },
   ];
 

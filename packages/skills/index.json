@@ -149,24 +149,24 @@
       "usage": "Crear migraciones SQL o diseñar queries contra schema platform",
       "path": "skills/user/opsly-supabase/"
     },
-      {
-        "name": "opsly-tenant",
-        "version": "1.0.0",
-        "description": "Onboarding, suspensión, resume, diagnóstico de stacks por tenant. Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
-        "category": "operations",
-        "priority": "high",
-        "usage": "Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
-        "path": "skills/user/opsly-tenant/"
-      },
-      {
-        "name": "opsly-peskids",
-        "version": "1.0.0",
-        "description": "Peskids tenant-specific product and operations work. Use when changing landing, admin, teacher, support, families, auth, routes, docs, or deployment for the Peskids tenant.",
-        "category": "operations",
-        "priority": "high",
-        "usage": "Peskids tenant-specific product, auth, routing, docs, deployment, and role-specific UI work",
-        "path": "skills/user/opsly-peskids/"
-      },
+    {
+      "name": "opsly-tenant",
+      "version": "1.0.0",
+      "description": "Onboarding, suspensión, resume, diagnóstico de stacks por tenant. Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
+      "category": "operations",
+      "priority": "high",
+      "usage": "Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
+      "path": "skills/user/opsly-tenant/"
+    },
+    {
+      "name": "opsly-peskids",
+      "version": "1.0.0",
+      "description": "Peskids tenant-specific product and operations work. Use when changing landing, admin, teacher, support, families, auth, routes, docs, or deployment for the Peskids tenant.",
+      "category": "operations",
+      "priority": "high",
+      "usage": "Peskids tenant-specific product, auth, routing, docs, deployment, and role-specific UI work",
+      "path": "skills/user/opsly-peskids/"
+    },
     {
       "name": "opsly-universe",
       "version": "1.0.0",
@@ -420,7 +420,17 @@
       "priority": "high",
       "usage": "Session start, skill discovery, picking the right workflow for any task",
       "path": "skills/vendor/agent-skills/using-agent-skills/",
-      "triggers": ["which skill", "qué skill", "discovery", "workflow", "engineering workflow", "agent skills", "start session", "nueva tarea", "no sé por dónde empezar"]
+      "triggers": [
+        "which skill",
+        "qué skill",
+        "discovery",
+        "workflow",
+        "engineering workflow",
+        "agent skills",
+        "start session",
+        "nueva tarea",
+        "no sé por dónde empezar"
+      ]
     },
     {
       "name": "spec-driven-development",
@@ -431,7 +441,15 @@
       "priority": "high",
       "usage": "New feature, ambiguous spec, requirements before coding",
       "path": "skills/vendor/agent-skills/spec-driven-development/",
-      "triggers": ["spec", "requirements", "acceptance criteria", "definir feature", "antes de codear", "spec first", "spec driven"]
+      "triggers": [
+        "spec",
+        "requirements",
+        "acceptance criteria",
+        "definir feature",
+        "antes de codear",
+        "spec first",
+        "spec driven"
+      ]
     },
     {
       "name": "planning-and-task-breakdown",
@@ -442,7 +460,17 @@
       "priority": "high",
       "usage": "Task decomposition, scope sizing, dependency mapping, sprint planning",
       "path": "skills/vendor/agent-skills/planning-and-task-breakdown/",
-      "triggers": ["planning", "task breakdown", "desglosar", "descomponer", "tareas", "sprint", "roadmap tasks", "scope", "estimación"]
+      "triggers": [
+        "planning",
+        "task breakdown",
+        "desglosar",
+        "descomponer",
+        "tareas",
+        "sprint",
+        "roadmap tasks",
+        "scope",
+        "estimación"
+      ]
     },
     {
       "name": "incremental-implementation",
@@ -453,7 +481,16 @@
       "priority": "high",
       "usage": "Multi-file feature implementation, avoid big-bang changes",
       "path": "skills/vendor/agent-skills/incremental-implementation/",
-      "triggers": ["incremental", "vertical slice", "implementar", "build feature", "implement", "step by step", "slice", "iterative"]
+      "triggers": [
+        "incremental",
+        "vertical slice",
+        "implementar",
+        "build feature",
+        "implement",
+        "step by step",
+        "slice",
+        "iterative"
+      ]
     },
     {
       "name": "test-driven-development",
@@ -464,7 +501,18 @@
       "priority": "high",
       "usage": "Writing tests, TDD, test coverage, unit tests, integration tests",
       "path": "skills/vendor/agent-skills/test-driven-development/",
-      "triggers": ["tdd", "test", "testing", "unit test", "pruebas", "coverage", "red green refactor", "failing test", "jest", "vitest"]
+      "triggers": [
+        "tdd",
+        "test",
+        "testing",
+        "unit test",
+        "pruebas",
+        "coverage",
+        "red green refactor",
+        "failing test",
+        "jest",
+        "vitest"
+      ]
     },
     {
       "name": "code-review-and-quality",
@@ -475,7 +523,16 @@
       "priority": "high",
       "usage": "Code review, PR review, quality gate before merge",
       "path": "skills/vendor/agent-skills/code-review-and-quality/",
-      "triggers": ["code review", "review", "revisar código", "PR review", "pull request", "quality gate", "before merge", "calidad"]
+      "triggers": [
+        "code review",
+        "review",
+        "revisar código",
+        "PR review",
+        "pull request",
+        "quality gate",
+        "before merge",
+        "calidad"
+      ]
     },
     {
       "name": "debugging-and-error-recovery",
@@ -486,7 +543,19 @@
       "priority": "high",
       "usage": "Bug investigation, production errors, test failures, debugging",
       "path": "skills/vendor/agent-skills/debugging-and-error-recovery/",
-      "triggers": ["debug", "bug", "error", "broke", "roto", "falla", "crash", "fix", "investigate", "investigate error", "not working"]
+      "triggers": [
+        "debug",
+        "bug",
+        "error",
+        "broke",
+        "roto",
+        "falla",
+        "crash",
+        "fix",
+        "investigate",
+        "investigate error",
+        "not working"
+      ]
     },
     {
       "name": "security-and-hardening",
@@ -497,7 +566,19 @@
       "priority": "high",
       "usage": "Security review, auth changes, RLS policies, input validation, secrets",
       "path": "skills/vendor/agent-skills/security-and-hardening/",
-      "triggers": ["security", "seguridad", "owasp", "auth", "injection", "xss", "rls", "secrets", "hardening", "vulnerabilidad", "pentest"]
+      "triggers": [
+        "security",
+        "seguridad",
+        "owasp",
+        "auth",
+        "injection",
+        "xss",
+        "rls",
+        "secrets",
+        "hardening",
+        "vulnerabilidad",
+        "pentest"
+      ]
     },
     {
       "name": "api-and-interface-design",
@@ -508,7 +589,17 @@
       "priority": "high",
       "usage": "New API endpoint, interface design, API versioning, OpenAPI",
       "path": "skills/vendor/agent-skills/api-and-interface-design/",
-      "triggers": ["api design", "interface design", "endpoint", "REST", "OpenAPI", "contract", "versioning", "diseño API", "ruta"]
+      "triggers": [
+        "api design",
+        "interface design",
+        "endpoint",
+        "REST",
+        "OpenAPI",
+        "contract",
+        "versioning",
+        "diseño API",
+        "ruta"
+      ]
     },
     {
       "name": "git-workflow-and-versioning",
@@ -519,7 +610,18 @@
       "priority": "medium",
       "usage": "Git branching, commits, PRs, release tagging, merge strategy",
       "path": "skills/vendor/agent-skills/git-workflow-and-versioning/",
-      "triggers": ["git", "commit", "branch", "PR", "pull request", "merge", "release", "tag", "conventional commits", "squash"]
+      "triggers": [
+        "git",
+        "commit",
+        "branch",
+        "PR",
+        "pull request",
+        "merge",
+        "release",
+        "tag",
+        "conventional commits",
+        "squash"
+      ]
     },
     {
       "name": "shipping-and-launch",
@@ -530,7 +632,18 @@
       "priority": "high",
       "usage": "Production deploy, launch checklist, feature flags, rollback",
       "path": "skills/vendor/agent-skills/shipping-and-launch/",
-      "triggers": ["deploy", "launch", "ship", "production", "go live", "release", "rollout", "rollback", "feature flag", "desplegar"]
+      "triggers": [
+        "deploy",
+        "launch",
+        "ship",
+        "production",
+        "go live",
+        "release",
+        "rollout",
+        "rollback",
+        "feature flag",
+        "desplegar"
+      ]
     },
     {
       "name": "ci-cd-and-automation",
@@ -541,7 +654,18 @@
       "priority": "medium",
       "usage": "CI/CD pipeline, GitHub Actions, automated testing, deployment automation",
       "path": "skills/vendor/agent-skills/ci-cd-and-automation/",
-      "triggers": ["ci", "cd", "cicd", "pipeline", "github actions", "automation", "automated", "workflow", "lint", "build gate"]
+      "triggers": [
+        "ci",
+        "cd",
+        "cicd",
+        "pipeline",
+        "github actions",
+        "automation",
+        "automated",
+        "workflow",
+        "lint",
+        "build gate"
+      ]
     },
     {
       "name": "performance-optimization",
@@ -552,7 +676,19 @@
       "priority": "medium",
       "usage": "Slow queries, high latency, bundle size, LCP, memory usage, profiling",
       "path": "skills/vendor/agent-skills/performance-optimization/",
-      "triggers": ["performance", "slow", "latency", "optimize", "profiling", "lento", "cache", "query optimization", "bundle", "LCP", "memory"]
+      "triggers": [
+        "performance",
+        "slow",
+        "latency",
+        "optimize",
+        "profiling",
+        "lento",
+        "cache",
+        "query optimization",
+        "bundle",
+        "LCP",
+        "memory"
+      ]
     },
     {
       "name": "frontend-ui-engineering",
@@ -563,7 +699,18 @@
       "priority": "medium",
       "usage": "React components, UI implementation, design system, accessibility",
       "path": "skills/vendor/agent-skills/frontend-ui-engineering/",
-      "triggers": ["frontend", "UI", "react", "component", "design system", "responsive", "accessibility", "a11y", "tailwind", "css"]
+      "triggers": [
+        "frontend",
+        "UI",
+        "react",
+        "component",
+        "design system",
+        "responsive",
+        "accessibility",
+        "a11y",
+        "tailwind",
+        "css"
+      ]
     },
     {
       "name": "documentation-and-adrs",
@@ -574,7 +721,17 @@
       "priority": "medium",
       "usage": "ADR creation, runbook writing, API documentation, decision records",
       "path": "skills/vendor/agent-skills/documentation-and-adrs/",
-      "triggers": ["docs", "documentation", "ADR", "runbook", "decision record", "arquitectura", "document", "write docs", "api docs"]
+      "triggers": [
+        "docs",
+        "documentation",
+        "ADR",
+        "runbook",
+        "decision record",
+        "arquitectura",
+        "document",
+        "write docs",
+        "api docs"
+      ]
     },
     {
       "name": "code-simplification",
@@ -585,7 +742,17 @@
       "priority": "medium",
       "usage": "Refactoring, reducing complexity, dead code removal, readability",
       "path": "skills/vendor/agent-skills/code-simplification/",
-      "triggers": ["simplify", "simplificar", "refactor", "complexity", "dead code", "clean up", "readable", "over-engineered", "too complex"]
+      "triggers": [
+        "simplify",
+        "simplificar",
+        "refactor",
+        "complexity",
+        "dead code",
+        "clean up",
+        "readable",
+        "over-engineered",
+        "too complex"
+      ]
     },
     {
       "name": "context-engineering",
@@ -596,7 +763,15 @@
       "priority": "medium",
       "usage": "Agent context management, prompt engineering, token optimization",
       "path": "skills/vendor/agent-skills/context-engineering/",
-      "triggers": ["context", "context window", "prompt engineering", "token", "context management", "agent context", "contexto"]
+      "triggers": [
+        "context",
+        "context window",
+        "prompt engineering",
+        "token",
+        "context management",
+        "agent context",
+        "contexto"
+      ]
     },
     {
       "name": "doubt-driven-development",
@@ -607,7 +782,16 @@
       "priority": "medium",
       "usage": "High-stakes decisions, unfamiliar code, second opinion, adversarial review",
       "path": "skills/vendor/agent-skills/doubt-driven-development/",
-      "triggers": ["doubt", "second opinion", "adversarial", "review decision", "duda", "high stakes", "unfamiliar", "risky change"]
+      "triggers": [
+        "doubt",
+        "second opinion",
+        "adversarial",
+        "review decision",
+        "duda",
+        "high stakes",
+        "unfamiliar",
+        "risky change"
+      ]
     },
     {
       "name": "source-driven-development",
@@ -618,7 +802,15 @@
       "priority": "medium",
       "usage": "External API integration, library usage, official docs verification",
       "path": "skills/vendor/agent-skills/source-driven-development/",
-      "triggers": ["source", "official docs", "documentation driven", "verify docs", "library docs", "external API", "SDK"]
+      "triggers": [
+        "source",
+        "official docs",
+        "documentation driven",
+        "verify docs",
+        "library docs",
+        "external API",
+        "SDK"
+      ]
     },
     {
       "name": "deprecation-and-migration",
@@ -629,7 +821,17 @@
       "priority": "medium",
       "usage": "API deprecation, dependency migration, pattern replacement, sunset planning",
       "path": "skills/vendor/agent-skills/deprecation-and-migration/",
-      "triggers": ["deprecate", "deprecation", "migrate", "migration", "sunset", "replace", "upgrade", "breaking change", "compatibility"]
+      "triggers": [
+        "deprecate",
+        "deprecation",
+        "migrate",
+        "migration",
+        "sunset",
+        "replace",
+        "upgrade",
+        "breaking change",
+        "compatibility"
+      ]
     },
     {
       "name": "browser-testing-with-devtools",
@@ -640,7 +842,17 @@
       "priority": "medium",
       "usage": "Browser testing, Playwright, e2e tests, DevTools, runtime verification",
       "path": "skills/vendor/agent-skills/browser-testing-with-devtools/",
-      "triggers": ["browser test", "e2e", "playwright", "devtools", "chrome", "runtime", "DOM", "network tab", "browser testing"]
+      "triggers": [
+        "browser test",
+        "e2e",
+        "playwright",
+        "devtools",
+        "chrome",
+        "runtime",
+        "DOM",
+        "network tab",
+        "browser testing"
+      ]
     },
     {
       "name": "idea-refine",
@@ -651,7 +863,17 @@
       "priority": "medium",
       "usage": "Vague requirements, brainstorming, idea exploration, product discovery",
       "path": "skills/vendor/agent-skills/idea-refine/",
-      "triggers": ["idea", "brainstorm", "explore", "vague", "refine", "discovery", "product idea", "concept", "tengo una idea"]
+      "triggers": [
+        "idea",
+        "brainstorm",
+        "explore",
+        "vague",
+        "refine",
+        "discovery",
+        "product idea",
+        "concept",
+        "tengo una idea"
+      ]
     },
     {
       "name": "interview-me",
@@ -662,7 +884,15 @@
       "priority": "medium",
       "usage": "Requirements unclear, interview user, elicit needs, discovery conversation",
       "path": "skills/vendor/agent-skills/interview-me/",
-      "triggers": ["interview me", "what do I want", "requirements unclear", "entrevístate", "no sé qué quiero", "help me define", "discover requirements"]
+      "triggers": [
+        "interview me",
+        "what do I want",
+        "requirements unclear",
+        "entrevístate",
+        "no sé qué quiero",
+        "help me define",
+        "discover requirements"
+      ]
     },
     {
       "name": "observability-and-instrumentation",
@@ -673,7 +903,19 @@
       "priority": "high",
       "usage": "Add logging/metrics/tracing, production telemetry, alerting rules, diagnose blind spots in prod",
       "path": "skills/vendor/agent-skills/observability-and-instrumentation/",
-      "triggers": ["observability", "instrumentation", "logging", "metrics", "tracing", "alerting", "telemetry", "SLO", "OpenTelemetry", "qué está pasando en prod", "instrumentar"]
+      "triggers": [
+        "observability",
+        "instrumentation",
+        "logging",
+        "metrics",
+        "tracing",
+        "alerting",
+        "telemetry",
+        "SLO",
+        "OpenTelemetry",
+        "qué está pasando en prod",
+        "instrumentar"
+      ]
     },
     {
       "name": "opsly-content-studio",
@@ -693,26 +935,97 @@
         "ingest video",
         "rights gate"
       ]
+    },
+    {
+      "name": "opsly-revenue-agent",
+      "version": "1.0.0",
+      "description": "Governed Revenue Agent for opportunity qualification, matching, attribution and commission reconciliation.",
+      "category": "operations",
+      "priority": "high",
+      "usage": "Revenue OS, Health & Travel, affiliate/deals, commerce partners and referral revenue",
+      "path": "skills/user/opsly-revenue-agent/",
+      "triggers": [
+        "revenue agent",
+        "commission",
+        "attribution",
+        "referral",
+        "affiliate",
+        "health travel",
+        "deal scout"
+      ]
     }
   ],
   "categories": {
-    "tooling": ["opsly-skill-creator"],
-    "bootstrap": ["opsly-context", "opsly-modularity", "opsly-bootstrap"],
-    "master": ["opsly-quantum"],
-    "autonomy": ["opsly-autonomous"],
-    "architecture": ["opsly-modularity", "opsly-architect-senior", "opsly-architect"],
-    "development": ["opsly-api", "opsly-bash", "opsly-frontend"],
-    "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml", "opsly-ai-sdk-vercel"],
-    "integration": ["opsly-mcp", "opsly-claude-codex-review", "opsly-google-cloud"],
-    "database": ["opsly-supabase", "opsly-supabase-marketplace"],
-    "operations": ["opsly-tenant", "opsly-peskids", "opsly-content-studio"],
-    "infrastructure": ["opsly-infra"],
-    "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode"],
-    "billing": ["opsly-billing", "opsly-stripe-marketplace"],
-    "qa": ["opsly-qa", "opsly-agent-verification"],
-    "notifications": ["opsly-discord"],
-    "optimization": ["opsly-simplify"],
-    "research": ["opsly-researcher"],
+    "tooling": [
+      "opsly-skill-creator"
+    ],
+    "bootstrap": [
+      "opsly-context",
+      "opsly-modularity",
+      "opsly-bootstrap"
+    ],
+    "master": [
+      "opsly-quantum"
+    ],
+    "autonomy": [
+      "opsly-autonomous"
+    ],
+    "architecture": [
+      "opsly-modularity",
+      "opsly-architect-senior",
+      "opsly-architect"
+    ],
+    "development": [
+      "opsly-api",
+      "opsly-bash",
+      "opsly-frontend"
+    ],
+    "ai": [
+      "opsly-llm",
+      "opsly-notebooklm",
+      "opsly-feedback-ml",
+      "opsly-ai-sdk-vercel"
+    ],
+    "integration": [
+      "opsly-mcp",
+      "opsly-claude-codex-review",
+      "opsly-google-cloud"
+    ],
+    "database": [
+      "opsly-supabase",
+      "opsly-supabase-marketplace"
+    ],
+    "operations": [
+      "opsly-tenant",
+      "opsly-peskids",
+      "opsly-content-studio",
+      "opsly-revenue-agent"
+    ],
+    "infrastructure": [
+      "opsly-infra"
+    ],
+    "orchestration": [
+      "opsly-orchestrator",
+      "opsly-agent-teams",
+      "opsly-jcode"
+    ],
+    "billing": [
+      "opsly-billing",
+      "opsly-stripe-marketplace"
+    ],
+    "qa": [
+      "opsly-qa",
+      "opsly-agent-verification"
+    ],
+    "notifications": [
+      "opsly-discord"
+    ],
+    "optimization": [
+      "opsly-simplify"
+    ],
+    "research": [
+      "opsly-researcher"
+    ],
     "marketplace": [
       "opsly-stripe-marketplace",
       "opsly-supabase-marketplace",
@@ -721,31 +1034,112 @@
     ]
   },
   "quick_reference": {
-    "nueva_sesion": ["opsly-context", "opsly-modularity"],
-    "orquestacion": ["opsly-quantum"],
-    "autonomo": ["opsly-autonomous"],
-    "desarrollo_api": ["opsly-modularity", "opsly-api", "opsly-bash", "opsly-jcode"],
-    "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
-    "infra": ["opsly-infra", "opsly-tenant", "opsly-discord", "opsly-self-healing"],
-    "self_healing": ["opsly-self-healing", "opsly-infra", "opsly-discord"],
-    "revision_arquitectura": ["opsly-architect-senior"],
-    "investigacion_externa": ["opsly-researcher"],
-    "stripe_oficial": ["opsly-billing", "opsly-stripe-marketplace"],
-    "supabase_oficial": ["opsly-supabase", "opsly-supabase-marketplace"],
-    "frontend_ai_chat": ["opsly-frontend", "opsly-ai-sdk-vercel"],
-    "cierre_tarea_agente": ["opsly-agent-verification", "opsly-qa"],
-    "contenido_video": ["opsly-content-studio", "opsly-modularity"],
-    "engineering_workflow": ["using-agent-skills", "spec-driven-development", "planning-and-task-breakdown", "incremental-implementation"],
-    "code_quality": ["code-review-and-quality", "code-simplification", "doubt-driven-development"],
-    "testing": ["test-driven-development", "browser-testing-with-devtools"],
-    "security_review": ["security-and-hardening"],
-    "deploy_launch": ["shipping-and-launch", "ci-cd-and-automation"],
-    "debugging": ["debugging-and-error-recovery", "observability-and-instrumentation"],
-    "api_design": ["api-and-interface-design"],
-    "frontend": ["frontend-ui-engineering"],
-    "documentation": ["documentation-and-adrs"],
-    "git": ["git-workflow-and-versioning"],
-    "observability": ["observability-and-instrumentation", "opsly-distributed-tracing"]
+    "nueva_sesion": [
+      "opsly-context",
+      "opsly-modularity"
+    ],
+    "orquestacion": [
+      "opsly-quantum"
+    ],
+    "autonomo": [
+      "opsly-autonomous"
+    ],
+    "desarrollo_api": [
+      "opsly-modularity",
+      "opsly-api",
+      "opsly-bash",
+      "opsly-jcode"
+    ],
+    "ia_ml": [
+      "opsly-llm",
+      "opsly-feedback-ml",
+      "opsly-notebooklm"
+    ],
+    "infra": [
+      "opsly-infra",
+      "opsly-tenant",
+      "opsly-discord",
+      "opsly-self-healing"
+    ],
+    "self_healing": [
+      "opsly-self-healing",
+      "opsly-infra",
+      "opsly-discord"
+    ],
+    "revision_arquitectura": [
+      "opsly-architect-senior"
+    ],
+    "investigacion_externa": [
+      "opsly-researcher"
+    ],
+    "stripe_oficial": [
+      "opsly-billing",
+      "opsly-stripe-marketplace"
+    ],
+    "supabase_oficial": [
+      "opsly-supabase",
+      "opsly-supabase-marketplace"
+    ],
+    "frontend_ai_chat": [
+      "opsly-frontend",
+      "opsly-ai-sdk-vercel"
+    ],
+    "cierre_tarea_agente": [
+      "opsly-agent-verification",
+      "opsly-qa"
+    ],
+    "contenido_video": [
+      "opsly-content-studio",
+      "opsly-modularity"
+    ],
+    "engineering_workflow": [
+      "using-agent-skills",
+      "spec-driven-development",
+      "planning-and-task-breakdown",
+      "incremental-implementation"
+    ],
+    "code_quality": [
+      "code-review-and-quality",
+      "code-simplification",
+      "doubt-driven-development"
+    ],
+    "testing": [
+      "test-driven-development",
+      "browser-testing-with-devtools"
+    ],
+    "security_review": [
+      "security-and-hardening"
+    ],
+    "deploy_launch": [
+      "shipping-and-launch",
+      "ci-cd-and-automation"
+    ],
+    "debugging": [
+      "debugging-and-error-recovery",
+      "observability-and-instrumentation"
+    ],
+    "api_design": [
+      "api-and-interface-design"
+    ],
+    "frontend": [
+      "frontend-ui-engineering"
+    ],
+    "documentation": [
+      "documentation-and-adrs"
+    ],
+    "git": [
+      "git-workflow-and-versioning"
+    ],
+    "observability": [
+      "observability-and-instrumentation",
+      "opsly-distributed-tracing"
+    ],
+    "revenue": [
+      "opsly-revenue-agent",
+      "opsly-researcher",
+      "opsly-supabase",
+      "opsly-qa"
+    ]
   },
   "deprecated": {
     "opsly-bootstrap": "Usar opsly-context",
