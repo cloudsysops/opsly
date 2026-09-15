@@ -39,9 +39,9 @@ describe('lead-pipeline-progress', () => {
 
   it('exposes Spanish labels and tones', () => {
     expect(LEAD_STATUS_LABEL.new).toMatch(/Nuevo/i);
-    expect(LEAD_PIPELINE_STAGES[3].label).toBe('Clase programada');
-    expect(buildLeadPipelineProgress('trial').stages[3].label).toBe('Clase programada');
-    expect(buildLeadPipelineProgress('trial', true).stages[3].label).toBe('Primera clase');
+    expect(LEAD_PIPELINE_STAGES[3].label).toBe('Primera clase');
+    expect(buildLeadPipelineProgress('trial').stages[3].label).toBe('Primera clase');
+    expect(buildLeadPipelineProgress('trial', true).stages[3].label).toBe('Primera clase asistida');
     expect(leadStatusTone('new')).toBe('coral');
     expect(leadStatusTone('enrolled')).toBe('green');
   });

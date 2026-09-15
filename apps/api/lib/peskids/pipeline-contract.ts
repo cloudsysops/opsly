@@ -19,10 +19,11 @@ const interestField = z
   .min(2, 'interest must be at least 2 characters')
   .max(80, 'interest must be at most 80 characters');
 
+/** Canonical CRM stages. Trial Class is a legacy alias of Enrollment. */
 export const PESKIDS_PIPELINE_STAGES = [
   'New Lead',
   'Contacted',
-  'Trial Class',
+  'Enrollment',
   'Enrolled',
   'Active Student',
   'Renewal',
@@ -34,7 +35,7 @@ export type PeskidsPipelineStage = (typeof PESKIDS_PIPELINE_STAGES)[number];
 export const PESKIDS_AUTOMATION_ACTIONS = [
   'welcome_message',
   'reminder',
-  'trial_class_invitation',
+  'enrollment_invitation',
 ] as const;
 
 export type PeskidsAutomationAction = (typeof PESKIDS_AUTOMATION_ACTIONS)[number];
@@ -65,12 +66,18 @@ export const peskidsLeadAutomationEventSchema = z
       .object({
         welcome_message: z.boolean().default(true),
         reminder: z.boolean().default(true),
-        trial_class_invitation: z.boolean().default(true),
+        enrollment_invitation: z.boolean().default(true),
+        trial_class_invitation: z.boolean().optional(),
       })
+      .transform((value) => ({
+        welcome_message: value.welcome_message,
+        reminder: value.reminder,
+        enrollment_invitation: value.enrollment_invitation || value.trial_class_invitation === true,
+      }))
       .default({
         welcome_message: true,
         reminder: true,
-        trial_class_invitation: true,
+        enrollment_invitation: true,
       }),
   })
   .strict();
@@ -82,9 +89,11 @@ export function normalizePeskidsPipelineStage(value: string): PeskidsPipelineSta
   switch (normalized) {
     case 'contacted':
       return 'Contacted';
+    case 'enrollment':
     case 'trial class':
     case 'trial':
-      return 'Trial Class';
+    case 'qualified':
+      return 'Enrollment';
     case 'enrolled':
       return 'Enrolled';
     case 'active student':
@@ -105,7 +114,7 @@ export function leadStatusFromPipelineStage(
   switch (stage) {
     case 'Contacted':
       return 'contacted';
-    case 'Trial Class':
+    case 'Enrollment':
       return 'qualified';
     case 'Enrolled':
     case 'Active Student':

@@ -11,6 +11,7 @@ export {
   handleHiveInit,
 } from './hive.js';
 export { handleEnqueueAgentFarm, handleOpenClawImproveDocumentation, handleMetaOptimizerMetrics } from './internal.js';
+export { handleBoardEvents } from './board-events.js';
 export {
   handleStartTerminalTask,
   handleTerminalStatus,
@@ -19,7 +20,7 @@ export {
   handleTerminalSessionOutput,
   handleTerminalSessionStop,
 } from './terminal.js';
-export { handleLocalControlMode, handleLocalState, handleLocalPromptSubmit } from './local.js';
+export { handleLocalControlMode, handleLocalState, handleLocalQueueHealth, handleLocalPromptSubmit } from './local.js';
 export { handleExternalAgentsRegistry } from './external-agents.js';
 export {
   handleValidationMetrics,

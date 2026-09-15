@@ -61,7 +61,7 @@ describe('peskids automation dispatch', () => {
       automation: {
         welcome_message: true,
         reminder: true,
-        trial_class_invitation: true,
+        enrollment_invitation: true,
       },
     });
 
@@ -79,7 +79,7 @@ describe('peskids automation dispatch', () => {
       lead_id: 'lead-1',
       event_id: 'evt-1',
       stage: 'New Lead',
-      next_actions: ['welcome_message', 'reminder', 'trial_class_invitation'],
+      next_actions: ['welcome_message', 'reminder', 'enrollment_invitation'],
     });
   });
 });

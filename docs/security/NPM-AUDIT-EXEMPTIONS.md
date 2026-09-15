@@ -4,6 +4,39 @@ This file documents pre-existing security vulnerabilities that are known but cur
 
 **Note:** the `npm audit (moderate+)` CI gate (`.github/workflows/security.yml`) only fails on `--omit=dev`, so anything reachable exclusively through a devDependency (e.g. `prisma` CLI tooling) does not block merges even if `npm audit` (without `--omit=dev`) still reports it.
 
+## CI policy — baseline vs PR-introduced (2026-09-09)
+
+The current gate **cannot distinguish** inherited `main` vulnerabilities from new ones a PR introduces. `security.yml` runs `npm audit --audit-level=moderate --omit=dev` on the PR tree only. `dependency-audit-strict.yml` also audits the PR tree (fails on `"severity":"critical"` in JSON). Night-merge ignores `production-change-window` but **not** an npm-audit FAILURE.
+
+That means a gameplay/docs PR such as **#1155** can go red for `next` / `sharp` / `hono` / `@ai-sdk/provider-utils` even when it does not touch those packages. Those findings are **PREEXISTING_ON_MAIN**, not `INTRODUCED_BY_PR`.
+
+**Bounded improvement (do not weaken globally):**
+
+1. Keep the full moderate+ `--omit=dev` audit on `schedule` + `workflow_dispatch` + pushes to `main`. Do not ignore moderate/high/critical.
+2. On pull requests, add an **additive** delta later: fail if the PR introduces **new** advisory IDs vs `origin/main`. Do not replace the main/schedule full gate with “ignore baseline”.
+3. Baseline repair is **#1156** (`chore/audit-security-deps`, Next 15.5.25 + sharp 0.35.4), stacked into **#1154**. After that lands, the full omit=dev gate should return to 0 on `main`. Do not squash that repair into #1155.
+
+Do not attribute inherited lockfile findings to the PC-gamer gameplay PR.
+
+## Classification — `origin/main` `a9883b8` (`npm audit --omit=dev`, 2026-09-09)
+
+Recorded on the lockfile at `feat(peskids): recover admin data-backup upload feature from stash (#1149)`. None of these rows are `INTRODUCED_BY_PR` for #1155 (gameplay watcher / stdlib clip-agent). #1155 after rebase onto #1156 already carries the patched Next/sharp/hono versions; the inherited hole is **`main` until #1154/#1156 merge**.
+
+| package | installed on main | fixed version | path / app | severity | DIRECT / TRANSITIVE | class |
+| --- | --- | --- | --- | --- | --- | --- |
+| `next` | 15.5.22 | 15.5.24+ (pin 15.5.25 in #1156) | root + `apps/peskids` | critical | DIRECT | PREEXISTING_ON_MAIN |
+| `sharp` | 0.35.3 | 0.35.4 | root override / image pipeline | high | DIRECT | PREEXISTING_ON_MAIN |
+| `hono` | 4.13.0 | 4.13.7 (#1156 override) | root override; MCP SDK consumer | moderate | DIRECT | PREEXISTING_ON_MAIN |
+| `@ai-sdk/provider-utils` | 4.0.27 | ≥4.0.33 | via `ai` / `@ai-sdk/openai` / `@ai-sdk/gateway` | low | TRANSITIVE | PREEXISTING_ON_MAIN |
+| `@ai-sdk/openai` | (tree) | bump via `provider-utils` | root `ai` stack | low | DIRECT (via) | PREEXISTING_ON_MAIN / TRANSITIVE |
+| `@ai-sdk/gateway` | (tree) | bump via `provider-utils` | root `ai` stack | low | TRANSITIVE | PREEXISTING_ON_MAIN |
+| `ai` | (tree) | bump via gateway/utils | root | low | DIRECT | PREEXISTING_ON_MAIN |
+| `@modelcontextprotocol/sdk` | (tree) | via `hono` 4.13.7 | MCP | moderate | DIRECT (via) | PREEXISTING_ON_MAIN |
+
+`omit=dev` metadata on that SHA: 1 critical, 1 high, 2 moderate, 4 low (8 total). Gate `audit-level=moderate` therefore fails `main` today. #1156 reports `npm audit --omit=dev --audit-level=moderate` → 0. Low `provider-utils` may remain advisory-only after the Next/sharp/hono pin; it does not block the moderate+ gate once those three land.
+
+**#1154 / this stabilize PR:** do not add ML/Python deps. **#1155:** stdlib `pc-gamer-clip-agent.py` only — no pip, no lockfile reason to own `next`/`sharp`.
+
 ## Resolved (2026-09-04)
 
 `d3-color`, `fast-uri`, and `qs` (plus its dependents `body-parser`/`express`) were flagged by the moderate+ gate. Root cause: the `overrides` block in root `package.json` already pinned `fast-uri` (3.1.5) and `qs` (6.15.2) to versions that were *inside* the vulnerable range, and `d3-color` had no override at all (stuck at 2.0.0 via `react-simple-maps` → `d3-zoom` in `apps/peskids-franchise`). Fix: bumped the pinned overrides to patched versions (`fast-uri` → 3.1.7, `qs` → 6.16.0, both same-major/non-breaking) and added a new `d3-color` → `^3.1.0` override (matches the version `mermaid`'s own `d3` dependency already resolves to). Verified with `tsc --noEmit` on `peskids-franchise`, `notion-mcp`, and `task-orchestrator` (the apps touching these deps directly or via `express`) — no type errors introduced. `npm audit --audit-level=moderate --omit=dev` now returns 0 findings.

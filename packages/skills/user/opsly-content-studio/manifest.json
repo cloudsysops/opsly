@@ -1,0 +1,22 @@
+{
+  "name": "opsly-content-studio",
+  "version": "1.1.0",
+  "description": "Content OS v2 + anti-duplication gate. Read config/content-capabilities.json before any clip/highlight/publish work.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "channel": {
+        "type": "string",
+        "enum": ["bitsitos", "splashitos", "opsly-universe", "peskids", "icso-gaming-tbd"]
+      },
+      "mode": {
+        "type": "string",
+        "enum": ["original", "repurpose", "commentary"]
+      },
+      "tenantSlug": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": true
+  }
+}

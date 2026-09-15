@@ -4,6 +4,7 @@
  * Listens on 'local-agents' queue for jobs with names derived from LocalAgentKind:
  * - local_cursor, local_claude, local_copilot, local_opencode
  * - local_codex, local_openai, local_hermes, local_decepticon
+ * - local_aider, local_goose, local_playwright, local_openclaw
  *
  * Routes to appropriate HTTP endpoint based on job.name
  * Integrates with ValidationOrchestrator for validation → decision → commit flow
@@ -32,6 +33,12 @@ import { getWorkerConcurrency, type WorkerConcurrencyKey } from '../worker-concu
 import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { writeValidationGuard } from '../lib/validation/validation-utils.js';
 import { AgentTaskRuntime } from '../runtime/agent-task-runtime.js';
+import {
+  completeTaskDispatchClaim,
+  parseDispatchClaimLease,
+  releaseTaskDispatchClaim,
+  renewTaskDispatchClaim,
+} from '../task-claim-store.js';
 
 interface LocalAgentPayload {
   prompt_content?: string;
@@ -46,6 +53,14 @@ interface LocalAgentPayload {
 
 interface LocalAgentResponse {
   success: boolean;
+  jobId?: string;
+  requestId?: string;
+  workerId?: string;
+  result?: string;
+  durationMs?: number;
+  runtime?: string;
+  model?: string;
+  errorCode?: string;
   response_path?: string;
   error?: string;
   execution_time_ms?: number;
@@ -82,8 +97,44 @@ function stringField(record: Record<string, unknown>, keys: readonly string[]): 
   return null;
 }
 
+export function sanitizeLocalAgentError(value: string): string {
+  return value
+    .replace(/sk-[A-Za-z0-9_-]{12,}/g, 'sk-***')
+    .replace(/nvapi-[A-Za-z0-9_-]{12,}/g, 'nvapi-***')
+    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer ***')
+    .replace(/(api[_-]?key|token|password)=([^\s]+)/gi, '$1=***')
+    .slice(0, 300);
+}
+
+export function mapLocalAgentBridgeFailure(
+  agent: string,
+  status: number,
+  body: Record<string, unknown> | null
+): { unrecoverable: boolean; errorCode: string; message: string } {
+  const errorCode =
+    typeof body?.errorCode === 'string' && body.errorCode.trim().length > 0
+      ? body.errorCode.trim()
+      : status === 400
+        ? 'VALIDATION_ERROR'
+        : status === 401
+          ? 'UNAUTHORIZED'
+          : status === 503
+            ? 'AGENT_BINARY_NOT_FOUND'
+            : 'BRIDGE_HTTP_ERROR';
+  const raw =
+    stringField(body ?? {}, ['error', 'message']) ?? `${agent} service error: ${status}`;
+  const message = sanitizeLocalAgentError(raw);
+  const unrecoverable =
+    status === 400 ||
+    status === 401 ||
+    errorCode === 'VALIDATION_ERROR' ||
+    errorCode === 'AGENT_BINARY_NOT_FOUND';
+  return { unrecoverable, errorCode, message };
+}
+
 function responseTextFromResult(result: Record<string, unknown>): string | null {
   return stringField(result, [
+    'result',
     'response_content',
     'content',
     'message',
@@ -135,6 +186,70 @@ export function shouldWaitForAcceptedResponse(result: Record<string, unknown>): 
   return result.accepted === true && !stringField(result, ['response_path']);
 }
 
+export function allowLegacyLocalAgentPayload(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD === 'true';
+}
+
+async function finalizeDispatchClaimForPayload(
+  payload: LocalAgentPayload,
+  outcome: 'completed' | 'failed',
+  reason: string
+): Promise<void> {
+  const lease = parseDispatchClaimLease(payload.context?.dispatch_claim);
+  if (!lease) return;
+
+  try {
+    if (outcome === 'completed') {
+      const result = await completeTaskDispatchClaim(lease);
+      if (!result.tombstoneWritten) {
+        logWorkerWarn(
+          'local-agents',
+          'Completed task could not write ALREADY_DONE tombstone; claim may have expired',
+          {
+            claim_id: lease.claimId,
+            task_id: lease.taskId,
+            workstream: lease.workstream,
+            reason,
+          }
+        );
+        return;
+      }
+      logWorkerInfo('local-agents', 'Completed dispatch claim and preserved task tombstone', {
+        claim_id: lease.claimId,
+        task_id: lease.taskId,
+        workstream: lease.workstream,
+        released_keys: result.released,
+        reason,
+      });
+      return;
+    }
+
+    const released = await releaseTaskDispatchClaim(lease);
+    logWorkerInfo('local-agents', 'Released failed dispatch ownership claim', {
+      claim_id: lease.claimId,
+      task_id: lease.taskId,
+      workstream: lease.workstream,
+      released_keys: released,
+      reason,
+    });
+  } catch (err) {
+    // A leaked active claim is bounded by TTL. Do not rewrite the task result
+    // merely because Redis cleanup/tombstoning could not be confirmed.
+    logWorkerWarn('local-agents', 'Dispatch claim finalization failed; TTL will recover active locks', {
+      claim_id: lease.claimId,
+      task_id: lease.taskId,
+      error: sanitizeLocalAgentError(err instanceof Error ? err.message : String(err)),
+      reason,
+    });
+  }
+}
+
+function isFinalBullAttempt(job: Job, error: unknown): boolean {
+  if (error instanceof UnrecoverableError) return true;
+  const attempts = Math.max(1, Number(job.opts.attempts ?? 1));
+  return job.attemptsMade + 1 >= attempts;
+}
+
 async function processLocalAgentJob(
   jobType: string,
   prompt_content: string,
@@ -142,7 +257,8 @@ async function processLocalAgentJob(
   agent_role: string,
   registry: ReturnType<typeof getAgentServiceRegistry>,
   max_steps: number = 5,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  model?: string
 ): Promise<LocalAgentResponse> {
   const startTime = Date.now();
   const cursorDir =
@@ -169,18 +285,24 @@ async function processLocalAgentJob(
         agent_role,
         max_steps,
         job_id,
+        ...(model ? { model } : {}),
       }),
       signal: signal ?? AbortSignal.timeout(service.timeout_ms),
     });
 
-    if (!response.ok) {
-      throw new Error(`${agent} service error: ${response.status}`);
-    }
-
     const result = await readJsonRecord(response);
+    if (!response.ok) {
+      const mapped = mapLocalAgentBridgeFailure(agent, response.status, result);
+      if (mapped.unrecoverable) {
+        throw new UnrecoverableError(`${mapped.errorCode}: ${mapped.message}`);
+      }
+      throw new Error(`${mapped.errorCode}: ${mapped.message}`);
+    }
     if (result.success === false) {
       throw new Error(
-        stringField(result, ['error', 'message']) ?? `${agent} service returned success=false`
+        sanitizeLocalAgentError(
+          stringField(result, ['error', 'message']) ?? `${agent} service returned success=false`
+        )
       );
     }
 
@@ -226,6 +348,13 @@ async function processLocalAgentJob(
 
       return {
         success: true,
+        jobId: job_id,
+        requestId: job_id,
+        workerId: process.env.WORKER_ID,
+        result: responseText ?? undefined,
+        durationMs: Date.now() - startTime,
+        runtime: agent,
+        model: typeof result.model === 'string' ? result.model : model,
         response_path: responsePath,
         execution_time_ms: Date.now() - startTime,
         validation_decision: {
@@ -237,16 +366,31 @@ async function processLocalAgentJob(
 
     return {
       success: true,
+      jobId: job_id,
+      requestId: job_id,
+      workerId: process.env.WORKER_ID,
+      result: responseText ?? undefined,
+      durationMs: Date.now() - startTime,
+      runtime: agent,
+      model: typeof result.model === 'string' ? result.model : model,
       response_path: responsePath || undefined,
       execution_time_ms: Date.now() - startTime,
     };
   } catch (err) {
-    const errorMsg = err instanceof Error ? err.message : String(err);
+    if (err instanceof UnrecoverableError) {
+      throw err;
+    }
+    const errorMsg = sanitizeLocalAgentError(err instanceof Error ? err.message : String(err));
     logWorkerError('local-agents', `Job ${job_id} error: ${errorMsg}`);
 
     return {
       success: false,
+      jobId: job_id,
+      requestId: job_id,
+      workerId: process.env.WORKER_ID,
+      errorCode: 'BRIDGE_HTTP_ERROR',
       error: errorMsg,
+      durationMs: Date.now() - startTime,
       execution_time_ms: Date.now() - startTime,
     };
   }
@@ -293,6 +437,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       const agent_role = payload.agent_role || 'executor';
       const max_steps = payload.max_steps || 5;
       const job_id = payload.job_id || job.id?.toString() || '';
+      const model = payload.model;
 
       if (!prompt_content) {
         throw new UnrecoverableError('Empty prompt_content');
@@ -306,7 +451,32 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
 
       try {
         const process = (signal?: AbortSignal) =>
-          processLocalAgentJob(jobType, prompt_content, job_id, agent_role, registry, max_steps, signal);
+          processLocalAgentJob(
+            jobType,
+            prompt_content,
+            job_id,
+            agent_role,
+            registry,
+            max_steps,
+            signal,
+            model
+          );
+        if (payload.agent_task === undefined && !allowLegacyLocalAgentPayload()) {
+          throw new UnrecoverableError(
+            'AGENT_TASK_REQUIRED: local agent execution requires AgentTaskEnvelopeV1'
+          );
+        }
+
+        const dispatchLease = parseDispatchClaimLease(payload.context?.dispatch_claim);
+        if (dispatchLease) {
+          const ownership = await renewTaskDispatchClaim(dispatchLease);
+          if (!ownership.renewed) {
+            throw new UnrecoverableError(
+              'DISPATCH_CLAIM_LOST: active ownership lease is no longer held by this job'
+            );
+          }
+        }
+
         const result = payload.agent_task === undefined
           ? await process()
           : await (async () => {
@@ -353,6 +523,22 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
                 : { success: true, execution_time_ms: runtimeResult.duration_ms };
             })();
 
+        if (!result.success) {
+          throw new Error(result.error || 'local agent adapter returned success=false');
+        }
+
+        const validationAction = result.validation_decision?.action;
+        if (validationAction === 'iterate') {
+          throw new Error(
+            `VALIDATION_ITERATE: ${result.validation_decision?.reason || 'another iteration is required'}`
+          );
+        }
+        if (validationAction === 'escalate') {
+          throw new UnrecoverableError(
+            `VALIDATION_ESCALATE: ${result.validation_decision?.reason || 'human escalation is required'}`
+          );
+        }
+
         const elapsed = Date.now() - t0;
         logWorkerLifecycle('complete', 'local-agents', job, { duration_ms: elapsed });
 
@@ -364,6 +550,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           logWorkerError('local-agents', `${jobType} job ${job.id} failed: ${result.error}`);
         }
 
+        await finalizeDispatchClaimForPayload(payload, 'completed', 'validated_terminal_success');
         return result;
       } catch (err) {
         const elapsed = Date.now() - t0;
@@ -383,6 +570,16 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           logWorkerLifecycle('fail', 'local-agents', job, {
             duration_ms: elapsed,
             error: errorMsg,
+          });
+        }
+
+        if (isFinalBullAttempt(job, err)) {
+          await finalizeDispatchClaimForPayload(payload, 'failed', 'terminal_failure');
+        } else {
+          logWorkerInfo('local-agents', 'Retaining dispatch claim across BullMQ retry', {
+            job_id,
+            attempts_made: job.attemptsMade,
+            max_attempts: job.opts.attempts ?? 1,
           });
         }
 

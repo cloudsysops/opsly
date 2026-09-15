@@ -1,6 +1,6 @@
 import { getServiceClient } from '../supabase';
 import { logger } from '../logger';
-import { PESKIDS_PIPELINE_STAGES, type PeskidsPipelineStage } from './pipeline-contract';
+import { PESKIDS_PIPELINE_STAGES, normalizePeskidsPipelineStage, type PeskidsPipelineStage } from './pipeline-contract';
 import { getCache, setCache } from '../redis-cache';
 import { CACHE_TTL } from '../constants';
 
@@ -68,11 +68,19 @@ function normalizeLeadStage(row: PlatformLeadRow): PeskidsPipelineStage | null {
     return row.stage;
   }
 
+  if (row.stage) {
+    const aliased = normalizePeskidsPipelineStage(row.stage);
+    if (aliased === 'Enrollment' && /trial|qualified|enrollment/i.test(row.stage)) {
+      return 'Enrollment';
+    }
+  }
+
   switch ((row.status ?? '').toLowerCase()) {
     case 'contacted':
       return 'Contacted';
     case 'qualified':
-      return 'Trial Class';
+    case 'trial':
+      return 'Enrollment';
     case 'converted':
       return 'Enrolled';
     case 'new':

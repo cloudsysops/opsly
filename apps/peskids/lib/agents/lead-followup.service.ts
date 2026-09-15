@@ -181,26 +181,26 @@ export class LeadFollowupService {
     const child = gradeInterested ? ` (${gradeInterested})` : '';
     return (
       `¡Hola ${parentName}! Soy de Peskids. Vimos que hace unos días preguntaste` +
-      ` por nuestras clases de natación${child}. ¿Qué tal si agendamos una clase` +
-      ` de prueba gratis esta semana? Responde SÍ y te contacto.`
+      ` por nuestras clases de natación${child}. ¿Te enviamos el formulario de` +
+      ` matrícula esta semana? Responde SÍ y te contacto.`
     );
   }
 
   private buildReminderMessage(parentName: string, gradeInterested: string | null): string {
     const child = gradeInterested ? ` (${gradeInterested})` : '';
     return (
-      `¡Hola ${parentName}! Queremos recordarte que tu clase de prueba gratuita` +
-      ` en Peskids sigue disponible${child}. Tenemos horarios flexibles en` +
-      ` Llanogrande y a domicilio. ¿Te gustaría probar?`
+      `¡Hola ${parentName}! Queremos recordarte que el formulario de matrícula` +
+      ` de Peskids sigue disponible${child}. Tenemos horarios flexibles en` +
+      ` Llanogrande y a domicilio. ¿Te lo reenviamos?`
     );
   }
 
   private buildFinalAttemptMessage(parentName: string, gradeInterested: string | null): string {
     const child = gradeInterested ? ` para ${gradeInterested}` : '';
     return (
-      `${parentName}, último aviso${child}: tu invitación a clase de prueba gratuita en Peskids` +
-      ` vence pronto. No pierdas la oportunidad de que tu hijo aprenda a nadar.` +
-      ` ¡Responde y te agendamos!`
+      `${parentName}, último aviso${child}: el formulario de matrícula de Peskids` +
+      ` sigue abierto. No pierdas la oportunidad de que tu hijo aprenda a nadar.` +
+      ` ¡Responde y te enviamos el link!`
     );
   }
 
@@ -209,7 +209,7 @@ export class LeadFollowupService {
     const child = gradeInterested ? ` (${gradeInterested})` : '';
     return (
       `Hola ${name}, soy el equipo de Peskids. Queremos saber si tienes alguna pregunta sobre nuestras clases${child}. ` +
-      '¿Te gustaría más información o agendar una prueba?'
+      '¿Te gustaría más información o el formulario de matrícula?'
     );
   }
 }

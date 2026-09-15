@@ -1,0 +1,7 @@
+[Unit]
+Description=Opsly PC-gamer safe content retention
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/opsly-pc-gamer
+ExecStart=/usr/bin/node scripts/ops/pc-gamer-content-retention.mjs --apply --min-free-gb 150 --retention-days 30

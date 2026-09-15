@@ -30,6 +30,8 @@ Toda salida IA debe llevar:
 - `model` / `request_id` si pasa por LLM Gateway
 - Timestamp y versión de prompt (cuando aplique)
 
+**Automation level (Peskids support):** LEVEL 2 — prepare draft; human SEND. Do not autonomously promote to LEVEL 4. See [`AI-BOARD-INTEGRATION.md`](./AI-BOARD-INTEGRATION.md).
+
 ## Prohibido (MVP e incubación)
 
 | Acción | Razón |

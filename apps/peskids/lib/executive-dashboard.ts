@@ -36,7 +36,7 @@ const FUNNEL_STAGES: Array<{
 }> = [
   { stage: 'new', label: 'Nuevos' },
   { stage: 'contacted', label: 'Contactados' },
-  { stage: 'trial', label: 'Clase de prueba' },
+  { stage: 'trial', label: 'Matrícula' },
   { stage: 'enrolled', label: 'Matriculados' },
 ];
 
@@ -296,7 +296,7 @@ export function buildExecutiveDashboard(input: {
     ...trialsToday.map((trial) => ({
       id: `trial-${trial.id}`,
       kind: 'trial' as const,
-      title: `Clase de prueba · ${trial.status}`,
+      title: `Registro legado · ${trial.status}`,
       time_label: formatTimeLabel(trial.scheduled_time),
       href: leadHref(trial.lead_id),
     })),

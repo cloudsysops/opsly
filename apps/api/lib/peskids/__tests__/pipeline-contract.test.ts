@@ -7,7 +7,9 @@ import {
 
 describe('pipeline-contract', () => {
   it('normalizes stages', () => {
-    expect(normalizePeskidsPipelineStage('trial')).toBe('Trial Class');
+    expect(normalizePeskidsPipelineStage('trial')).toBe('Enrollment');
+    expect(normalizePeskidsPipelineStage('Trial Class')).toBe('Enrollment');
+    expect(normalizePeskidsPipelineStage('qualified')).toBe('Enrollment');
     expect(normalizePeskidsPipelineStage('new')).toBe('New Lead');
   });
 

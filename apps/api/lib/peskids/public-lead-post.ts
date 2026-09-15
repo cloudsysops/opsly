@@ -12,6 +12,7 @@ import { dispatchPeskidsStaffLeadNotification } from './staff-notification-email
 import { peskidsInsertLead, peskidsUpdateLeadMetadata } from './repository';
 import { peskidsLeadBodySchema } from './schemas';
 import { generateAdvisorBrief } from './advisor-brief-generator';
+import { emitPeskidsLeadBoardEvent } from './board-signal';
 
 async function readBody(request: NextRequest): Promise<unknown | Response> {
   const contentType = request.headers.get('content-type') || '';
@@ -118,7 +119,13 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
     },
   });
 
-  // Never block lead persistence on n8n/Discord/email outages.
+  // Never block lead persistence on n8n/Discord/email/board/LLM outages.
+  void emitPeskidsLeadBoardEvent(row).catch((error: unknown) => {
+    console.warn('[peskids] board signal emit failed', {
+      lead_id: row.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  });
   void dispatchPeskidsHotLeadAlert(row).catch((error: unknown) => {
     console.warn('[peskids] hot-lead alert dispatch failed', {
       lead_id: row.id,

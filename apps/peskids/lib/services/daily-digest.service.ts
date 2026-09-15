@@ -133,15 +133,15 @@ function buildRecommendedNextAction(
     return {
       priority: 2,
       action: 'Contactar leads pendientes',
-      detail: `${payload.leads.pending} interesado(s) sin contactar. Llama o envía WhatsApp para agendar clase de prueba.`,
+      detail: `${payload.leads.pending} interesado(s) sin contactar. Llama o envía WhatsApp con el link de matrícula.`,
     };
   }
-  // Priority 3: trial classes today
+  // Priority 3: leftover trial_classes rows (not a canonical stage)
   if (payload.trial_classes.scheduled_today > 0) {
     return {
       priority: 3,
-      action: 'Confirmar clases de prueba de hoy',
-      detail: `${payload.trial_classes.scheduled_today} clase(s) de prueba programadas hoy. Confirmar asistencia y preparar profesor.`,
+      action: 'Revisar registros legado de hoy',
+      detail: `${payload.trial_classes.scheduled_today} registro(s) legado en trial_classes para hoy. Confirmar en matrícula / primera clase, no como etapa trial.`,
     };
   }
   // Priority 4: overdue followups

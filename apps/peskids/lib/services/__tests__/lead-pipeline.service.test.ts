@@ -55,15 +55,15 @@ describe('resolvePipelineColumn', () => {
     expect(resolvePipelineColumn(lead({ id: 'f', status: 'archived' }), trials)).toBe('perdidos');
   });
 
-  it('splits trial leads by attended trial_classes', () => {
+  it('maps leftover trial status to enrollment, not a trial-class column', () => {
     expect(resolvePipelineColumn(lead({ id: 'trial-done', status: 'trial' }), trials)).toBe(
-      'trial_realizado'
+      'enrollment'
     );
     expect(resolvePipelineColumn(lead({ id: 'trial-scheduled', status: 'trial' }), trials)).toBe(
-      'trial_agendado'
+      'enrollment'
     );
     expect(resolvePipelineColumn(lead({ id: 'trial-unknown', status: 'trial' }), trials)).toBe(
-      'trial_agendado'
+      'enrollment'
     );
   });
 });
@@ -99,8 +99,8 @@ describe('groupLeadsIntoPipelineColumns', () => {
 
     expect(board.counts.nuevos).toBe(1);
     expect(board.counts.contactados).toBe(1);
-    expect(board.counts.trial_agendado).toBe(1);
-    expect(board.counts.trial_realizado).toBe(1);
+    expect(board.counts.enrollment).toBe(2);
+    expect(board.counts.first_class).toBe(0);
     expect(board.counts.matriculados).toBe(1);
     expect(board.counts.perdidos).toBe(1);
     expect(board.total).toBe(6);

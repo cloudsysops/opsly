@@ -1,0 +1,32 @@
+{
+  "tenant_slug": "peskids",
+  "notes": "Mirror of lib/ai-board PESKIDS_FLAG_REGISTRY. Customer-facing sends stay off. Rollback is the env flag itself.",
+  "flags": [
+    {
+      "flag": "PESKIDS_HOT_LEAD_ALERTS_ENABLED",
+      "owner": "peskids-support",
+      "environment": "prd",
+      "risk": "medium",
+      "current_state": "off",
+      "staging_evidence": null,
+      "activation_timestamp": null,
+      "metrics": ["hot_leads", "automation_failures"],
+      "rollback_switch": "PESKIDS_HOT_LEAD_ALERTS_ENABLED=false",
+      "customer_facing_send": false,
+      "automation_level": 1
+    },
+    {
+      "flag": "PESKIDS_WHATSAPP_AUTO_SEND_ENABLED",
+      "owner": "peskids-support",
+      "environment": "prd",
+      "risk": "high",
+      "current_state": "off",
+      "staging_evidence": null,
+      "activation_timestamp": null,
+      "metrics": ["messages_confirmed_sent", "whatsapp_opened"],
+      "rollback_switch": "PESKIDS_WHATSAPP_AUTO_SEND_ENABLED=false",
+      "customer_facing_send": true,
+      "automation_level": 4
+    }
+  ]
+}

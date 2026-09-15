@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly activatable module catalog — one entry per feature pack available to tenants",
-  "updated": "2026-07-12",
+  "updated": "2026-09-12",
   "modules": {
     "twenty": {
       "id": "twenty",
@@ -38,8 +38,12 @@
       "category": "messaging",
       "tier": "growth",
       "required_by": [],
-      "requires": ["twenty"],
-      "docker_services": ["wacrm_${slug}"],
+      "requires": [
+        "twenty"
+      ],
+      "docker_services": [
+        "wacrm_${slug}"
+      ],
       "compose_file": "infra/docker-compose.platform.yml",
       "bootstrap_script": "scripts/tenants/bootstrap-wacrm.sh --slug ${slug}",
       "smoke_script": "scripts/tenants/wacrm-smoke.sh --slug ${slug}",
@@ -60,9 +64,13 @@
       "description": "Visual workflow automation — lead digests, follow-up sequences, CRM sync",
       "category": "automation",
       "tier": "starter",
-      "required_by": ["wacrm"],
+      "required_by": [
+        "wacrm"
+      ],
       "requires": [],
-      "docker_services": ["n8n_${slug}"],
+      "docker_services": [
+        "n8n_${slug}"
+      ],
       "compose_file": "infra/docker-compose.platform.yml",
       "bootstrap_script": null,
       "smoke_script": null,
@@ -113,7 +121,9 @@
       "tier": "starter",
       "required_by": [],
       "requires": [],
-      "docker_services": ["uptime_${slug}"],
+      "docker_services": [
+        "uptime_${slug}"
+      ],
       "compose_file": "infra/docker-compose.platform.yml",
       "bootstrap_script": null,
       "smoke_script": null,
@@ -126,26 +136,271 @@
       ],
       "estimated_setup_minutes": 10,
       "cost_level": "low"
+    },
+    "chatwoot": {
+      "id": "chatwoot",
+      "name": "Chatwoot Inbox",
+      "description": "Open-source customer inbox for support, WhatsApp and conversation routing",
+      "category": "messaging",
+      "tier": "growth",
+      "required_by": [],
+      "requires": [
+        "twenty"
+      ],
+      "external_service": "chatwoot",
+      "docker_services": [],
+      "compose_file": null,
+      "bootstrap_script": "scripts/ops/bootstrap-external-services.sh chatwoot",
+      "smoke_script": null,
+      "doppler_secrets_prefix": "CHATWOOT_${SLUG}_",
+      "doppler_flag": "CHATWOOT_${SLUG}_ENABLED",
+      "traefik_domain": "inbox-${slug}.op-sly.com",
+      "manual_steps": [
+        "Bootstrap pinned external service",
+        "Add tenant secrets/config",
+        "Wire webhooks to Opsly/n8n",
+        "Run tenant smoke before enabling"
+      ],
+      "estimated_setup_minutes": 45,
+      "cost_level": "low"
+    },
+    "calcom": {
+      "id": "calcom",
+      "name": "Cal.com Scheduling",
+      "description": "Open-source booking and appointment scheduling",
+      "category": "scheduling",
+      "tier": "growth",
+      "required_by": [],
+      "requires": [
+        "twenty"
+      ],
+      "external_service": "calcom",
+      "docker_services": [],
+      "compose_file": null,
+      "bootstrap_script": "scripts/ops/bootstrap-external-services.sh calcom",
+      "smoke_script": null,
+      "doppler_secrets_prefix": "CALCOM_${SLUG}_",
+      "doppler_flag": "CALCOM_${SLUG}_ENABLED",
+      "traefik_domain": "booking-${slug}.op-sly.com",
+      "manual_steps": [
+        "Bootstrap pinned external service",
+        "Configure booking types and provider calendars",
+        "Wire booking webhook to Opsly"
+      ],
+      "estimated_setup_minutes": 45,
+      "cost_level": "low"
+    },
+    "medusa": {
+      "id": "medusa",
+      "name": "Medusa Commerce",
+      "description": "Open-source commerce engine for catalogs, products, promotions and orders",
+      "category": "commerce",
+      "tier": "growth",
+      "required_by": [],
+      "requires": [],
+      "external_service": "medusa",
+      "docker_services": [],
+      "compose_file": null,
+      "bootstrap_script": "scripts/ops/bootstrap-external-services.sh medusa",
+      "smoke_script": null,
+      "doppler_secrets_prefix": "MEDUSA_${SLUG}_",
+      "doppler_flag": "MEDUSA_${SLUG}_ENABLED",
+      "traefik_domain": "commerce-${slug}.op-sly.com",
+      "manual_steps": [
+        "Bootstrap pinned external service",
+        "Create tenant catalog/region",
+        "Connect fulfillment/payment adapters only when approved",
+        "Wire order events to Opsly"
+      ],
+      "estimated_setup_minutes": 60,
+      "cost_level": "low"
+    },
+    "changedetection": {
+      "id": "changedetection",
+      "name": "Deal & Price Watch",
+      "description": "Price, restock and offer monitoring for approved sources",
+      "category": "revenue-intelligence",
+      "tier": "growth",
+      "required_by": [],
+      "requires": [],
+      "external_service": "changedetection",
+      "docker_services": [],
+      "compose_file": null,
+      "bootstrap_script": "scripts/ops/bootstrap-external-services.sh changedetection",
+      "smoke_script": null,
+      "doppler_secrets_prefix": "CHANGEDETECTION_${SLUG}_",
+      "doppler_flag": "CHANGEDETECTION_${SLUG}_ENABLED",
+      "traefik_domain": null,
+      "manual_steps": [
+        "Bootstrap pinned external service",
+        "Add only approved/API-compliant watches",
+        "Send change events to Opsly Revenue workflows"
+      ],
+      "estimated_setup_minutes": 30,
+      "cost_level": "low"
+    },
+    "shlink": {
+      "id": "shlink",
+      "name": "Shlink Attribution",
+      "description": "Short links and click attribution for referral/affiliate campaigns",
+      "category": "attribution",
+      "tier": "growth",
+      "required_by": [],
+      "requires": [],
+      "external_service": "shlink",
+      "docker_services": [],
+      "compose_file": null,
+      "bootstrap_script": "scripts/ops/bootstrap-external-services.sh shlink",
+      "smoke_script": null,
+      "doppler_secrets_prefix": "SHLINK_${SLUG}_",
+      "doppler_flag": "SHLINK_${SLUG}_ENABLED",
+      "traefik_domain": "go-${slug}.op-sly.com",
+      "manual_steps": [
+        "Bootstrap pinned external service",
+        "Configure branded domain",
+        "Map click IDs to Opsly attribution records"
+      ],
+      "estimated_setup_minutes": 30,
+      "cost_level": "low"
+    },
+    "listmonk": {
+      "id": "listmonk",
+      "name": "listmonk Campaigns",
+      "description": "Self-hosted email lists, segmentation and campaign delivery",
+      "category": "marketing",
+      "tier": "growth",
+      "required_by": [],
+      "requires": [
+        "twenty"
+      ],
+      "external_service": "listmonk",
+      "docker_services": [],
+      "compose_file": null,
+      "bootstrap_script": "scripts/ops/bootstrap-external-services.sh listmonk",
+      "smoke_script": null,
+      "doppler_secrets_prefix": "LISTMONK_${SLUG}_",
+      "doppler_flag": "LISTMONK_${SLUG}_ENABLED",
+      "traefik_domain": "campaigns-${slug}.op-sly.com",
+      "manual_steps": [
+        "Bootstrap pinned external service",
+        "Configure SMTP/provider",
+        "Sync opted-in segments from Twenty",
+        "Keep outbound campaigns approval-first"
+      ],
+      "estimated_setup_minutes": 45,
+      "cost_level": "low"
+    },
+    "langfuse": {
+      "id": "langfuse",
+      "name": "Langfuse AI Observability",
+      "description": "Tracing, evaluation and observability for AgentTask and LLM execution",
+      "category": "ai-observability",
+      "tier": "ai-first",
+      "required_by": [],
+      "requires": [
+        "llm"
+      ],
+      "external_service": "langfuse",
+      "docker_services": [],
+      "compose_file": null,
+      "bootstrap_script": "scripts/ops/bootstrap-external-services.sh langfuse",
+      "smoke_script": null,
+      "doppler_secrets_prefix": "LANGFUSE_${SLUG}_",
+      "doppler_flag": "LANGFUSE_${SLUG}_ENABLED",
+      "traefik_domain": "ai-observe-${slug}.op-sly.com",
+      "manual_steps": [
+        "Bootstrap pinned external service",
+        "Create Opsly project",
+        "Instrument AgentTask lifecycle without leaking secrets/PII"
+      ],
+      "estimated_setup_minutes": 45,
+      "cost_level": "medium"
     }
   },
   "bundles": {
     "starter": {
       "name": "Starter Pack",
       "description": "CRM + automación básica — ideal para SMBs sin WhatsApp Business",
-      "modules": ["twenty", "n8n", "uptime"],
+      "modules": [
+        "twenty",
+        "n8n",
+        "uptime"
+      ],
       "estimated_setup_minutes": 60
     },
     "growth": {
       "name": "Growth Pack",
       "description": "CRM + WhatsApp + IA — el stack completo de Peskids como referencia",
-      "modules": ["twenty", "wacrm", "n8n", "llm", "uptime"],
+      "modules": [
+        "twenty",
+        "wacrm",
+        "n8n",
+        "llm",
+        "uptime"
+      ],
       "estimated_setup_minutes": 120
     },
     "ai-first": {
       "name": "AI-First Pack",
       "description": "Automatización con IA como centro — para tenants que priorizan inteligencia",
-      "modules": ["twenty", "n8n", "llm", "uptime"],
+      "modules": [
+        "twenty",
+        "n8n",
+        "llm",
+        "uptime"
+      ],
       "estimated_setup_minutes": 75
+    },
+    "revenue-os": {
+      "name": "Revenue OS",
+      "description": "CRM + inbox + scheduling + attribution + campaigns + AI",
+      "modules": [
+        "twenty",
+        "chatwoot",
+        "calcom",
+        "n8n",
+        "llm",
+        "shlink",
+        "listmonk",
+        "uptime"
+      ],
+      "estimated_setup_minutes": 240
+    },
+    "commerce-deals": {
+      "name": "Commerce & Deals",
+      "description": "Commerce catalog + price/restock intelligence + attribution",
+      "modules": [
+        "medusa",
+        "changedetection",
+        "shlink",
+        "n8n",
+        "uptime"
+      ],
+      "estimated_setup_minutes": 180
+    },
+    "health-travel": {
+      "name": "Health & Travel Colombia",
+      "description": "CRM + appointments + concierge inbox + revenue attribution for coordinated health/travel journeys",
+      "modules": [
+        "twenty",
+        "chatwoot",
+        "calcom",
+        "n8n",
+        "llm",
+        "shlink",
+        "uptime"
+      ],
+      "estimated_setup_minutes": 240
+    },
+    "agent-observability": {
+      "name": "Agent Observability",
+      "description": "Mission Control + LLM/agent tracing and evaluation",
+      "modules": [
+        "llm",
+        "langfuse",
+        "uptime"
+      ],
+      "estimated_setup_minutes": 90
     }
   }
 }

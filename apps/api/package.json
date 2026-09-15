@@ -17,6 +17,7 @@
   "dependencies": {
     "@aws-sdk/client-sts": "^3.1049.0",
     "@aws-sdk/nested-clients": "^3.997.10",
+    "@intcloudsysops/ai-board": "*",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@intcloudsysops/ml": "^1.0.0",
     "@intcloudsysops/prompt-guard": "*",

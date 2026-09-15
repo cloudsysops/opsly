@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  emitLeadCreated,
   emitLeadStatusTransition,
 } from '@/lib/events';
 
@@ -7,6 +8,26 @@ describe('emitLeadStatusTransition', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     delete process.env.OPSLY_EVENT_BUS_URL;
+  });
+
+  it('posts lead.created with IDs only', async () => {
+    process.env.OPSLY_EVENT_BUS_URL = 'https://example.invalid/events';
+    const fetchMock = vi.fn().mockResolvedValue(new Response('{}', { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await emitLeadCreated(
+      'lead-9',
+      'Maria Rodriguez',
+      'maria@example.com',
+      '+573001112233',
+      'K-5',
+      'Friend'
+    );
+
+    const payload = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body));
+    expect(payload.event_type).toBe('lead.created');
+    expect(payload.data).toMatchObject({ lead_id: 'lead-9', has_phone: true, hot: true });
+    expect(JSON.stringify(payload)).not.toMatch(/Maria|maria@example.com|\+573001112233/);
   });
 
   it('posts status_changed and contacted', async () => {

@@ -1,11 +1,19 @@
 #!/usr/bin/env npx tsx
 
 import express from 'express';
-import { spawn } from 'node:child_process';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { promises as fsp } from 'node:fs';
+import { resolve, join } from 'node:path';
+import { createSession, sendCommand, stopSession, waitForSessionExit } from '@intcloudsysops/session-manager';
 import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
+import {
+  classifySpawnError,
+  extraSearchPaths,
+  promptContentFromBody,
+  redactSecrets,
+  resolveAgentCommand,
+} from './lib/cli-agent-bridge.mjs';
 
 type ExecuteRequest = {
   job_id?: string;
@@ -54,6 +62,7 @@ function defaultPortFor(name: string): string {
     aider: '5009',
     goose: '5010',
     playwright: '5011',
+    openclaw: '5012',
   };
   return ports[name] || '5099';
 }
@@ -76,7 +85,7 @@ function buildPrompt(body: ExecuteRequest): string {
 }
 
 function promptContent(body: ExecuteRequest): string {
-  return body.prompt_content || body.prompt || '';
+  return promptContentFromBody(body);
 }
 
 function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
@@ -88,7 +97,8 @@ function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
     return { command: override, args: [] };
   }
 
-  const modelArgs = body.model ? ['--model', body.model] : [];
+  const selectedModel = body.model || process.env.OPSLY_OPENCODE_MODEL?.trim();
+  const modelArgs = selectedModel ? ['--model', selectedModel] : [];
 
   switch (agent) {
     case 'claude':
@@ -139,6 +149,20 @@ function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
           '--max-turns',
           String(body.max_steps ?? process.env.HERMES_MAX_TURNS ?? 8),
           ...(body.model ? ['-m', body.model] : []),
+        ],
+      };
+    case 'openclaw':
+      return {
+        command: 'openclaw',
+        args: [
+          'agent',
+          'exec',
+          '--cwd',
+          cwd,
+          '--timeout',
+          String(positiveInteger(process.env.OPSLY_OPENCLAW_TIMEOUT_SECONDS, 300)),
+          ...(body.model ? ['--model', body.model] : []),
+          prompt,
         ],
       };
     case 'openai':
@@ -232,7 +256,7 @@ function safeEquals(left: string, right: string): boolean {
 }
 
 function isAuthorized(req: express.Request): boolean {
-  if (!executeToken) return true;
+  if (!executeToken) return false;
   const authHeader = req.header('authorization') || '';
   const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() || '';
   return bearer.length > 0 && safeEquals(bearer, executeToken);
@@ -258,7 +282,15 @@ function buildChildEnv(): NodeJS.ProcessEnv {
     'OPENCODE_CONFIG',
     'GOOSE_CONFIG_DIR',
     'HERMES_HOME',
+    'OPENCLAW_HOME',
+    'OPENCLAW_CONFIG_PATH',
+    'OLLAMA_API_KEY',
+    'OPENCLAW_OFFLINE',
+    'OPENCLAW_CONFIG_READONLY',
     'NODE_OPTIONS',
+    'OLLAMA_HOST',
+    'OLLAMA_URL',
+    'OLLAMA_MODEL',
   ];
   const extraAllowlist = (process.env.OPSLY_CLI_AGENT_ENV_ALLOWLIST || '')
     .split(',')
@@ -273,74 +305,96 @@ function buildChildEnv(): NodeJS.ProcessEnv {
     }
   }
 
+  const extra = extraSearchPaths(process.env).join(':');
+  if (extra) {
+    env.PATH = env.PATH ? `${extra}:${env.PATH}` : extra;
+  }
+
   return env;
 }
 
 function redact(value: string): string {
-  return value
-    .replace(/sk-[A-Za-z0-9_-]{12,}/g, 'sk-***')
-    .replace(/nvapi-[A-Za-z0-9_-]{12,}/g, 'nvapi-***')
-    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer ***')
-    .replace(/(api[_-]?key|token|password)=([^\s]+)/gi, '$1=***');
+  return redactSecrets(value);
 }
 
-function appendLimited(current: string, chunk: Buffer): string {
-  const next = current + chunk.toString();
-  if (Buffer.byteLength(next, 'utf8') <= outputLimitBytes) {
-    return next;
-  }
-
-  const truncated = Buffer.from(next).subarray(0, outputLimitBytes).toString('utf8');
-  return `${truncated}\n[opsly] output truncated at ${outputLimitBytes} bytes`;
+function safeTaskToken(value: string): string {
+  return value.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').slice(0, 40) || 'task';
 }
 
-function runCommand(spec: CommandSpec): Promise<{ stdout: string; stderr: string; code: number | null }> {
-  return new Promise((resolvePromise, reject) => {
-    validateWorkspaceScope();
+function roleSuffix(agentName: string, requestedRole?: string): string {
+  const role = requestedRole?.trim().toLowerCase() || '';
+  if (role.includes('plan')) return 'plan';
+  if (role.includes('build') || role.includes('implement')) return 'build';
+  if (role.includes('debug')) return 'debug';
+  if (role.includes('review')) return 'review';
+  if (agentName === 'hermes') return 'plan';
+  if (agentName === 'openclaw') return 'run';
+  if (agentName === 'opencode') return 'build';
+  if (agentName === 'codex' || agentName === 'openai') return 'debug';
+  if (agentName === 'claude') return 'review';
+  return 'run';
+}
 
-    const child = spawn(spec.command, spec.args, {
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
+async function runCommand(
+  spec: CommandSpec,
+  body: ExecuteRequest,
+  jobId: string
+): Promise<{ stdout: string; stderr: string; code: number | null; session: string }> {
+  validateWorkspaceScope();
+
+  const resolved = resolveAgentCommand(spec.command);
+  const runtimeRoot = resolve(process.env.OPSLY_RUNTIME_STATE_DIR || join(repoRoot, 'runtime', 'agent-sessions'));
+  const executionDir = join(runtimeRoot, 'executions', safeTaskToken(jobId));
+  await fsp.mkdir(executionDir, { recursive: true, mode: 0o700 });
+
+  const configPath = join(executionDir, 'execution.json');
+  const resultPath = join(executionDir, 'result.json');
+  const runnerPath = resolve(repoRoot, 'scripts/ops/ephemeral-cli-runner.mjs');
+  const tmuxName = `opsly-task-${safeTaskToken(jobId)}-${roleSuffix(agent, body.agent_role)}`;
+
+  await fsp.writeFile(
+    configPath,
+    JSON.stringify({
+      command: resolved,
+      args: spec.args,
       cwd,
-      detached: true,
       env: buildChildEnv(),
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
+      outputLimitBytes,
+      resultPath,
+    }),
+    { mode: 0o600 }
+  );
 
-    let stdout = '';
-    let stderr = '';
-    let timedOut = false;
-    const timeout = setTimeout(() => {
-      timedOut = true;
-      if (child.pid) {
-        process.kill(-child.pid, 'SIGTERM');
-        setTimeout(() => {
-          try {
-            if (child.pid) process.kill(-child.pid, 'SIGKILL');
-          } catch {
-            // Process already exited.
-          }
-        }, 5000).unref();
-      }
-    }, timeoutMs);
-
-    child.stdout.on('data', (chunk) => {
-      stdout = appendLimited(stdout, chunk);
-    });
-    child.stderr.on('data', (chunk) => {
-      stderr = appendLimited(stderr, chunk);
-    });
-    child.on('error', (error) => {
-      clearTimeout(timeout);
-      reject(error);
-    });
-    child.on('close', (code) => {
-      clearTimeout(timeout);
-      if (timedOut) {
-        reject(new Error(`Agent ${agent} timed out after ${timeoutMs}ms`));
-        return;
-      }
-      resolvePromise({ stdout: redact(stdout), stderr: redact(stderr), code });
-    });
+  const session = await createSession({
+    name: tmuxName,
+    agentId: agent,
+    jobId,
+    workspace: cwd,
+    tmuxSessionName: tmuxName,
   });
+
+  try {
+    const command = `node ${shellQuote(runnerPath)} ${shellQuote(configPath)}; exit`;
+    await sendCommand({ sessionId: session.sessionId, command });
+    await waitForSessionExit(session.sessionId, timeoutMs);
+
+    const raw = await fsp.readFile(resultPath, 'utf8');
+    const parsed = JSON.parse(raw) as { stdout?: string; stderr?: string; exitCode?: number };
+    return {
+      stdout: redact(parsed.stdout || ''),
+      stderr: redact(parsed.stderr || ''),
+      code: Number.isInteger(parsed.exitCode) ? parsed.exitCode! : 1,
+      session: tmuxName,
+    };
+  } finally {
+    await stopSession(session.sessionId).catch(() => undefined);
+    await fsp.rm(configPath, { force: true }).catch(() => undefined);
+    await fsp.rm(resultPath, { force: true }).catch(() => undefined);
+  }
 }
 
 app.get('/health', (_req, res) => {
@@ -351,7 +405,9 @@ app.get('/health', (_req, res) => {
     dry_run: dryRun,
     cwd,
     allowed_root: allowedRoot,
-    auth_required: Boolean(executeToken),
+    auth_required: true,
+    auth_configured: Boolean(executeToken),
+    execution_model: 'ephemeral-tmux-session',
     in_flight_job_id: inFlightJobId,
     output_limit_bytes: outputLimitBytes,
     timeout_ms: timeoutMs,
@@ -364,8 +420,23 @@ app.post('/execute', async (req, res) => {
   const jobId = body.job_id || randomUUID();
 
   try {
+    if (!executeToken) {
+      res.status(503).json({
+        success: false,
+        job_id: jobId,
+        errorCode: 'AUTH_NOT_CONFIGURED',
+        error: 'execution bridge authentication is not configured',
+      });
+      return;
+    }
+
     if (!isAuthorized(req)) {
-      res.status(401).json({ success: false, job_id: jobId, error: 'unauthorized' });
+      res.status(401).json({
+        success: false,
+        job_id: jobId,
+        errorCode: 'UNAUTHORIZED',
+        error: 'unauthorized',
+      });
       return;
     }
 
@@ -380,7 +451,12 @@ app.post('/execute', async (req, res) => {
     }
 
     if (!promptContent(body).trim()) {
-      res.status(400).json({ success: false, job_id: jobId, error: 'prompt_content is required' });
+      res.status(400).json({
+        success: false,
+        job_id: jobId,
+        errorCode: 'VALIDATION_ERROR',
+        error: 'prompt_content is required',
+      });
       return;
     }
 
@@ -405,25 +481,37 @@ app.post('/execute', async (req, res) => {
 
     inFlightJobId = jobId;
     const spec = commandFor(prompt, body);
-    const result = await runCommand(spec);
+    const result = await runCommand(spec, body, jobId);
     const content = result.stdout.trim() || result.stderr.trim();
 
+    const selectedModel = body.model || process.env.OPSLY_OPENCODE_MODEL?.trim() || agent;
     res.status(result.code === 0 ? 200 : 500).json({
       success: result.code === 0,
       job_id: jobId,
+      request_id: jobId,
       response_content: content,
+      result: content,
       stdout: result.stdout,
       stderr: result.stderr,
       exit_code: result.code,
+      errorCode: result.code === 0 ? undefined : 'AGENT_EXIT_NONZERO',
       execution_time_ms: Date.now() - started,
-      model: body.model || agent,
+      durationMs: Date.now() - started,
+      runtime: agent,
+      model: selectedModel,
+      session: result.session,
     });
   } catch (error) {
-    res.status(500).json({
+    const classified = classifySpawnError(error);
+    res.status(classified.status).json({
       success: false,
       job_id: jobId,
-      error: redact(error instanceof Error ? error.message : String(error)),
+      request_id: jobId,
+      errorCode: classified.errorCode,
+      error: classified.error,
       execution_time_ms: Date.now() - started,
+      durationMs: Date.now() - started,
+      runtime: agent,
     });
   } finally {
     if (inFlightJobId === jobId) {

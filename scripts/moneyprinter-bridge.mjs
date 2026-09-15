@@ -10,8 +10,8 @@
 // render artifacts under MPT_BRIDGE_OUT_DIR, and returns a manifest whose asset.url is
 // reachable via MPT_BRIDGE_PUBLIC_BASE (HTTP static or local).
 //
-// This is the integration seam for the real GPU renderer: replace renderDraft() with a
-// call to MoneyPrinterTurbo (or external API) that returns a VideoRenderManifest.
+// renderDraft() uses local FFmpeg (title card + thumbnail). It fails closed if
+// ffmpeg is missing. Temporary files under MPT_BRIDGE_OUT_DIR are not canonical.
 //
 // Env:
 //   MPT_BRIDGE_PORT        default 8080
@@ -30,6 +30,7 @@ import { createServer } from 'node:http';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { renderTitleCard } from './ops/content-render-ffmpeg.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
@@ -96,41 +97,53 @@ function sanitizeSegment(value) {
   return String(value).toLowerCase().replace(/[^a-z0-9-_]+/g, '-').replace(/^-+|-+$/g, '') || 'draft';
 }
 
-// Deterministic local render: persists artifacts, returns a compatible manifest.
-// Replace/augment this async body with the real GPU renderer when available.
+function scriptDurationSec(draft) {
+  if (!Array.isArray(draft.reel_script)) return 8;
+  return draft.reel_script.reduce((sum, step) => sum + Number(step?.duration_sec ?? 0), 0);
+}
+
+function publicUrl(dir, fileName) {
+  return `${PUBLIC_BASE}/${relative(OUT_DIR, join(dir, fileName)).split('\\').join('/')}`;
+}
+
+// Real FFmpeg title card. Fails closed if ffmpeg is missing — no placeholder MP4.
 async function renderDraft({ tenant_slug, request_id, draft_id, preset, draft }) {
   const dir = join(OUT_DIR, sanitizeSegment(tenant_slug), sanitizeSegment(draft_id));
   await mkdir(dir, { recursive: true });
 
+  const submittedAt = new Date().toISOString();
+  const baseFilename = sanitizeSegment(draft_id);
+  const videoFile = `${baseFilename}.mp4`;
+  const thumbFile = `${baseFilename}.jpg`;
+  const rendered = await renderTitleCard({
+    title: draft.title || draft_id,
+    aspectRatio: preset.aspect_ratio,
+    durationSec: scriptDurationSec(draft),
+    videoPath: join(dir, videoFile),
+    thumbPath: join(dir, thumbFile),
+  });
+
   const manifest = {
-    provider: 'moneyprinterturbo',
+    provider: 'ffmpeg-titlecard',
     status: 'completed',
     tenant_slug,
     request_id,
     draft_id,
     preset_slug: preset.slug,
-    submitted_at: new Date().toISOString(),
+    submitted_at: submittedAt,
     completed_at: new Date().toISOString(),
     job_id: `mpt-${request_id}`,
-    output_key: relative(OUT_DIR, dir),
+    output_key: relative(OUT_DIR, dir).split('\\').join('/'),
     asset: {
-      url: '',
-      duration_sec:
-        Array.isArray(draft.reel_script)
-          ? draft.reel_script.reduce((sum, s) => sum + Number(s?.duration_sec ?? 0), 0)
-          : undefined,
+      url: publicUrl(dir, videoFile),
+      thumbnail_url: publicUrl(dir, thumbFile),
+      duration_sec: rendered.durationSec,
       aspect_ratio: preset.aspect_ratio,
+      width: rendered.width,
+      height: rendered.height,
     },
   };
 
-  const baseFilename = sanitizeSegment(draft_id);
-  const videoFile = `${baseFilename}.mp4`;
-  // asset.url is relative to OUT_DIR (served under PUBLIC_BASE), not the repo root.
-  const urlRelative = relative(OUT_DIR, join(dir, videoFile)).split('\\').join('/');
-  manifest.asset.url = `${PUBLIC_BASE}/${urlRelative}`;
-  manifest.output_key = relative(OUT_DIR, dir).split('\\').join('/');
-
-  // Renderable artifacts (POC): articulated script + payload, ready for a real renderer.
   await writeFile(
     join(dir, 'draft.json'),
     JSON.stringify({ tenant_slug, request_id, draft_id, preset, draft }, null, 2),
@@ -147,20 +160,10 @@ async function renderDraft({ tenant_slug, request_id, draft_id, preset, draft })
       ...(draft.hashtags && Array.isArray(draft.hashtags) ? draft.hashtags.join(' ') : []),
     ].join('\n'),
   );
-  // Placeholder video so `asset.url` resolves during manual upload / review.
-  await writeFile(join(dir, videoFile), PLACEHOLDER_MP4);
+  await writeFile(join(dir, 'result.json'), JSON.stringify(manifest, null, 2));
 
   return { manifest, dir };
 }
-
-const PLACEHOLDER_MP4 = Buffer.from(
-  '00000018ftypmp42' +
-    '00000008mp42' +
-    '00000008isom' +
-    '00000000mdat00000000' +
-    'Placeholder render: replace with a real MoneyPrinterTurbo MP4 output.',
-  'utf8',
-);
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);

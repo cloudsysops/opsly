@@ -38,6 +38,13 @@ export function isPeskidsHotLeadAlertsEnabled(
   return parseBooleanFlag(env.PESKIDS_HOT_LEAD_ALERTS_ENABLED, false);
 }
 
+/** Customer WhatsApp auto-send. Must stay false until a separate human gate. */
+export function isPeskidsWhatsappAutoSendEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_WHATSAPP_AUTO_SEND_ENABLED, false);
+}
+
 export function isPeskidsLeadReminder24hEnabled(
   env: NodeJS.ProcessEnv = process.env
 ): boolean {

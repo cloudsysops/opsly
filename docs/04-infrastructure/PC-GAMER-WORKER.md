@@ -1,7 +1,7 @@
 ---
 status: active
 owner: operations
-last_review: 2026-08-14
+last_review: 2026-09-11
 type: infrastructure
 tags:
   - opsly/infrastructure
@@ -36,10 +36,15 @@ VPS vps-dragon (100.120.151.91) ── control plane siempre ON
 
 Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orchestrator.
 
+**Regla:** el PC gamer **ejecuta**. La nube **decide y guarda el estado**. Si el PC se apaga, Opsly sigue; los jobs GPU quedan en BullMQ (`QUEUED`).
+
+Enrutar por **capacidad** (`gpu.nvidia`, `video.render`, `llm.local`, `ffmpeg`), no por hostname. Registro: [`config/compute-workers.json`](../../config/compute-workers.json). CLI: `npm run compute:workers` / `npm run compute:assign -- --job content.render.video`.
+
 ## Reglas no negociables
 
 1. **No** SSH a Internet; **no** abrir puerto 22 en el router.
-2. Preferir **Tailscale** (`Host pc-gamer` → user `devops` → `wsl -d Ubuntu`).
+2. Preferir **Tailscale** (`Host pc-gamer` → Windows OpenSSH → `wsl -d Ubuntu`).
+   User Linux: `devops`. Root WSL (bootstrap): `wsl -d Ubuntu -u root`.
 3. **No** almacenar en el PC: Doppler master/service tokens, AWS/GCP admin, `SUPABASE_SERVICE_ROLE_KEY` de prod, secretos de clientes, claves SSH productivas, GitHub PAT amplios, `PLATFORM_ADMIN_TOKEN`, Stripe live.
 4. Credenciales de **mínimo privilegio**: solo `REDIS_URL` (password de cola) + URLs Tailscale del gateway.
 5. El nodo **puede desaparecer** sin romper Opsly (fail-open prod).
@@ -49,6 +54,28 @@ Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orches
 9. Jobs LLM de plataforma pasan por Gateway; **excepción documentada:** worker efímero con `OPSLY_OLLAMA_DIRECT` / `OLLAMA_URL` local ($0). OpenCode overnight usa CLI local, no el Gateway.
 10. **No** crear otro control plane / orchestrator / Redis de prod en el gamer.
 11. **No** encolar trabajo delicado si el nodo está offline (`check-pc-gamer-online.sh`).
+
+## sudo NOPASSWD (WSL `devops` only)
+
+SSH a `pc-gamer` cae en **CMD de Windows**. El usuario Linux `devops` vive en WSL Ubuntu. Para que un agente (Claude / overnight) instale paquetes y servicios **sin TTY**, el drop-in es:
+
+`/etc/sudoers.d/devops` → `devops ALL=(ALL) NOPASSWD: ALL`
+
+Eso **no** va al VPS (`100.120.151.91` / `vps-dragon`). El archivo existente `/etc/sudoers.d/opsly-ollama` (solo `systemctl` de Ollama) se deja.
+
+Aplicar / comprobar desde Mac:
+
+```bash
+./scripts/ops/setup-pc-gamer-sudoers.sh --dry-run
+./scripts/ops/setup-pc-gamer-sudoers.sh          # wsl -u root + visudo
+./scripts/ops/setup-pc-gamer-sudoers.sh --status # sudo -n true
+```
+
+Comprobación manual:
+
+```bash
+ssh pc-gamer wsl -d Ubuntu -- sudo -n true
+```
 
 Validación local de `.env.worker`:
 
@@ -82,13 +109,15 @@ Cuando el PC está **encendido + Tailscale**, el plano durable es Docker (Ollama
 
 ```bash
 cd ~/opsly
-git pull --ff-only origin feat/pc-gamer-worker-plane
+git pull --ff-only origin main
 # .env.worker ya con REDIS_URL (Doppler)
 ./scripts/ops/pc-gamer-docker-plane.sh --up --pull-model --install-autostart
 # Overnight OpenCode (opcional):
 ./scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart
 sudo loginctl enable-linger devops   # una vez
 ```
+
+Reconnect desde Mac también usa **`main`** (`PC_GAMER_BRANCH` solo para un experimento nombrado). El plano Docker es **un solo** `docker compose` (workers + moneyprinter file en el mismo proyecto `infra`, `COMPOSE_IGNORE_ORPHANS=1`). Un segundo `up` de `docker-compose.pc-gamer-moneyprinter.yml` huérfana el worker y lo mata (crash loop `Up < 1s`). `--down` es solo operador; el unit `opsly-pc-gamer-docker.service` **no** hace `ExecStop --down` (un recycle de sesión no debe tumbar :3011).
 
 **Desde Mac cuando vuelve online:**
 
@@ -145,6 +174,17 @@ MONEY_PRINTER_TURBO_URL=http://100.74.88.103:8080 \
 
 npm run content:bitsitos:publish -- --kit
 ```
+
+Primer job real en el bridge: `content.render.video` → FFmpeg title card + thumbnail (`scripts/ops/content-render-ffmpeg.mjs`). Si falta ffmpeg, el job **falla** (no hay MP4 placeholder). Los artefactos locales no son canónicos: sincronizar y guardar la referencia en Opsly.
+
+AI Board / Mission Control:
+
+```bash
+npm run compute:assign -- --job content.render.video
+npm run compute:assign -- --job ai.local.inference --apply   # requiere REDIS_URL Tailscale
+```
+
+Mission Control muestra un panel compacto **PC GAMER** (status, GPU/VRAM, heartbeat, cola). `GET /api/admin/compute-workers`.
 
 Docs: [`docs/brand/icso/YOUTUBE-KIDS-TECH-CHANNEL.md`](../brand/icso/YOUTUBE-KIDS-TECH-CHANNEL.md).
 
@@ -228,12 +268,30 @@ swap=4GB
 | `scripts/ops/enqueue-overnight-opencode.sh` | Mac → encolar `local_opencode` |
 | `scripts/ops/pc-gamer-reconnect.sh` | Mac → SSH → levantar plano (+ `--with-opencode`) |
 | `scripts/setup-pc-gamer-worker.sh` | Bootstrap (delega a docker plane) |
-| `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis |
+| `config/compute-workers.json` | Capacidades + job types (no hostname hardcode) |
+| `scripts/ops/compute-worker-router.mjs` | Router por capacidad; offline → job sigue `QUEUED` |
+| `scripts/ops/board-assign-gpu-job.mjs` | AI Board asigna GPU job (`--apply` encola BullMQ) |
+| `scripts/ops/content-render-ffmpeg.mjs` | Primer job real: title card MP4 + thumbnail |
+| `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis (JSON GPU/VRAM/disk) |
+| `scripts/ops/setup-pc-gamer-sudoers.sh` | NOPASSWD `devops` en WSL (no VPS) |
 | `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
 | `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |
 | `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |
 | `scripts/ops/pc-gamer-schedule.sh` | Modo gaming/light/heavy según Mauro |
 | `config/pc-gamer-schedule.json` | Calendario semanal (DRAFT) |
+
+## Python policy (gamer WSL)
+
+Allowed now: **CPython stdlib only** (`/usr/bin/python3`, 3.12). No `pip install`, venv, torch, whisper, opencv, ultralytics, or numpy until a later approved capability needs them.
+
+`scripts/ops/pc-gamer-clip-agent.py` lives on **PR #1155**, not on gamer `main` until that PR merges and the host pulls the exact SHA. Proof after that pull: `python3 scripts/ops/pc-gamer-clip-agent.py --help`, then one local highlight with `OPSLY_CONTENT_PUBLISHING=disabled`. Do not add Auto-clipper / Remotion / Whisper / OpenCV / YOLO before that proof.
+
+## Archivos (continuación — autonomía Mac)
+
+| Path | Uso |
+|------|-----|
+| `scripts/ops/pc-gamer-watch.sh` | **Launchd watcher:** Tailscale online + worker no sano → `pc-gamer-reconnect.sh` (main) |
+| `infra/launchd/com.opsly.pcgamerwatch.plist` | LaunchAgent cada 120s (Mac opsly-admin) |
 | `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md` | Cómo ajustar horas con el dueño |
 | `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md` | Runbook crecimiento overnight |
 | `scripts/ops/start-mac-local-agents-worker.sh` | Worker Mac solo cola `local-agents` |
@@ -242,6 +300,7 @@ swap=4GB
 | `scripts/ops/ensure-overnight-autodispatch-launchd.sh` | Instalar LaunchAgent del autodispatch (5 min, Doppler) |
 | `infra/launchd/com.opsly.pc-gamer-autodispatch.plist` | LaunchAgent: corre el autodispatch cada 5 min |
 | `docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md` | Runbook del autodispatch overnight |
+| `docs/design/AUTONOMOUS-INCOME-SERVICES.md` | Blueprint: Content OS → Moon → ingresos sin romper Peskids |
 
 ## Relacionado
 
@@ -254,3 +313,55 @@ swap=4GB
 - `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`
 - `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md`
 - `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md`
+
+
+## OpenCode local-first sin suscripción
+
+El PC Gamer es ahora la ubicación preferida para tareas de implementación con costo de tokens $0:
+
+```text
+Opsly scheduler
+→ local-agents
+→ PC Gamer
+→ OpenCode
+→ Ollama GPU
+→ code/tests/evidence
+```
+
+Validar antes de usar:
+
+```bash
+cd ~/opsly
+git pull --ff-only origin main
+npm run pc-gamer:opencode:doctor
+```
+
+Si el doctor devuelve `LOCAL_FIRST_READY`:
+
+```bash
+npm run pc-gamer:opencode:autostart
+npm run pc-gamer:opencode:status
+```
+
+El modelo ya no está fijado a `llama3.2`. Se resuelve desde el inventario real de Ollama según:
+
+```text
+OPSLY_OPENCODE_MODEL (override)
+→ qwen3-coder
+→ qwen2.5-coder
+→ devstral
+→ gpt-oss
+→ codestral
+→ llama3.2
+→ primer modelo instalado
+```
+
+La lista puede cambiarse mediante `OPSLY_LOCAL_MODEL_PREFERENCE` sin editar código.
+
+Para instalar un modelo concreto se requiere acción explícita:
+
+```bash
+./scripts/ops/pc-gamer-opencode-plane.sh --pull-model=<modelo>
+```
+
+No se descarga ningún modelo implícitamente durante el arranque.

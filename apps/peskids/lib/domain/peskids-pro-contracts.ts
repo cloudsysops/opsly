@@ -13,17 +13,13 @@
 /**
  * Target lead lifecycle. Today `lib/validation/lead-admin.schema.ts`
  * (`adminLeadStatusSchema`) exposes `new | contacted | trial | enrolled |
- * archived`, mapped in `lib/services/lead-admin.service.ts`
- * (`mapAdminStatusToPlatform`) to the `platform.peskids_leads` stage values
- * `new | contacted | qualified | converted | lost`. Splitting `trial` into
- * `trial_scheduled` / `trial_completed` and renaming `archived` → `lost` is
- * PR-PRO-3/5 work, not done here.
+ * archived`. Live `trial` is a leftover enum value meaning enrollment in
+ * progress — not a trial class. Map it to `enrollment_in_progress`.
  */
 export type LeadStatus =
   | 'new'
   | 'contacted'
-  | 'trial_scheduled'
-  | 'trial_completed'
+  | 'enrollment_in_progress'
   | 'enrolled'
   | 'lost';
 
@@ -44,9 +40,8 @@ export type FollowUpStatus = 'pending' | 'completed' | 'cancelled' | 'overdue';
 export type FollowUpType = 'call' | 'whatsapp' | 'email' | 'other';
 
 /**
- * Target trial-class lifecycle. Today `lib/validation/trial-class.schema.ts`
- * (`trialClassStatusSchema`) uses `attended`, not `completed` — a naming
- * difference PR-PRO-10 should resolve deliberately (rename vs. alias).
+ * Leftover trial-class row statuses. Not a canonical business stage.
+ * Do not add new product flows on this type.
  */
 export type TrialStatus = 'scheduled' | 'confirmed' | 'completed' | 'no_show' | 'cancelled';
 
@@ -60,7 +55,15 @@ export type TrialStatus = 'scheduled' | 'confirmed' | 'completed' | 'no_show' | 
  * whether to keep them separate or unify them is a PR-PRO-3 product decision,
  * not assumed here.
  */
-export type LeadSource = 'website' | 'instagram' | 'facebook' | 'referral' | 'whatsapp' | 'other';
+export type LeadSource =
+  | 'website'
+  | 'instagram'
+  | 'facebook'
+  | 'referral'
+  | 'whatsapp'
+  | 'qr'
+  | 'ads'
+  | 'other';
 
 /**
  * Generic external-integration sync status, for any future

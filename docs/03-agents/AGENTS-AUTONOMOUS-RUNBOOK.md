@@ -1,5 +1,5 @@
 ---
-status: draft
+status: deprecated
 owner: operations
 last_review: 2026-05-24
 type: agent-doc
@@ -7,7 +7,7 @@ tags:
   - opsly/agents
 ---
 
-# Runbook: agentes OpenClaw en modo autónomo
+# Deprecated: persistent autonomous agent loops
 
 **Autónomo** aquí significa: **cola BullMQ `openclaw` siempre consumida** por el orchestrator en modo **worker** (`OPSLY_ORCHESTRATOR_MODE=worker-enabled`), con **Redis** del VPS y **LLM Gateway** alcanzable (Ollama u otros proveedores según `OLLAMA_URL`).
 
@@ -102,34 +102,27 @@ Configuración declarativa del equipo (roles, presupuestos, herramientas): [`con
 
 ---
 
-## 6.1 Autopilot continuo (Hermes + Ollama squad + smoke)
+## 6.1 Persistent autopilot — disabled
 
-Para dejar agentes trabajando en bucle sin intervención manual:
+The previous `nohup`/PID-file loop is deprecated and disabled.
 
-```bash
-# Arranca en background (nohup + pid file en logs/)
-TENANT_SLUG=smiletripcare \
-GOAL="Mantener plataforma multi-agente estable y eficiente" \
-PLAN=business \
-INTERVAL_SECONDS=300 \
-./scripts/start-agents-autopilot.sh
+Canonical execution is now:
 
-# Estado
-./scripts/status-agents-autopilot.sh
-
-# Stop limpio
-./scripts/stop-agents-autopilot.sh
+```text
+AgentTask
+→ policy / node authorization
+→ capability routing
+→ Session Manager
+→ opsly-task-<id>-<role>
+→ real external CLI/runtime
+→ evidence
+→ tmux teardown
 ```
 
-El loop (`scripts/agents-autopilot.sh`) ejecuta por ciclo:
+Only infrastructure remains persistent: BullMQ workers, prompt watchers, authenticated HTTP bridges and heartbeats.
 
-1. `npm run hermes:tick --workspace=@intcloudsysops/orchestrator`
-2. `npx tsx scripts/enqueue-ollama-squad.ts ...`
-3. `./scripts/test-worker-e2e.sh <tenant> --notify` (si `ENABLE_WORKER_SMOKE=true`)
+See [EXTERNAL-RUNTIME-POLICY.md](./EXTERNAL-RUNTIME-POLICY.md).
 
-Por defecto usa `doppler run --project ops-intcloudsysops --config prd` si la CLI está disponible.
-
----
 
 ## 7. Tras cada `git pull` en el worker
 
