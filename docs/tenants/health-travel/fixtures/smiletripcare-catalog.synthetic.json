@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "source_system": "smile-trip-care",
+  "generated_at": "2026-09-13T12:00:00.000Z",
+  "providers": [
+    {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "name": "Medellín Demo Care Center",
+      "provider_type": "clinic",
+      "city": "Medellín",
+      "country": "Colombia",
+      "approval_status": "approved",
+      "published": true
+    }
+  ],
+  "offers": [
+    {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "provider_id": "11111111-1111-4111-8111-111111111111",
+      "name": "Smile Journey Demo",
+      "package_type": "health",
+      "location": "Medellín",
+      "recovery_city": "Medellín",
+      "currency": "USD",
+      "price_from_usd": 4200,
+      "published": true
+    }
+  ]
+}

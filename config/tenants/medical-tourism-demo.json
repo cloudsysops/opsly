@@ -1,0 +1,21 @@
+{
+  "tenant_name": "Medical Tourism Demo",
+  "tenant_slug": "medical-tourism-demo",
+  "schema_name": "medical_tourism_demo",
+  "platform_domain": "example.invalid",
+  "public_url": "https://medical-tourism-demo.example.invalid",
+  "internal_port": 3098,
+  "stack_type": "incubator-app",
+  "owner_email": "medical-tourism-demo@example.invalid",
+  "vertical": "health-travel-colombia",
+  "modules_enabled": ["health-travel"],
+  "bundle": "starter",
+  "pattern_ids": ["incubator-app"],
+  "notes": "Non-production Health Travel fixture. Synthetic data only. External payments and communications disabled. Not for public deploy.",
+  "agent_task_defaults": {
+    "local_only": true,
+    "open_source_preferred": true,
+    "execution_mode_default": "dry_run",
+    "max_cost_usd": 0
+  }
+}
