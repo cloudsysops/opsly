@@ -42,8 +42,39 @@ function requireBooleanField(meta, key) {
   }
 }
 
+function listField(value) {
+  if (Array.isArray(value)) return value.map(String).map((v) => v.trim()).filter(Boolean);
+  if (typeof value !== 'string' || value.trim() === '') return [];
+  const trimmed = value.trim();
+  if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    try {
+      const parsed = JSON.parse(trimmed.replace(/'/g, '"'));
+      if (Array.isArray(parsed)) {
+        return parsed.map(String).map((v) => v.trim()).filter(Boolean);
+      }
+    } catch {}
+    return trimmed
+      .slice(1, -1)
+      .split(',')
+      .map((v) => v.trim().replace(/^['"]|['"]$/g, ''))
+      .filter(Boolean);
+  }
+  return trimmed.split(',').map((v) => v.trim()).filter(Boolean);
+}
+
 function assertSafe(meta) {
-  for (const key of ['id','status','priority','agent','owner','environment','cost_class','estimated_cost_usd']) {
+  for (const key of [
+    'id',
+    'status',
+    'priority',
+    'agent',
+    'owner',
+    'environment',
+    'cost_class',
+    'estimated_cost_usd',
+    'workstream',
+    'conflict_key',
+  ]) {
     requireField(meta, key);
   }
   for (const key of ['requires_pr','requires_approval','production_deploy','paid_infra_required']) {
@@ -114,9 +145,9 @@ if (!file) {
 
 const root = process.cwd();
 const absolute = path.resolve(root, file);
-const queueRoot = path.resolve(root, 'docs/01-development/github-agent-queue');
+const queueRoot = path.resolve(root, 'docs/01-development/night-queue');
 if (!(absolute === queueRoot || absolute.startsWith(queueRoot + path.sep))) {
-  throw new Error('workpack must live under docs/01-development/github-agent-queue');
+  throw new Error('workpack must live under docs/01-development/night-queue');
 }
 
 const orchestratorUrl = (process.env.OPSLY_ORCHESTRATOR_URL || '').replace(/\/+$/, '');
@@ -148,9 +179,12 @@ const payload = {
     github_run_id: process.env.GITHUB_RUN_ID || null,
     workpack_id: meta.id,
     workpack_file: file,
-    workstream: meta.workstream || null,
-    conflict_key: meta.conflict_key || null,
-    depends_on: meta.depends_on || null,
+    dispatch_contract_version: 'dispatch-claim-v1',
+    workstream: String(meta.workstream),
+    conflict_key: String(meta.conflict_key),
+    semantic_scope: String(meta.semantic_scope || meta.conflict_key),
+    affected_paths: listField(meta.affected_paths),
+    depends_on: listField(meta.depends_on),
     priority: meta.priority,
     owner: meta.owner,
     environment: meta.environment,
@@ -175,6 +209,34 @@ const submit = await request(`${orchestratorUrl}/api/local/prompt-submit`, {
 
 if (!submit.response.ok) {
   console.error(JSON.stringify(submit.body, null, 2));
+  if (submit.response.status === 409 && submit.body?.dispatch_decision) {
+    if (submit.body.dispatch_decision === 'ALREADY_DONE') {
+      console.log(
+        `ALREADY_DONE task=${submit.body.existing_task_id || 'unknown'} claim=${submit.body.existing_claim_id || 'unknown'}`
+      );
+      process.exit(0);
+    }
+    if (submit.body.dispatch_decision === 'JOIN_EXISTING') {
+      console.error(
+        `JOIN_EXISTING_NONTERMINAL task=${submit.body.existing_task_id || 'unknown'} job=${submit.body.existing_job_id || 'unknown'} claim=${submit.body.existing_claim_id || 'unknown'}`
+      );
+      throw new Error(
+        'JOIN_EXISTING_NONTERMINAL: canonical work is still active; this submitter must not report success'
+      );
+    }
+    if (submit.body.error === 'DISPATCH_SCOPE_ALREADY_OWNED') {
+      throw new Error(
+        `DISPATCH_SCOPE_ALREADY_OWNED: dispatch_decision=${submit.body.dispatch_decision} ` +
+          `${submit.body.conflict_dimension || 'scope'}="${submit.body.conflict_scope || 'unknown'}" ` +
+          `already owned by task=${submit.body.existing_task_id || 'unknown'} ` +
+          `workstream=${submit.body.existing_workstream || 'unknown'} ` +
+          `claim=${submit.body.existing_claim_id || 'unknown'}`
+      );
+    }
+    throw new Error(
+      `${submit.body.dispatch_decision}: ${submit.body.conflict_dimension || 'scope'} is already owned`
+    );
+  }
   throw new Error(`submit failed HTTP ${submit.response.status}`);
 }
 

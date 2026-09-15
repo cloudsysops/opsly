@@ -64,3 +64,20 @@ test('Hermes image builds fail closed in main and staging deploy pipelines', () 
     assert.match(tail, /Dockerfile\.hermes/);
   }
 });
+
+
+test('Hermes image preserves content-studio universe dependency closure', () => {
+  const hermesDocker = read('Dockerfile.hermes');
+
+  const universeBuild = hermesDocker.indexOf('build -w @intcloudsysops/universe');
+  const contentStudioBuild = hermesDocker.indexOf('build -w @intcloudsysops/content-studio');
+
+  assert.notEqual(universeBuild, -1, 'Hermes must build @intcloudsysops/universe');
+  assert.notEqual(contentStudioBuild, -1, 'Hermes must build @intcloudsysops/content-studio');
+  assert.ok(
+    universeBuild < contentStudioBuild,
+    'Hermes must build universe before content-studio because content-studio imports it',
+  );
+  assert.match(hermesDocker, /lib\/universe\/dist/);
+  assert.match(hermesDocker, /lib\/universe\/package\.json/);
+});
