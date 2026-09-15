@@ -1,0 +1,53 @@
+name: Agent physical acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: 'Local agent runtime to verify'
+        required: true
+        type: choice
+        options:
+          - hermes
+          - openclaw
+      expected_marker:
+        description: 'Exact terminal marker'
+        required: false
+        default: 'OPSLY_E2E_OK'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-physical-acceptance-mac
+  cancel-in-progress: false
+
+jobs:
+  physical-acceptance:
+    # Deliberately target the controlled Mac execution node; never fall back to GitHub-hosted runners.
+    runs-on: [self-hosted, macOS]
+    timeout-minutes: 15
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run canonical governed physical acceptance
+        env:
+          OPSLY_E2E_AGENT: ${{ inputs.agent }}
+          OPSLY_E2E_EXPECT_MARKER: ${{ inputs.expected_marker }}
+          OPSLY_E2E_TIMEOUT_SECONDS: '240'
+        run: npm run opsly:mac:go-live
+
+      - name: Publish acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-physical-acceptance-${{ inputs.agent }}-${{ github.run_id }}
+          path: runtime/evidence/mac-go-live-*.json
+          if-no-files-found: warn
+          retention-days: 14
