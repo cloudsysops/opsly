@@ -4,6 +4,7 @@ import { logWorkerLifecycle } from '../observability/worker-log.js';
 import { notifyDiscord } from './NotifyWorker.js';
 import { orchestratorQueue } from '../queue.js';
 import { getTasksByAgent } from '../agents/autonomous-tasks.js';
+import { ExecutorRouter } from '../agents/executor-router.js';
 
 export interface ValidationPayload {
   task_id: string;
@@ -155,19 +156,32 @@ async function handleValidationRetry(
     'info'
   );
 
-  await orchestratorQueue.add('cursor', {
-    payload: {
-      task: `Fix CI failure: ${task_id} (intento ${nextRetry + 1})`,
-      tenant_slug: 'platform',
-      commands: [
-        `La tarea ${task_id} falló CI con conclusion: ${conclusion}`,
-        `Commit: ${commit_sha}`,
-        `Revisa los logs de CI en GitHub Actions, identifica el error y corrígelo.`,
-        `Haz commit del fix en la misma rama.`,
-      ],
-    },
-    retry_count: nextRetry,
-    original_task_id: task_id,
+  // No hardcodear el agente que arregla el fallo — si Cursor no está
+  // disponible (o ya está ocupado en otra tarea), que caiga a claude-code
+  // (o shell) en vez de quedarse la tarea sin dueño. Mismo enrutamiento que
+  // usa el resto del Maia Loop (apps/orchestrator/src/agents/executor-router.ts).
+  const { executor } = await ExecutorRouter.route({
+    id: `${task_id}-ci-fix-${nextRetry}`,
+    title: `Fix CI failure: ${task_id} (intento ${nextRetry + 1})`,
+    agent: job.data.agent,
+    executor: 'cursor',
+    executorFallback: 'claude-code',
+    priority: 0,
+    prUrl: job.data.pr_url ?? '',
+    description: `La tarea ${task_id} falló CI con conclusion: ${conclusion}. Commit: ${commit_sha}.`,
+    acceptanceCriteria: [
+      'Revisa los logs de CI en GitHub Actions, identifica el error y corrígelo.',
+      'Haz commit del fix en la misma rama.',
+    ],
+    estimatedHours: 0,
+    tags: ['ci-fix', 'validation-retry'],
+  });
+
+  await orchestratorQueue.add('memory-write', {
+    task_id,
+    result: 'retry_routed',
+    summary: `Fix CI encolado a executor=${executor} (intento ${nextRetry}).`,
+    timestamp: new Date().toISOString(),
   });
 
   logWorkerLifecycle('complete', 'validation', job, {

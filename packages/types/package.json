@@ -29,12 +29,18 @@
       "import": "./dist/creator-os.js",
       "require": "./dist/creator-os.js",
       "default": "./dist/creator-os.js"
+    },
+    "./release-candidate": {
+      "types": "./dist/release-candidate.d.ts",
+      "import": "./dist/release-candidate.js",
+      "require": "./dist/release-candidate.js",
+      "default": "./dist/release-candidate.js"
     }
   },
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "test": "npm run build && node --test __tests__/creator-os.test.mjs"
+    "test": "npm run build && node --test __tests__/creator-os.test.mjs __tests__/release-candidate.test.mjs"
   },
   "dependencies": {
     "zod": "^3.25.76"
