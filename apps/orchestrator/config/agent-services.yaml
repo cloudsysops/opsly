@@ -78,3 +78,10 @@ services:
     env_var: OPSLY_PLAYWRIGHT_AGENT_URL
     timeout: 300000
     retry_attempts: 1
+
+  local_openclaw:
+    enabled: false
+    endpoint: http://localhost:5012
+    env_var: OPSLY_OPENCLAW_AGENT_URL
+    timeout: 300000
+    retry_attempts: 1
