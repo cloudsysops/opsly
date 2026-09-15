@@ -19,6 +19,7 @@ export const hermesTaskTypeSchema = z.enum([
   'infra',
   'task-management',
   'decision',
+  'content-review',
   'unknown',
 ]);
 

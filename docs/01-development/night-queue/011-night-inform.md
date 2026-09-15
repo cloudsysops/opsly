@@ -1,6 +1,7 @@
 ---
 id: night-merge-inform-011
-status: pending
+status: held
+hold_reason: held for isolated Mac engineering-loop E2E smoke; avoid Discord/rebase side effects during smoke
 owner: opsly-night-agent
 created: 2026-09-09
 requires_pr: false
