@@ -32,3 +32,18 @@ export {
 } from './routing.js';
 
 export { routeAgentTask } from './task-routing.js';
+
+export {
+  buildRuntimeCapabilityMatrixV1,
+  routeModelV1,
+} from './model-routing-v1.js';
+export type {
+  RuntimeCostClass,
+  RuntimeLatencyClass,
+  RuntimeLocality,
+  RuntimeAvailabilityV1,
+  RouteRejectCode,
+  ModelRouteReasonCode,
+  ModelRouteDecisionV1,
+  RouteModelV1Input,
+} from './model-routing-v1.js';
