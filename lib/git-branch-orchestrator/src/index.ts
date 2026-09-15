@@ -54,16 +54,10 @@ export {
   assignWorkerToBranch,
   type AssignWorkerInput,
   type AssignWorkerResult,
+  type BranchDispatchClaimEvidence,
 } from './assign.js';
 
 export { buildMergeAdvisorReport } from './merge-advisor.js';
-
-export {
-  isGitDryRun,
-  gitCreateBranch,
-  ghCreatePullRequest,
-  materializeBranchPlan,
-} from './github.js';
 
 export {
   buildBranchHygieneReport,
