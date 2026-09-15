@@ -14,6 +14,8 @@ import type {
   TrustLevel,
 } from './types.js';
 import { TRUST_LEVELS } from './types.js';
+import type { ExecutionEvidenceV1 } from './execution-evidence-v1.js';
+import { normalizeExecutionEvidenceV1 } from './execution-evidence-v1.js';
 import {
   DEFAULT_DEMOTION_FAILURE_WINDOW,
   DEFAULT_DEMOTION_SUCCESS_FLOOR,
@@ -34,6 +36,7 @@ export type AgentLearningStoreOptions = {
 export class AgentLearningStore {
   private readonly profiles = new Map<string, AgentLearningProfile>();
   private readonly executions = new Map<string, ExecutionEvidence>();
+  private readonly executionEvidenceV1 = new Map<string, ExecutionEvidenceV1>();
   private readonly reviews = new Map<string, ReviewEvidence>();
   private readonly records = new Map<string, LearningRecord>();
   private readonly evalCases = new Map<string, EvalCase>();
@@ -51,6 +54,42 @@ export class AgentLearningStore {
       options.demotionFailureWindow ?? DEFAULT_DEMOTION_FAILURE_WINDOW;
     this.demotionSuccessFloor =
       options.demotionSuccessFloor ?? DEFAULT_DEMOTION_SUCCESS_FLOOR;
+  }
+
+  /**
+   * Attach bounded, redacted ExecutionEvidenceV1 to the canonical AgentTask request_id.
+   * Duplicate evidence_id writes are idempotent only when the normalized payload matches.
+   */
+  attachExecutionEvidenceV1(evidence: ExecutionEvidenceV1): ExecutionEvidenceV1 {
+    const next = normalizeExecutionEvidenceV1(evidence);
+    assertCanonicalTaskId(next.request_id);
+    assertCanonicalTaskId(next.task_id);
+
+    const existing = this.executionEvidenceV1.get(next.evidence_id);
+    if (existing) {
+      if (JSON.stringify(existing) !== JSON.stringify(next)) {
+        throw new Error(
+          `Conflicting duplicate ExecutionEvidenceV1: ${next.evidence_id}`
+        );
+      }
+      return existing;
+    }
+
+    this.executionEvidenceV1.set(next.evidence_id, next);
+    return next;
+  }
+
+  getExecutionEvidenceV1(evidenceId: string): ExecutionEvidenceV1 | undefined {
+    return this.executionEvidenceV1.get(evidenceId);
+  }
+
+  listExecutionEvidenceV1(taskId?: CanonicalTaskId): ExecutionEvidenceV1[] {
+    if (taskId !== undefined) {
+      assertCanonicalTaskId(taskId);
+    }
+    return Array.from(this.executionEvidenceV1.values()).filter(
+      (evidence) => taskId === undefined || evidence.task_id === taskId
+    );
   }
 
   registerProfile(profile: AgentLearningProfile): AgentLearningProfile {

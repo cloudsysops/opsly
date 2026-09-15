@@ -12,7 +12,8 @@
   },
   "exports": {
     ".": "./src/builder.ts",
-    "./indexer": "./src/indexer.ts"
+    "./indexer": "./src/indexer.ts",
+    "./assembly-v1": "./src/context-assembly-v1.ts"
   },
   "dependencies": {
     "@intcloudsysops/llm-gateway": "^1.0.0",
