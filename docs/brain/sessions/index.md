@@ -20,6 +20,20 @@ A session record must contain: `work_id`/`request_id`, agent/runtime, attempt nu
 
 Do not create one disconnected memory file per trivial action. Repeated attempts for the same canonical work identity should append/link through the same work history. Never store secrets, tokens, environment dumps, customer PII, or credentials.
 
+## Machine enforcement
+
+The canonical machine contract lives in `@intcloudsysops/agent-learning` as `WorkHandoffV1` plus `checkWorkClosureV1` / `assertWorkClosureV1`.
+
+For material autonomous work:
+
+- every terminal attempt requires at least one execution `evidence_id`;
+- `ready_to_merge`, `merged` and `cleaned` require validation evidence;
+- when `durable_knowledge_changed=true`, successful closure requires a canonical `documentation_ref`;
+- `retryable` requires a blocker explaining why work returns to the queue;
+- missing evidence/writeback fails closed instead of silently reporting DONE.
+
+The reconciler/factory should call this guard before accepting terminal closure. Human-readable session notes remain selective; machine handoff/evidence is mandatory for every attempt.
+
 ## Promotion rule
 
 Session knowledge is temporary operational memory. If a discovery remains true after the work is complete, promote it in the same PR to the owning canonical location: `docs/brain/modules/`, `architecture/`, `workflows/`, `agents/`, `tenants/`, ADR/runbook, or other owner documentation. The session then links to that canonical knowledge instead of becoming a competing source of truth.
@@ -40,7 +54,12 @@ issue: <number/url>
 pr: <number/url or null>
 branch: <branch or null>
 head_sha: <sha or null>
-terminal_state: <DONE|RETRYABLE|NEEDS_HUMAN|BLOCKED>
+terminal_state: <retryable|ready_to_merge|merged|cleaned|needs_human>
+evidence_ids:
+  - <execution evidence id>
+durable_knowledge_changed: <true|false>
+documentation_refs:
+  - <canonical doc/brain path when required>
 ```
 
 ```text
@@ -58,3 +77,4 @@ Canonical documentation updates:
 - [[03-agents/AGENT-BRAIN-CONTRACT|Agent Brain Contract]]
 - [[brain/agents/README|Agents MOC]]
 - [[01-development/DOCUMENTATION-LIFECYCLE|Documentation Lifecycle]]
+- `lib/agent-learning/src/work-handoff-v1.ts`
