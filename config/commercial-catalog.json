@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated": "2026-07-30",
+  "updated": "2026-09-12",
   "owner": "icso",
   "currency": "USD",
   "disclaimer": "Rangos orientativos LATAM. Setup y ops se confirman en discovery. Pass-through (dominio, APIs, WhatsApp) aparte. No prometemos resultados de ventas ni uptime de terceros.",
@@ -83,6 +83,62 @@
       "mvp_default": false,
       "risk": "low",
       "summary": "Cuando el cliente crece: repo propio sin romper Opsly."
+    },
+    {
+      "id": "revenue-pipeline",
+      "label": "Revenue Pipeline",
+      "label_es": "Pipeline de ingresos",
+      "mvp_default": false,
+      "risk": "medium",
+      "summary": "Twenty + follow-up + opportunity attribution."
+    },
+    {
+      "id": "partner-commissions",
+      "label": "Partner Commission Tracking",
+      "label_es": "Comisiones de partners",
+      "mvp_default": false,
+      "risk": "medium",
+      "summary": "Atribución de referrals, conversiones, comisiones esperadas y pagos."
+    },
+    {
+      "id": "deal-watch",
+      "label": "Deal & Price Watch",
+      "label_es": "Monitor de ofertas",
+      "mvp_default": false,
+      "risk": "medium",
+      "summary": "Monitorea cambios de precio/stock en fuentes aprobadas y dispara oportunidades."
+    },
+    {
+      "id": "commerce-catalog",
+      "label": "Commerce Catalog",
+      "label_es": "Catálogo comercial",
+      "mvp_default": false,
+      "risk": "medium",
+      "summary": "Productos, promociones y órdenes sobre Medusa sin reinventar ecommerce."
+    },
+    {
+      "id": "booking-concierge",
+      "label": "Booking & Concierge",
+      "label_es": "Reservas y concierge",
+      "mvp_default": false,
+      "risk": "medium",
+      "summary": "Citas, intake y coordinación usando Cal.com + inbox."
+    },
+    {
+      "id": "campaign-engine",
+      "label": "Campaign Engine",
+      "label_es": "Campañas",
+      "mvp_default": false,
+      "risk": "medium",
+      "summary": "Segmentación y campañas approval-first con listmonk."
+    },
+    {
+      "id": "ai-observability",
+      "label": "AI Observability",
+      "label_es": "Observabilidad IA",
+      "mvp_default": false,
+      "risk": "low",
+      "summary": "Trazas y evaluaciones de AgentTask/LLM con Langfuse."
     }
   ],
   "packages": [
@@ -91,10 +147,20 @@
       "name": "Basic Setup",
       "name_es": "Arranque digital",
       "ideal_for": "Negocio que empieza digital",
-      "setup_range_usd": { "min": 400, "max": 900 },
-      "ops_monthly_usd": { "min": 0, "max": 49 },
+      "setup_range_usd": {
+        "min": 400,
+        "max": 900
+      },
+      "ops_monthly_usd": {
+        "min": 0,
+        "max": 49
+      },
       "highlighted": false,
-      "module_ids": ["lead-capture", "follow-up", "weekly-report"],
+      "module_ids": [
+        "lead-capture",
+        "follow-up",
+        "weekly-report"
+      ],
       "includes": [
         "Discovery 1–2 sesiones",
         "Mapa de flujo actual",
@@ -113,8 +179,14 @@
       "name": "Hybrid Opsly",
       "name_es": "Incubación Opsly",
       "ideal_for": "Piloto incubado (escuela, clínica, agencia local)",
-      "setup_range_usd": { "min": 1200, "max": 2500 },
-      "ops_monthly_usd": { "min": 79, "max": 199 },
+      "setup_range_usd": {
+        "min": 1200,
+        "max": 2500
+      },
+      "ops_monthly_usd": {
+        "min": 79,
+        "max": 199
+      },
       "highlighted": true,
       "module_ids": [
         "lead-capture",
@@ -142,8 +214,14 @@
       "name": "Custom Platform",
       "name_es": "Plataforma a medida",
       "ideal_for": "Nicho con flujos propios (escala Peskids)",
-      "setup_range_usd": { "min": 3500, "max": 8000 },
-      "ops_monthly_usd": { "min": 199, "max": 499 },
+      "setup_range_usd": {
+        "min": 3500,
+        "max": 8000
+      },
+      "ops_monthly_usd": {
+        "min": 199,
+        "max": 499
+      },
       "highlighted": false,
       "module_ids": [
         "lead-capture",
@@ -174,9 +252,16 @@
       "name_es": "Operación gestionada",
       "ideal_for": "Dueño sin tiempo técnico",
       "setup_range_usd": null,
-      "ops_monthly_usd": { "min": 299, "max": 799 },
+      "ops_monthly_usd": {
+        "min": 299,
+        "max": 799
+      },
       "highlighted": false,
-      "module_ids": ["weekly-report", "approval-queue", "follow-up"],
+      "module_ids": [
+        "weekly-report",
+        "approval-queue",
+        "follow-up"
+      ],
       "includes": [
         "Revisión workflows y reportes",
         "Ajustes menores n8n (horas cap/mes)",
@@ -235,6 +320,27 @@
     {
       "id": "marketplace",
       "label": "Marketplace C2C",
+      "reference_tenant": null,
+      "status": "blueprint",
+      "recommended_package_id": "custom-platform"
+    },
+    {
+      "id": "health-travel-colombia",
+      "label": "Turismo de salud y viajes — Colombia",
+      "reference_tenant": null,
+      "status": "blueprint",
+      "recommended_package_id": "custom-platform"
+    },
+    {
+      "id": "affiliate-deals",
+      "label": "Deals / afiliados / comisiones",
+      "reference_tenant": null,
+      "status": "blueprint",
+      "recommended_package_id": "hybrid-opsly"
+    },
+    {
+      "id": "commerce-partners",
+      "label": "Commerce de productos de terceros",
       "reference_tenant": null,
       "status": "blueprint",
       "recommended_package_id": "custom-platform"

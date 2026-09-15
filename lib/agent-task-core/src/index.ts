@@ -20,8 +20,46 @@ export {
   type OrchestratorClientOptions,
 } from './orchestrator-client.js';
 
+export {
+  evaluateTaskSource,
+  DEFAULT_TASK_SOURCE_POLICY,
+  type TaskSourceType,
+  type TaskSourceRejectReason,
+  type TaskContractFrontmatter,
+  type TaskSourceDescriptor,
+  type TaskSourcePolicy,
+  type TaskSourceDecision,
+} from './task-source-guard.js';
+
 export type {
   AgentTaskEnvelopeV1,
   AgentTaskType,
   AgentExecutionMode,
 } from '@intcloudsysops/types';
+
+
+export {
+  TASK_GRAPH_VERSION,
+  TaskGraphNodeSchema,
+  TaskGraphV1Schema,
+  parseTaskGraphV1,
+  validateTaskGraph,
+  planTaskGraphWaves,
+  type TaskGraphNode,
+  type TaskGraphV1,
+  type TaskGraphValidationIssue,
+  type TaskGraphValidationResult,
+  type TaskGraphWave,
+} from './task-graph.js';
+
+export {
+  DISPATCH_CLAIM_VERSION,
+  DispatchClaimInputSchema,
+  buildDispatchClaimDescriptors,
+  classifyDispatchConflict,
+  normalizeDispatchPath,
+  type DispatchClaimInput,
+  type DispatchClaimDescriptor,
+  type DispatchClaimDimension,
+  type DispatchConflictDecision,
+} from './dispatch-claim.js';

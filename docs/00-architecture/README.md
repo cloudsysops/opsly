@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: architecture
-last_review: 2026-05-25
+last_review: 2026-09-12
 ---
 
 # Architecture MOC
@@ -24,6 +24,9 @@ Arquitectura estable de Opsly: control plane, data plane, OpenClaw, LLM Gateway,
 
 - `openapi-opsly-api.yaml` — contrato HTTP subset (portal, health, feedback); CI `npm run validate-openapi`.
 - `ARCHITECTURE.md`
+- `AGENT-RUNTIME-ARCHITECTURE.md` — runtime canónico: AgentTaskEnvelopeV1 → BullMQ → worker → Session Manager → runtime efímero
+- `CURRENT-AUTOMATION-MAP.md` — mapa actual de task sources, machine roles y ejecución gobernada
+- `BACKGROUND-WORK-SCHEDULER.md` — scheduler oportunista y política read-only/write approval
 - `TENANT-INCUBATION-LIFECYCLE.md` — contrato multi-tenant: core primero, `tenant_slug` como frontera, extracción a VPS propio
 - `TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md` — batch BI con Python/pandas, snapshot contract y ruta reusable por tenant
 - `../adr/ADR-044-core-first-tenant-slug-extraction.md` — decisión formal: core-first, `tenant_slug` activation, clean extraction
@@ -39,6 +42,7 @@ Arquitectura estable de Opsly: control plane, data plane, OpenClaw, LLM Gateway,
 - `ORCHESTRATOR.md`
 - `MISSION-CONTROL-KIT.md` — módulo reutilizable agency/tenant MC (ICSO + futuros clientes)
 - `CONTENT-PIPELINE-CANONICAL.md` — único path de producción Mauro/gameplay + dueños por capability
+- `CREATOR-OS-PRODUCT-THESIS.md` — Creator OS canonical hierarchy, four surfaces, Fair-Play, Moments and platform boundaries
 
 ---
 

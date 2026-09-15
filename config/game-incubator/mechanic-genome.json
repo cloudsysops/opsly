@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "mechanics": {
+    "movement": ["4-way", "8-way", "grid-movement", "platform", "swimming", "vehicle", "inertia"],
+    "interaction": ["collect", "avoid", "push", "shoot", "activate", "break"],
+    "progression": ["score", "combo", "xp", "unlock", "skill-tree", "growth"],
+    "challenge": ["timer", "survival", "boss", "puzzle", "rhythm", "dodge"]
+  },
+  "rule": "Mechanics may inspire original experiments; copied commercial expression, assets, names, characters, levels and music are prohibited."
+}

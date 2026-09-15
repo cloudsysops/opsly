@@ -6,7 +6,7 @@ last_review: 2026-05-19
 
 # Opsly Operational Blueprint — Provider Matrix
 
-Guía de elección. **No** hay un solo proveedor obligatorio.
+Guía de elección. Algunas capas admiten múltiples proveedores; **CRM es una excepción: Twenty es canónico para nuevos despliegues** (ADR-042).
 
 ## Hosting / frontend
 
