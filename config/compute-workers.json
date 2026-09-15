@@ -48,6 +48,19 @@
       "requires": ["ffmpeg"],
       "minVramGb": 0
     },
+    "content.transcribe": {
+      "queue": "content-video",
+      "jobName": "transcribe",
+      "requires": ["ffmpeg"],
+      "minVramGb": 0,
+      "status": "capability-only"
+    },
+    "content.review": {
+      "queue": "openclaw",
+      "jobName": "ollama",
+      "requires": ["llm.local"],
+      "minVramGb": 8
+    },
     "universe.asset.generate": {
       "queue": "content-video",
       "jobName": "render",

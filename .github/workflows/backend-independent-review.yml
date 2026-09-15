@@ -1,0 +1,81 @@
+# Backend independent review — genera la review con nuestro propio LLM Gateway
+# (OpenClaw), no con Copilot/Codex externos, y la postea como github-actions[bot].
+#
+# SEGURIDAD: mismo patrón que trusted-independent-review.yml — el paso que corre
+# scripts/ci/backend-independent-review.mjs se hace checkout en la BASE SHA
+# trusteada, nunca ejecuta código del PR head. Solo lee el PR (diff, checks,
+# reviews existentes) vía API de GitHub.
+#
+# Por qué ubuntu-latest y no self-hosted: cloudsysops/opsly es repo público —
+# un runner self-hosted no puede registrarse ahí (ver github-agent-queue.yml).
+# Por qué se une a Tailscale: el LLM Gateway (apps/llm-gateway) solo es
+# alcanzable por la red interna (http://100.120.151.91:3010, ver
+# docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md) — nunca se llama a un proveedor
+# externo directo, para no romper la regla "todo tráfico IA pasa por OpenClaw"
+# (docs/03-agents/AGENTS.md). El join es efímero: solo dura esta corrida.
+#
+# Por qué github-actions[bot] cuenta como reviewer confiable: whitelisteado
+# explícitamente en trusted-independent-review.yml (INDEPENDENT_REVIEW_BOTS)
+# justamente porque su único origen posible es este workflow.
+
+name: Backend independent review
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+concurrency:
+  group: backend-independent-review-${{ github.repository }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  backend-review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      # Neither github.event.pull_request.base.sha (webhook payload snapshot)
+      # nor a live `gh api pulls/$PR` call give the true current tip of main:
+      # a PR's base.sha reflects whenever GitHub last recomputed that PR's
+      # mergeability, not "main right now" — confirmed by comparing both
+      # against git/refs/heads/main during live testing (run 34906830538: both
+      # returned 3b7b6f6f1, two merges stale, while refs/heads/main was
+      # already at 046761760). Ask for the branch ref directly instead.
+      - name: Resolve current main tip
+        id: base
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha="$(gh api repos/${{ github.repository }}/git/refs/heads/main --jq '.object.sha')"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout trusted base (reviewer script only — never PR-head code)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.base.outputs.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Join tailnet (ephemeral, this job only)
+        uses: tailscale/github-action@v3
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run backend independent review
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          LLM_GATEWAY_URL: http://100.120.151.91:3010
+          OPSLY_GITHUB_REPO: ${{ github.repository }}
+        run: |
+          node scripts/ci/backend-independent-review.mjs --pr "${{ github.event.pull_request.number }}"

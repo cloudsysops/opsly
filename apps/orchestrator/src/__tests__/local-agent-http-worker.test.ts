@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  allowLegacyLocalAgentPayload,
   localAgentExecuteHeaders,
   mapLocalAgentBridgeFailure,
   sanitizeLocalAgentError,
@@ -78,5 +79,17 @@ describe('sanitizeLocalAgentError', () => {
     expect(sanitizeLocalAgentError('Bearer abcdef.secret token=supersecret')).toContain('Bearer ***');
     expect(sanitizeLocalAgentError('token=supersecret')).toContain('token=***');
     expect(sanitizeLocalAgentError('sk-abcdefghijklmnopqrstuvwxyz')).toContain('sk-***');
+  });
+});
+
+
+describe('allowLegacyLocalAgentPayload', () => {
+  it('fails closed by default', () => {
+    expect(allowLegacyLocalAgentPayload({})).toBe(false);
+  });
+
+  it('requires an explicit transition override', () => {
+    expect(allowLegacyLocalAgentPayload({ OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD: 'true' })).toBe(true);
+    expect(allowLegacyLocalAgentPayload({ OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD: '1' })).toBe(false);
   });
 });
