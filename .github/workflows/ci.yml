@@ -7,7 +7,9 @@ on:
     branches: [main]
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  # Normalize push + pull_request runs for the same feature branch into one
+  # cancellation domain. This prevents duplicate full CI for one head commit.
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -343,6 +345,9 @@ jobs:
             scripts/ops/__tests__/mac-local-agent-routing.test.mjs \
             scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs \
             scripts/ops/__tests__/mac-ephemeral-runtime.test.mjs
+
+      - name: Independent review gate policy tests
+        run: node --test scripts/ci/__tests__/independent-review-gate.test.mjs
 
       - name: Peskids Docker next-build flags (no --webpack on Next 15.5)
         run: bash scripts/ci/check-peskids-docker-build-flags.sh
