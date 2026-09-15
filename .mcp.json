@@ -4,6 +4,11 @@
       "command": "npm",
       "args": ["run", "opsly:mcp:stdio"],
       "cwd": "${CLAUDE_PROJECT_DIR}"
+    },
+    "codex": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["--yes", "claude-codex-bridge@0.3.1", "serve", "codex"]
     }
   }
 }

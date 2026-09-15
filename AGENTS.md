@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-09-07
+last_review: 2026-09-12
 ---
 
 # Opsly — Contexto del Agente
@@ -11,6 +11,13 @@ last_review: 2026-09-07
 > Al terminar: actualiza las secciones marcadas con 🔄.
 
 ## SYSTEM — Git (hard fail)
+
+**Respaldo obligatorio entre máquinas:** antes de cerrar sesión, cambiar de rama,
+actualizar un clon o entregar trabajo, aplicar la sección «Preservación de trabajo
+entre máquinas» de `docs/01-development/GIT-WORKFLOW.md`. Un commit local no es
+respaldo remoto. Reportar máquina, worktree, rama, SHA remoto verificado, PR y
+pendientes/bloqueantes. Nunca cerrar como «respaldado» si el push no se verificó.
+No mezclar cambios de agentes activos ni subir secretos, PII, cachés o renders.
 
 Aplica a **todos** los agentes (Cursor, Claude, OpenCode, Copilot, Jules, workers). Estas reglas ganan sobre “terminar la tarea”.
 
@@ -34,6 +41,10 @@ Aplica a **todos** los agentes (Cursor, Claude, OpenCode, Copilot, Jules, worker
 **Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
 
 **Orquestación de agentes:** [`docs/design/AGENT-ORCHESTRATION-INDEX.md`](docs/design/AGENT-ORCHESTRATION-INDEX.md) — índice maestro (**elegir ruta A, B o C** como foco); fallover / repair queue (diseño): [`docs/orchestrator/REPAIR-QUEUE.md`](docs/orchestrator/REPAIR-QUEUE.md).
+
+**Runtime canónico de agentes:** [`docs/00-architecture/AGENT-RUNTIME-ARCHITECTURE.md`](docs/00-architecture/AGENT-RUNTIME-ARCHITECTURE.md). Antes de modificar workers, bridges, scheduler, Mac/Gamer o GitHub Agent Queue: leer ese documento. `AgentTaskEnvelopeV1` + BullMQ + `external-agent-registry` + Session Manager + sesiones efímeras son el boundary actual. Roles/personas antiguas no implican procesos AI persistentes.
+
+**Ownership gate obligatorio para trabajo de agentes:** antes de crear rama, worktree o ejecutar una tarea write-capable, el task debe tener un `DispatchClaimV1` adquirido por el Orchestrator. Invariante: **NO CLAIM → NO BRANCH → NO WORKTREE → NO EXECUTION**. Cada workpack gobernado declara `workstream` + `conflict_key`; `semantic_scope` y `affected_paths` refinan detección. `JOIN_EXISTING` = unirse/revisar/esperar al dueño actual; `ALREADY_DONE` = no rehacer; `CONFLICT_BLOCKED` = no iniciar trabajo paralelo. El Git Branch Orchestrator puede planear sin claim, pero no materializar una rama de agente sin evidencia de claim ligada al request. Nunca crear un segundo task store u otro scheduler para resolver esto.
 
 **Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
@@ -322,6 +333,27 @@ import { MigrationRunner } from '@intcloudsysops/migrations';
 
 - `docs/01-development/LIBRARY-MODULES.md` — Complete integration guide for all 13 modules
 - `config/modules.json` — Module registry with versions, owners, dependencies
+
+### Agent Lab / orchestration — anti-duplication (canonical)
+
+**Before building any agent/orchestration capability:**
+
+1. Search `AgentTaskEnvelopeV1` (`packages/types/src/agent-task.ts`)
+2. Search `lib/agent-task-core`
+3. Search `lib/external-agent-registry`
+4. Search orchestrator `AgentTaskRuntime` + BullMQ (`ADR-048`)
+5. Search `lib/ai-board`
+6. Search `lib/agent-learning` + `config/agent-capability-owners.json`
+
+If the capability exists → **EXTEND** the canonical owner.  
+If two implementations exist → **STOP** and reconcile (`docs/design/PR-1185-ARCHITECTURE-RECONCILIATION.md`).  
+If ownership is unclear → **BLOCK** and request architecture review.
+
+**Never** create a second: task registry, task envelope, router, worker registry, queue, or orchestrator.
+
+**Roles:** Claude = planner · Cursor = builder · Codex = independent reviewer (no edit during review). One builder + one reviewer per change set.
+
+Agent Lab owns evidence / trust / scorecards / eval — keyed by `request_id`. It does **not** own task creation. Canonical package: `@intcloudsysops/agent-learning` (`lib/agent-learning`). Do **not** introduce `lib/agent-lab-evidence` or `lib/agent-job-registry`.
 
 ---
 
@@ -692,34 +724,40 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/history/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-09-07)
+### 📌 Sesión Activa (2026-09-10)
 
-**Tema:** Peskids RC `f27efea66` en staging + notas 🔄 alineadas a prod real
-**Branch:** `origin/main` = `f27efea66` (#1116). Este PR (#1118) solo tests `lib/` + docs.
-**Objetivo:** no mentirle al siguiente agente sobre SHAs, flags ni promote
+**Tema:** Peskids prod catch-up + Docker `--webpack` unblock + Claude Code handoff
+**Branch:** `origin/main` = `a176bd202` (#1168 hotfix). Prod live aligned.
+**Objetivo:** que Claude Code / CI no vuelvan a fallar el Deploy Peskids por flags Next inválidos
 
-**Live (verificado 2026-09-07 ~02:00 UTC / 21:00 Bogotá):**
-1. ✅ `main` = `f27efea66c37969bfcdce267a3aeb1c51ce4f226` (`feat(ops): night cleanup… (#1116)`)
-2. ✅ Staging `https://peskids-staging.op-sly.com/api/health` → 200, `environment=staging`, `environment_boundary.ok=true`, `git_sha=f27efea66`
-3. ✅ Prod `https://www.peskids.com/api/health` → 200, `git_sha=c4822d9e380e142c7b55df856c92027400363113`
-4. ✅ Prod **`hot_lead_alerts=true`**. Resto de flags n8n **`false`**. Staging: todos los flags `false`.
-5. ✅ #1116 mergeado. #1115 unificó checkout staging + migraciones 0103–0106 (no aplicar a prod).
-6. ✅ Cola stale cerrada: #1088/#1083/#1082/#992/#961/#935. #1117 auto-fix cerrado sin merge.
+**Live (verificado 2026-09-10 ~10:49 Bogotá / 15:49 UTC):**
+1. ✅ Prod `https://www.peskids.com/api/health` → 200, `environment=production`, `boundary.ok=true`, `git_sha=a176bd20210f9ddcb2bdec6bb1a264c64054b83a`
+2. ✅ Imagen `ghcr.io/cloudsysops/peskids:a176bd202…` (Deploy run `34497713615`, `force_daytime=true`)
+3. ✅ Prod **`hot_lead_alerts=true`**. Resto n8n flags **`false`**
+4. ✅ Home 200 · `/admin` 307→login · API plataforma supabase+redis ok
+5. ✅ Fix #1168: Dockerfile sin `next build --webpack` (Next 15.5)
+6. ✅ Claude↔Codex MCP bridge en `main` (#1163) + skill `opsly-claude-codex-review`
 
 **Pendiente:**
-- **Promote RC `f27efea66`** — HIGH; ventana `America/Bogota` 22:00–06:00; **gate humano**. No `force_daytime`. Workflow: Actions → Deploy Peskids → `workflow_dispatch` (`force_daytime=false`). Rebuilds prod image from that **git SHA** (tag `peskids:f27efea66…`); no reutilizar la imagen staging (`sha-f27efea66`, URL/Supabase QA).
-- **No encender** digest ni un segundo flag n8n. Hot-lead ya está ON en prod.
-- Humano: Auth `site_url` + allow list en **opsly-QA** (`hljetbbgiphpjbldebpo`) = solo `https://peskids-staging.op-sly.com`. MCP no lee Auth settings (403 / sin tool).
-- Humano: confirmar PITR en **opsly-prod** (`jkwykpldnitavhmtuzmo`). Drill de restore **solo contra opsly-QA**, nunca overwrite prod.
-- No aplicar `0098`/`0099`/`0103`–`0106` a prod.
+- **#1160** content independent AI review — label `night-merge`; merge solo 22:00–06:00 Bogotá
+- Humano: migración `apps/peskids/migrations/20260818_admin_data_backups.sql` en Supabase **prod** si el panel data-backup falla (zona roja)
+- Staging puede seguir en SHA anterior; no confundir con prod
+- No encender digest ni segundo flag n8n
+- No reintroducir `--webpack` en Dockerfile Peskids (guard CI)
 
 ### 📅 Sesiones Recientes
 
+**Sesión 2026-09-10 — Prod deploy unblock + CC handoff ✅**
+- ✅ Diagnóstico: prod sano pero atrás de `main`; Deploy fallaba por `--webpack`
+- ✅ #1168 merged + Deploy Peskids success → prod = `main` = `a176bd202`
+- ✅ Guard CI + docs para que Claude Code no repita el fallo
+- ⏳ #1160 night-merge; migración data-backup opcional humano
+
 **Sesión 2026-09-07 — Live-state correction (AI Review Board) ✅**
 - ✅ RC `f27efea66` smoke en staging (health + boundary + home + admin login)
-- ✅ Prod sigue `c4822d9e` con `hot_lead_alerts=true` — no pedir “encender hot-lead”
+- ✅ Prod seguía `c4822d9e` con `hot_lead_alerts=true` — no pedir “encender hot-lead”
 - ✅ #1118: 32 tests `lib/` (errors/security/config/observability); no mergear este draft antes del promote
-- ⏳ Promote prod de `f27efea66` después de 22:00 Bogotá + humano
+- ⏳ Promote prod de `f27efea66` después de 22:00 Bogotá + humano → **superseded 2026-09-10** (prod ahora `a176bd202`)
 
 **Sesión 2026-09-07 — PR queue cleanup + lib tests ✅**
 - ✅ 10 PRs mergeados (Peskids features, security, DB assurance, franchise cleanup, data-safety)
@@ -1633,15 +1671,19 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids RC:** `main` = staging = `f27efea66`. Prod = `c4822d9e` (`https://www.peskids.com`). Staging aislado: `https://peskids-staging.op-sly.com` (`environment_boundary.ok=true`). `peskids.op-sly.com` es 308 a www — **no** es prod ni QA. Hot-lead **ya ON** en prod; no encender digest. Promote: Actions → **Deploy Peskids** → `workflow_dispatch` en ventana 22:00–06:00 Bogotá, **mismo git SHA**, `force_daytime=false`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
+**Peskids LIVE:** prod = `main` = `a176bd202` (`https://www.peskids.com`). Hot-lead **ON**; digest **OFF**. `peskids.op-sly.com` → www (308). No re-promote salvo lag nuevo.
 
-**Plataforma:** API `https://api.op-sly.com/api/health` → 200. UFW SSH Tailscale-only. No mergear Content Studio / PC-gamer / auto-fix en masa. No `git push origin main` ni `--no-verify`.
+**Claude Code (al volver):** checklist en [`docs/03-agents/CLAUDE-CODEX-MCP-BRIDGE.md`](docs/03-agents/CLAUDE-CODEX-MCP-BRIDGE.md) § resume — worktree limpio, `gh auth`, smoke health, **no** `--webpack` en Dockerfile (CI: `scripts/ci/check-peskids-docker-build-flags.sh`). Builder=Claude / Reviewer=Codex.
 
-**Franchise:** #1098 canónico (sin Franchise OS in-house). `tenant_slug` = `peskids`. No aplicar `0098`/`0099`/`0103`–`0106` a prod sin humano.
+**Noche:** merge **#1160** (`night-merge`) content independent AI review. No mergear Content Studio en masa de día.
 
-**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
+**Humano opcional:** aplicar `20260818_admin_data_backups.sql` en Supabase prod si hace falta el panel data-backup. No aplicar `0098`/`0099`/`0103`–`0106` a prod.
 
+**Plataforma:** API `https://api.op-sly.com/api/health` → 200. UFW SSH Tailscale-only. No `git push origin main` ni `--no-verify`.
 
+**Franchise:** #1098 canónico. `tenant_slug` = `peskids`.
+
+**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`.
 
 **Status PRs Cleanup (2026-05-22 — SESSION FINAL):**
 
@@ -2676,6 +2718,101 @@ Esto es un problema de credenciales/red del entorno local, no del código. Revis
 2. `git push -u origin fix/mcp-tool-auth-required`
 3. `gh pr create --draft --base main --head fix/mcp-tool-auth-required`
 4. Merge a `main` tras pasar CI.
+
+---
+
+## 🔄 Estado Actual (2026-09-11 — Duplicación Mauro/content-engine, 2 fixes de CI, AGENTS.md al día)
+
+**Agente:** Claude
+**Rama:** varios worktrees cortos (`worktree-fix-hermes-health-prompt-guard-build`, `worktree-fix-vendor-agent-skills-broken-submodule`, `worktree-docs-agents-session-update-2026-09-11`) — este archivo estaba **congelado desde 2026-09-04** pese a ser el mecanismo oficial de coordinación entre sesiones; esa brecha es en sí misma parte de lo que causó el hallazgo principal de abajo.
+
+### Hallazgo principal: dos sesiones ejecutaron el mismo plan de Mauro en paralelo
+
+Se diseñó un pipeline de gameplay para Mauro (spec + plan de 9 tareas en `docs/superpowers/plans/2026-09-08-mauro-gameplay-pipeline.md`, worktree `mauro-gameplay-pipeline-impl`, Tareas 1-6 implementadas y revisadas). Al verificar el estado de producción se descubrió que **otra sesión ejecutó el mismo plan en paralelo** y ya llegó a `main` primero (PRs #1155, #1158) — mismo nombre de canal (`icso-gaming-tbd`, mismo comentario de código literal), mismos nombres de función (`discoverProjectClipsFromAudio`, `ingestPrecutHighlight`, `runContentQaCheck`), más trabajo adicional (`prepareGameplaySession`, `highlight-score.ts`, `pc-gamer-clip-agent.py`). **Decisión (usuario, explícita):** abandonar el worktree local, `main` gana. Ledger de esa rama marcado `SUPERSEDED` con la causa raíz documentada.
+
+**Causa raíz real:** no fue falta de una regla (`CLAUDE.md` ya dice "reuse first"), fue que **nadie actualizó `AGENTS.md`** al cerrar sesión — ni yo hasta ahora, ni quien construyó #1155/#1158. El mecanismo de coordinación existe pero no se estaba usando.
+
+### Relacionado, ya encontrado por otra sesión (no duplicar)
+
+- `docs/adr/ADR-058-content-engine-duplication.md` (rama `docs/adr-content-engine-consolidation`, sesión previa, 2026-09-07): documenta que `lib/content-engine` (canónico, registrado) y `lib/content-studio/src/content-engine` (usado por Mauro, no registrado) son motores paralelos — consolidación **deliberadamente diferida** por falta de validación real de ffmpeg en ese sandbox. Esta máquina sí tiene ffmpeg — sigue pendiente si alguien quiere retomarlo, pero es su propio proyecto, no algo para colar en otro trabajo.
+- `docs/superpowers/specs/2026-09-09-content-vendor-research.md` (rama `docs/content-vendor-research`, Cursor): Auto-clipper/OpenCut/remotion-clip/TwitchDownloader/remotion-studio ya clonados y auditados en workspace hermano `/Users/dragon/cboteros/proyectos/opsly-content-research/` (fuera del monorepo). **No re-clonar.**
+- Skill `skills/user/opsly-content-studio/` — actualizado por otra sesión con un gate de anti-duplicación (`config/content-capabilities.json`, canon en `docs/00-architecture/CONTENT-PIPELINE-CANONICAL.md`) más estricto que la versión que yo dejé. Vigente, no revertir.
+
+### Fixes de CI cerrados esta sesión
+
+1. **PR #1181** — `hermes-health.yml` fallaba en cada corrida programada: el paso "Build orchestrator workspace deps" nunca compilaba `@intcloudsysops/prompt-guard` antes de `apps/ml` (que sí lo declara como dependencia) → `Cannot find module`. Fix de una línea, verificado localmente (build + type-check + `test:hermes` 14/14). Label `night-merge`.
+2. **PR #1182** — `vendor/agent-skills` era un gitlink de submódulo (`160000`) sin entrada en `.gitmodules` → directorio vacío en todo checkout + warning en cada limpieza de CI. Confirmado que nada lo usa (`scripts/load-agent-skills.js` usa `skills/vendor/agent-skills/`, con contenido real, como ruta primaria). Gitlink eliminado + puntero corregido en `.claude/CLAUDE.md`. Label `night-merge`.
+3. **Race condition en rollback de night-merge** (el que dejó el PR #1165 colgado el 2026-09-10) — investigado, **ya estaba arreglado** por `#1154` (`NIGHT_MERGE_AUTO_ROLLBACK_MERGE` default `"0"`, no auto-mergea su propio revert). Sin acción — evitado trabajo duplicado.
+
+### Bloqueante activo (viejo, sigue sin resolver)
+
+**PC-gamer sigue offline** (`check-pc-gamer-online.sh` → `online:false`) desde hace varios días de esta misma sesión. Bloquea: activación de `PR #1161` (Hermes `content-review` → ollama local, código listo/testeado/sin mergear, pendiente `HERMES_LOCAL_LLM_FIRST` + `OLLAMA_URL` + `REDIS_URL` en Doppler), cualquier trabajo real de "agentes autónomos con AI local" que se pidió esta sesión, y validación del watcher de gameplay.
+
+**Nota de terminología:** "Hermes" en este repo (`HermesTaskType`, enrutamiento de criticidad) **no es** el Hermes Agent de Nous Research (self-hosted, cron, Telegram) — mismo nombre, proyectos distintos. No confundir en futuras sesiones.
+
+### Próximos pasos
+
+1. Usuario: encender PC-gamer + Tailscale.
+2. Una vez online: activar `#1161` (Doppler) y verificar que ollama responde de verdad antes de llamarlo "funcionando".
+3. Definir alcance concreto de "autónomo" (qué tareas, qué límite de gasto, qué aprobación humana) antes de construir nada nuevo — pedido explícitamente por el usuario, no iniciado aún.
+4. Si se retoma ADR-058 (consolidación de motores), hacerlo con ffmpeg real disponible aquí — no repetir el trabajo ya hecho por la sesión previa.
+
+---
+
+## 🔄 Estado Actual (2026-09-13 — Limpieza de ramas (85), fix dispatch-ownership-gate #1472, 4 PRs en cola night-merge)
+
+**Agente:** Claude
+**Rama:** trabajo hecho desde el worktree de `feat/pr-1185-agent-lab-reconcile`, más un worktree corto `fix-dispatch-ownership-gate-v2` para el fix de abajo (ya eliminado). Esta entrada se escribe directo sobre `main` (cierre documental explícito pedido por el usuario).
+
+### Limpieza de flota de ramas: 216 → 131 remotas
+
+Auditoría completa de las 216 ramas remotas cruzadas contra las 1101 PRs históricas (estado, autor, antigüedad, si el contenido ya llegó a `main` por otra vía). Resultado: **85 ramas borradas** en dos tandas, con confirmación explícita del usuario antes de cada una:
+
+1. **78 ramas de bots ya resueltas** — `auto-fix/push-*` (44), `nightly-fix/*` (12), `sentinel/*` (8), `palette/*` (5), `jules-*` (4), `bolt*` (2), + 3 `human/product` ya mergeadas y sin borrar (`docs/content-pipeline-canonical`, `feat/mauro-gameplay-session-pipeline`, `fix/night-merge-agent-recovery`). Todas sin PR abierto y con PR cerrado/mergeado.
+2. **7 ramas más, tras revisar a mano las 12 que nunca tuvieron PR** (contenido real comparado commit a commit contra `main` y contra otras ramas activas, no solo estado de PR):
+   - `chatgpt/engineering-portfolio-control` — 0 commits únicos, idéntica a un punto ya en `main`.
+   - `chatgpt/agent-learning-013` — su contenido ya viajó a `main` vía PR #1281.
+   - `claude/task-source-guard-impl` — `task-source-guard.ts` ya en `main`.
+   - `chatgpt/github-agent-queue` — `github-agent-queue-submit.mjs` ya en `main`.
+   - `fix/peskids-security-audit` — su único commit (franchise management platform) ya se envió por otro commit distinto.
+   - `ops/astral-pc-render-smoke-20260912` y `preview/astral-arena` — solo 4 y 16 commits únicos más allá de lo ya absorbido por la PR abierta `feat/astral-arena-universe` (#1300).
+
+**Quedan sin tocar, con decisión pendiente del usuario:**
+- `chatgpt/runtime-env-and-company-gates` — 4 commits reales (`COMPANY-READINESS-GATE-SEMANTICS.md`, fases de night-queue) que no existen en ningún otro lado. No es ruido.
+- `fix/game-blueprint-template-root` — **203 commits únicos** de trabajo real sobre la ubicación permitida de templates Godot/Steam, no encontrados en `main` ni en ninguna otra rama. Tamaño grande, no es candidato de borrado; alguien debería abrirle PR o decidir explícitamente abandonarlo.
+- `fix/production-audit-baseline` y `feat/franchise-ops-catalog` — worktrees activos en este momento, dejados en paz (el segundo ya tiene sus migraciones core en `main`, pero el worktree puede tener trabajo encima).
+
+También: `.claude-scratch/` apareció sin querer en la raíz del repo (creado por esta sesión al generar un reporte) y tumbó el hook `pre-push` de validación de estructura para *cualquier* push, no solo el de esa carpeta — limpiado. Recordatorio para futuras sesiones: nunca escribir fuera del scratchpad de la sesión.
+
+Se corrieron además `git worktree prune` (5 entradas muertas: `opsly-1185-reconcile`, `opsly-claude-codex-bridge`, `opsly-mauro-e2e-main`, `opsly-pc-gamer-routing`, `opsly-reconnect-now`) y `git fetch --prune`.
+
+### Fix real: `DISPATCH_SCOPE_ALREADY_OWNED` no se propagaba en el submitter — PR #1472
+
+`fix/dispatch-ownership-gate-v2` (el fix para la causa raíz de la duplicación Mauro/#1155 documentada el 2026-09-11) tenía un test de contrato fallando de verdad, no un flake: `apps/orchestrator/src/__tests__/github-agent-queue-submit-contract.test.ts` esperaba que `scripts/ops/github-agent-queue-submit.mjs` reconociera `DISPATCH_SCOPE_ALREADY_OWNED`. El servidor (`apps/orchestrator/src/http/routes/local.ts:367`) ya devuelve `error: 'DISPATCH_SCOPE_ALREADY_OWNED'` en el 409 de hard-deny (distinto de los soft-decisions `JOIN_EXISTING`/`ALREADY_DONE`, que sí se manejaban), pero el cliente nunca miraba ese campo y caía a un error genérico que descartaba `existing_task_id`/`existing_workstream`/`existing_claim_id` que el servidor ya mandaba. Fix: rama nueva de manejo explícito para ese campo, con el detalle completo en el mensaje de error. Commit `d72840ec9`, verificado con symlink a `node_modules` del repo principal (sin reinstalar): 9/9 en el test de contrato, 263/263 en toda la suite de `apps/orchestrator`. Pusheado a `fix/dispatch-ownership-gate-v2`; CI de la PR quedó en verde salvo el gate de horario (ver abajo).
+
+### 4 PRs de dispatch-safety listas, en cola para el merge nocturno
+
+Todas con label `night-merge` y sacadas de draft (necesario — el gate de horario/auto-merge no actúa sobre drafts):
+
+- **#1472** `fix(orchestrator): enforce exclusive task ownership before agent dispatch` — recién arreglada arriba.
+- **#1471** `feat(agents): enforce branch and worktree cleanup ownership`
+- **#1470** `fix(ci): run validate-doppler on PRs (was silently skipped)`
+- **#1437** `feat(ci): publish trusted final-head independent-review status`
+
+Las 4 pasan CI completo; el único check en rojo en las 4 es `production-change-window` (bloqueo de merges de impacto-prod fuera de `America/Bogota` 22:00–06:00), que es el comportamiento esperado del gate, no un bug. Deberían auto-mergear a la 01:00 Bogotá. **Verificar mañana que efectivamente mergearon** — si alguna sigue abierta, revisar el workflow de night-merge, no re-abrir esta investigación desde cero.
+
+### Infra local (esta sesión)
+
+- Doppler (`ops-intcloudsysops/prd`) y `gh auth` — **ambos funcionando**. La nota de "gh auth roto" del 2026-09-11 ya no aplica, quedó resuelta en algún punto entre sesiones.
+- Tailscale **no estaba corriendo** en esta Mac durante la sesión → VPS y PC-gamer inalcanzables desde aquí.
+- `check-pc-gamer-online.sh` → `online=false tailscale=false ssh=false health=false heartbeat=false`. **Mismo bloqueante que el 2026-09-11, sigue sin resolver.**
+
+### Próximos pasos
+
+1. Usuario: encender Tailscale + PC-gamer (bloqueante recurrente, arrastrado de sesiones anteriores).
+2. Mañana: confirmar que #1472/#1471/#1470/#1437 mergearon a `main` por la ventana nocturna.
+3. Decidir `chatgpt/runtime-env-and-company-gates` y `fix/game-blueprint-template-root` (abrir PR o abandonar explícitamente) — no son ruido, son trabajo real huérfano.
+4. Si se retoma cualquier tarea de "agentes autónomos con AI local" (`#1161`, ollama), sigue bloqueada por el mismo PC-gamer offline.
 
 ---
 

@@ -16,7 +16,8 @@ El droplet actual (~**4 GiB / 2 vCPU**) corre plataforma + Twenty×2 + n8n×5 + 
 
 | Contenedor | Límite |
 |------------|--------|
-| `twenty_peskids` / `twenty_icso` | 640M |
+| `twenty_peskids` | **1024M** (heap default 768; was 640/512 — OOM crash-loop) |
+| `twenty_icso` | 640M (raise to 1024M if health starts flapping) |
 | `twenty_*_worker` | 384M |
 | `twenty_*_db` | 256M |
 | `twenty_*_redis` | 64M (+ Redis `maxmemory 48mb`) |

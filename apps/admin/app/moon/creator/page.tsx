@@ -11,7 +11,7 @@ import {
   loadCreatorStudioData,
   parseCreatorTab,
 } from '@/lib/moon/creator-data';
-import { approveCreatorProjectAction } from './actions';
+import { approveCreatorProjectAction, rejectCreatorProjectAction } from './actions';
 import type { MoonHealthTone } from '@/lib/moon/tenant-card';
 
 const TAB_LABELS: Record<(typeof CREATOR_TABS)[number], string> = {
@@ -59,10 +59,18 @@ export default async function MoonCreatorPage({
 
   return (
     <div className="space-y-6">
-      <MoonPageHeader
-        title="Creator Studio"
-        subtitle="Content OS multi-tenant. Agentes preparan; humanos aprueban. Sin métricas inventadas."
-      />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <MoonPageHeader
+          title="Creator Studio"
+          subtitle="Content OS multi-tenant. Agentes preparan; humanos aprueban. Sin métricas inventadas."
+        />
+        <Link
+          href="/moon/creator/command-deck"
+          className="rounded-lg border border-violet-400/30 bg-violet-500/10 px-3 py-2 font-mono text-[11px] uppercase tracking-wide text-violet-100"
+        >
+          Command Deck
+        </Link>
+      </div>
       <div className="flex flex-wrap gap-2">
         {CREATOR_TABS.map((item) => (
           <Link
@@ -267,20 +275,62 @@ export default async function MoonCreatorPage({
                     <p className="text-sm text-slate-100">{item.project.title}</p>
                     <p className="font-mono text-[11px] text-slate-500">
                       {item.project.tenantId} · {item.rights?.verdict ?? 'pending'}
+                      {item.session?.game ? ` · game ${item.session.game}` : ''}
                     </p>
                   </div>
                   <MoonStatusBadge tone="warning">{item.project.status}</MoonStatusBadge>
                 </div>
-                <form action={approveCreatorProjectAction}>
-                  <input type="hidden" name="tenantId" value={item.project.tenantId} />
-                  <input type="hidden" name="projectId" value={item.project.id} />
-                  <button
-                    type="submit"
-                    className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs text-emerald-100"
-                  >
-                    Approve
-                  </button>
-                </form>
+                {item.aiReview ? (
+                  <p className="font-mono text-[11px] text-slate-400">
+                    AI {item.aiReview.decision ?? item.aiReview.state} · score {item.aiReview.score?.total ?? '—'} · r
+                    {item.aiReview.round}/{item.aiReview.maxRounds} · {item.aiReview.currentVersionId ?? 'v?'}
+                  </p>
+                ) : null}
+                {(item.aiReview?.findings ?? []).slice(0, 3).map((finding) => (
+                  <p key={finding.finding_id} className="font-mono text-[11px] text-amber-200/80">
+                    {finding.severity} {finding.finding_id} {finding.timecode_start}s–{finding.timecode_end}s · {finding.issue}
+                  </p>
+                ))}
+                {(item.clipCandidates ?? []).length > 0 ? (
+                  <ul className="space-y-1 font-mono text-[11px] text-slate-400">
+                    {(item.clipCandidates ?? []).slice(0, 5).map((clip) => (
+                      <li key={clip.id}>
+                        {clip.id} · {clip.start}s–{clip.end}s · score {clip.score}
+                        {clip.reasons[0] ? ` · ${clip.reasons[0]}` : ''}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                <div className="flex flex-wrap gap-2">
+                  <form action={approveCreatorProjectAction} className="space-y-2">
+                    <input type="hidden" name="tenantId" value={item.project.tenantId} />
+                    <input type="hidden" name="projectId" value={item.project.id} />
+                    <div className="flex flex-wrap gap-2 text-[11px] text-slate-300">
+                      {['youtube', 'tiktok', 'instagram', 'facebook', 'x'].map((platform) => (
+                        <label key={platform} className="inline-flex items-center gap-1">
+                          <input type="checkbox" name={`platform_${platform}`} defaultChecked={platform === 'youtube'} />
+                          {platform}
+                        </label>
+                      ))}
+                    </div>
+                    <button
+                      type="submit"
+                      className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs text-emerald-100"
+                    >
+                      Approve &amp; Schedule
+                    </button>
+                  </form>
+                  <form action={rejectCreatorProjectAction}>
+                    <input type="hidden" name="tenantId" value={item.project.tenantId} />
+                    <input type="hidden" name="projectId" value={item.project.id} />
+                    <button
+                      type="submit"
+                      className="rounded-lg border border-rose-400/40 px-3 py-1.5 text-xs text-rose-100"
+                    >
+                      Reject
+                    </button>
+                  </form>
+                </div>
               </MoonCard>
             ))}
           </div>

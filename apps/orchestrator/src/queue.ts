@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { Queue } from 'bullmq';
 import { logJobEnqueue } from './observability/job-log.js';
-import { buildQueueAddOptions } from './queue-opts.js';
+import { buildQueueAddOptions, sanitizeQueueJobId } from './queue-opts.js';
 import { getJobTenantSlug } from './lib/tenant-context.js';
 import type { OrchestratorJob } from './types.js';
 
@@ -86,6 +86,20 @@ export async function enqueueJob(job: OrchestratorJob) {
   return bull;
 }
 
+export function localAgentJobIdFor(job: OrchestratorJob): string | undefined {
+  const rawJobId =
+    typeof job.idempotency_key === 'string' && job.idempotency_key.trim().length > 0
+      ? job.idempotency_key.trim()
+      : job.request_id;
+  return typeof rawJobId === 'string' && rawJobId.trim().length > 0
+    ? sanitizeQueueJobId(`${job.type}-${rawJobId.trim()}`)
+    : undefined;
+}
+
+export async function getLocalAgentJobById(jobId: string) {
+  return localAgentQueue.getJob(jobId);
+}
+
 /** Enqueue job to local-agents queue for execution on local machines (Cursor, Claude, etc) */
 export async function enqueueLocalAgentJob(
   jobOrName: OrchestratorJob | string,
@@ -94,10 +108,7 @@ export async function enqueueLocalAgentJob(
 ) {
   if (typeof jobOrName === 'object' && jobOrName !== null && 'type' in jobOrName) {
     const job = jobOrName as OrchestratorJob;
-    const jobId =
-      typeof job.idempotency_key === 'string' && job.idempotency_key.trim().length > 0
-        ? job.idempotency_key.trim()
-        : job.request_id;
+    const jobId = localAgentJobIdFor(job);
     const bull = await localAgentQueue.add(job.type, job, {
       jobId,
       priority: 40000,
@@ -127,7 +138,8 @@ export async function enqueueLocalAgentJob(
   }
 
   const jobName = jobOrName as string;
-  const rid = typeof requestId === 'string' && requestId.length > 0 ? requestId : randomUUID();
+  const ridRaw = typeof requestId === 'string' && requestId.length > 0 ? requestId : randomUUID();
+  const rid = sanitizeQueueJobId(`${jobName}-${ridRaw}`);
   const legacyPayload = payload ?? {};
   const legacyTenant =
     typeof legacyPayload.tenant_slug === 'string' && legacyPayload.tenant_slug.trim().length > 0
@@ -156,4 +168,29 @@ export async function enqueueLocalAgentJob(
   });
 
   return bull;
+}
+
+
+export async function probeLocalAgentQueue(): Promise<{
+  ok: boolean;
+  redis_ping: string;
+  queue: string;
+  counts: Record<string, number>;
+}> {
+  const client = (await localAgentQueue.client) as unknown as { ping: () => Promise<string> };
+  const redisPing = await client.ping();
+  const counts = await localAgentQueue.getJobCounts(
+    'waiting',
+    'active',
+    'delayed',
+    'failed',
+    'completed',
+    'paused'
+  );
+  return {
+    ok: redisPing === 'PONG',
+    redis_ping: redisPing,
+    queue: 'local-agents',
+    counts,
+  };
 }

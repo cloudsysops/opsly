@@ -59,14 +59,36 @@ def _action_get_stream_status(client: Any, _: Payload) -> dict[str, Any]:
     return _as_dict(client.get_stream_status())
 
 
-def _action_start_stream(client: Any, _: Payload) -> dict[str, Any]:
-    client.start_stream()
-    return {"ok": True, "action": "start_stream"}
+def _action_get_stats(client: Any, _: Payload) -> dict[str, Any]:
+    return _as_dict(client.get_stats())
 
 
-def _action_stop_stream(client: Any, _: Payload) -> dict[str, Any]:
-    client.stop_stream()
-    return {"ok": True, "action": "stop_stream"}
+def _action_get_record_status(client: Any, _: Payload) -> dict[str, Any]:
+    return _as_dict(client.get_record_status())
+
+
+def _action_start_record(client: Any, _: Payload) -> dict[str, Any]:
+    client.start_record()
+    return {"ok": True, "action": "start_record"}
+
+
+def _action_stop_record(client: Any, _: Payload) -> dict[str, Any]:
+    return _as_dict(client.stop_record())
+
+
+def _action_pause_record(client: Any, _: Payload) -> dict[str, Any]:
+    client.pause_record()
+    return {"ok": True, "action": "pause_record"}
+
+
+def _action_resume_record(client: Any, _: Payload) -> dict[str, Any]:
+    client.resume_record()
+    return {"ok": True, "action": "resume_record"}
+
+
+def _action_save_replay_buffer(client: Any, _: Payload) -> dict[str, Any]:
+    client.save_replay_buffer()
+    return {"ok": True, "action": "save_replay_buffer"}
 
 
 def _action_set_current_program_scene(client: Any, p: Payload) -> dict[str, Any]:
@@ -88,16 +110,27 @@ def _action_get_scene_list(client: Any, _: Payload) -> dict[str, Any]:
 ALLOWED: dict[str, Callable[[Any, Payload], dict[str, Any]]] = {
     "get_version": _action_get_version,
     "get_stream_status": _action_get_stream_status,
-    "start_stream": _action_start_stream,
-    "stop_stream": _action_stop_stream,
+    "get_stats": _action_get_stats,
+    "get_record_status": _action_get_record_status,
+    "start_record": _action_start_record,
+    "stop_record": _action_stop_record,
+    "pause_record": _action_pause_record,
+    "resume_record": _action_resume_record,
+    "save_replay_buffer": _action_save_replay_buffer,
     "set_current_program_scene": _action_set_current_program_scene,
     "get_current_program_scene": _action_get_current_program_scene,
     "get_scene_list": _action_get_scene_list,
 }
 
+BLOCKED_ACTIONS = {"start_stream", "stop_stream", "set_stream_service_settings"}
+
 
 def run_command(payload: Payload) -> dict[str, Any]:
     action = payload.get("action")
+    if action in BLOCKED_ACTIONS:
+        raise PermissionError(
+            f"action {action!r} is blocked by PC Gamer policy: no automatic streaming or publishing"
+        )
     if not isinstance(action, str) or action not in ALLOWED:
         known = ", ".join(sorted(ALLOWED))
         raise ValueError(f"unknown or missing action: {action!r}. Allowed: {known}")

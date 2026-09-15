@@ -7,7 +7,9 @@ on:
     branches: [main]
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  # Normalize push + pull_request runs for the same feature branch into one
+  # cancellation domain. This prevents duplicate full CI for one head commit.
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -53,6 +55,7 @@ jobs:
           (cd lib/services && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
+          (cd lib/ai-board && npm run build)
           (cd lib/runtime && npm run build)
           (cd lib/voice-messaging && npm run build)
           (cd apps/context-builder && npm run build)
@@ -140,7 +143,7 @@ jobs:
           node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: npm ci + unit tests (api/portal/mcp/ml/llm-gateway/peskids)
+      - name: npm ci + unit tests (api/portal/mcp/ml/llm-gateway/agent-task/git-branch/peskids)
         run: |
           set -euo pipefail
           npm ci
@@ -156,6 +159,7 @@ jobs:
           (cd lib/services && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
+          (cd lib/ai-board && npm run build)
           (cd lib/runtime && npm run build)
           (cd lib/voice-messaging && npm run build)
           (cd apps/mcp && npm run build)
@@ -166,6 +170,8 @@ jobs:
           (cd apps/mcp && npm test) & pid1=$!
           (cd apps/ml && npm test) & pid3=$!
           (cd lib/prompt-guard && npm test) & pid_pg=$!
+          (cd lib/agent-task-core && npm test) & pid_agent_task=$!
+          (cd lib/git-branch-orchestrator && npm test) & pid_git_branch=$!
           (cd apps/llm-gateway && npm test -- --exclude __tests__/cache-namespace.test.ts) & pid4=$!
           (cd apps/peskids && npm test) & pid_peskids=$!
           status=0
@@ -174,6 +180,8 @@ jobs:
           wait $pid1 || status=1
           wait $pid3 || status=1
           wait $pid_pg || status=1
+          wait $pid_agent_task || status=1
+          wait $pid_git_branch || status=1
           wait $pid4 || status=1
           wait $pid_peskids || status=1
           exit $status
@@ -215,6 +223,7 @@ jobs:
           (cd lib/services && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
+          (cd lib/ai-board && npm run build)
           (cd lib/runtime && npm run build)
           (cd lib/voice-messaging && npm run build)
           (cd apps/orchestrator && npm run build)
@@ -279,6 +288,7 @@ jobs:
           (cd lib/services && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
+          (cd lib/ai-board && npm run build)
           (cd lib/runtime && npm run build)
           (cd lib/voice-messaging && npm run build)
           (cd apps/orchestrator && npm run build)
@@ -326,6 +336,21 @@ jobs:
 
       - name: compute-worker policy tests
         run: node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs
+
+      - name: Golden runtime topology contracts
+        run: |
+          node --test \
+            scripts/ops/__tests__/golden-runtime-contract.test.mjs \
+            scripts/ops/__tests__/ephemeral-agent-lifecycle.test.mjs \
+            scripts/ops/__tests__/mac-local-agent-routing.test.mjs \
+            scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs \
+            scripts/ops/__tests__/mac-ephemeral-runtime.test.mjs
+
+      - name: Independent review gate policy tests
+        run: node --test scripts/ci/__tests__/independent-review-gate.test.mjs
+
+      - name: Peskids Docker next-build flags (no --webpack on Next 15.5)
+        run: bash scripts/ci/check-peskids-docker-build-flags.sh
 
   secret-scan:
     needs: structure-validation
