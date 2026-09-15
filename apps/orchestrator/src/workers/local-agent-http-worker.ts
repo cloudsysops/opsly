@@ -4,6 +4,7 @@
  * Listens on 'local-agents' queue for jobs with names derived from LocalAgentKind:
  * - local_cursor, local_claude, local_copilot, local_opencode
  * - local_codex, local_openai, local_hermes, local_decepticon
+ * - local_aider, local_goose, local_playwright, local_openclaw
  *
  * Routes to appropriate HTTP endpoint based on job.name
  * Integrates with ValidationOrchestrator for validation → decision → commit flow
@@ -32,6 +33,12 @@ import { getWorkerConcurrency, type WorkerConcurrencyKey } from '../worker-concu
 import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { writeValidationGuard } from '../lib/validation/validation-utils.js';
 import { AgentTaskRuntime } from '../runtime/agent-task-runtime.js';
+import {
+  completeTaskDispatchClaim,
+  parseDispatchClaimLease,
+  releaseTaskDispatchClaim,
+  renewTaskDispatchClaim,
+} from '../task-claim-store.js';
 
 interface LocalAgentPayload {
   prompt_content?: string;
@@ -181,6 +188,66 @@ export function shouldWaitForAcceptedResponse(result: Record<string, unknown>): 
 
 export function allowLegacyLocalAgentPayload(env: NodeJS.ProcessEnv = process.env): boolean {
   return env.OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD === 'true';
+}
+
+async function finalizeDispatchClaimForPayload(
+  payload: LocalAgentPayload,
+  outcome: 'completed' | 'failed',
+  reason: string
+): Promise<void> {
+  const lease = parseDispatchClaimLease(payload.context?.dispatch_claim);
+  if (!lease) return;
+
+  try {
+    if (outcome === 'completed') {
+      const result = await completeTaskDispatchClaim(lease);
+      if (!result.tombstoneWritten) {
+        logWorkerWarn(
+          'local-agents',
+          'Completed task could not write ALREADY_DONE tombstone; claim may have expired',
+          {
+            claim_id: lease.claimId,
+            task_id: lease.taskId,
+            workstream: lease.workstream,
+            reason,
+          }
+        );
+        return;
+      }
+      logWorkerInfo('local-agents', 'Completed dispatch claim and preserved task tombstone', {
+        claim_id: lease.claimId,
+        task_id: lease.taskId,
+        workstream: lease.workstream,
+        released_keys: result.released,
+        reason,
+      });
+      return;
+    }
+
+    const released = await releaseTaskDispatchClaim(lease);
+    logWorkerInfo('local-agents', 'Released failed dispatch ownership claim', {
+      claim_id: lease.claimId,
+      task_id: lease.taskId,
+      workstream: lease.workstream,
+      released_keys: released,
+      reason,
+    });
+  } catch (err) {
+    // A leaked active claim is bounded by TTL. Do not rewrite the task result
+    // merely because Redis cleanup/tombstoning could not be confirmed.
+    logWorkerWarn('local-agents', 'Dispatch claim finalization failed; TTL will recover active locks', {
+      claim_id: lease.claimId,
+      task_id: lease.taskId,
+      error: sanitizeLocalAgentError(err instanceof Error ? err.message : String(err)),
+      reason,
+    });
+  }
+}
+
+function isFinalBullAttempt(job: Job, error: unknown): boolean {
+  if (error instanceof UnrecoverableError) return true;
+  const attempts = Math.max(1, Number(job.opts.attempts ?? 1));
+  return job.attemptsMade + 1 >= attempts;
 }
 
 async function processLocalAgentJob(
@@ -400,6 +467,16 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           );
         }
 
+        const dispatchLease = parseDispatchClaimLease(payload.context?.dispatch_claim);
+        if (dispatchLease) {
+          const ownership = await renewTaskDispatchClaim(dispatchLease);
+          if (!ownership.renewed) {
+            throw new UnrecoverableError(
+              'DISPATCH_CLAIM_LOST: active ownership lease is no longer held by this job'
+            );
+          }
+        }
+
         const result = payload.agent_task === undefined
           ? await process()
           : await (async () => {
@@ -446,6 +523,22 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
                 : { success: true, execution_time_ms: runtimeResult.duration_ms };
             })();
 
+        if (!result.success) {
+          throw new Error(result.error || 'local agent adapter returned success=false');
+        }
+
+        const validationAction = result.validation_decision?.action;
+        if (validationAction === 'iterate') {
+          throw new Error(
+            `VALIDATION_ITERATE: ${result.validation_decision?.reason || 'another iteration is required'}`
+          );
+        }
+        if (validationAction === 'escalate') {
+          throw new UnrecoverableError(
+            `VALIDATION_ESCALATE: ${result.validation_decision?.reason || 'human escalation is required'}`
+          );
+        }
+
         const elapsed = Date.now() - t0;
         logWorkerLifecycle('complete', 'local-agents', job, { duration_ms: elapsed });
 
@@ -457,6 +550,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           logWorkerError('local-agents', `${jobType} job ${job.id} failed: ${result.error}`);
         }
 
+        await finalizeDispatchClaimForPayload(payload, 'completed', 'validated_terminal_success');
         return result;
       } catch (err) {
         const elapsed = Date.now() - t0;
@@ -476,6 +570,16 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           logWorkerLifecycle('fail', 'local-agents', job, {
             duration_ms: elapsed,
             error: errorMsg,
+          });
+        }
+
+        if (isFinalBullAttempt(job, err)) {
+          await finalizeDispatchClaimForPayload(payload, 'failed', 'terminal_failure');
+        } else {
+          logWorkerInfo('local-agents', 'Retaining dispatch claim across BullMQ retry', {
+            job_id,
+            attempts_made: job.attemptsMade,
+            max_attempts: job.opts.attempts ?? 1,
           });
         }
 

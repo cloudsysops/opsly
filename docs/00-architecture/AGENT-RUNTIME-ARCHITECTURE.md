@@ -22,7 +22,11 @@ The canonical lifecycle is:
 ```text
 task source
   ↓
+TaskGraphV1 readiness / reuse-first check
+  ↓
 governed submit
+  ↓
+DispatchClaimV1 (atomic Redis ownership)
   ↓
 AgentTaskEnvelopeV1
   ↓
@@ -64,6 +68,36 @@ Canonical control components:
 
 Any GitHub, scheduler, n8n or local watcher integration must converge on this path instead of spawning an AI CLI directly.
 
+
+## Pre-dispatch ownership gate
+
+Governed autonomous work must acquire exclusive ownership **before BullMQ can assign it to a worker**. The gate reuses Orchestrator Redis/BullMQ infrastructure; it is not a second task store or scheduler.
+
+Required GitHub workpack identity:
+
+- `task_id/workpack_id`: exact task identity;
+- `workstream`: portfolio grouping (not itself an exclusive lock);
+- `conflict_key`: exclusive capability/resource ownership;
+- `semantic_scope`: optional semantic-equivalence lock (defaults to conflict key);
+- `affected_paths`: optional explicit path scopes.
+
+The Orchestrator acquires all claim dimensions atomically. If any dimension is held:
+
+- exact active task collision → `JOIN_EXISTING`;
+- exact successfully completed task tombstone → `ALREADY_DONE`;
+- conflict/semantic/path collision → `CONFLICT_BLOCKED`;
+- no BullMQ job is created for any of these outcomes.
+
+Invariant for governed autonomous work:
+
+`NO CLAIM → NO BRANCH → NO WORKTREE → NO EXECUTION`.
+
+Active claims survive BullMQ retries. Failed terminal work releases all scopes; successful terminal work releases conflict/semantic/path scopes but retains a bounded exact-task tombstone so the same workpack returns `ALREADY_DONE`. Active claims have bounded expiry for crash recovery. Client-supplied claim leases are discarded; only the Orchestrator may mint/release/finalize them.
+
+Any write-capable local AgentTask (generated or caller-supplied `write_allowed=true`) must have claimable `workstream + conflict_key` metadata before execution. Read-only manual work can remain claim-free. Physical branch creation through the existing Git Branch Orchestrator is also held unless dispatch-claim evidence is bound to the same request.
+
+`TaskGraphV1` remains the dependency/parallel-wave planner. `DispatchClaimV1` is the runtime admission lock that makes conflict metadata enforceable.
+
 ## Machine roles
 
 | Node | Canonical responsibility | Must not do |
@@ -86,12 +120,41 @@ Examples currently wired through authenticated bridges include:
 | Claude Code | `local_claude` | :5002 |
 | OpenCode | `local_opencode` | :5004 |
 | Codex CLI | `local_codex` | :5005 |
-| Hermes Agent | registered Hermes runtime kind | :5007 |
-| OpenClaw | registered external runtime / worker capability | registry-driven |
+| Hermes Agent | `local_hermes` | :5007 |
+| OpenClaw CLI | `local_openclaw` | :5012 (registered, held/disabled until physical acceptance) |
 
 Ports are deployment details. The registry and runtime adapter configuration are authoritative.
 
 Names such as planner, developer, reviewer, architect or QA are **roles**, not proof that a dedicated persistent process exists.
+
+
+## OpenClaw CLI runtime
+
+OpenClaw CLI is distinct from the historical Opsly TypeScript "OpenClaw" control layer and from the BullMQ queue named `openclaw`.
+
+The canonical external runtime adapter uses:
+
+```text
+local_openclaw
+→ authenticated bridge :5012
+→ Session Manager
+→ ephemeral opsly-task-* session
+→ openclaw agent exec
+```
+
+`openclaw agent exec` is used because it is a one-shot embedded/headless execution path. The persistent OpenClaw Gateway/TUI is not the canonical Opsly AgentTask runtime.
+
+Security posture before physical acceptance:
+
+- the external registry entry remains `enabled:false`;
+- the agent service remains disabled for worker routing;
+- the default Mac worker allowlist excludes `local_openclaw`;
+- physical acceptance may enable the disabled service only in a temporary worker process with `OPSLY_OPENCLAW_ACCEPTANCE_ENABLED=true`; this is not a persistent routing toggle;
+- the launchd bridge may be installed as infrastructure, but no AgentTask may be routed to it automatically;
+- OpenClaw is treated as write-capable/high-risk because its effective tool policy may allow filesystem mutation or host exec;
+- a read-only physical smoke requires an explicit restrictive OpenClaw tool policy.
+
+Physical acceptance is tracked in workpack 052 and must return exactly `OPENCLAW_OK`.
 
 ## AgentTaskEnvelopeV1
 
