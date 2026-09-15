@@ -122,6 +122,9 @@ describe('external agent fleet observability', () => {
       ...configured.workers['hermes-cli'],
       endpoint_env: 'OPSLY_HERMES_AGENT_URL',
     };
+    // Isolate the worker under test. Other registry workers may legitimately use their
+    // declared local bridge_port and therefore perform independent health probes.
+    configured.workers = { 'hermes-cli': configured.workers['hermes-cli'] };
 
     const fetchImpl = vi.fn(async () => new Response(null, { status: 200 })) as typeof fetch;
     const rows = await buildExternalAgentFleetSnapshot(configured, fetchImpl);
