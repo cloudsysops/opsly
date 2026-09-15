@@ -30,7 +30,9 @@
  *                              Mismo contrato que lib/content-studio/src/llm/client.ts
  *                              (GatewayClient): POST /v1/chat.
  *   OPSLY_GITHUB_REPO       — default cloudsysops/opsly
- *   OPSLY_REVIEW_TENANT     — tenant_slug para el gateway, default "platform"
+ *   OPSLY_REVIEW_TENANT     — tenant_slug para el gateway, default "opsly-ci-review"
+ *                              (perfil hybrid propio en Doppler, no comparte
+ *                              free-always con el resto de 'platform')
  *
  * Uso:
  *   node scripts/ci/backend-independent-review.mjs --dry-run           # no escribe nada, solo lee
@@ -52,7 +54,14 @@ const POST_TOKEN =
   (process.env.OPSLY_REVIEW_BOT_TOKEN ?? '').trim() || (process.env.GITHUB_TOKEN ?? '').trim();
 const READ_TOKEN = POST_TOKEN;
 const GATEWAY_URL = process.env.LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
-const TENANT_SLUG = process.env.OPSLY_REVIEW_TENANT ?? 'platform';
+// Dedicado, no 'platform' — ese tenant_slug lo comparte todo el sistema de
+// agentes internos (orchestrator, ValidationWorker, CursorWorker, etc.) bajo
+// perfil free-always (solo Ollama, nunca cloud). Este tenant tiene su propio
+// override AI_PROFILE_OPSLY_CI_REVIEW=hybrid en Doppler (aprobado
+// explícitamente para este uso) para poder caer a un proveedor cloud cuando
+// Ollama esté pausado (p. ej. modo gaming en config/pc-gamer-schedule.json)
+// — sin abrirle gasto cloud a ningún otro flujo que use 'platform'.
+const TENANT_SLUG = process.env.OPSLY_REVIEW_TENANT ?? 'opsly-ci-review';
 
 const CLEAN_PHRASE = "Codex Review: Didn't find any major issues.";
 
@@ -130,9 +139,14 @@ async function fetchDiff(pr, token) {
 }
 
 /**
- * Un solo call al LLM Gateway, mismo contrato que
- * lib/content-studio/src/llm/client.ts (GatewayClient.review):
- * POST /v1/chat { tenant_slug, system, messages, max_tokens, model, feature }.
+ * Un solo call al LLM Gateway. Contrato real (no el de
+ * lib/content-studio/src/llm/client.ts, que apunta a /v1/chat — esa ruta no
+ * existe en el server; ver apps/llm-gateway/src/health-server.ts):
+ * POST /v1/text { tenant_slug, prompt, system, task_type, request_id, feature }
+ * → { content, llm: {...}, request_id }
+ * (apps/llm-gateway/src/text-completion-route.ts). Nota: esta ruta fuerza
+ * routing_bias=cost / model=cheap del lado del servidor — no hay forma de
+ * pedir un modelo específico por este endpoint hoy.
  */
 async function reviewWithGateway({ pr, diff, failingChecks }) {
   const system = [
@@ -147,7 +161,7 @@ async function reviewWithGateway({ pr, diff, failingChecks }) {
     'real, usa el formato 1.',
   ].join('\n');
 
-  const user = [
+  const prompt = [
     `PR #${pr.number}: ${pr.title}`,
     failingChecks.length
       ? `Checks de CI en rojo ahora mismo: ${failingChecks.join(', ')}`
@@ -157,15 +171,14 @@ async function reviewWithGateway({ pr, diff, failingChecks }) {
     diff,
   ].join('\n');
 
-  const resp = await fetch(`${GATEWAY_URL}/v1/chat`, {
+  const resp = await fetch(`${GATEWAY_URL}/v1/text`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       tenant_slug: TENANT_SLUG,
+      prompt,
       system,
-      messages: [{ role: 'user', content: user }],
-      max_tokens: 1200,
-      model: 'sonnet',
+      task_type: 'review',
       skip_repo_context: true,
       feature: 'independent_review',
       request_id: `backend-independent-review:${pr.number}:${pr.head.sha.slice(0, 8)}`,
@@ -189,13 +202,31 @@ async function submitReview(pr, verdict, token) {
   const body = clean
     ? `${CLEAN_PHRASE}\n\nReviewed commit: \`${pr.head.sha}\``
     : `${verdict}\n\nReviewed commit: \`${pr.head.sha}\``;
-  return gh(`repos/${REPO}/pulls/${pr.number}/reviews`, {
+  await gh(`repos/${REPO}/pulls/${pr.number}/reviews`, {
     token,
     method: 'POST',
     body: {
       commit_id: pr.head.sha,
       body,
       event: clean ? 'APPROVE' : 'REQUEST_CHANGES',
+    },
+  });
+
+  // GitHub does not fire pull_request_review (or any) events for actions
+  // taken with the default GITHUB_TOKEN — it's an anti-recursion guard, so
+  // trusted-independent-review.yml would never re-run to notice this review
+  // and flip the opsly-independent-review status. Set it ourselves instead
+  // of depending on that re-trigger (confirmed live: zero pull_request_review
+  // runs appeared for several minutes after a real APPROVE landed on the PR).
+  await gh(`repos/${REPO}/statuses/${pr.head.sha}`, {
+    token,
+    method: 'POST',
+    body: {
+      state: clean ? 'success' : 'failure',
+      context: 'opsly-independent-review',
+      description: clean
+        ? 'Independent review verified for final head SHA'
+        : 'Independent review missing, stale, or has blocking findings',
     },
   });
 }
@@ -263,6 +294,8 @@ async function main() {
       verdict = await reviewWithGateway({ pr, diff, failingChecks: failing });
     } catch (error) {
       console.error(`#${pr.number} error generando review: ${error.message}`);
+      // No dejar que CI reporte "success" cuando en realidad no se posteó nada.
+      process.exitCode = 1;
       continue;
     }
 

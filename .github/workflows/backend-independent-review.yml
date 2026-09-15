@@ -27,6 +27,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  statuses: write
 
 concurrency:
   group: backend-independent-review-${{ github.repository }}-${{ github.event.pull_request.number }}
@@ -37,10 +38,26 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
+      # Neither github.event.pull_request.base.sha (webhook payload snapshot)
+      # nor a live `gh api pulls/$PR` call give the true current tip of main:
+      # a PR's base.sha reflects whenever GitHub last recomputed that PR's
+      # mergeability, not "main right now" — confirmed by comparing both
+      # against git/refs/heads/main during live testing (run 34906830538: both
+      # returned 3b7b6f6f1, two merges stale, while refs/heads/main was
+      # already at 046761760). Ask for the branch ref directly instead.
+      - name: Resolve current main tip
+        id: base
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha="$(gh api repos/${{ github.repository }}/git/refs/heads/main --jq '.object.sha')"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
       - name: Checkout trusted base (reviewer script only — never PR-head code)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ steps.base.outputs.sha }}
           fetch-depth: 1
           persist-credentials: false
 
