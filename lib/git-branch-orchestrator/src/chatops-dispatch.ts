@@ -33,6 +33,13 @@ export interface ChatOpsDispatchInput {
   open_pr?: boolean;
   enqueue_worker?: boolean;
   prompt_body?: string;
+  request_id?: string;
+  dispatch_claim?: {
+    version: 'dispatch-claim-v1';
+    claim_id: string;
+    task_id: string;
+    workstream: string;
+  };
 }
 
 export interface ChatOpsDispatchResult {
@@ -142,6 +149,8 @@ export async function dispatchChatOps(
     task_type: taskType,
     title,
     worker_id: workerId,
+    request_id: input.request_id,
+    dispatch_claim: input.dispatch_claim,
     materialize_git: input.materialize_git === true,
     open_pr: input.open_pr === true,
   });
