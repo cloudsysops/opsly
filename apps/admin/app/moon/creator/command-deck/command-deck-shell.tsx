@@ -11,14 +11,62 @@ type DeckModule = {
 };
 
 const MODULES: readonly DeckModule[] = [
-  { id: 'system', name: 'System', purpose: 'CPU, GPU, RAM, thermals and network health', source: 'Local Bridge', fairPlay: true },
-  { id: 'chat', name: 'Chat', purpose: 'Unified creator chat surface', source: 'Stream adapters', fairPlay: true },
-  { id: 'obs', name: 'OBS Control', purpose: 'Scoped scene, mute and recording controls', source: 'OBS adapter', fairPlay: true },
-  { id: 'challenges', name: 'Challenges', purpose: 'Creator and community challenge state', source: 'Creator OS', fairPlay: true },
-  { id: 'community', name: 'Community', purpose: 'Polls, votes and participation', source: 'Platform adapters', fairPlay: true },
-  { id: 'stats', name: 'Session Stats', purpose: 'Only legitimately available session/game data', source: 'Game adapter', fairPlay: true },
-  { id: 'moments', name: 'Moment Detector', purpose: 'Explainable Moment candidates', source: 'Creator OS', fairPlay: true },
-  { id: 'cards', name: 'Card Studio', purpose: 'Approved Moment card generation', source: 'Creator OS', fairPlay: true },
+  {
+    id: 'system',
+    name: 'System',
+    purpose: 'CPU, GPU, RAM, thermals and network health',
+    source: 'Local Bridge',
+    fairPlay: true,
+  },
+  {
+    id: 'chat',
+    name: 'Chat',
+    purpose: 'Unified creator chat surface',
+    source: 'Stream adapters',
+    fairPlay: true,
+  },
+  {
+    id: 'obs',
+    name: 'OBS Control',
+    purpose: 'Scoped scene, mute and recording controls',
+    source: 'OBS adapter',
+    fairPlay: true,
+  },
+  {
+    id: 'challenges',
+    name: 'Challenges',
+    purpose: 'Creator and community challenge state',
+    source: 'Creator OS',
+    fairPlay: true,
+  },
+  {
+    id: 'community',
+    name: 'Community',
+    purpose: 'Polls, votes and participation',
+    source: 'Platform adapters',
+    fairPlay: true,
+  },
+  {
+    id: 'stats',
+    name: 'Session Stats',
+    purpose: 'Only legitimately available session/game data',
+    source: 'Game adapter',
+    fairPlay: true,
+  },
+  {
+    id: 'moments',
+    name: 'Moment Detector',
+    purpose: 'Explainable Moment candidates',
+    source: 'Creator OS',
+    fairPlay: true,
+  },
+  {
+    id: 'cards',
+    name: 'Card Studio',
+    purpose: 'Approved Moment card generation',
+    source: 'Creator OS',
+    fairPlay: true,
+  },
 ] as const;
 
 function statusLabel(networkAvailable: boolean): string {
@@ -80,7 +128,9 @@ export function CommandDeckShell(): React.ReactElement {
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
           <p className="font-mono text-[10px] uppercase text-slate-500">Browser transport</p>
-          <p className="mt-2 text-lg text-slate-100">{networkAvailable ? 'Available' : 'Offline'}</p>
+          <p className="mt-2 text-lg text-slate-100">
+            {networkAvailable ? 'Available' : 'Offline'}
+          </p>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
           <p className="font-mono text-[10px] uppercase text-slate-500">Event stream</p>
