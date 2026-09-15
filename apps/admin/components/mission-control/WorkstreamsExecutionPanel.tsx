@@ -12,10 +12,17 @@ type ExecutionSourcesPayload = {
   observed_at: string;
   registry_driven_admission: boolean;
   handoff_available: boolean;
+  runtime_fleet_observed: boolean;
+  runtime_fleet_error: string | null;
   registered_workers: Array<{
     id: string;
     enabled: boolean;
     opsly_job_type: string | null;
+    runtime_state: 'LIVE' | 'UNHEALTHY' | 'UNREACHABLE' | 'UNKNOWN';
+    dispatch_eligible: boolean;
+    dispatch_blocker: string | null;
+    health_source: string | null;
+    observed_at: string | null;
   }>;
   error?: string;
 };
@@ -114,6 +121,12 @@ function evidenceTone(value: string): string {
   return 'text-slate-500';
 }
 
+function runtimeTone(value: string): string {
+  if (value === 'LIVE') return 'text-emerald-300';
+  if (value === 'UNHEALTHY' || value === 'UNREACHABLE') return 'text-rose-300';
+  return 'text-slate-500';
+}
+
 export function WorkstreamsExecutionPanel() {
   const baseUrl = useMemo(() => getBaseUrl(), []);
 
@@ -205,6 +218,80 @@ export function WorkstreamsExecutionPanel() {
         {sourcesError ? (
           <div className="mt-2 text-xs text-rose-300">
             Execution source probe unavailable: {sourcesError.message}
+          </div>
+        ) : null}
+      </section>
+
+      <section>
+        <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
+              Agent fleet
+            </h2>
+            <p className="text-xs text-slate-500">
+              Runtime health and autonomous dispatch policy are intentionally separate signals.
+            </p>
+          </div>
+          {sourcesData ? (
+            <div className="text-[10px] uppercase tracking-[0.12em] text-slate-500">
+              runtime fleet {sourcesData.runtime_fleet_observed ? 'OBSERVED' : 'UNKNOWN'}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/70">
+          <table className="min-w-[900px] w-full text-left text-xs">
+            <thead className="border-b border-slate-800 text-[10px] uppercase tracking-[0.14em] text-slate-500">
+              <tr>
+                <th className="px-3 py-2 font-medium">Agent</th>
+                <th className="px-3 py-2 font-medium">Job type</th>
+                <th className="px-3 py-2 font-medium">Runtime</th>
+                <th className="px-3 py-2 font-medium">Registry</th>
+                <th className="px-3 py-2 font-medium">Dispatch</th>
+                <th className="px-3 py-2 font-medium">Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sourcesData?.registered_workers.length ? (
+                sourcesData.registered_workers.map((worker) => (
+                  <tr key={worker.id} className="border-b border-slate-900 last:border-b-0">
+                    <td className="px-3 py-3 font-mono text-slate-200">{worker.id}</td>
+                    <td className="px-3 py-3 font-mono text-slate-400">
+                      {worker.opsly_job_type ?? 'UNKNOWN'}
+                    </td>
+                    <td className={`px-3 py-3 font-semibold ${runtimeTone(worker.runtime_state)}`}>
+                      {worker.runtime_state}
+                    </td>
+                    <td className={`px-3 py-3 ${worker.enabled ? 'text-emerald-300' : 'text-amber-300'}`}>
+                      {worker.enabled ? 'ENABLED' : 'POLICY LOCK'}
+                    </td>
+                    <td className={`px-3 py-3 font-semibold ${worker.dispatch_eligible ? 'text-emerald-300' : 'text-slate-500'}`}>
+                      {worker.dispatch_eligible ? 'ELIGIBLE' : 'BLOCKED'}
+                      {!worker.dispatch_eligible && worker.dispatch_blocker ? (
+                        <div className="mt-1 text-[10px] font-normal text-slate-600">
+                          {worker.dispatch_blocker}
+                        </div>
+                      ) : null}
+                    </td>
+                    <td className="px-3 py-3 text-[10px] text-slate-500">
+                      {worker.health_source ?? 'UNKNOWN'}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="px-3 py-6 text-center text-slate-500">
+                    Agent fleet evidence is not available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {sourcesData?.runtime_fleet_error ? (
+          <div className="mt-2 text-xs text-amber-300">
+            Runtime fleet degraded: {sourcesData.runtime_fleet_error}
           </div>
         ) : null}
       </section>
