@@ -28,6 +28,7 @@ export type WorkerConcurrencyKey =
   | 'local-aider'
   | 'local-goose'
   | 'local-playwright'
+  | 'local-openclaw'
   | 'cloudsysops_agents'
   | 'defense_audit'
   | 'sigma_decision'
@@ -69,6 +70,7 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'local-aider': 1,
   'local-goose': 1,
   'local-playwright': 1,
+  'local-openclaw': 1,
   'cloudsysops_agents': 2,
   'defense_audit': 2,
   'sigma_decision': 2,
@@ -111,6 +113,7 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'local-aider': 1,
   'local-goose': 1,
   'local-playwright': 1,
+  'local-openclaw': 1,
   'cloudsysops_agents': 1,
   'defense_audit': 1,
   'sigma_decision': 1,
@@ -153,6 +156,7 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'local-aider': 'ORCHESTRATOR_LOCAL_AIDER_CONCURRENCY',
   'local-goose': 'ORCHESTRATOR_LOCAL_GOOSE_CONCURRENCY',
   'local-playwright': 'ORCHESTRATOR_LOCAL_PLAYWRIGHT_CONCURRENCY',
+  'local-openclaw': 'ORCHESTRATOR_LOCAL_OPENCLAW_CONCURRENCY',
   'cloudsysops_agents': 'ORCHESTRATOR_CLOUDSYSOPS_AGENTS_CONCURRENCY',
   'defense_audit': 'ORCHESTRATOR_DEFENSE_AUDIT_CONCURRENCY',
   'sigma_decision': 'ORCHESTRATOR_SIGMA_DECISION_CONCURRENCY',

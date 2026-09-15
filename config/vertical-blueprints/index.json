@@ -43,6 +43,13 @@
       "reference_tenant": "intcloudsysops",
       "reference_launch": "clients/intcloudsysops.launch.json",
       "package_doc": "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md"
+    },
+    {
+      "id": "health-travel-colombia",
+      "file": "health-travel-colombia.json",
+      "label": "Turismo de salud y viajes — Colombia",
+      "reference_tenant": null,
+      "package_doc": "docs/blueprints/HEALTH-TRAVEL-COLOMBIA.md"
     }
   ],
   "commands": {

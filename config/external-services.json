@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "updated": "2026-09-12",
+  "policy": {
+    "installRoot": "~/.opsly/external-services",
+    "updatePolicy": "manual-review-only",
+    "productionRule": "reviewed tag + resolved exact SHA required",
+    "forkPolicy": "prefer upstream API/config/extensions; fork only with ADR + license review"
+  },
+  "services": {
+    "twenty": {
+      "displayName": "Twenty CRM",
+      "repository": "https://github.com/twentyhq/twenty.git",
+      "installPath": "~/.opsly/external-services/twenty",
+      "reviewedRef": "twenty/v2.39.0",
+      "role": "canonical-crm",
+      "capabilities": [
+        "crm",
+        "contacts",
+        "companies",
+        "opportunities"
+      ],
+      "updatePolicy": "manual-review-only",
+      "vendoredIntoOpsly": false,
+      "forkRequired": false
+    },
+    "chatwoot": {
+      "displayName": "Chatwoot",
+      "repository": "https://github.com/chatwoot/chatwoot.git",
+      "installPath": "~/.opsly/external-services/chatwoot",
+      "reviewedRef": "v4.17.1",
+      "role": "customer-inbox",
+      "capabilities": [
+        "inbox",
+        "support",
+        "whatsapp",
+        "conversation-routing"
+      ],
+      "updatePolicy": "manual-review-only",
+      "vendoredIntoOpsly": false,
+      "forkRequired": false
+    },
+    "calcom": {
+      "displayName": "Cal.com",
+      "repository": "https://github.com/calcom/cal.diy.git",
+      "installPath": "~/.opsly/external-services/calcom",
+      "reviewedRef": "v6.2.0",
+      "role": "scheduling",
+      "capabilities": [
+        "booking",
+        "appointments",
+        "availability"
+      ],
+      "updatePolicy": "manual-review-only",
+      "vendoredIntoOpsly": false,
+      "forkRequired": false
+    },
+    "medusa": {
+      "displayName": "Medusa",
+      "repository": "https://github.com/medusajs/medusa.git",
+      "installPath": "~/.opsly/external-services/medusa",
+      "reviewedRef": "v2.21.0",
+      "role": "commerce-engine",
+      "capabilities": [
+        "catalog",
+        "products",
+        "promotions",
+        "orders",
+        "fulfillment-adapters"
+      ],
+      "updatePolicy": "manual-review-only",
+      "vendoredIntoOpsly": false,
+      "forkRequired": false
+    },
+    "changedetection": {
+      "displayName": "changedetection.io",
+      "repository": "https://github.com/dgtlmoon/changedetection.io.git",
+      "installPath": "~/.opsly/external-services/changedetection",
+      "reviewedRef": "0.60.4",
+      "role": "deal-watch",
+      "capabilities": [
+        "price-watch",
+        "restock-watch",
+        "page-change",
+        "webhook-events"
+      ],
+      "updatePolicy": "manual-review-only",
+      "vendoredIntoOpsly": false,
+      "forkRequired": false
+    },
+    "shlink": {
+      "displayName": "Shlink",
+      "repository": "https://github.com/shlinkio/shlink.git",
+      "installPath": "~/.opsly/external-services/shlink",
+      "reviewedRef": "v5.1.6",
+      "role": "attribution-links",
+      "capabilities": [
+        "short-links",
+        "click-tracking",
+        "campaign-attribution"
+      ],
+      "updatePolicy": "manual-review-only",
+      "vendoredIntoOpsly": false,
+      "forkRequired": false
+    },
+    "listmonk": {
+      "displayName": "listmonk",
+      "repository": "https://github.com/knadh/listmonk.git",
+      "installPath": "~/.opsly/external-services/listmonk",
+      "reviewedRef": "v6.2.0",
+      "role": "campaign-delivery",
+      "capabilities": [
+        "email-campaigns",
+        "lists",
+        "segments",
+        "transactional-email"
+      ],
+      "updatePolicy": "manual-review-only",
+      "vendoredIntoOpsly": false,
+      "forkRequired": false
+    },
+    "langfuse": {
+      "displayName": "Langfuse",
+      "repository": "https://github.com/langfuse/langfuse.git",
+      "installPath": "~/.opsly/external-services/langfuse",
+      "reviewedRef": "v4.35.0",
+      "role": "ai-observability",
+      "capabilities": [
+        "traces",
+        "evals",
+        "prompt-observability",
+        "agent-metrics"
+      ],
+      "updatePolicy": "manual-review-only",
+      "vendoredIntoOpsly": false,
+      "forkRequired": false
+    }
+  }
+}
