@@ -1,0 +1,59 @@
+{
+  "name": "Opsly night agent queue (no ACTIVE-PROMPT shell)",
+  "meta": {
+    "description": "Cron in the Bogotá night window: Discord status + HTTP enqueue to local OpenCode via orchestrator. Does not write docs/ACTIVE-PROMPT.md (RCE). Import into n8n; bind credentials there, never commit tokens.",
+    "version": "1.0.0",
+    "owner": "opsly"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "10,40 3-10 * * *" }]
+        }
+      },
+      "name": "Night window UTC",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0],
+      "notes": "10/40 minutes past the hour, 03:10–10:40 UTC ≈ 22:10–05:40 America/Bogota (UTC-5, no DST)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.OPSLY_ORCHESTRATOR_URL}}/api/local/prompt-submit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"tenant_slug\": \"opsly\", \"agent\": \"opencode\", \"prompt_content\": \"Ejecuta la cola de prompts: lee .cursor/prompts/queue/, elige el primero con status pending, sigue docs/01-development/AGENT-PROMPT-QUEUE.md y deja la sección Respuesta agente. No esperes órdenes humanas.\" }"
+      },
+      "name": "Enqueue OpenCode",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0],
+      "notes": "Header Authorization Bearer PLATFORM_ADMIN_TOKEN via n8n credential. Orchestrator must be reachable from n8n (Tailscale)."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.DISCORD_WEBHOOK_URL}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"content\": \"Night agent tick: prompt-submit dispatched to OpenCode. Check GitHub Night merge + Deploy.\" }"
+      },
+      "name": "Discord ping",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Night window UTC": {
+      "main": [[{ "node": "Enqueue OpenCode", "type": "main", "index": 0 }]]
+    },
+    "Enqueue OpenCode": {
+      "main": [[{ "node": "Discord ping", "type": "main", "index": 0 }]]
+    }
+  }
+}

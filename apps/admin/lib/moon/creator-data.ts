@@ -11,8 +11,12 @@ import {
   loadProjectEnvelopeByTenant,
   saveProjectEnvelope,
   setProjectApproval,
+  enqueueApprovedPublishJobs,
+  buildDistributionPackages,
+  writeDistributionManifest,
   type ContentProjectEnvelope,
   type ContentProjectStatus,
+  type PublishingPlatform,
 } from '@intcloudsysops/content-studio/studio';
 
 export const CREATOR_TABS = [
@@ -71,7 +75,8 @@ export async function loadCreatorStudioData(): Promise<{
 export async function approveCreatorProject(
   tenantId: string,
   projectId: string,
-  reviewer: string
+  reviewer: string,
+  platforms: PublishingPlatform[] = ['youtube']
 ): Promise<void> {
   const envelope = await loadProjectEnvelopeByTenant(tenantId, projectId);
   assertSameTenant(envelope, tenantId);
@@ -79,11 +84,34 @@ export async function approveCreatorProject(
   if (rights.verdict === 'BLOCKED') {
     throw new Error(`RightsGate BLOCKED: ${rights.reasons.join('; ')}`);
   }
-  const next = setProjectApproval(envelope, {
+  const approved = setProjectApproval(envelope, {
     state: 'approved',
     approvedBy: reviewer,
     approvedAt: new Date().toISOString(),
-    reviewNotes: `Moon human approval. Rights ${rights.verdict}`,
+    reviewNotes: `Moon human approval. Rights ${rights.verdict}. Platforms ${platforms.join(',')}`,
+  });
+  const packaged = {
+    ...approved,
+    distributionPackages: buildDistributionPackages(approved),
+  };
+  writeDistributionManifest(packaged, packaged.distributionPackages ?? []);
+  const next = enqueueApprovedPublishJobs(packaged, platforms.length ? platforms : ['youtube']);
+  await saveProjectEnvelope(next);
+}
+
+export async function rejectCreatorProject(
+  tenantId: string,
+  projectId: string,
+  reviewer: string,
+  notes?: string
+): Promise<void> {
+  const envelope = await loadProjectEnvelopeByTenant(tenantId, projectId);
+  assertSameTenant(envelope, tenantId);
+  const next = setProjectApproval(envelope, {
+    state: 'rejected',
+    approvedBy: reviewer,
+    approvedAt: new Date().toISOString(),
+    reviewNotes: notes ?? 'Moon human rejection',
   });
   await saveProjectEnvelope(next);
 }

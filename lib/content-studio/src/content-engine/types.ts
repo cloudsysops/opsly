@@ -7,6 +7,9 @@ export const contentChannelValues = [
   'splashitos',
   'opsly-universe',
   'peskids',
+  // Placeholder slug — youth/adult gaming channel, brand/name not decided yet.
+  // Rename everywhere this string appears once branding lands.
+  'icso-gaming-tbd',
 ] as const;
 export type ContentChannel = (typeof contentChannelValues)[number];
 
@@ -330,6 +333,30 @@ export interface ContentTranscript {
   segments: TranscriptSegment[];
 }
 
+export const highlightScoreDimensionValues = [
+  'ENTERTAINMENT',
+  'REACTION_STRENGTH',
+  'HOOK',
+  'CLARITY',
+  'VISUAL_QUALITY',
+  'STORY_VALUE',
+  'TECH_CONNECTION',
+  'UNIQUENESS',
+  'DUPLICATION',
+  'RIGHTS_RISK',
+] as const;
+export type HighlightScoreDimension = (typeof highlightScoreDimensionValues)[number];
+export type HighlightScoreBreakdown = Record<HighlightScoreDimension, number>;
+
+export const dragonCyberModeValues = [
+  'NONE',
+  'COMMENTARY',
+  'REACTION',
+  'TECH_CONNECTION',
+  'STORY_CROSSOVER',
+] as const;
+export type DragonCyberMode = (typeof dragonCyberModeValues)[number];
+
 export interface ClipCandidate {
   id: string;
   start: number;
@@ -340,6 +367,197 @@ export interface ClipCandidate {
   category: string;
   score: number;
   reasons: string[];
+  scoreBreakdown?: HighlightScoreBreakdown;
+  recommendedFormats?: ContentFormat[];
+  dragonMode?: DragonCyberMode;
+}
+
+export const gameplayCaptureSourceValues = [
+  'obs',
+  'nvidia_instant_replay',
+  'nvidia_highlight',
+  'synthetic',
+] as const;
+export type GameplayCaptureSource = (typeof gameplayCaptureSourceValues)[number];
+
+export interface GameplaySessionMeta {
+  sessionId: string;
+  tenant: string;
+  channel: ContentChannel;
+  game: string;
+  startedAt: string;
+  endedAt: string;
+  sourceFile: string;
+  duration: number;
+  captureSource: GameplayCaptureSource;
+  processingStatus: string;
+}
+
+export const contentPublishJobStatusValues = [
+  'queued',
+  'scheduled',
+  'published',
+  'failed',
+] as const;
+export type ContentPublishJobStatus = (typeof contentPublishJobStatusValues)[number];
+
+export const publishingPlatformValues = [
+  'youtube',
+  'tiktok',
+  'instagram',
+  'facebook',
+  'x',
+] as const;
+export type PublishingPlatform = (typeof publishingPlatformValues)[number];
+
+export interface ContentPublishJob {
+  id: string;
+  platform: PublishingPlatform;
+  status: ContentPublishJobStatus;
+  scheduledAt?: string;
+  publishedAt?: string;
+  url?: string;
+  error?: string;
+  retryCount: number;
+  externalPostId?: string;
+}
+
+export const MAX_REVIEW_ROUNDS = 3 as const;
+
+export const reviewAgentIds = {
+  creator: 'content-os-session-pipeline',
+  reviewer: 'content-os-independent-reviewer',
+  repair: 'content-os-repair',
+} as const;
+
+export const aiReviewDecisionValues = [
+  'APPROVED',
+  'APPROVED_WITH_MINOR_FIXES',
+  'REQUEST_CHANGES',
+  'REJECT',
+  'BLOCKED',
+] as const;
+export type AiReviewDecision = (typeof aiReviewDecisionValues)[number];
+
+export const aiReviewStateValues = [
+  'generated',
+  'rendered',
+  'ai_review',
+  'changes_requested',
+  'repairing',
+  'ai_approved',
+  'rights_approved',
+  'ready_for_human_approval',
+  'human_review_required',
+  'rejected',
+  'blocked',
+  'failed',
+] as const;
+export type AiReviewState = (typeof aiReviewStateValues)[number];
+
+export const reviewFindingSeverityValues = ['CRITICAL', 'IMPORTANT', 'MINOR'] as const;
+export type ReviewFindingSeverity = (typeof reviewFindingSeverityValues)[number];
+
+export const reviewFindingCategoryValues = [
+  'HOOK',
+  'PACING',
+  'STORY',
+  'GAMEPLAY',
+  'VIDEO',
+  'AUDIO',
+  'CAPTIONS',
+  'FORMAT',
+  'BRAND',
+  'RIGHTS',
+  'METADATA',
+] as const;
+export type ReviewFindingCategory = (typeof reviewFindingCategoryValues)[number];
+
+export interface ReviewFinding {
+  finding_id: string;
+  severity: ReviewFindingSeverity;
+  timecode_start: number;
+  timecode_end: number;
+  category: ReviewFindingCategory;
+  issue: string;
+  recommended_fix: string;
+  evidence: string;
+  repairable: boolean;
+}
+
+export interface ReviewScorecard {
+  HOOK: number;
+  PACING: number;
+  STORY: number;
+  GAMEPLAY: number;
+  VIDEO: number;
+  AUDIO: number;
+  CAPTIONS: number;
+  FORMAT: number;
+  BRAND: number;
+  RIGHTS: number;
+  METADATA: number;
+  total: number;
+}
+
+export interface ArtifactVersion {
+  id: string;
+  label: string;
+  path: string;
+  parentVersion: string | null;
+  findingsAddressed: string[];
+  reviewScore: number | null;
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface IndependentReviewRecord {
+  round: number;
+  reviewerAgent: string;
+  creatorAgent: string;
+  decision: AiReviewDecision;
+  score: ReviewScorecard;
+  findings: ReviewFinding[];
+  versionId: string;
+  createdAt: string;
+  modelHints: {
+    visual: string;
+    narrative: string;
+  };
+}
+
+export interface IndependentReviewState {
+  state: AiReviewState;
+  round: number;
+  maxRounds: typeof MAX_REVIEW_ROUNDS;
+  decision?: AiReviewDecision;
+  score?: ReviewScorecard;
+  findings: ReviewFinding[];
+  versions: ArtifactVersion[];
+  reviews: IndependentReviewRecord[];
+  currentVersionId?: string;
+  lastReviewedAt?: string;
+}
+
+export interface RightsManifest {
+  GAMEPLAY_RIGHTS: 'OWNED' | 'UNKNOWN' | 'BLOCKED';
+  MUSIC_RIGHTS: 'OWNED' | 'UNKNOWN' | 'BLOCKED';
+  ASSET_RIGHTS: 'OWNED' | 'UNKNOWN' | 'BLOCKED';
+  DRAGON_ASSETS: 'OWNED' | 'NONE' | 'UNKNOWN' | 'BLOCKED';
+  THUMBNAIL_ASSETS: 'OWNED' | 'UNKNOWN' | 'BLOCKED';
+  publishReady: boolean;
+}
+
+export interface PlatformVariantPackage {
+  platform: PublishingPlatform;
+  aspectRatio: '9:16' | '1:1' | '16:9';
+  maxDurationSec: number;
+  videoPath: string;
+  title: string;
+  caption: string;
+  description: string;
+  hashtags: string[];
+  thumbnailPath?: string;
 }
 
 export interface RightsGateResult {
@@ -451,6 +669,13 @@ export interface ContentProjectEnvelope {
   research?: string[];
   brandKit?: BrandKit;
   universeContext?: UniverseProjectBinding;
+  qaFlags?: string[];
+  session?: GameplaySessionMeta;
+  selectedClipIds?: string[];
+  publishJobs?: ContentPublishJob[];
+  aiReview?: IndependentReviewState;
+  rightsManifest?: RightsManifest;
+  distributionPackages?: PlatformVariantPackage[];
 }
 
 export interface ContentProjectCreateInput {

@@ -1,7 +1,8 @@
+import { execFile } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { promisify } from 'node:util';
 
-import { execa } from 'execa';
 import { listBranchEntries, resolveRepoRoot } from '@intcloudsysops/git-branch-orchestrator';
 
 import { appendSessionLog, loadSession, resolveStateDir } from './store.js';
@@ -45,6 +46,18 @@ async function readLogsTail(sessionId: string, maxLines = 40): Promise<string | 
   }
 }
 
+const execFileAsync = promisify(execFile);
+
+async function runGit(args: string[], cwd: string): Promise<{ stdout: string; stderr: string }> {
+  try {
+    const { stdout, stderr } = await execFileAsync('git', args, { cwd });
+    return { stdout, stderr };
+  } catch (err) {
+    const e = err as { stdout?: string; stderr?: string };
+    return { stdout: e.stdout ?? '', stderr: e.stderr ?? '' };
+  }
+}
+
 async function gitSnapshot(
   workspace: string,
 ): Promise<{ status?: string; diffStat?: string; changedFiles: string[] }> {
@@ -57,9 +70,9 @@ async function gitSnapshot(
   }
   try {
     const [status, diffStat, nameOnly] = await Promise.all([
-      execa('git', ['status', '--short'], { cwd: workspace, reject: false }),
-      execa('git', ['diff', '--stat'], { cwd: workspace, reject: false }),
-      execa('git', ['diff', '--name-only'], { cwd: workspace, reject: false }),
+      runGit(['status', '--short'], workspace),
+      runGit(['diff', '--stat'], workspace),
+      runGit(['diff', '--name-only'], workspace),
     ]);
     const changedFiles = nameOnly.stdout
       .split('\n')

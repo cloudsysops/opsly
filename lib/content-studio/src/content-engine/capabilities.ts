@@ -10,6 +10,9 @@ export const CONTENT_OS_CAPABILITIES = [
   'thumbnail_ideation',
   'media_render',
   'content_qa',
+  'independent_ai_review',
+  'review_repair',
+  'distribution_packages',
   'rights_review',
   'analytics',
 ] as const;
@@ -28,7 +31,10 @@ export function contentOsCapabilityMap(): Record<ContentOsCapability, string> {
     caption_writer: 'content-engine/ffmpeg.ts',
     thumbnail_ideation: 'content-engine/ffmpeg.ts',
     media_render: 'content-engine/ffmpeg.ts',
-    content_qa: 'content-engine/validation.ts',
+    content_qa: 'content-engine/media-qa.ts',
+    independent_ai_review: 'content-engine/review-loop.ts',
+    review_repair: 'content-engine/review-repair.ts',
+    distribution_packages: 'content-engine/distribution.ts',
     rights_review: 'content-engine/rights.ts',
     analytics: 'not-wired-no-metrics-source',
   };

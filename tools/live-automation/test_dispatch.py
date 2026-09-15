@@ -14,6 +14,11 @@ class TestDispatch(unittest.TestCase):
             d.run_command({"action": "evil_exec", "params": {}})
         self.assertIn("unknown", str(ctx.exception).lower())
 
+    def test_streaming_is_blocked_by_policy(self) -> None:
+        with self.assertRaises(PermissionError) as ctx:
+            d.run_command({"action": "start_stream", "params": {}})
+        self.assertIn("blocked", str(ctx.exception).lower())
+
     def test_params_must_be_object(self) -> None:
         with self.assertRaises(ValueError) as ctx:
             d.run_command({"action": "get_version", "params": "nope"})
@@ -44,6 +49,21 @@ class TestDispatch(unittest.TestCase):
         out = d.run_command({"action": "get_version"})
         self.assertEqual(out.get("obs_version"), "30.0.0")
         self.assertNotIn("_private", out)
+
+    @patch.object(d, "_client")
+    def test_record_actions_are_allowlisted(self, mock_factory: MagicMock) -> None:
+        mock_c = MagicMock()
+        mock_factory.return_value = mock_c
+        self.assertEqual(
+            d.run_command({"action": "start_record"}).get("action"),
+            "start_record",
+        )
+        self.assertEqual(
+            d.run_command({"action": "save_replay_buffer"}).get("action"),
+            "save_replay_buffer",
+        )
+        mock_c.start_record.assert_called_once_with()
+        mock_c.save_replay_buffer.assert_called_once_with()
 
 
 if __name__ == "__main__":

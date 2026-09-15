@@ -24,10 +24,16 @@ interface SuperOrchestratorConfig {
   configDir: string;
 }
 
+// Resolved relative to this compiled file (apps/orchestrator/dist/) rather than
+// process.cwd(), which varies by launcher (npm --workspace runs with cwd=apps/orchestrator,
+// Docker CMD runs with WORKDIR=/app/apps/orchestrator) and never matched where
+// scripts/super_orchestrator actually lives (repo root, three levels up from dist/).
+const REPO_ROOT = resolve(__dirname, '../../..');
+
 const DEFAULT_CONFIG: SuperOrchestratorConfig = {
   pythonPath: 'python3',
-  scriptsDir: join(process.cwd(), 'scripts/super_orchestrator'),
-  configDir: join(process.cwd(), 'config')
+  scriptsDir: join(REPO_ROOT, 'scripts/super_orchestrator'),
+  configDir: join(REPO_ROOT, 'config')
 };
 
 export class SuperOrchestratorBridge {

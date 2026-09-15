@@ -51,6 +51,8 @@ function defaultCapabilities() {
     'llm.local',
     'embedding',
     'ffmpeg',
+    'gpu.telemetry',
+    'nvidia.capture',
   ];
 }
 

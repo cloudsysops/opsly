@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Auto-reconnect PC-gamer when Tailscale comes back.
+  Install (replace __OPSLY_ROOT__):
+    sed "s|__OPSLY_ROOT__|$HOME/cboteros/proyectos/intcloudsysops|g" \
+      infra/launchd/com.opsly.pcgamerwatch.plist \
+      > ~/Library/LaunchAgents/com.opsly.pcgamerwatch.plist
+    launchctl bootout gui/$(id -u)/com.opsly.pcgamerwatch 2>/dev/null || true
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.opsly.pcgamerwatch.plist
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.opsly.pcgamerwatch</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>__OPSLY_ROOT__/scripts/ops/pc-gamer-watch.sh</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>__OPSLY_ROOT__</string>
+  <key>StartInterval</key>
+  <integer>120</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/dragon/.nvm/versions/node/v22.22.3/bin:/opt/homebrew/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>OPSLY_ROOT</key>
+    <string>__OPSLY_ROOT__</string>
+    <key>PC_GAMER_BRANCH</key>
+    <string>main</string>
+    <key>PC_GAMER_SSH_HOST</key>
+    <string>pc-gamer</string>
+    <key>PC_GAMER_TAILSCALE_HOST</key>
+    <string>pc-gamer</string>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/dragon/Library/Logs/opsly/pc-gamer-watch.launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/dragon/Library/Logs/opsly/pc-gamer-watch.launchd.log</string>
+</dict>
+</plist>
