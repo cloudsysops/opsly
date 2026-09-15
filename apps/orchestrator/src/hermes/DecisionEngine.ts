@@ -77,6 +77,9 @@ export class DecisionEngine {
         priority: 50_000,
       };
     }
+    if (t === 'content-review') {
+      return { agentType: 'ollama', queueName: 'openclaw', priority: 0 };
+    }
     if (t === 'decision') {
       return { agentType: 'claude', queueName: 'openclaw', priority: 0 };
     }

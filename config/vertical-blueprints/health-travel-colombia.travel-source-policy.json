@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "policy_id": "health-travel-colombia-travel-source-policy",
+  "preferred_source_order": [
+    "official_partner_api",
+    "approved_affiliate_feed",
+    "contracted_local_partner",
+    "manually_verified_offer"
+  ],
+  "source_requirements": {
+    "attribution_supported": true,
+    "current_price_required": true,
+    "cancellation_terms_required": true,
+    "currency_required": true,
+    "last_verified_at_required": true
+  },
+  "prohibited": [
+    "scrape source when terms prohibit it",
+    "present stale price as bookable",
+    "hide affiliate relationship where disclosure is required",
+    "auto-book without user approval"
+  ],
+  "ranking_dimensions": [
+    "total_price",
+    "distance_to_provider",
+    "change_or_cancellation_policy",
+    "baggage_or_inclusions",
+    "accessibility_fit",
+    "traveler_preference",
+    "commission_as_secondary_dimension"
+  ]
+}
