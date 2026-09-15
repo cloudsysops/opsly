@@ -1,0 +1,109 @@
+name: PR Reconciliation Inventory
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+  actions: read
+
+concurrency:
+  group: pr-reconciliation-inventory
+  cancel-in-progress: true
+
+jobs:
+  inventory:
+    name: Classify open pull requests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build reconciliation inventory
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RECONCILIATION_OUTPUT: pr-reconciliation-inventory.json
+        run: node scripts/ops/pr-reconciliation-inventory.mjs
+
+      - name: Build supervised reconciliation workpacks
+        env:
+          RECONCILIATION_INVENTORY: pr-reconciliation-inventory.json
+          RECONCILIATION_WORKPACKS: pr-reconciliation-workpacks.json
+        run: node scripts/ops/pr-reconciliation-workpacks.mjs
+
+      - name: Build supervised AgentTaskEnvelopeV1 tasks
+        env:
+          RECONCILIATION_WORKPACKS: pr-reconciliation-workpacks.json
+          RECONCILIATION_AGENT_ENVELOPES: pr-reconciliation-agent-envelopes.json
+        run: node scripts/ops/pr-reconciliation-agent-envelopes.mjs
+
+      - name: Build branch cleanup candidates
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RECONCILIATION_CLEANUP: pr-reconciliation-cleanup-candidates.json
+        run: node scripts/ops/pr-reconciliation-cleanup-candidates.mjs
+
+      - name: Validate reconciliation contracts
+        run: |
+          node --test scripts/ops/__tests__/pr-reconciliation-agent-envelopes.test.mjs
+          node --test scripts/ops/__tests__/pr-reconciliation-cleanup-candidates.test.mjs
+
+      - name: Publish reconciliation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-reconciliation
+          path: |
+            pr-reconciliation-inventory.json
+            pr-reconciliation-workpacks.json
+            pr-reconciliation-agent-envelopes.json
+            pr-reconciliation-cleanup-candidates.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Write run summary
+        shell: bash
+        run: |
+          node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require('fs');
+          const inventory = JSON.parse(fs.readFileSync('pr-reconciliation-inventory.json', 'utf8'));
+          const workpacks = JSON.parse(fs.readFileSync('pr-reconciliation-workpacks.json', 'utf8'));
+          const envelopes = JSON.parse(fs.readFileSync('pr-reconciliation-agent-envelopes.json', 'utf8'));
+          const cleanup = JSON.parse(fs.readFileSync('pr-reconciliation-cleanup-candidates.json', 'utf8'));
+          console.log('# PR Reconciliation Inventory');
+          console.log('');
+          console.log(`Generated: ${inventory.generatedAt}`);
+          console.log('');
+          console.log('| Lane | Count |');
+          console.log('| --- | ---: |');
+          for (const [lane, count] of Object.entries(inventory.summary)) {
+            console.log(`| ${lane} | ${count} |`);
+          }
+          console.log('');
+          console.log(`Actionable supervised workpacks: **${workpacks.count}**`);
+          console.log(`Prepared AgentTaskEnvelopeV1 tasks: **${envelopes.count}**`);
+          console.log(`Recommended maximum parallel workers: **${workpacks.maxParallelismRecommendation}**`);
+          console.log(`Branch cleanup candidates (read-only): **${cleanup.cleanupCandidateCount}** / ${cleanup.totalBranches}`);
+          console.log('');
+          console.log('## Safety invariants');
+          console.log('- Read-only inventory/workpack/envelope/cleanup preparation');
+          console.log('- Agent envelopes are SUPERVISED_ONLY and dispatchAllowed=false');
+          console.log('- Cleanup only identifies candidates; it never deletes branches');
+          console.log('- Active PR heads and active dependency bases cannot be cleanup candidates');
+          console.log('- No auto-merge');
+          console.log('- No production deploy');
+          console.log('- No safe-daytime or hotfix-prod application');
+          console.log('- Peskids/production/runtime-sensitive surfaces are classified PROTECTED');
+          console.log('- Every workpack has one exclusive PR/branch lock key and expected head SHA');
+          NODE

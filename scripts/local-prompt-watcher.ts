@@ -159,12 +159,36 @@ function renderUnknown(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
-function decommentMarkdownPrompt(content: string): string {
-  return content
-    .split('\n')
-    .map((line) => line.replace(/^#\s?/, ''))
-    .join('\n')
-    .trim();
+/**
+ * Shell monitor (`cursor-prompt-monitor`) may store ACTIVE-PROMPT with `#` lines
+ * so it is not executed as shell. NEVER strip those markers when building an
+ * LLM/agent prompt — that would turn commented ops runbooks into live instructions
+ * (e.g. prod tenant DB/VPS work) and inject them into every queue task.
+ */
+function sanitizeActivePromptContext(content: string): string {
+  const trimmed = content.trim();
+  if (!trimmed) {
+    return '';
+  }
+  // If the file is primarily shell-monitor comment lines, do not pass it to agents.
+  const lines = trimmed.split('\n');
+  const codeLines = lines.filter((line) => {
+    const t = line.trim();
+    return t.length > 0 && !t.startsWith('#') && t !== '---';
+  });
+  const commentLines = lines.filter((line) => line.trim().startsWith('#'));
+  // Shell-monitor ACTIVE-PROMPT is almost entirely `#` lines (plus YAML ---).
+  // Treat that as non-agent context even if a few frontmatter lines remain.
+  if (commentLines.length > 0 && codeLines.length === 0) {
+    return '';
+  }
+  if (commentLines.length >= Math.max(3, codeLines.length * 2)) {
+    return '';
+  }
+  if (trimmed.includes('cursor-prompt-monitor')) {
+    return '';
+  }
+  return trimmed;
 }
 
 class LocalPromptWatcher {
@@ -245,7 +269,7 @@ class LocalPromptWatcher {
   private async readActivePromptContext(): Promise<string> {
     try {
       const content = await fsp.readFile(this.activePromptPath, 'utf-8');
-      return decommentMarkdownPrompt(content);
+      return sanitizeActivePromptContext(content);
     } catch {
       return '';
     }
@@ -466,16 +490,34 @@ class LocalPromptWatcher {
   }
 
   private async pollJob(jobId: string): Promise<JobStatusResponse | null> {
+    const url = `${this.orchestratorUrl}/api/job-status/${encodeURIComponent(jobId)}`;
     for (let attempt = 1; attempt <= this.pollAttempts; attempt += 1) {
-      const response = await fetch(`${this.orchestratorUrl}/api/job-status/${encodeURIComponent(jobId)}`, {
-        headers: { Authorization: `Bearer ${this.adminToken}` },
-      });
+      let response: Response;
+      try {
+        response = await fetch(url, {
+          headers: { Authorization: `Bearer ${this.adminToken}` },
+        });
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err);
+        console.warn(
+          `[LocalPromptWatcher] job-status fetch error (${attempt}/${this.pollAttempts}) ${jobId}: ${detail}`,
+        );
+        await sleep(this.pollIntervalMs);
+        continue;
+      }
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(`job-status auth failed HTTP ${response.status} for ${jobId}`);
+      }
       if (response.ok) {
         const status = (await response.json()) as JobStatusResponse;
         const normalized = normalizeStatus(status.status ?? status.state);
         if (normalized === 'completed' || normalized === 'failed') {
           return status;
         }
+      } else if (response.status !== 404) {
+        console.warn(
+          `[LocalPromptWatcher] job-status HTTP ${response.status} (${attempt}/${this.pollAttempts}) ${jobId}`,
+        );
       }
       await sleep(this.pollIntervalMs);
     }
