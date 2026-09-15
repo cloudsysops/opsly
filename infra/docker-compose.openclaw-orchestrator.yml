@@ -102,6 +102,7 @@ services:
       - LLM_GATEWAY_URL=http://llm-gateway:3010
       - OPSLY_ORCHESTRATOR_MODE=worker-enabled
       - OPSLY_GITHUB_REPO=cloudsysops/opsly
+      - OPSLY_LOCAL_AGENT_UNIFIED_ONLY=true
       - NODE_ENV=production
       - PORT=3011
       # Concurrency por worker

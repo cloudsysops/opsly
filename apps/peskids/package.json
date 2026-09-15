@@ -5,7 +5,7 @@
   "description": "After-school program management (MVP). Next.js aligned with the monorepo for security audit / CI.",
   "scripts": {
     "dev": "next dev -p 3004",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "next start -p 3004",
     "lint": "next lint",
     "type-check": "tsc --noEmit -p tsconfig.typecheck.json",

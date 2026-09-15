@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "worker": "pc-gamer",
+  "policy": {
+    "localOnly": true,
+    "humanApprovalRequiredForPublish": true,
+    "autoPublish": false,
+    "customerDataAllowed": false,
+    "streamingAllowed": false
+  },
+  "tools": {
+    "nvidia": {
+      "provider": "nvidia-app",
+      "gpu": "RTX 5070 Ti",
+      "telemetryCommand": "nvidia-smi --query-gpu=name,driver_version,memory.used,memory.total,utilization.gpu,temperature.gpu --format=csv,noheader,nounits",
+      "heartbeat": "scripts/ops/pc-gamer-heartbeat-payload.mjs",
+      "captureDirectories": [
+        "C:/Users/PC MAURO/Videos/NVIDIA/Valorant",
+        "C:/Users/PC MAURO/AppData/Local/NVIDIA Corporation/NVIDIA Overlay/Highlights"
+      ],
+      "publishing": "disabled",
+      "autoDriverUpdate": false
+    },
+    "obsPlugins": [
+      {
+        "id": "aitum-vertical",
+        "version": "1.6.4",
+        "purpose": "vertical canvas for Shorts/Reels/TikTok",
+        "installPath": "C:/ProgramData/obs-studio/plugins/vertical-canvas",
+        "source": "https://github.com/Aitum/obs-vertical-canvas/releases/tag/1.6.4",
+        "sha256": "91a7edb5ce9c39f70135964b2084c77b7cc4bf43608e3a4fb7e44345ff54f4f7"
+      },
+      {
+        "id": "advanced-scene-switcher",
+        "version": "1.36.1",
+        "purpose": "safe scene automation and event-driven capture workflows",
+        "installPath": "C:/ProgramData/obs-studio/plugins/advanced-scene-switcher",
+        "source": "https://github.com/WarmUpTill/SceneSwitcher/releases/tag/1.36.1",
+        "sha256": "7119dff4c4cb7b5e0a7cf8e9549cee2d157a0621f4797f4ce3caa1f7cb66b286"
+      },
+      {
+        "id": "obs-shaderfilter",
+        "version": "2.6.0",
+        "purpose": "optional visual effects and shader filters for edited clips",
+        "installPath": "C:/ProgramData/obs-studio/plugins/obs-shaderfilter",
+        "source": "https://github.com/exeldro/obs-shaderfilter/releases/tag/2.6.0",
+        "sha256": "0e75fc5f2523befd9c66c0adb14f9c838cc0cd705b32487e121abb03ad2f2486"
+      }
+    ],
+    "obsScripts": [
+      {
+        "id": "smart-replay-mover",
+        "version": "2.15.0",
+        "purpose": "organize replay clips by active game",
+        "path": "C:/Users/PC MAURO/Documents/Opsly/OBS/SmartReplay/Smart_Replay_Mover.lua",
+        "source": "https://github.com/SlonickLab/Smart-Replay-Mover/releases/tag/v2.15.0",
+        "sha256": "26021fed6e3b2dc0a1a95a87872cf750c1d4ab7f9f3e57f355f43e6c4866c5e6",
+        "publishing": "disabled",
+        "requiresManualObsActivation": true
+      }
+    ],
+    "obs": {
+      "transport": "obs-websocket-5",
+      "endpoint": "ws://127.0.0.1:4455",
+      "command": "scripts/opsly-live-obs.sh",
+      "allowedActions": [
+        "get_version",
+        "get_stream_status",
+        "get_stats",
+        "get_record_status",
+        "start_record",
+        "stop_record",
+        "pause_record",
+        "resume_record",
+        "save_replay_buffer",
+        "set_current_program_scene",
+        "get_current_program_scene",
+        "get_scene_list"
+      ],
+      "blockedActions": [
+        "start_stream",
+        "stop_stream",
+        "set_stream_service_settings"
+      ],
+      "secretSource": "OBS_WEBSOCKET_PASSWORD_FILE"
+    },
+    "content_pipeline": {
+      "command": "node scripts/content-os-cli.ts",
+      "capabilities": [
+        "ingest",
+        "prepare-highlight",
+        "validate",
+        "render-plan",
+        "rights-check",
+        "human-review-queue"
+      ],
+      "publishing": "approval-required"
+    },
+    "pythonAgents": {
+      "clipAgent": {
+        "command": "python3 scripts/ops/pc-gamer-clip-agent.py",
+        "role": "local orchestration for gameplay highlight preparation",
+        "delegatesTo": "scripts/content-os-cli.ts prepare-highlight",
+        "publishing": "disabled",
+        "approvalRequired": true,
+        "network": "disabled-by-default"
+      }
+    },
+    "vendor_research": {
+      "command": "opsly-content-vendor",
+      "networkFetch": false,
+      "researchOnly": true,
+      "publishing": "disabled"
+    }
+  }
+}

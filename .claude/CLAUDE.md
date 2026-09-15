@@ -103,7 +103,7 @@ Templates: `skills/templates/` — `template-api-route.md`, `template-migration.
 
 **Integrated:** Addy Osmani's 23 production-grade skills (https://github.com/addyosmani/agent-skills)  
 **Adapter:** `opsly-agent-skills-bridge` bridges agent-skills to Opsly domain patterns  
-**Location:** `vendor/agent-skills/` + `skills/user/opsly-agent-skills-bridge/`
+**Location:** `skills/vendor/agent-skills/` + `skills/user/opsly-agent-skills-bridge/`
 
 ### Usage
 

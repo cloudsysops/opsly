@@ -208,7 +208,16 @@ describe('enrollment form + submit', () => {
       lead: { id: 'lead-1', status: 'enrolled', referral_source: 'instagram' },
     });
 
-    const first = await submitEnrollmentForm({ store, rawToken: raw, body: validForm });
+    // Fixed inside the fixture's created_at (2026-09-01) .. expires_at
+    // (2026-09-14) window. Without an explicit `now`, resolveEnrollmentToken
+    // falls back to the real system clock (policy.ts default
+    // `now: Date = new Date()`) and this hardcoded expires_at eventually
+    // lands in the past — the token then reads as expired regardless of
+    // what this test is actually exercising. That's what was happening
+    // here: not flaky, just a fixture with a real-world expiration date.
+    const now = new Date('2026-09-08T12:00:00.000Z');
+
+    const first = await submitEnrollmentForm({ store, rawToken: raw, body: validForm, now });
     expect(first.ok).toBe(true);
     if (first.ok) {
       expect(first.student_id).toBe('stu-1');
@@ -225,7 +234,7 @@ describe('enrollment form + submit', () => {
     );
 
     convertLeadToStudentMock.mockClear();
-    const retry = await submitEnrollmentForm({ store, rawToken: raw, body: validForm });
+    const retry = await submitEnrollmentForm({ store, rawToken: raw, body: validForm, now });
     expect(retry.ok).toBe(true);
     if (retry.ok) {
       expect(retry.already_submitted).toBe(true);
@@ -277,7 +286,10 @@ describe('enrollment form + submit', () => {
     });
     emitEventMock.mockRejectedValue(new Error('orchestrator / n8n unreachable'));
 
-    const result = await submitEnrollmentForm({ store, rawToken: raw, body: validForm });
+    // Same real-clock-vs-fixture expiry issue as above — pin `now` inside
+    // the fixture's validity window.
+    const now = new Date('2026-09-08T12:00:00.000Z');
+    const result = await submitEnrollmentForm({ store, rawToken: raw, body: validForm, now });
     expect(result.ok).toBe(true);
     const saved = await store.getById('lead-1', 'peskids');
     expect(saved?.metadata.enrollment_outcome?.student.student_id).toBe('stu-offline');

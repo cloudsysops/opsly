@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "updated_at": "2026-09-11",
+  "notes": "One capability = one canonical owner. If two implementations exist: STOP and reconcile. Do not create a second task registry, router, worker registry, queue, or orchestrator.",
+  "capabilities": [
+    {
+      "capability": "task.contract",
+      "canonical_owner": "agent-task-core",
+      "path": "packages/types/src/agent-task.ts + lib/agent-task-core",
+      "status": "canonical",
+      "deprecated_paths": ["lib/agent-job-registry (JobSpec)"],
+      "notes": "AgentTaskEnvelopeV1 only"
+    },
+    {
+      "capability": "task.policy",
+      "canonical_owner": "agent-task-core",
+      "path": "lib/agent-task-core/src/policy.ts",
+      "status": "canonical",
+      "deprecated_paths": [],
+      "notes": ""
+    },
+    {
+      "capability": "task.routing",
+      "canonical_owner": "external-agent-registry",
+      "path": "lib/external-agent-registry",
+      "status": "canonical",
+      "deprecated_paths": ["lib/agent-job-registry findCandidateAgents"],
+      "notes": "Also config/agent-capabilities.json for local pool hints"
+    },
+    {
+      "capability": "task.runtime",
+      "canonical_owner": "orchestrator",
+      "path": "apps/orchestrator/src/runtime/agent-task-runtime.ts",
+      "status": "canonical",
+      "deprecated_paths": [],
+      "notes": "ADR-048 store = BullMQ local-agents + Redis"
+    },
+    {
+      "capability": "agent.registry",
+      "canonical_owner": "external-agent-registry",
+      "path": "lib/external-agent-registry",
+      "status": "canonical",
+      "deprecated_paths": [],
+      "notes": "Scorecards may extend via agent-learning without replacing registry"
+    },
+    {
+      "capability": "worker.registry",
+      "canonical_owner": "agent-services",
+      "path": "config/agent-services.json",
+      "status": "canonical",
+      "deprecated_paths": [],
+      "notes": ""
+    },
+    {
+      "capability": "queue.enqueue",
+      "canonical_owner": "orchestrator",
+      "path": "lib/agent-task-core OrchestratorAgentTaskClient + apps/orchestrator",
+      "status": "canonical",
+      "deprecated_paths": ["lib/agent-job-registry bullmq-adapter direct Queue.add"],
+      "notes": ""
+    },
+    {
+      "capability": "evidence",
+      "canonical_owner": "agent-learning",
+      "path": "lib/agent-learning",
+      "status": "canonical",
+      "deprecated_paths": ["lib/agent-job-registry"],
+      "notes": "Attaches to task_id = AgentTaskEnvelopeV1.request_id"
+    },
+    {
+      "capability": "review",
+      "canonical_owner": "ai-board",
+      "path": "lib/ai-board + skills/user/opsly-claude-codex-review",
+      "status": "canonical",
+      "deprecated_paths": [],
+      "notes": "Persisted review scores also stored in agent-learning by task_id"
+    },
+    {
+      "capability": "trust",
+      "canonical_owner": "agent-learning",
+      "path": "lib/agent-learning",
+      "status": "canonical",
+      "deprecated_paths": ["lib/agent-job-registry"],
+      "notes": "No agent starts autonomous"
+    },
+    {
+      "capability": "learning",
+      "canonical_owner": "agent-learning",
+      "path": "lib/agent-learning",
+      "status": "canonical",
+      "deprecated_paths": ["lib/agent-job-registry"],
+      "notes": "No model fine-tuning in MVP"
+    },
+    {
+      "capability": "evaluation",
+      "canonical_owner": "agent-learning",
+      "path": "lib/agent-learning",
+      "status": "canonical",
+      "deprecated_paths": [],
+      "notes": "Shadow tournaments / holdout evals"
+    }
+  ]
+}

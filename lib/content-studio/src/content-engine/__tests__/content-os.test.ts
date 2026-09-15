@@ -13,6 +13,7 @@ import { sanitizeDrawtext, ffmpegAvailable } from '../ffmpeg.js';
 import { publishPubliclyNotImplemented } from '../publishing.js';
 import { createManualTrendCandidate } from '../trends.js';
 import { contentOsCapabilityMap } from '../capabilities.js';
+import { scenesFromClipCandidates } from '../pipeline.js';
 import type { ContentProjectEnvelope } from '../types.js';
 
 function emptyEnvelope(tenantId: string, mode: 'original' | 'repurpose' | 'commentary'): ContentProjectEnvelope {
@@ -48,6 +49,44 @@ describe('content os contracts', () => {
     expect(clips[0].score).toBeGreaterThan(clips[4].score);
     expect(clips[0].reasons.length).toBeGreaterThan(0);
     expect(clips.every((clip) => clip.end > clip.start)).toBe(true);
+  });
+
+  it('creates ordered source-clip scenes for a repurpose render', () => {
+    const envelope = emptyEnvelope('creator-juan', 'repurpose');
+    envelope.assets.push({
+      id: 'source-video',
+      tenantId: envelope.project.tenantId,
+      projectId: envelope.project.id,
+      type: 'video',
+      path: 'runtime/content-os/tenants/creator-juan/assets/source.mp4',
+      source: 'source.mp4',
+      license: 'all-rights-reserved',
+      checksum: 'checksum',
+      metadata: {},
+    });
+
+    const scenes = scenesFromClipCandidates(envelope, [{
+      id: 'clip-1',
+      start: 12,
+      end: 20.5,
+      duration: 8.5,
+      transcript: '',
+      hook: 'VALORANT | visual highlight',
+      category: 'visual-highlight',
+      score: 10,
+      reasons: ['manual visual review'],
+    }]);
+
+    expect(scenes).toHaveLength(1);
+    expect(scenes[0]).toMatchObject({
+      id: 'scene-1',
+      projectId: envelope.project.id,
+      order: 1,
+      durationMs: 8500,
+      visualType: 'source_clip',
+      assetRefs: ['source-video'],
+      caption: 'VALORANT | visual highlight',
+    });
   });
 
   it('blocks unknown provenance and does not claim fair use', () => {
@@ -240,6 +279,13 @@ describe('content os contracts', () => {
       approvedAt: '2026-08-16T00:00:00.000Z',
     });
     expect(approved.project.status).toBe('approved');
+    const rejected = setProjectApproval(queued, {
+      state: 'rejected',
+      approvedBy: 'human',
+      approvedAt: '2026-08-16T00:00:00.000Z',
+    });
+    expect(rejected.project.status).toBe('failed');
+    expect(rejected.approval?.state).toBe('rejected');
   });
 
   it('enforces tenant isolation on assertSameTenant', () => {

@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "defaultMode": "FREE_ONLY",
+  "unknownCostRequiresApproval": true,
+  "paidRequiresApproval": true,
+  "ephemeralRequiresTtl": true,
+  "requireDestroyPlan": true,
+  "requirePlanBeforeApply": true,
+  "allowedAutoApplyCostClasses": ["free", "free_with_quota"],
+  "prohibitedPatterns": [
+    "second-orchestrator",
+    "second-control-plane",
+    "second-queue",
+    "public-redis",
+    "public-database",
+    "persistent-cloud-ai-runtime"
+  ],
+  "requiredMetadata": [
+    "owner",
+    "purpose",
+    "environment",
+    "cost_class"
+  ],
+  "requiredEphemeralMetadata": [
+    "ttl",
+    "expires_at"
+  ]
+}

@@ -9,6 +9,10 @@ tags:
 
 # Opsly Content Studio — Phase 2 Architecture
 
+> **Historical (event → social draft).** Production gameplay path:
+> [`CONTENT-PIPELINE-CANONICAL.md`](./CONTENT-PIPELINE-CANONICAL.md)
+> and `config/content-capabilities.json`. Do not extend this doc as a second pipeline.
+
 ## Vision
 Tenants + Opsly generate educational, brand-building content from real operational progress without manual work, without violating platform rules, without exposing secrets.
 
@@ -255,3 +259,4 @@ POST /api/content/regenerate      # Rerun generators for a draft
 
 - [[00-architecture/README|00-architecture]]
 - [[brain/README|Brain Central]]
+- [[superpowers/specs/2026-09-09-content-vendor-research|Vendor research (fuera del monorepo)]]
