@@ -5,6 +5,13 @@ const CLEAN_REVIEW_PHRASES = [
   "Codex Review: Didn't find any major issues.",
   'did not find any major issues',
   "didn't find any major issues",
+  // GitHub Copilot's actual code-review header for its clean verdict — not
+  // Codex phrasing. Confirmed against real review bodies: clean reviews say
+  // "### 🟢 Approval recommended" / "No unresolved review issues were
+  // identified."; non-clean ones say "### 🔵 Needs a closer look" instead.
+  // Match the emoji+text pairing specifically (not "approval" alone) so a
+  // findings review that merely mentions approval elsewhere can't match.
+  '🟢 approval recommended',
 ];
 
 const DEFAULT_REVIEW_BOTS = [
