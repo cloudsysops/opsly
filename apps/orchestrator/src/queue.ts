@@ -86,6 +86,20 @@ export async function enqueueJob(job: OrchestratorJob) {
   return bull;
 }
 
+export function localAgentJobIdFor(job: OrchestratorJob): string | undefined {
+  const rawJobId =
+    typeof job.idempotency_key === 'string' && job.idempotency_key.trim().length > 0
+      ? job.idempotency_key.trim()
+      : job.request_id;
+  return typeof rawJobId === 'string' && rawJobId.trim().length > 0
+    ? sanitizeQueueJobId(`${job.type}-${rawJobId.trim()}`)
+    : undefined;
+}
+
+export async function getLocalAgentJobById(jobId: string) {
+  return localAgentQueue.getJob(jobId);
+}
+
 /** Enqueue job to local-agents queue for execution on local machines (Cursor, Claude, etc) */
 export async function enqueueLocalAgentJob(
   jobOrName: OrchestratorJob | string,
@@ -94,14 +108,7 @@ export async function enqueueLocalAgentJob(
 ) {
   if (typeof jobOrName === 'object' && jobOrName !== null && 'type' in jobOrName) {
     const job = jobOrName as OrchestratorJob;
-    const rawJobId =
-      typeof job.idempotency_key === 'string' && job.idempotency_key.trim().length > 0
-        ? job.idempotency_key.trim()
-        : job.request_id;
-    const jobId =
-      typeof rawJobId === 'string' && rawJobId.trim().length > 0
-        ? sanitizeQueueJobId(`${job.type}-${rawJobId.trim()}`)
-        : undefined;
+    const jobId = localAgentJobIdFor(job);
     const bull = await localAgentQueue.add(job.type, job, {
       jobId,
       priority: 40000,
