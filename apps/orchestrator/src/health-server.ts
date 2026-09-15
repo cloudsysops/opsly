@@ -1,6 +1,7 @@
 import { createServer, type Server } from 'node:http';
 import { parseControlMode, setLocalControlMode } from './control-mode.js';
 import { Router } from './http/router.js';
+import { handleLocalHeartbeats } from './http/routes/heartbeat.js';
 import {
   handleHealthCheck,
   handleOpenclawJobStatus,
@@ -28,6 +29,7 @@ import {
   handleTerminalSessionStop,
   handleLocalControlMode,
   handleLocalState,
+  handleLocalQueueHealth,
   handleLocalPromptSubmit,
   handleExternalAgentsRegistry,
   handleValidationMetrics,
@@ -151,6 +153,8 @@ function buildRouter(): Router {
   r.post('/api/local/prompt-submit', handleLocalPromptSubmit);
   r.post('/api/local/control-mode', handleLocalControlMode);
   r.get('/api/local/state', handleLocalState);
+  r.get('/api/local/queue-health', handleLocalQueueHealth);
+  r.get('/api/local/heartbeats', handleLocalHeartbeats);
   r.get('/api/local/external-agents', handleExternalAgentsRegistry);
   r.get('/internal/external-agents/registry', handleExternalAgentsRegistry);
 

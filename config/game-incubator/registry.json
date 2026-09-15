@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "states": ["IDEA", "RESEARCH", "PROTOTYPE", "PLAYABLE", "PLAYTEST", "ITERATE", "CANDIDATE", "GRADUATED"],
+  "experiments": [
+    {"id":"retro-star-paddle-001","source":"star-paddle","status":"PLAYABLE","mechanics":["paddle","bounce","score"],"original_expression":true},
+    {"id":"retro-crystal-breaker-001","source":"crystal-breaker","status":"PLAYABLE","mechanics":["paddle","break","combo"],"original_expression":true},
+    {"id":"retro-nexus-snake-001","source":"nexus-snake","status":"PLAYABLE","mechanics":["grid-movement","collect","growth"],"original_expression":true},
+    {"id":"retro-meteor-dodge-001","source":"meteor-dodge","status":"PLAYABLE","mechanics":["dodge","survival","score"],"original_expression":true}
+  ]
+}

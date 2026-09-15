@@ -1,7 +1,7 @@
 ---
 status: active
 owner: operations
-last_review: 2026-09-07
+last_review: 2026-09-11
 type: infrastructure
 tags:
   - opsly/infrastructure
@@ -285,6 +285,13 @@ swap=4GB
 Allowed now: **CPython stdlib only** (`/usr/bin/python3`, 3.12). No `pip install`, venv, torch, whisper, opencv, ultralytics, or numpy until a later approved capability needs them.
 
 `scripts/ops/pc-gamer-clip-agent.py` lives on **PR #1155**, not on gamer `main` until that PR merges and the host pulls the exact SHA. Proof after that pull: `python3 scripts/ops/pc-gamer-clip-agent.py --help`, then one local highlight with `OPSLY_CONTENT_PUBLISHING=disabled`. Do not add Auto-clipper / Remotion / Whisper / OpenCV / YOLO before that proof.
+
+## Archivos (continuación — autonomía Mac)
+
+| Path | Uso |
+|------|-----|
+| `scripts/ops/pc-gamer-watch.sh` | **Launchd watcher:** Tailscale online + worker no sano → `pc-gamer-reconnect.sh` (main) |
+| `infra/launchd/com.opsly.pcgamerwatch.plist` | LaunchAgent cada 120s (Mac opsly-admin) |
 | `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md` | Cómo ajustar horas con el dueño |
 | `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md` | Runbook crecimiento overnight |
 | `scripts/ops/start-mac-local-agents-worker.sh` | Worker Mac solo cola `local-agents` |
@@ -293,6 +300,7 @@ Allowed now: **CPython stdlib only** (`/usr/bin/python3`, 3.12). No `pip install
 | `scripts/ops/ensure-overnight-autodispatch-launchd.sh` | Instalar LaunchAgent del autodispatch (5 min, Doppler) |
 | `infra/launchd/com.opsly.pc-gamer-autodispatch.plist` | LaunchAgent: corre el autodispatch cada 5 min |
 | `docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md` | Runbook del autodispatch overnight |
+| `docs/design/AUTONOMOUS-INCOME-SERVICES.md` | Blueprint: Content OS → Moon → ingresos sin romper Peskids |
 
 ## Relacionado
 
@@ -305,3 +313,55 @@ Allowed now: **CPython stdlib only** (`/usr/bin/python3`, 3.12). No `pip install
 - `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`
 - `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md`
 - `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md`
+
+
+## OpenCode local-first sin suscripción
+
+El PC Gamer es ahora la ubicación preferida para tareas de implementación con costo de tokens $0:
+
+```text
+Opsly scheduler
+→ local-agents
+→ PC Gamer
+→ OpenCode
+→ Ollama GPU
+→ code/tests/evidence
+```
+
+Validar antes de usar:
+
+```bash
+cd ~/opsly
+git pull --ff-only origin main
+npm run pc-gamer:opencode:doctor
+```
+
+Si el doctor devuelve `LOCAL_FIRST_READY`:
+
+```bash
+npm run pc-gamer:opencode:autostart
+npm run pc-gamer:opencode:status
+```
+
+El modelo ya no está fijado a `llama3.2`. Se resuelve desde el inventario real de Ollama según:
+
+```text
+OPSLY_OPENCODE_MODEL (override)
+→ qwen3-coder
+→ qwen2.5-coder
+→ devstral
+→ gpt-oss
+→ codestral
+→ llama3.2
+→ primer modelo instalado
+```
+
+La lista puede cambiarse mediante `OPSLY_LOCAL_MODEL_PREFERENCE` sin editar código.
+
+Para instalar un modelo concreto se requiere acción explícita:
+
+```bash
+./scripts/ops/pc-gamer-opencode-plane.sh --pull-model=<modelo>
+```
+
+No se descarga ningún modelo implícitamente durante el arranque.

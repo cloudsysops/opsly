@@ -77,3 +77,22 @@ export async function tmuxKillSession(name: string): Promise<void> {
   }
   await execFileAsync('tmux', ['kill-session', '-t', name], { timeout: 10000 });
 }
+
+
+export async function tmuxWaitUntilGone(
+  name: string,
+  timeoutMs = 300000,
+  pollMs = 500
+): Promise<void> {
+  if (isDryRun()) {
+    return;
+  }
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (!(await tmuxHasSession(name))) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, pollMs));
+  }
+  throw new Error(`tmux session timed out: ${name}`);
+}

@@ -59,10 +59,18 @@ export default async function MoonCreatorPage({
 
   return (
     <div className="space-y-6">
-      <MoonPageHeader
-        title="Creator Studio"
-        subtitle="Content OS multi-tenant. Agentes preparan; humanos aprueban. Sin métricas inventadas."
-      />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <MoonPageHeader
+          title="Creator Studio"
+          subtitle="Content OS multi-tenant. Agentes preparan; humanos aprueban. Sin métricas inventadas."
+        />
+        <Link
+          href="/moon/creator/command-deck"
+          className="rounded-lg border border-violet-400/30 bg-violet-500/10 px-3 py-2 font-mono text-[11px] uppercase tracking-wide text-violet-100"
+        >
+          Command Deck
+        </Link>
+      </div>
       <div className="flex flex-wrap gap-2">
         {CREATOR_TABS.map((item) => (
           <Link

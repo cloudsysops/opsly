@@ -184,16 +184,40 @@ dump_plan() {
   echo "SERVICES=${COMPOSE_SERVICES[*]}"
 }
 
+# Stale containers (Created/Exited) with fixed names block `compose up` (Conflict).
+# Keep running ones; remove only non-running name collisions.
+reconcile_named_containers() {
+  local names=(opsly-pc-gamer-worker-openclaw opslyquantum-ollama)
+  local name id status
+  [[ "$DRY_RUN" == "true" ]] && return 0
+  for name in "${names[@]}"; do
+    id="$(docker ps -aq --filter "name=^/${name}$" 2>/dev/null || true)"
+    [[ -n "$id" ]] || continue
+    status="$(docker inspect -f '{{.State.Status}}' "$id" 2>/dev/null || echo missing)"
+    if [[ "$status" == "running" ]]; then
+      echo "[pc-gamer-docker] keep running $name"
+      continue
+    fi
+    echo "[pc-gamer-docker] removing stale $name (status=$status)"
+    docker rm -f "$id" >/dev/null 2>&1 || true
+  done
+}
+
 compose_up() {
   need_docker
   ensure_env
   stop_native_competitors
   build_compose_plan
+  reconcile_named_containers
   if [[ "$USE_HOST_OLLAMA" == "true" ]]; then
     echo "[pc-gamer-docker] Using host Ollama — starting worker only"
   fi
   echo "[pc-gamer-docker] docker compose up -d ${COMPOSE_SERVICES[*]} (unified, ignore_orphans=1)"
-  run compose up -d "${COMPOSE_SERVICES[@]}"
+  if ! run compose up -d "${COMPOSE_SERVICES[@]}"; then
+    echo "[pc-gamer-docker] up failed — reconcile + force-recreate once"
+    reconcile_named_containers
+    run compose up -d --force-recreate "${COMPOSE_SERVICES[@]}"
+  fi
   if [[ "$PULL_MODEL" == "true" && "$USE_HOST_OLLAMA" != "true" && "$DRY_RUN" != "true" ]]; then
     echo "[pc-gamer-docker] Pulling ${OLLAMA_MODEL}…"
     docker exec opslyquantum-ollama ollama pull "$OLLAMA_MODEL" || true
@@ -246,9 +270,18 @@ install_autostart() {
   local unit="$unit_dir/opsly-pc-gamer-docker.service"
   local timer="$unit_dir/opsly-pc-gamer-heartbeat.timer"
   local hb_svc="$unit_dir/opsly-pc-gamer-heartbeat.service"
+  local autostart_args="--up"
+
+  # Persist the execution mode selected when autostart is installed.
+  # Without these flags a cold WSL start silently drops the content plane
+  # and/or switches away from host Ollama even though the interactive
+  # bootstrap was healthy.
+  [[ "$WITH_CONTENT" == "true" ]] && autostart_args+=" --with-content"
+  [[ "$USE_HOST_OLLAMA" == "true" ]] && autostart_args+=" --use-host-ollama"
 
   if [[ "$DRY_RUN" == "true" ]]; then
     echo "[dry-run] would write $unit $hb_svc $timer"
+    echo "[dry-run] autostart_exec=$ROOT/scripts/ops/pc-gamer-docker-plane.sh $autostart_args"
     echo "[dry-run] systemctl --user enable --now opsly-pc-gamer-docker.service opsly-pc-gamer-heartbeat.timer"
     return 0
   fi
@@ -265,7 +298,7 @@ Wants=network-online.target
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=${ROOT}
-ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up
+ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh ${autostart_args}
 TimeoutStartSec=600
 
 [Install]
