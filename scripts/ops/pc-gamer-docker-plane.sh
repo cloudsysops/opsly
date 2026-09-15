@@ -270,9 +270,18 @@ install_autostart() {
   local unit="$unit_dir/opsly-pc-gamer-docker.service"
   local timer="$unit_dir/opsly-pc-gamer-heartbeat.timer"
   local hb_svc="$unit_dir/opsly-pc-gamer-heartbeat.service"
+  local autostart_args="--up"
+
+  # Persist the execution mode selected when autostart is installed.
+  # Without these flags a cold WSL start silently drops the content plane
+  # and/or switches away from host Ollama even though the interactive
+  # bootstrap was healthy.
+  [[ "$WITH_CONTENT" == "true" ]] && autostart_args+=" --with-content"
+  [[ "$USE_HOST_OLLAMA" == "true" ]] && autostart_args+=" --use-host-ollama"
 
   if [[ "$DRY_RUN" == "true" ]]; then
     echo "[dry-run] would write $unit $hb_svc $timer"
+    echo "[dry-run] autostart_exec=$ROOT/scripts/ops/pc-gamer-docker-plane.sh $autostart_args"
     echo "[dry-run] systemctl --user enable --now opsly-pc-gamer-docker.service opsly-pc-gamer-heartbeat.timer"
     return 0
   fi
@@ -289,7 +298,7 @@ Wants=network-online.target
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=${ROOT}
-ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up
+ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh ${autostart_args}
 TimeoutStartSec=600
 
 [Install]
