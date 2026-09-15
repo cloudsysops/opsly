@@ -36,6 +36,12 @@ FROM node:20-alpine AS runner
 
 ENV NODE_ENV=production
 
+# scripts/super_orchestrator/agent_pool_manager.py runs inside this container
+# (spawned by the Super Orchestrator integration for agent health checks) but
+# alpine ships no python3 by default -> spawn ENOENT, health checks always
+# report {healthy:0, unhealthy:0, total:0} regardless of real agent state.
+RUN apk add --no-cache python3
+
 WORKDIR /app
 
 COPY --from=builder /app/package.json ./
