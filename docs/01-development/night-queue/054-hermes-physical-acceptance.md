@@ -51,6 +51,14 @@ tracked workpack
 → teardown
 ```
 
+## Execution command
+
+```bash
+OPSLY_E2E_AGENT=hermes \
+OPSLY_E2E_EXPECT_MARKER=HERMES_OK \
+npm run opsly:mac:go-live
+```
+
 ## Task
 
 Perform a read-only inspection of the repository root.
