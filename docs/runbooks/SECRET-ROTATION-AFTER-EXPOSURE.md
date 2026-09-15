@@ -28,6 +28,7 @@ Objetivo: asumir que cualquier secreto mostrado en una sesión compartida (Curso
 
 - Variables: [docs/DOPPLER-VARS.md](../DOPPLER-VARS.md)
 - Traefik / token: [docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md](../04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md)
+- Higiene automática (no rota valores): [KEY-HYGIENE.md](./KEY-HYGIENE.md)
 
 ---
 

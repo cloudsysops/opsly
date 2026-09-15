@@ -1,0 +1,12 @@
+{
+  "warn_days": 14,
+  "servers": [
+    "pc-gamer",
+    "vps-dragon",
+    "opsly-worker",
+    "opsly-admin",
+    "opslyquantum",
+    "opsly-quantum"
+  ],
+  "exclude": ["github-runner", "opsly-gha-", "github-actions"]
+}
