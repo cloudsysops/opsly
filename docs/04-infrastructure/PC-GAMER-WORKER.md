@@ -313,3 +313,55 @@ Allowed now: **CPython stdlib only** (`/usr/bin/python3`, 3.12). No `pip install
 - `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`
 - `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md`
 - `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md`
+
+
+## OpenCode local-first sin suscripción
+
+El PC Gamer es ahora la ubicación preferida para tareas de implementación con costo de tokens $0:
+
+```text
+Opsly scheduler
+→ local-agents
+→ PC Gamer
+→ OpenCode
+→ Ollama GPU
+→ code/tests/evidence
+```
+
+Validar antes de usar:
+
+```bash
+cd ~/opsly
+git pull --ff-only origin main
+npm run pc-gamer:opencode:doctor
+```
+
+Si el doctor devuelve `LOCAL_FIRST_READY`:
+
+```bash
+npm run pc-gamer:opencode:autostart
+npm run pc-gamer:opencode:status
+```
+
+El modelo ya no está fijado a `llama3.2`. Se resuelve desde el inventario real de Ollama según:
+
+```text
+OPSLY_OPENCODE_MODEL (override)
+→ qwen3-coder
+→ qwen2.5-coder
+→ devstral
+→ gpt-oss
+→ codestral
+→ llama3.2
+→ primer modelo instalado
+```
+
+La lista puede cambiarse mediante `OPSLY_LOCAL_MODEL_PREFERENCE` sin editar código.
+
+Para instalar un modelo concreto se requiere acción explícita:
+
+```bash
+./scripts/ops/pc-gamer-opencode-plane.sh --pull-model=<modelo>
+```
+
+No se descarga ningún modelo implícitamente durante el arranque.

@@ -95,6 +95,14 @@ export class AgentServiceRegistry {
     return services[serviceName] ?? services[`local_${serviceName}`] ?? null;
   }
 
+  private acceptanceOverrideEnabled(serviceName: string): boolean {
+    const normalized = serviceName.trim().toLowerCase().replace(/^local_/, '');
+    return (
+      normalized === 'openclaw' &&
+      process.env.OPSLY_OPENCLAW_ACCEPTANCE_ENABLED === 'true'
+    );
+  }
+
   private normalizeService(serviceName: string, raw: Record<string, unknown>): AgentService {
     const url = typeof raw.url === 'string' ? raw.url : typeof raw.endpoint === 'string' ? raw.endpoint : '';
     const envVar =
@@ -116,7 +124,7 @@ export class AgentServiceRegistry {
           ? raw.retries
           : 1;
     return {
-      enabled: raw.enabled === true,
+      enabled: raw.enabled === true || this.acceptanceOverrideEnabled(serviceName),
       url,
       env_var: envVar,
       type: raw.type === 'http_api' ? 'http_api' : 'http',

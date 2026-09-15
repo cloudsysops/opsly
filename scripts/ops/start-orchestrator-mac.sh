@@ -6,10 +6,23 @@
 # LaunchAgent: com.opsly.orchestrator-mac (optional KeepAlive)
 set -euo pipefail
 
-export PATH="${HOME}/.nvm/versions/node/v22.22.3/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${PATH:-}"
+NODE_BIN="$(command -v node || true)"
+if [[ -z "$NODE_BIN" && -d "${HOME}/.nvm/versions/node" ]]; then
+  NODE_BIN="$(
+    find "${HOME}/.nvm/versions/node" -type f -path '*/bin/node' 2>/dev/null       | sort -V       | tail -n 1
+  )"
+fi
+if [[ -z "$NODE_BIN" ]]; then
+  echo "node executable not found" >&2
+  exit 1
+fi
+NODE_DIR="$(dirname "$NODE_BIN")"
+export PATH="${NODE_DIR}:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${PATH:-}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 ROOT="${REPO_ROOT:-${ROOT}}"
 cd "${ROOT}"
+
+export OPSLY_HEARTBEAT_SERVICE_NAME="${OPSLY_HEARTBEAT_SERVICE_NAME:-mac-orchestrator}"
 
 if [[ ! -f /tmp/opsly-mac-redis.env ]]; then
   echo "missing /tmp/opsly-mac-redis.env (REDIS_URL host must be 127.0.0.1 — Doppler uses Docker DNS 'redis')" >&2

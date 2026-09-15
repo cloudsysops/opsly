@@ -1,87 +1,114 @@
 ---
-status: draft
+status: canon
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-09-12
 type: guide
 tags:
   - opsly/development
+  - opsly/agents
 ---
 
-# Cola de prompts para agentes (local / Cursor)
+# Agent Task Queues
 
-Objetivo: que **desde el móvil o el equipo** se dejen instrucciones en git y el agente en Cursor las **encuentre, ejecute y deje constancia** de forma ordenada.
+Opsly has multiple task-entry surfaces, but only one governed runtime path.
 
-## Límites honestos (importante)
+Canonical architecture:
+[Agent Runtime Architecture](../00-architecture/AGENT-RUNTIME-ARCHITECTURE.md).
 
-- **Cursor no ejecuta prompts solo** mientras el IDE está cerrado: hace falta **abrir una sesión** y disparar la cola (mensaje en el chat o `@archivo`).
-- **No** reutilizar en local el patrón del VPS `docs/ACTIVE-PROMPT.md` + `cursor-prompt-monitor` para ejecutar líneas como shell sin revisión: es **riesgo RCE** si alguien malicioso puede editar el repo.
-- Lo que sí podemos es: **convención de carpetas + formato + una frase fija** en el chat para que el agente lea la cola y responda en el sitio acordado.
-
-## Rutas recomendadas
-
-| Rol | Ruta | Notas |
-|-----|------|--------|
-| Prompts **pendientes** | `.cursor/prompts/queue/*.md` | Un archivo = una tarea; nombre `NNN-breve-titulo.md` (NNN = 001, 002…). |
-| Prompts **hechos** (archivo) | `.cursor/prompts/done/` | Tras completar: **mover** el `.md` de `queue/` → `done/` (o renombrar con prefijo `done-`). |
-| **Respuesta del agente** | Mismo archivo, sección final *o* par `queue/001-x.md` + `queue/001-x.response.md` | Elige **una** convención por repo y cúmplela siempre. |
-
-Convención **recomendada en este repo**: respuesta **al final del mismo archivo** en una sección fija (menos archivos sueltos).
-
-## Formato del prompt (cabecera YAML mínima)
-
-Al inicio del `.md` en `queue/`:
-
-```yaml
----
-id: local-services-001
-status: pending
-owner: optional-github-handle
-created: 2026-05-03
-requires_pr: true
----
-```
-
-Cuerpo: instrucciones en Markdown (qué construir, rutas, criterios de hecho).
-
-## Dónde y cómo **dejar la respuesta** (obligatorio para el agente)
-
-Al terminar (o si bloquea), el agente **añade** al mismo archivo (debajo del cuerpo original, sin borrar el pedido):
-
-```markdown
----
-
-## Respuesta agente (ISO-8601 UTC)
-
-- **Estado:** hecho | parcial | bloqueado
-- **Rama / PR:** …
-- **Commits:** …
-- **Qué se hizo:** …
-- **Qué falta / riesgos:** …
-- **Cómo verificar:** comandos o URLs
-```
-
-Luego:
-
-1. Si `requires_pr: true` y hay cambios: **PR** según `docs/01-development/GIT-WORKFLOW.md`.
-2. Cambiar en la cabecera `status: done` (o mover el archivo a `done/` si preferís solo estado por ruta).
-
-## Cómo **disparar** la ejecución en Cursor (local)
-
-En el chat, una sola línea (copiable desde el móvil):
+## One execution path
 
 ```text
-Ejecuta la cola de prompts: lee .cursor/prompts/queue/, elige el primero con status pending, sigue docs/01-development/AGENT-PROMPT-QUEUE.md y deja la sección «Respuesta agente».
+tracked/local/GitHub task source
+  ↓
+governed submit
+  ↓
+POST /api/local/prompt-submit
+  ↓
+AgentTaskEnvelopeV1
+  ↓
+policy / approval
+  ↓
+BullMQ local-agents
+  ↓
+eligible worker
+  ↓
+authenticated bridge
+  ↓
+Session Manager
+  ↓
+ephemeral opsly-task-* session
+  ↓
+real runtime
+  ↓
+result / evidence
+  ↓
+teardown
 ```
 
-O abrir un prompt concreto:
+No queue integration may bypass the orchestrator by spawning a real AI runtime directly.
 
-```text
-@.cursor/prompts/queue/001-mi-tarea.md Ejecuta y deja respuesta según AGENT-PROMPT-QUEUE.md
+## Queue surfaces
+
+### 1. Tracked night/background workpacks
+
+Canonical tracked backlog:
+
+`docs/01-development/night-queue/*.md`
+
+These workpacks carry safety metadata such as:
+
+- status;
+- priority;
+- agent;
+- owner;
+- environment;
+- cost class;
+- estimated cost;
+- PR/write intent;
+- approval requirement;
+- production deploy;
+- paid infra;
+- resource class;
+- node type.
+
+The background scheduler compiles these into candidates and selects only eligible work.
+
+### 2. Local prompt queue
+
+Local transient queue:
+
+`.cursor/prompts/queue/*.md`
+
+It is gitignored and can be seeded from tracked workpacks.
+
+Use:
+
+```bash
+./scripts/ops/dispatch-prompt-queue.sh --dry-run
 ```
 
-## Daemon local seguro
+for inspection.
 
-El repo incluye un watcher mantenido:
+The dispatcher does not execute Markdown as shell and must not start a persistent AI runtime.
+
+### 3. GitHub Agent Queue
+
+The private `opsly-control` repository can stage governed workpacks that call the canonical submitter in `opsly/main`.
+
+Current autonomous policy is read-only.
+
+Eligible work must be zero-cost local work and must not request:
+
+- production deployment;
+- paid infrastructure;
+- approval-required sensitive execution;
+- autonomous PR/write capability.
+
+Write-capable GitHub work remains blocked until the typed approval design in workpack 051 is implemented.
+
+## Local watcher
+
+The maintained local watcher submits work through the orchestrator:
 
 ```bash
 PLATFORM_ADMIN_TOKEN="<token>" \
@@ -89,62 +116,105 @@ ORCHESTRATOR_URL="http://localhost:3011" \
 npm run opsly:local-prompt-watcher
 ```
 
-Comportamiento:
-
-- Escucha `.cursor/prompts/queue/*.md`.
-- Procesa todos los prompts con `status: pending` al arrancar y luego los nuevos cambios.
-- Lee `docs/01-development/ACTIVE-PROMPT.md` como contexto operativo para cada job.
-- Envía el contenido a `POST /api/local/prompt-submit`; **no ejecuta bloques shell del Markdown**.
-- Hace polling de `/api/job-status/{job_id}`.
-- Añade la sección `## Respuesta agente (...)` en el mismo archivo y cambia `status` a `done` o `failed`.
-
-Para procesar una sola pasada y salir:
+Single pass:
 
 ```bash
 PLATFORM_ADMIN_TOKEN="<token>" npm run opsly:local-prompt-watcher:once
 ```
 
-## Detección manual sin peligro
+The watcher:
 
-- **Opcional:** script solo lectura que lista el siguiente pendiente (para humano o para pegar salida en el chat):
+- reads pending prompt files;
+- submits to `POST /api/local/prompt-submit`;
+- polls terminal status;
+- writes bounded response metadata;
+- does not execute Markdown shell blocks.
+
+## Git trust
+
+Automatic tracked-task pickup must use a trusted branch, normally `main`.
+
+Fast-forward sync may be used only when safe; dirty trees, detached HEADs or untrusted branches must not become automatic task sources.
+
+## Runtime invariants
+
+- `PLATFORM_ADMIN_TOKEN` is required for governed local submit;
+- `AgentTaskEnvelopeV1` is the canonical execution contract;
+- legacy payload fallback is break-glass only;
+- runtime invocation is ephemeral;
+- healthy idle means zero `opsly-task-*` sessions;
+- real runtime names come from `config/external-agent-registry.json`;
+- roles such as planner/reviewer/developer do not imply persistent processes.
+
+## Read vs write work
+
+Read-only work may execute without write approval when all other policy gates pass.
+
+Write-capable autonomous work is currently held.
+
+Do not infer write approval from:
+
+- a scheduler flag;
+- a GitHub label alone;
+- an HTTP header alone.
+
+Future write approval must be typed, bound to exact task identity and validated inside `AgentTaskRuntime`.
+
+## Physical Mac activation
+
+Canonical activation:
 
 ```bash
-./scripts/next-prompt-in-queue.sh
+npm run opsly:mac:activate
 ```
 
-Prompts versionados para la noche: `docs/01-development/night-queue/` — `dispatch-prompt-queue.sh` los copia a `.cursor/prompts/queue/` (gitignored) y abre OpenCode. n8n: `docs/n8n-workflows/night-agent-queue.json` (HTTP al orchestrator; **no** escribe `docs/ACTIVE-PROMPT.md`).
+The physical readiness path validates:
 
-### Cron Mac (pull + validar prompts)
+1. prerequisites;
+2. Doppler access;
+3. execution-boundary builds;
+4. bridge/orchestrator health;
+5. readiness doctor;
+6. zero AI task sessions at healthy idle.
 
-En el Mac runner (`opsly-mac-runner` en `main`), instalar crontab idempotente:
+The health deadline defaults to 90 seconds and is bounded by `OPSLY_MAC_HEALTH_WAIT_SECONDS` between 10 and 300 seconds.
 
-```bash
-# dry-run
-./scripts/ops/install-mac-prompt-cron.sh --dry-run
-# crontab: pull cada 5 min + validate cada 10 min
-./scripts/ops/install-mac-prompt-cron.sh
-# opcional: también LaunchAgents
-./scripts/ops/install-mac-prompt-cron.sh --launchd-also
+## Gamer physical acceptance
+
+The target acceptance path is:
+
+```text
+GitHub
+→ canonical submitter
+→ AgentTaskEnvelopeV1
+→ BullMQ local-agents
+→ PC Gamer
+→ OpenCode
+→ Ollama
+→ exact GAMER_OPENCODE_OK
+→ terminal success
+→ teardown
 ```
 
-| Script | Qué hace |
-|--------|----------|
-| `scripts/ops/mac-runner-pull.sh` | `git fetch` + `pull --ff-only` solo en `main` y árbol limpio |
-| `scripts/ops/validate-prompt-queue.sh` | Valida frontmatter (`id`/`status`) en `night-queue/` y `.cursor/prompts/queue/` — **no** ejecuta Markdown |
-| `scripts/ops/mac-prompt-cron-tick.sh` | Tick combinado (pull → validate) |
+A merely queued job or generic completion is not sufficient.
 
-Logs: `~/Library/Logs/opsly/opsly-mac-runner-pull.log` y `opsly-prompt-queue-validate.log`.
+## Current runtime workpacks
 
-Si no existe el script, basta con listar la carpeta `queue/` manualmente; el protocolo sigue siendo válido.
+```text
+045  pending  read-only audit
+046  held     write-capable
+047  held     write-capable
+048  held     write-capable
+049  held     write-capable
+050  pending  Gamer-only physical acceptance
+051  held     typed write approval
+```
 
-## Relación con otras carpetas
+See the operational snapshot:
+[AGENT-RUNTIME-STATUS-2026-09-12.md](AGENT-RUNTIME-STATUS-2026-09-12.md).
 
-- `.cursor/prompts/*.md` **fuera** de `queue/` pueden ser **plantillas o referencia** (no son tarea hasta que alguien copie o enlace desde `queue/`).
-- No confundir con **skills** (`skills/user/…`): la cola es **tareas puntuales** del producto/sprint; las skills son procedimiento reutilizable.
+## Related
 
----
-
-## Enlaces relacionados
-
-- [[01-development/README|01-development]]
-- [[brain/README|Brain Central]]
+- [Canonical runtime architecture](../00-architecture/AGENT-RUNTIME-ARCHITECTURE.md)
+- [Current automation map](../00-architecture/CURRENT-AUTOMATION-MAP.md)
+- [Background scheduler](../00-architecture/BACKGROUND-WORK-SCHEDULER.md)

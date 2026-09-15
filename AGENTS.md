@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-09-07
+last_review: 2026-09-12
 ---
 
 # Opsly — Contexto del Agente
@@ -41,6 +41,10 @@ Aplica a **todos** los agentes (Cursor, Claude, OpenCode, Copilot, Jules, worker
 **Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
 
 **Orquestación de agentes:** [`docs/design/AGENT-ORCHESTRATION-INDEX.md`](docs/design/AGENT-ORCHESTRATION-INDEX.md) — índice maestro (**elegir ruta A, B o C** como foco); fallover / repair queue (diseño): [`docs/orchestrator/REPAIR-QUEUE.md`](docs/orchestrator/REPAIR-QUEUE.md).
+
+**Runtime canónico de agentes:** [`docs/00-architecture/AGENT-RUNTIME-ARCHITECTURE.md`](docs/00-architecture/AGENT-RUNTIME-ARCHITECTURE.md). Antes de modificar workers, bridges, scheduler, Mac/Gamer o GitHub Agent Queue: leer ese documento. `AgentTaskEnvelopeV1` + BullMQ + `external-agent-registry` + Session Manager + sesiones efímeras son el boundary actual. Roles/personas antiguas no implican procesos AI persistentes.
+
+**Ownership gate obligatorio para trabajo de agentes:** antes de crear rama, worktree o ejecutar una tarea write-capable, el task debe tener un `DispatchClaimV1` adquirido por el Orchestrator. Invariante: **NO CLAIM → NO BRANCH → NO WORKTREE → NO EXECUTION**. Cada workpack gobernado declara `workstream` + `conflict_key`; `semantic_scope` y `affected_paths` refinan detección. `JOIN_EXISTING` = unirse/revisar/esperar al dueño actual; `ALREADY_DONE` = no rehacer; `CONFLICT_BLOCKED` = no iniciar trabajo paralelo. El Git Branch Orchestrator puede planear sin claim, pero no materializar una rama de agente sin evidencia de claim ligada al request. Nunca crear un segundo task store u otro scheduler para resolver esto.
 
 **Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
@@ -2752,6 +2756,63 @@ Se diseñó un pipeline de gameplay para Mauro (spec + plan de 9 tareas en `docs
 2. Una vez online: activar `#1161` (Doppler) y verificar que ollama responde de verdad antes de llamarlo "funcionando".
 3. Definir alcance concreto de "autónomo" (qué tareas, qué límite de gasto, qué aprobación humana) antes de construir nada nuevo — pedido explícitamente por el usuario, no iniciado aún.
 4. Si se retoma ADR-058 (consolidación de motores), hacerlo con ffmpeg real disponible aquí — no repetir el trabajo ya hecho por la sesión previa.
+
+---
+
+## 🔄 Estado Actual (2026-09-13 — Limpieza de ramas (85), fix dispatch-ownership-gate #1472, 4 PRs en cola night-merge)
+
+**Agente:** Claude
+**Rama:** trabajo hecho desde el worktree de `feat/pr-1185-agent-lab-reconcile`, más un worktree corto `fix-dispatch-ownership-gate-v2` para el fix de abajo (ya eliminado). Esta entrada se escribe directo sobre `main` (cierre documental explícito pedido por el usuario).
+
+### Limpieza de flota de ramas: 216 → 131 remotas
+
+Auditoría completa de las 216 ramas remotas cruzadas contra las 1101 PRs históricas (estado, autor, antigüedad, si el contenido ya llegó a `main` por otra vía). Resultado: **85 ramas borradas** en dos tandas, con confirmación explícita del usuario antes de cada una:
+
+1. **78 ramas de bots ya resueltas** — `auto-fix/push-*` (44), `nightly-fix/*` (12), `sentinel/*` (8), `palette/*` (5), `jules-*` (4), `bolt*` (2), + 3 `human/product` ya mergeadas y sin borrar (`docs/content-pipeline-canonical`, `feat/mauro-gameplay-session-pipeline`, `fix/night-merge-agent-recovery`). Todas sin PR abierto y con PR cerrado/mergeado.
+2. **7 ramas más, tras revisar a mano las 12 que nunca tuvieron PR** (contenido real comparado commit a commit contra `main` y contra otras ramas activas, no solo estado de PR):
+   - `chatgpt/engineering-portfolio-control` — 0 commits únicos, idéntica a un punto ya en `main`.
+   - `chatgpt/agent-learning-013` — su contenido ya viajó a `main` vía PR #1281.
+   - `claude/task-source-guard-impl` — `task-source-guard.ts` ya en `main`.
+   - `chatgpt/github-agent-queue` — `github-agent-queue-submit.mjs` ya en `main`.
+   - `fix/peskids-security-audit` — su único commit (franchise management platform) ya se envió por otro commit distinto.
+   - `ops/astral-pc-render-smoke-20260912` y `preview/astral-arena` — solo 4 y 16 commits únicos más allá de lo ya absorbido por la PR abierta `feat/astral-arena-universe` (#1300).
+
+**Quedan sin tocar, con decisión pendiente del usuario:**
+- `chatgpt/runtime-env-and-company-gates` — 4 commits reales (`COMPANY-READINESS-GATE-SEMANTICS.md`, fases de night-queue) que no existen en ningún otro lado. No es ruido.
+- `fix/game-blueprint-template-root` — **203 commits únicos** de trabajo real sobre la ubicación permitida de templates Godot/Steam, no encontrados en `main` ni en ninguna otra rama. Tamaño grande, no es candidato de borrado; alguien debería abrirle PR o decidir explícitamente abandonarlo.
+- `fix/production-audit-baseline` y `feat/franchise-ops-catalog` — worktrees activos en este momento, dejados en paz (el segundo ya tiene sus migraciones core en `main`, pero el worktree puede tener trabajo encima).
+
+También: `.claude-scratch/` apareció sin querer en la raíz del repo (creado por esta sesión al generar un reporte) y tumbó el hook `pre-push` de validación de estructura para *cualquier* push, no solo el de esa carpeta — limpiado. Recordatorio para futuras sesiones: nunca escribir fuera del scratchpad de la sesión.
+
+Se corrieron además `git worktree prune` (5 entradas muertas: `opsly-1185-reconcile`, `opsly-claude-codex-bridge`, `opsly-mauro-e2e-main`, `opsly-pc-gamer-routing`, `opsly-reconnect-now`) y `git fetch --prune`.
+
+### Fix real: `DISPATCH_SCOPE_ALREADY_OWNED` no se propagaba en el submitter — PR #1472
+
+`fix/dispatch-ownership-gate-v2` (el fix para la causa raíz de la duplicación Mauro/#1155 documentada el 2026-09-11) tenía un test de contrato fallando de verdad, no un flake: `apps/orchestrator/src/__tests__/github-agent-queue-submit-contract.test.ts` esperaba que `scripts/ops/github-agent-queue-submit.mjs` reconociera `DISPATCH_SCOPE_ALREADY_OWNED`. El servidor (`apps/orchestrator/src/http/routes/local.ts:367`) ya devuelve `error: 'DISPATCH_SCOPE_ALREADY_OWNED'` en el 409 de hard-deny (distinto de los soft-decisions `JOIN_EXISTING`/`ALREADY_DONE`, que sí se manejaban), pero el cliente nunca miraba ese campo y caía a un error genérico que descartaba `existing_task_id`/`existing_workstream`/`existing_claim_id` que el servidor ya mandaba. Fix: rama nueva de manejo explícito para ese campo, con el detalle completo en el mensaje de error. Commit `d72840ec9`, verificado con symlink a `node_modules` del repo principal (sin reinstalar): 9/9 en el test de contrato, 263/263 en toda la suite de `apps/orchestrator`. Pusheado a `fix/dispatch-ownership-gate-v2`; CI de la PR quedó en verde salvo el gate de horario (ver abajo).
+
+### 4 PRs de dispatch-safety listas, en cola para el merge nocturno
+
+Todas con label `night-merge` y sacadas de draft (necesario — el gate de horario/auto-merge no actúa sobre drafts):
+
+- **#1472** `fix(orchestrator): enforce exclusive task ownership before agent dispatch` — recién arreglada arriba.
+- **#1471** `feat(agents): enforce branch and worktree cleanup ownership`
+- **#1470** `fix(ci): run validate-doppler on PRs (was silently skipped)`
+- **#1437** `feat(ci): publish trusted final-head independent-review status`
+
+Las 4 pasan CI completo; el único check en rojo en las 4 es `production-change-window` (bloqueo de merges de impacto-prod fuera de `America/Bogota` 22:00–06:00), que es el comportamiento esperado del gate, no un bug. Deberían auto-mergear a la 01:00 Bogotá. **Verificar mañana que efectivamente mergearon** — si alguna sigue abierta, revisar el workflow de night-merge, no re-abrir esta investigación desde cero.
+
+### Infra local (esta sesión)
+
+- Doppler (`ops-intcloudsysops/prd`) y `gh auth` — **ambos funcionando**. La nota de "gh auth roto" del 2026-09-11 ya no aplica, quedó resuelta en algún punto entre sesiones.
+- Tailscale **no estaba corriendo** en esta Mac durante la sesión → VPS y PC-gamer inalcanzables desde aquí.
+- `check-pc-gamer-online.sh` → `online=false tailscale=false ssh=false health=false heartbeat=false`. **Mismo bloqueante que el 2026-09-11, sigue sin resolver.**
+
+### Próximos pasos
+
+1. Usuario: encender Tailscale + PC-gamer (bloqueante recurrente, arrastrado de sesiones anteriores).
+2. Mañana: confirmar que #1472/#1471/#1470/#1437 mergearon a `main` por la ventana nocturna.
+3. Decidir `chatgpt/runtime-env-and-company-gates` y `fix/game-blueprint-template-root` (abrir PR o abandonar explícitamente) — no son ruido, son trabajo real huérfano.
+4. Si se retoma cualquier tarea de "agentes autónomos con AI local" (`#1161`, ollama), sigue bloqueada por el mismo PC-gamer offline.
 
 ---
 
