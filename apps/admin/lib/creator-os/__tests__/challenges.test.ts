@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { activateChallenge, castVote, closePoll, toChallengeEvent, updateChallengeProgress } from '../challenges';
+import {
+  activateChallenge,
+  castVote,
+  closePoll,
+  toChallengeEvent,
+  updateChallengeProgress,
+} from '../challenges';
 
 test('challenge can run without a game API', () => {
   const draft = {
@@ -15,7 +21,7 @@ test('challenge can run without a game API', () => {
   const completed = updateChallengeProgress(
     activateChallenge(draft),
     1,
-    '2026-09-12T22:05:00-04:00',
+    '2026-09-12T22:05:00-04:00'
   );
   assert.equal(completed.status, 'completed');
   assert.equal(toChallengeEvent(completed).type, 'challenge.completed');
