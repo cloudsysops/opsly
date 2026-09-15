@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "agent_id": "revenue-agent",
+  "execution_model": "AgentTaskEnvelopeV1-ephemeral",
+  "owner": "platform",
+  "allowed_intents": [
+    {
+      "id": "scout",
+      "task_type": "research",
+      "default_runtime": "hermes",
+      "write_allowed": false,
+      "network_allowed": true,
+      "requires_approval": false,
+      "purpose": "Find or inspect commercial opportunities from approved sources."
+    },
+    {
+      "id": "qualify",
+      "task_type": "planning",
+      "default_runtime": "hermes",
+      "write_allowed": false,
+      "network_allowed": false,
+      "requires_approval": false,
+      "purpose": "Score and summarize an existing lead/opportunity using supplied evidence."
+    },
+    {
+      "id": "match",
+      "task_type": "planning",
+      "default_runtime": "hermes",
+      "write_allowed": false,
+      "network_allowed": false,
+      "requires_approval": false,
+      "purpose": "Rank approved offers/providers for a qualified opportunity."
+    },
+    {
+      "id": "followup-draft",
+      "task_type": "documentation",
+      "default_runtime": "claude",
+      "write_allowed": false,
+      "network_allowed": false,
+      "requires_approval": true,
+      "purpose": "Draft a follow-up message; never send automatically."
+    },
+    {
+      "id": "attribute",
+      "task_type": "qa",
+      "default_runtime": "codex",
+      "write_allowed": true,
+      "network_allowed": false,
+      "requires_approval": false,
+      "purpose": "Validate deterministic attribution inputs and prepare ledger-safe records."
+    },
+    {
+      "id": "commission-review",
+      "task_type": "qa",
+      "default_runtime": "codex",
+      "write_allowed": false,
+      "network_allowed": false,
+      "requires_approval": false,
+      "purpose": "Reconcile expected, confirmed and paid commission events."
+    }
+  ],
+  "forbidden_actions": [
+    "send_outbound_without_approval",
+    "create_paid_infrastructure",
+    "move_money",
+    "charge_payment_method",
+    "execute_trade",
+    "place_bet",
+    "fabricate_commission_terms",
+    "rank_health_provider_only_by_commission",
+    "diagnose_or_prescribe"
+  ],
+  "source_policy": {
+    "approved_sources_only": true,
+    "scraping_requires_terms_review": true,
+    "prefer_official_api_or_feed": true
+  },
+  "health_travel_policy": {
+    "clinical_decisions_out_of_scope": true,
+    "detailed_clinical_records_out_of_scope": true,
+    "provider_credentials_required_before_activation": true
+  },
+  "evidence_required": [
+    "source_refs",
+    "decision_reason",
+    "selected_offer_or_provider_refs",
+    "agent_task_request_id",
+    "confidence",
+    "blockers"
+  ]
+}
