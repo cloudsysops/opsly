@@ -15,7 +15,7 @@ Objetivo: dejar agentes AI con "superpoderes" listos desde cero:
 - librerías/workspaces compilados
 - conocimiento secuencial indexado
 - perfil runtime preconfigurado
-- autopilot de agentes encendido
+- bridges y workers de control disponibles; agentes ejecutados solo por tarea
 
 ## 1) Instalación base (idempotente)
 
@@ -38,19 +38,14 @@ Salida principal:
 - validación de skills + type-check + build de workspaces críticos
 - `index-knowledge` para RAG repo-first
 
-## 2) Encender superagentes (autopilot)
+## 2) Verificar runtime efímero
 
 ```bash
-TENANT_SLUG=smiletripcare \
-GOAL="Acelerar ejecución multi-agente con costo bajo" \
 ./scripts/superagents-up.sh
+./scripts/superagents-doctor.sh
 ```
 
-Dry-run:
-
-```bash
-./scripts/superagents-up.sh --dry-run
-```
+`superagents-up.sh` no inicia squads persistentes. Los bridges pueden quedar disponibles, pero cada runtime real se crea mediante una sesión tmux acotada a un AgentTask.
 
 ## 3) Diagnóstico rápido
 
@@ -79,7 +74,7 @@ Checklist:
 
 - `install-superagents-stack.sh` sin errores
 - `superagents-doctor.sh` con comandos base en verde
-- autopilot en running (`status-agents-autopilot.sh`)
+- `status-agents-autopilot.sh` reporta `status=deprecated` y cero procesos legacy
 - MCP stdio levanta y lista tools/resources/prompts
 
 ---
