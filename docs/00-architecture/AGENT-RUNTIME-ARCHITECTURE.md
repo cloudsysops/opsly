@@ -338,3 +338,19 @@ Do not persist raw secrets or unrestricted raw prompts as evidence.
 - [Orchestrator](ORCHESTRATOR.md)
 - [Agent prompt queue](../01-development/AGENT-PROMPT-QUEUE.md)
 - [Runtime status snapshot](../01-development/AGENT-RUNTIME-STATUS-2026-09-12.md)
+
+
+## GitHub Agent Queue admission contract
+
+The governed GitHub Agent Queue is a **read-only** execution lane until a typed write-approval chain exists.
+
+Admission must fail closed unless all are true:
+
+- the worker resolves through the canonical `external-agent-registry` schema;
+- `github_queue.eligible=true`, `read_only=true`, and `provider_approved=true`;
+- the registry-owned `github_queue.cost_class` is compatible with the workpack;
+- the worker itself has `write_access=false`;
+- the workpack declares an explicit `task_type` supported by that worker;
+- all existing zero-cost / no-production / no-approval boundaries pass.
+
+Unknown or ambiguous runtime, provider, cost, or task-type evidence is not eligible.

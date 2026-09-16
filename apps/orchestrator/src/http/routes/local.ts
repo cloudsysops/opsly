@@ -25,7 +25,7 @@ import {
 import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
 import { jsonResponse, errorResponse } from '../router.js';
 import { agentTaskEnvelopeV1Schema } from '@intcloudsysops/types/agent-task';
-import { buildAgentTaskEnvelope, inferTaskType } from '@intcloudsysops/agent-task-core';
+import { buildAgentTaskEnvelope, evaluateAgentTaskPolicy, inferTaskType } from '@intcloudsysops/agent-task-core';
 import {
   acquireTaskDispatchClaim,
   dispatchClaimRequestFromContext,
@@ -306,6 +306,22 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       ctx.res,
       400,
       'DISPATCH_CLAIM_REQUIRED: write-capable agent work requires workstream + conflict_key before execution'
+    );
+    return;
+  }
+
+  // taskEnvelope is now always built/validated above, but nothing actually
+  // evaluated it against policy — a sensitive task_type (browser/infra) or
+  // network/write access could reach dispatch with zero approval gate.
+  // evaluateAgentTaskPolicy is the canonical deterministic policy for
+  // exactly this (lib/agent-task-core/src/policy.ts); no caller-supplied
+  // override — approval can't be granted by anything in this request body.
+  const policyResult = evaluateAgentTaskPolicy(taskEnvelope);
+  if (policyResult.decision !== 'allow') {
+    errorResponse(
+      ctx.res,
+      403,
+      `AgentTaskEnvelopeV1 policy ${policyResult.decision}: ${policyResult.reasons.join(', ')}`
     );
     return;
   }

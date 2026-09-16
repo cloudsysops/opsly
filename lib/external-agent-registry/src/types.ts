@@ -3,6 +3,13 @@ import type { AgentTaskEnvelopeV1 } from '@intcloudsysops/types';
 
 export const ExternalWorkerKindSchema = z.literal('external-binary');
 
+export const ExternalWorkerGithubQueuePolicySchema = z.object({
+  eligible: z.boolean(),
+  read_only: z.boolean(),
+  provider_approved: z.boolean(),
+  cost_class: z.enum(['free', 'free_with_quota', 'paid', 'unknown']),
+});
+
 export const ExternalWorkerEntrySchema = z.object({
   kind: ExternalWorkerKindSchema,
   adapter: z.string().min(1),
@@ -24,6 +31,7 @@ export const ExternalWorkerEntrySchema = z.object({
   priority: z.number().int().min(0).default(50),
   fallback_agents: z.array(z.string().min(1)).default([]),
   enabled: z.boolean(),
+  github_queue: ExternalWorkerGithubQueuePolicySchema.optional(),
   not_opsly_hermes_module: z.string().optional(),
 });
 

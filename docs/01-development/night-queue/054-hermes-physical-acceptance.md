@@ -3,6 +3,7 @@ id: hermes-physical-acceptance-054
 status: pending
 priority: P1
 agent: local_hermes
+task_type: research
 owner: platform
 environment: local
 cost_class: free_with_quota

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { resolveGovernedAgent } from '../../../../scripts/ops/lib/github-agent-queue-admission.mjs';
 
 const repoRoot = path.resolve(__dirname, '../../../..');
 const source = readFileSync(
@@ -19,16 +20,37 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).not.toMatch(/spawn\(/);
   });
 
-  it('is fail-closed to approved zero-cost governed local runtimes', () => {
-    expect(source).toContain("new Set(['local_opencode', 'local_hermes', 'local_openclaw'])");
+  it('uses canonical registry admission instead of a hardcoded runtime allowlist', () => {
+    expect(source).toContain("from './lib/github-agent-queue-admission.mjs'");
+    expect(source).toContain('loadGovernedAgentRegistry(root)');
+    expect(source).toContain('resolveGovernedAgent(meta, registry)');
+    expect(source).toContain('agent: governedAgent.opslyJobType');
+    expect(source).toContain('registry_worker_id: governedAgent.workerId');
+    expect(source).toContain('registry_provider: governedAgent.provider');
+    expect(source).toContain('registry_cost_class: governedAgent.costClass');
+    expect(source).not.toContain("new Set(['local_opencode', 'local_hermes', 'local_openclaw'])");
+  });
+
+  it('sends the validated task_type through a real AgentTaskEnvelopeV1, not only as context metadata', () => {
+    // Without agent_task in the request body, /api/local/prompt-submit never
+    // sees it and evaluateAgentTaskPolicy() never runs — the validated
+    // task_type would sit unused in context, and a sensitive task_type
+    // (browser/infra) would get zero approval-gate enforcement server-side.
+    expect(source).toContain("from '@intcloudsysops/agent-task-core'");
+    expect(source).toContain('buildAgentTaskEnvelope(');
+    expect(source).toContain('taskType: governedAgent.taskType');
+    expect(source).toContain('agent_task: agentTaskEnvelope');
+  });
+
+  it('keeps the queue zero-cost and non-mutating at the workpack boundary', () => {
     expect(source).toContain("['free','free_with_quota']");
     expect(source).toContain('estimated_cost_usd must be exactly 0');
     expect(source).toContain('requires_pr=true is not eligible for autonomous GitHub dispatch yet');
     expect(source).toContain('requires_approval=true is not eligible');
     expect(source).toContain('production_deploy=true is forbidden');
     expect(source).toContain('paid_infra_required=true is forbidden');
+    expect(source).toContain("'task_type'");
     expect(source).toContain("agent_role: 'review'");
-    expect(source).toContain('agent: String(meta.agent)');
     expect(source).toContain('requires_pr: false');
   });
 
@@ -89,6 +111,119 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('OPSLY_ORCHESTRATOR_URL is required');
     expect(source).toContain('PLATFORM_ADMIN_TOKEN is required');
     expect(source).not.toMatch(/dp\.st\./);
-    expect(source).not.toMatch(/sk-[A-Za-z0-9]/);
+    // Real provider keys run 20+ chars after "sk-" with no separator
+    // (sk-ant-..., sk-proj-...); a short bound here false-positives on
+    // legitimate package names that happen to contain "sk-" (e.g.
+    // "agent-task-core" -> "...ta[sk-co]re").
+    expect(source).not.toMatch(/sk-[A-Za-z0-9]{20,}/);
+  });
+});
+
+
+describe('GitHub Agent Queue executable registry admission', () => {
+  const worker = (overrides: Record<string, unknown> = {}) => ({
+    kind: 'external-binary',
+    adapter: 'agent-binary-http-bridge',
+    opsly_job_type: 'local_hermes',
+    enabled: true,
+    local: true,
+    write_access: false,
+    provider: 'hermes',
+    supported_task_types: ['research', 'planning'],
+    github_queue: {
+      eligible: true,
+      read_only: true,
+      provider_approved: true,
+      cost_class: 'free_with_quota',
+    },
+    ...overrides,
+  });
+
+  const meta = (overrides: Record<string, unknown> = {}) => ({
+    agent: 'hermes-cli',
+    task_type: 'research',
+    cost_class: 'free_with_quota',
+    ...overrides,
+  });
+
+  it('resolves by worker id and canonical opsly job type', () => {
+    const registry = { workers: { 'hermes-cli': worker() } };
+    expect(resolveGovernedAgent(meta(), registry)).toMatchObject({
+      workerId: 'hermes-cli',
+      opslyJobType: 'local_hermes',
+      taskType: 'research',
+    });
+    expect(resolveGovernedAgent(meta({ agent: 'local_hermes' }), registry)).toMatchObject({
+      workerId: 'hermes-cli',
+      opslyJobType: 'local_hermes',
+    });
+  });
+
+  it('rejects write-capable entries even when registry policy is accidentally marked eligible', () => {
+    const registry = { workers: { 'writer-cli': worker({
+      opsly_job_type: 'local_opencode',
+      write_access: true,
+    }) } };
+    expect(() => resolveGovernedAgent(meta({ agent: 'writer-cli' }), registry))
+      .toThrow(/write-capable/);
+  });
+
+  it('rejects missing provider approval, unknown cost and free/quota mismatches', () => {
+    const providerBlocked = { workers: { 'hermes-cli': worker({
+      github_queue: {
+        eligible: true,
+        read_only: true,
+        provider_approved: false,
+        cost_class: 'free_with_quota',
+      },
+    }) } };
+    expect(() => resolveGovernedAgent(meta(), providerBlocked)).toThrow(/provider is not approved/);
+
+    const unknownCost = { workers: { 'hermes-cli': worker({
+      github_queue: {
+        eligible: true,
+        read_only: true,
+        provider_approved: true,
+        cost_class: 'unknown',
+      },
+    }) } };
+    expect(() => resolveGovernedAgent(meta(), unknownCost)).toThrow(/non-zero\/unknown/);
+
+    const quotaWorker = { workers: { 'hermes-cli': worker() } };
+    expect(() => resolveGovernedAgent(meta({ cost_class: 'free' }), quotaWorker))
+      .toThrow(/incompatible with free workpack/);
+  });
+
+  it('rejects unsupported or missing task types', () => {
+    const registry = { workers: { 'hermes-cli': worker() } };
+    expect(() => resolveGovernedAgent(meta({ task_type: 'code' }), registry))
+      .toThrow(/does not support task_type/);
+    expect(() => resolveGovernedAgent(meta({ task_type: '' }), registry))
+      .toThrow(/task_type/);
+  });
+
+  it('fails closed for unknown, disabled and non-local workers', () => {
+    const registry = { workers: { 'hermes-cli': worker() } };
+    expect(() => resolveGovernedAgent(meta({ agent: 'missing-cli' }), registry))
+      .toThrow(/not registered/);
+    expect(() => resolveGovernedAgent(meta(), {
+      workers: { 'hermes-cli': worker({ enabled: false }) },
+    })).toThrow(/disabled/);
+    expect(() => resolveGovernedAgent(meta(), {
+      workers: { 'hermes-cli': worker({ local: false }) },
+    })).toThrow(/not eligible for governed local dispatch/);
+  });
+
+  it('fails closed when opsly_job_type resolves to more than one worker', () => {
+    const registry = {
+      workers: {
+        'hermes-cli': worker({ opsly_job_type: 'local_hermes' }),
+        'hermes-cli-2': worker({ opsly_job_type: 'local_hermes' }),
+      },
+    };
+    // .find() would silently pick 'hermes-cli' and dispatch there without
+    // anyone deciding that on purpose — must refuse instead.
+    expect(() => resolveGovernedAgent(meta({ agent: 'local_hermes' }), registry))
+      .toThrow(/registered by more than one worker/);
   });
 });

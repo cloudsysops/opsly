@@ -46,7 +46,13 @@
       "fallback_agents": [
         "goose-cli"
       ],
-      "enabled": true
+      "enabled": true,
+      "github_queue": {
+        "eligible": false,
+        "read_only": true,
+        "provider_approved": false,
+        "cost_class": "unknown"
+      }
     },
     "opencode": {
       "kind": "external-binary",
@@ -81,7 +87,13 @@
         "aider-cli",
         "goose-cli"
       ],
-      "enabled": true
+      "enabled": true,
+      "github_queue": {
+        "eligible": false,
+        "read_only": false,
+        "provider_approved": false,
+        "cost_class": "unknown"
+      }
     },
     "codex-cli": {
       "kind": "external-binary",
@@ -114,7 +126,13 @@
       "fallback_agents": [
         "opencode"
       ],
-      "enabled": true
+      "enabled": true,
+      "github_queue": {
+        "eligible": false,
+        "read_only": false,
+        "provider_approved": false,
+        "cost_class": "unknown"
+      }
     },
     "cursor-ide": {
       "kind": "external-binary",
@@ -145,7 +163,13 @@
       "fallback_agents": [
         "opencode"
       ],
-      "enabled": true
+      "enabled": true,
+      "github_queue": {
+        "eligible": false,
+        "read_only": false,
+        "provider_approved": false,
+        "cost_class": "unknown"
+      }
     },
     "copilot-cli": {
       "kind": "external-binary",
@@ -176,7 +200,13 @@
       "fallback_agents": [
         "goose-cli"
       ],
-      "enabled": true
+      "enabled": true,
+      "github_queue": {
+        "eligible": true,
+        "read_only": true,
+        "provider_approved": true,
+        "cost_class": "free_with_quota"
+      }
     },
     "hermes-cli": {
       "kind": "external-binary",
@@ -210,7 +240,13 @@
         "goose-cli"
       ],
       "enabled": true,
-      "not_opsly_hermes_module": "apps/orchestrator/src/hermes is Opsly orchestration, not this CLI"
+      "not_opsly_hermes_module": "apps/orchestrator/src/hermes is Opsly orchestration, not this CLI",
+      "github_queue": {
+        "eligible": true,
+        "read_only": true,
+        "provider_approved": true,
+        "cost_class": "free_with_quota"
+      }
     },
     "decepticon-cli": {
       "kind": "external-binary",
@@ -241,7 +277,13 @@
       "fallback_agents": [
         "opencode"
       ],
-      "enabled": true
+      "enabled": true,
+      "github_queue": {
+        "eligible": false,
+        "read_only": true,
+        "provider_approved": false,
+        "cost_class": "unknown"
+      }
     },
     "aider-cli": {
       "kind": "external-binary",
@@ -271,7 +313,13 @@
       "fallback_agents": [
         "opencode"
       ],
-      "enabled": true
+      "enabled": true,
+      "github_queue": {
+        "eligible": false,
+        "read_only": false,
+        "provider_approved": false,
+        "cost_class": "unknown"
+      }
     },
     "goose-cli": {
       "kind": "external-binary",
@@ -304,7 +352,13 @@
       "fallback_agents": [
         "opencode"
       ],
-      "enabled": true
+      "enabled": true,
+      "github_queue": {
+        "eligible": false,
+        "read_only": false,
+        "provider_approved": false,
+        "cost_class": "unknown"
+      }
     },
     "playwright-runner": {
       "kind": "external-binary",
@@ -336,7 +390,13 @@
       "fallback_agents": [
         "goose-cli"
       ],
-      "enabled": true
+      "enabled": true,
+      "github_queue": {
+        "eligible": true,
+        "read_only": true,
+        "provider_approved": true,
+        "cost_class": "free"
+      }
     },
     "openclaw-cli": {
       "kind": "external-binary",
@@ -373,7 +433,13 @@
         "hermes-cli",
         "goose-cli"
       ],
-      "enabled": false
+      "enabled": false,
+      "github_queue": {
+        "eligible": false,
+        "read_only": false,
+        "provider_approved": false,
+        "cost_class": "unknown"
+      }
     }
   }
 }
