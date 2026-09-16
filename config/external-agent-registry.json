@@ -202,10 +202,10 @@
       ],
       "enabled": true,
       "github_queue": {
-        "eligible": true,
+        "eligible": false,
         "read_only": true,
-        "provider_approved": true,
-        "cost_class": "free_with_quota"
+        "provider_approved": false,
+        "cost_class": "unknown"
       }
     },
     "hermes-cli": {
@@ -392,10 +392,10 @@
       ],
       "enabled": true,
       "github_queue": {
-        "eligible": true,
+        "eligible": false,
         "read_only": true,
-        "provider_approved": true,
-        "cost_class": "free"
+        "provider_approved": false,
+        "cost_class": "unknown"
       }
     },
     "openclaw-cli": {
