@@ -1,0 +1,11 @@
+# Opsly — Ghostty Linux override.
+# Appended after config/ghostty/config by scripts/install-ghostty-config.sh.
+# Keep Linux-only launch behavior here; edit the canonical base for shared UI.
+#
+# Each concurrent Ghostty window gets an independent tmux session under the
+# opsly-harness namespace. Detached sessions are reused on the next launch,
+# so opening a new window no longer mirrors the currently attached client.
+
+working-directory = __REPO_ROOT__
+window-inherit-working-directory = false
+command = /usr/bin/env bash __REPO_ROOT__/scripts/ghostty-linux-harness.sh
