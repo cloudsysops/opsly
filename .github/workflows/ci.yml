@@ -335,6 +335,9 @@ jobs:
       - name: compute-worker policy tests
         run: node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs
 
+      - name: Machine claim contract tests
+        run: node --test scripts/ops/__tests__/machine-claim.test.mjs
+
       - name: Golden runtime topology contracts
         run: |
           node --test \
