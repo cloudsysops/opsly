@@ -44,9 +44,7 @@ test('composes real runtime, compute, team and queue signals', () => {
           tmuxSessions: [],
         },
       ],
-      queues: [
-        { name: 'local-agents', waiting: 1, active: 1, depth: 2, failed: 0 },
-      ],
+      queues: [{ name: 'local-agents', waiting: 1, active: 1, depth: 2, failed: 0 }],
       sessionSummary: { running: 0 },
     },
     compute: {
@@ -97,7 +95,7 @@ test('keeps failed runtime probe explicit and unknown', () => {
   assert.equal(snapshot.summary.machines_online, 0);
   assert.equal(
     snapshot.blockers.some((blocker) => blocker.blocker_id === 'runtime:nodes-status'),
-    true,
+    true
   );
 });
 
@@ -107,9 +105,7 @@ test('deduplicates queue observations without summing the same queue twice', () 
       ok: true,
       timestamp: '2026-09-13T16:00:00.000Z',
       nodes: [],
-      queues: [
-        { name: 'local-agents', waiting: 2, active: 1, depth: 3, failed: 0 },
-      ],
+      queues: [{ name: 'local-agents', waiting: 2, active: 1, depth: 3, failed: 0 }],
       sessionSummary: { running: 0 },
     },
     compute: {
@@ -123,7 +119,6 @@ test('deduplicates queue observations without summing the same queue twice', () 
   assert.equal(snapshot.summary.queue_waiting, 2);
   assert.equal(snapshot.summary.queue_active, 1);
 });
-
 
 test('historical team activity never fabricates a RUNNING agent', () => {
   const snapshot = buildMissionControlSnapshotV1({
@@ -159,12 +154,13 @@ test('orchestrator sentinel response remains unavailable and adds a blocker', ()
   const source = snapshot.sources.find((item) => item.id === 'orchestrator');
   assert.equal(source?.available, false);
   assert.equal(source?.confidence, 'UNKNOWN');
-  assert.equal(snapshot.queues.some((queue) => queue.queue === 'orchestrator'), false);
   assert.equal(
-    snapshot.blockers.some(
-      (blocker) => blocker.blocker_id === 'orchestrator:sentinel-unavailable',
-    ),
-    true,
+    snapshot.queues.some((queue) => queue.queue === 'orchestrator'),
+    false
+  );
+  assert.equal(
+    snapshot.blockers.some((blocker) => blocker.blocker_id === 'orchestrator:sentinel-unavailable'),
+    true
   );
 });
 
@@ -174,9 +170,7 @@ test('duplicate queue observations keep one coherent tuple instead of field maxi
       ok: true,
       timestamp: '2026-09-13T16:00:00.000Z',
       nodes: [],
-      queues: [
-        { name: 'local-agents', waiting: 2, active: 0, depth: 2, failed: 0 },
-      ],
+      queues: [{ name: 'local-agents', waiting: 2, active: 0, depth: 2, failed: 0 }],
       sessionSummary: { running: 0 },
     },
     compute: {
@@ -193,7 +187,7 @@ test('duplicate queue observations keep one coherent tuple instead of field maxi
       active: snapshot.queues[0]?.active,
       depth: snapshot.queues[0]?.depth,
     },
-    { waiting: 2, active: 0, depth: 2 },
+    { waiting: 2, active: 0, depth: 2 }
   );
   assert.equal(snapshot.summary.queue_waiting + snapshot.summary.queue_active, 2);
 });
