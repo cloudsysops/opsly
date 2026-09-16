@@ -35,7 +35,7 @@ export function activateChallenge(challenge: CreatorChallenge): CreatorChallenge
 export function updateChallengeProgress(
   challenge: CreatorChallenge,
   progress: number,
-  completedAt = new Date().toISOString(),
+  completedAt = new Date().toISOString()
 ): CreatorChallenge {
   if (challenge.status !== 'active') throw new Error('challenge must be active');
   if (!Number.isFinite(progress) || progress < 0) throw new Error('progress must be non-negative');
@@ -50,11 +50,12 @@ export function updateChallengeProgress(
 
 export function castVote(poll: CommunityPoll, optionId: string): CommunityPoll {
   if (poll.status !== 'open') throw new Error('poll is closed');
-  if (!poll.options.some(option => option.id === optionId)) throw new Error('unknown poll option');
+  if (!poll.options.some((option) => option.id === optionId))
+    throw new Error('unknown poll option');
   return {
     ...poll,
-    options: poll.options.map(option =>
-      option.id === optionId ? { ...option, votes: option.votes + 1 } : option,
+    options: poll.options.map((option) =>
+      option.id === optionId ? { ...option, votes: option.votes + 1 } : option
     ),
   };
 }
@@ -82,7 +83,7 @@ export function toPollEvent(poll: CommunityPoll) {
     payload: {
       pollId: poll.id,
       question: poll.question,
-      options: poll.options.map(option => ({ id: option.id, votes: option.votes })),
+      options: poll.options.map((option) => ({ id: option.id, votes: option.votes })),
     },
   };
 }
