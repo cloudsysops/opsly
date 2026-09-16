@@ -66,6 +66,19 @@ test('lab manifest exposes only bounded enabled work by default', () => {
   assert.ok(!selected.some((task) => task.id === 'lab-transcription'));
 });
 
+test('rejects unknown or disabled exact task ids', () => {
+  const manifest = loadLabTasks();
+
+  assert.throws(
+    () => selectLabTasks(manifest, 'does-not-exist'),
+    /Unknown gpu-lab task id/,
+  );
+  assert.throws(
+    () => selectLabTasks(manifest, 'lab-image-generation'),
+    /gpu-lab task is disabled/,
+  );
+});
+
 test('request id is stable inside a cadence bucket', () => {
   const task = { id: 'lab-gpu-runtime-smoke', cadence: 'hourly' };
   const a = requestIdForTask(task, new Date('2026-09-16T12:05:00.000Z'));
