@@ -23,12 +23,18 @@ import {
   isConfigurableLocalBridgeKey,
 } from '../../lib/local-worker-utils.js';
 import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
+import {
+  getExternalAgentRegistry,
+  resolveOpslyJobTypeForPrompt,
+} from '../../lib/external-agent-coordinator.js';
+import { buildExternalAgentFleetSnapshot } from './external-agents.js';
 import { jsonResponse, errorResponse } from '../router.js';
 import { agentTaskEnvelopeV1Schema } from '@intcloudsysops/types/agent-task';
 import { buildAgentTaskEnvelope, inferTaskType } from '@intcloudsysops/agent-task-core';
 import {
   acquireTaskDispatchClaim,
   dispatchClaimRequestFromContext,
+  readDispatchAttemptHistory,
   releaseTaskDispatchClaim,
   type DispatchClaimLease,
 } from '../../task-claim-store.js';
@@ -55,7 +61,10 @@ function recordRecentLocalJob(job: LocalRecentJob): void {
   }
 }
 
-function resolveLocalPromptAgentKind(b: Record<string, unknown>, promptForFrontmatter: string): string {
+export async function resolveLocalPromptAgentKind(
+  b: Record<string, unknown>,
+  promptForFrontmatter: string
+): Promise<string> {
   const explicit = typeof b.agent === 'string' ? b.agent.trim() : '';
   if (explicit.length > 0) {
     return normalizeLocalAgentKind(explicit);
@@ -71,7 +80,43 @@ function resolveLocalPromptAgentKind(b: Record<string, unknown>, promptForFrontm
   if (isLocalAgentKind(role)) {
     return normalizeLocalAgentKind(role);
   }
-  return 'local_cursor';
+
+  // Backward compatibility: an omitted agent still means the historical
+  // local_cursor default. Explicit `agent: null` means "factory, choose for
+  // me" and must use the canonical external-agent registry + runtime truth.
+  const autoRouteRequested =
+    Object.prototype.hasOwnProperty.call(b, 'agent') && b.agent === null;
+  if (!autoRouteRequested) {
+    return 'local_cursor';
+  }
+
+  const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
+  const routed = await resolveOpslyJobTypeForPrompt({
+    agentRole: role,
+    goal,
+  });
+  const registry = await getExternalAgentRegistry();
+  const fleet = await buildExternalAgentFleetSnapshot(registry);
+  const byJobType = new Map(fleet.map((row) => [row.opsly_job_type, row]));
+
+  const preferred = byJobType.get(routed.opslyJobType);
+  if (preferred?.dispatch_eligible) {
+    return routed.opslyJobType;
+  }
+
+  for (const fallbackWorkerId of routed.worker.entry.fallback_agents ?? []) {
+    const fallbackEntry = registry.workers[fallbackWorkerId];
+    if (!fallbackEntry?.enabled) continue;
+    const row = byJobType.get(fallbackEntry.opsly_job_type);
+    if (row?.dispatch_eligible) {
+      return normalizeLocalAgentKind(fallbackEntry.opsly_job_type);
+    }
+  }
+
+  const blocker = preferred?.dispatch_blocker ?? 'preferred_runtime_unknown';
+  throw new Error(
+    `NO_DISPATCH_ELIGIBLE_AGENT: preferred=${routed.worker.workerId} blocker=${blocker}`
+  );
 }
 
 export async function handleLocalControlMode(ctx: RouteContext): Promise<void> {
@@ -133,6 +178,41 @@ export async function handleLocalState(ctx: RouteContext): Promise<void> {
     });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
+  }
+}
+
+export async function handleLocalDispatchAttempts(ctx: RouteContext): Promise<void> {
+  if (!verifyPlatformAdminToken(ctx.req)) {
+    errorResponse(ctx.res, 401, 'unauthorized');
+    return;
+  }
+
+  const taskId = ctx.query.task_id?.trim() ?? '';
+  if (!taskId) {
+    errorResponse(ctx.res, 400, 'task_id query parameter required');
+    return;
+  }
+
+  const tenantSlug = ctx.query.tenant_slug?.trim() || 'local';
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    errorResponse(ctx.res, 400, err instanceof Error ? err.message : String(err));
+    return;
+  }
+
+  try {
+    const attempts = await readDispatchAttemptHistory({ tenantSlug, taskId });
+    jsonResponse(ctx.res, 200, {
+      success: true,
+      tenant_slug: tenantSlug,
+      task_id: taskId,
+      attempt_count: attempts.length,
+      attempts,
+      updated_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    errorResponse(ctx.res, 500, err instanceof Error ? err.message : String(err));
   }
 }
 
@@ -214,7 +294,13 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     return;
   }
 
-  const agentKind = resolveLocalPromptAgentKind(b, promptForAgentResolve);
+  let agentKind: string;
+  try {
+    agentKind = await resolveLocalPromptAgentKind(b, promptForAgentResolve);
+  } catch (err) {
+    errorResponse(ctx.res, 503, err instanceof Error ? err.message : String(err));
+    return;
+  }
   const jobType = jobTypeForLocalAgent(agentKind);
 
   const taskEnvelopeRaw = b.agent_task;

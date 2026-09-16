@@ -64,6 +64,9 @@ const GATEWAY_URL = process.env.LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
 const TENANT_SLUG = process.env.OPSLY_REVIEW_TENANT ?? 'opsly-ci-review';
 
 const CLEAN_PHRASE = "Codex Review: Didn't find any major issues.";
+// LLM Gateway /v1/text rejects prompts above 16k chars. Keep enough margin for
+// system instructions + PR/check metadata so large PRs are still reviewable.
+const MAX_REVIEW_DIFF_CHARS = 10_000;
 
 function parseArgs(argv) {
   const out = { dryRun: false, pr: null, limit: 5 };
@@ -134,8 +137,13 @@ async function fetchDiff(pr, token) {
   });
   if (!resp.ok) throw new Error(`diff fetch failed: ${resp.status}`);
   const text = await resp.text();
-  // No mandar diffs gigantes al gateway — sesgo hacia contexto útil, no todo.
-  return text.length > 60_000 ? `${text.slice(0, 60_000)}\n\n[...diff truncado...]` : text;
+  // The gateway hard-fails above 16k chars. Bound only the diff portion and
+  // leave margin for review instructions / PR metadata. The reviewer remains
+  // fail-closed; truncation is explicit in the prompt instead of turning a
+  // large PR into an infrastructure failure.
+  return text.length > MAX_REVIEW_DIFF_CHARS
+    ? `${text.slice(0, MAX_REVIEW_DIFF_CHARS)}\n\n[...diff truncado por presupuesto de review...]`
+    : text;
 }
 
 /**
