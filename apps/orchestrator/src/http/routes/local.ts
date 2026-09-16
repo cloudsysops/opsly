@@ -29,6 +29,7 @@ import { buildAgentTaskEnvelope, inferTaskType } from '@intcloudsysops/agent-tas
 import {
   acquireTaskDispatchClaim,
   dispatchClaimRequestFromContext,
+  readDispatchAttemptHistory,
   releaseTaskDispatchClaim,
   type DispatchClaimLease,
 } from '../../task-claim-store.js';
@@ -133,6 +134,41 @@ export async function handleLocalState(ctx: RouteContext): Promise<void> {
     });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
+  }
+}
+
+export async function handleLocalDispatchAttempts(ctx: RouteContext): Promise<void> {
+  if (!verifyPlatformAdminToken(ctx.req)) {
+    errorResponse(ctx.res, 401, 'unauthorized');
+    return;
+  }
+
+  const taskId = ctx.query.task_id?.trim() ?? '';
+  if (!taskId) {
+    errorResponse(ctx.res, 400, 'task_id query parameter required');
+    return;
+  }
+
+  const tenantSlug = ctx.query.tenant_slug?.trim() || 'local';
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    errorResponse(ctx.res, 400, err instanceof Error ? err.message : String(err));
+    return;
+  }
+
+  try {
+    const attempts = await readDispatchAttemptHistory({ tenantSlug, taskId });
+    jsonResponse(ctx.res, 200, {
+      success: true,
+      tenant_slug: tenantSlug,
+      task_id: taskId,
+      attempt_count: attempts.length,
+      attempts,
+      updated_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    errorResponse(ctx.res, 500, err instanceof Error ? err.message : String(err));
   }
 }
 
