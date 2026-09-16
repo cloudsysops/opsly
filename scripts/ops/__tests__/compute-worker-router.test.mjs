@@ -113,16 +113,24 @@ describe('compute-worker-router', () => {
     assert.equal(image.reason, 'runtime_not_installed');
   });
 
-  it('rejects a worker that lacks the required capability', () => {
+  it('rejects a worker that lacks the required capability, without hiding other capable workers', () => {
     const registry = freshRegistry();
-    for (const worker of registry.workers) worker.capabilities = ['ffmpeg'];
+    const crippled = registry.workers[0];
+    crippled.capabilities = ['ffmpeg'];
     const selected = selectWorkers(
       registry,
       { capabilities: ['llm.local'], minVramGb: 8 },
       {},
       now,
     );
-    assert.equal(selected.length, 0);
+    assert.equal(
+      selected.some((row) => row.worker.workerId === crippled.workerId),
+      false,
+    );
+    assert.equal(
+      selected.every((row) => (row.worker.capabilities ?? []).includes('llm.local')),
+      true,
+    );
   });
 
   it('builds a Mission Control snapshot without inventing a second queue', () => {
