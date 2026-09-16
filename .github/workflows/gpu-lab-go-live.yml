@@ -55,8 +55,18 @@ jobs:
             args+=(--apply)
           fi
 
+          test -f scripts/ops/gpu-lab-dispatch.mjs
+          test -f config/gpu-lab-tasks.json
+
+          DOPPLER_PROJECT="$(jq -r '.project.doppler_project // empty' config/opsly.config.json)"
+          DOPPLER_CONFIG="$(jq -r '.project.doppler_config // empty' config/opsly.config.json)"
+          if [ -z "${DOPPLER_PROJECT}" ] || [ -z "${DOPPLER_CONFIG}" ]; then
+            echo "Missing Doppler project/config in config/opsly.config.json" >&2
+            exit 1
+          fi
+
           # Doppler stays on the controlled Mac. GPU workers receive no Doppler token.
-          doppler run --project ops-intcloudsysops --config prd --             node scripts/ops/gpu-lab-dispatch.mjs "${args[@]}" | tee "${EVIDENCE_FILE}"
+          doppler run --project "${DOPPLER_PROJECT}" --config "${DOPPLER_CONFIG}" --             node scripts/ops/gpu-lab-dispatch.mjs "${args[@]}" | tee "${EVIDENCE_FILE}"
 
       - name: Publish GPU lab evidence
         if: always()
