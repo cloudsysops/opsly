@@ -10,6 +10,7 @@
 set -euo pipefail
 
 DRY_RUN=false
+WORKER_ID_FROM_ENV="${WORKER_ID:-}"
 WORKER_ID="${WORKER_ID:-pc-gamer-openclaw-01}"
 TTL="${OPSLY_WORKER_HEARTBEAT_TTL_SEC:-180}"
 
@@ -33,6 +34,15 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "$ROOT"
+
+# .env.worker's WORKER_ID is authoritative for a per-node install — without
+# this, every physical worker heartbeats under the same hardcoded default
+# key and silently overwrites each other's presence signal in Redis. An
+# explicit WORKER_ID already in the calling environment still wins.
+if [[ -z "$WORKER_ID_FROM_ENV" && -f .env.worker ]]; then
+  ENV_FILE_WORKER_ID="$(grep -E '^WORKER_ID=' .env.worker | tail -1 | cut -d= -f2-)"
+  [[ -n "$ENV_FILE_WORKER_ID" ]] && WORKER_ID="$ENV_FILE_WORKER_ID"
+fi
 
 KEY="opsly:worker:heartbeat:${WORKER_ID}"
 if ! VALUE="$(WORKER_ID="$WORKER_ID" node "${SCRIPT_DIR}/pc-gamer-heartbeat-payload.mjs" 2>/dev/null)"; then
