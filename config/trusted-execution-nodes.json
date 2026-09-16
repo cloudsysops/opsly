@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-12",
+  "updated_at": "2026-09-16",
   "principle": "Public code, private execution. Every execution node has a unique identity, least privilege, independent revocation, and no secret material committed to Git.",
   "trusted_task_source": {
     "repository": "cloudsysops/opsly",
@@ -60,7 +60,9 @@
         "video.render",
         "image.generate",
         "embedding",
-        "ffmpeg"
+        "ffmpeg",
+        "review.independent",
+        "verifier.readonly"
       ],
       "forbidden": [
         "release-authority",
@@ -69,7 +71,13 @@
         "direct-main-write",
         "auto-production-deploy"
       ],
-      "auth_enforcement": "legacy_shared_auth_pending_per_node_enforcement"
+      "auth_enforcement": "legacy_shared_auth_pending_per_node_enforcement",
+      "verifier_attestation": {
+        "status": "pending_key_enrollment",
+        "scheme": "ed25519",
+        "private_key_location": "pc-gamer-only",
+        "public_key_committed": false
+      }
     },
     {
       "node_id": "vps-dragon-control-01",
