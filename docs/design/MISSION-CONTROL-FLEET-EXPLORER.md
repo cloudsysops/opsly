@@ -314,46 +314,114 @@ AVAILABLE
 
 Mission Control must make this visually obvious so the operator knows why capacity disappeared without treating the machine as failed.
 
-## Futuristic visual system
+## Futuristic visual system — BLACK HACKER OPS
 
-Design direction: cinematic, technical, minimal, high information density.
+Design direction: **black-first, elite hacker/AI operations console**. The interface should feel like a sovereign cyber-operations cockpit built for real infrastructure: sharp, quiet, dangerous-looking, highly legible and evidence-driven. Avoid retro parody, Matrix rain, fake terminals or excessive neon.
 
 ### Surface
 
-- background: near-black navy;
-- subtle 24–32px grid;
-- faint radial/circuit field behind topology;
-- translucent machine cards;
-- restrained glow only around selected/live paths;
-- no gratuitous animation.
+- true black / near-black background (`#020304` family), not blue-gray;
+- layered black surfaces with tiny luminance differences instead of bright cards;
+- subtle 24–32px technical grid and sparse circuit traces;
+- faint scanline/noise texture at very low opacity;
+- machine cards use smoked-glass black with hairline borders;
+- selected/live entities get restrained phosphor-green edge light;
+- inactive/unobserved entities recede almost completely into black;
+- topology space should feel deep, with controlled bloom around live paths only;
+- no gratuitous animation, no decorative cyberpunk clutter.
 
-### Semantic accents
+### Hacker semantic accents
 
-- cyan: infrastructure/control;
-- violet: AI/agents/job dispatch;
-- emerald: live/healthy/proven;
-- amber: busy/draining/gaming;
-- rose/red: failure/offline;
-- slate: unknown/planned/unobserved.
+Primary visual language is monochrome black + phosphor green.
+
+- phosphor green: canonical live state, verified telemetry, active links, successful evidence;
+- electric green: selected machine / active AI path;
+- dim green-gray: configured/idle;
+- amber: BUSY / DRAINING / GAMING / constrained;
+- red: failure / OFFLINE / rejected / policy violation;
+- ice-cyan: control-plane metadata only, used sparingly;
+- violet: AI/model-specific context only, used sparingly;
+- graphite/slate: UNKNOWN / planned / unobserved.
+
+Never use color merely for decoration. Color must encode operational meaning.
+
+### Machine cards
+
+Cards should resemble high-end black tactical instrumentation:
+
+- machine ID is the dominant label;
+- live status lamp + heartbeat age in the header;
+- CPU / RAM / GPU / VRAM shown as precise compact meters;
+- tiny sparklines only when real history exists;
+- GPU temperature and power shown as instrument readouts;
+- container, agent and capability chips look like terminal modules;
+- current job appears as an active command/execution strip;
+- card edges illuminate only when selected, busy or receiving work.
 
 ### Typography
 
-- strong condensed/digital-style display treatment for machine IDs and primary telemetry;
-- normal UI sans for labels;
-- monospace for IDs, SHAs, PIDs, ports, queue names, model tags.
+- machine IDs and critical telemetry: condensed technical display style;
+- operator labels: clean sans-serif;
+- identifiers, SHAs, PIDs, ports, queue names, model tags and commands: monospace;
+- avoid oversized marketing typography inside operational views;
+- numbers should align like instrumentation.
+
+### Topology links
+
+Links should look like live signal paths rather than decorative arrows:
+
+- verified telemetry/control path: thin phosphor-green line;
+- active dispatch/job: brighter animated green pulse;
+- data/evidence path: dim cyan/green;
+- degraded: amber broken/pulsing line;
+- offline: muted red;
+- configured but not observed: dotted graphite.
+
+When a machine is selected, dim unrelated paths and illuminate its dependency chain from GitHub/queue/control-plane to runtime/evidence.
 
 ### Motion
 
-Use motion only to communicate state:
+Motion communicates machine state only:
 
-- heartbeat pulse;
-- active job path flow;
-- selection focus;
-- zoom transitions;
-- state transition;
-- newly arrived evidence.
+- heartbeat: subtle single-pixel/ring pulse;
+- active job: slow packet/signal travel along the real edge;
+- selection: fast focus lock;
+- zoom: smooth camera transition;
+- new evidence: brief green acknowledgement flash;
+- BUSY/DRAINING/GAMING transition: restrained amber state shift;
+- failure: one red alert pulse, then static.
 
 Respect reduced-motion preferences.
+
+### Hacker interaction details
+
+- global command/search bar should feel like a command palette, e.g. `> inspect home-gpu-01`;
+- keyboard-first navigation is first-class;
+- contextual inspector can expose copyable IDs/commands without exposing secrets;
+- optional compact terminal-style event stream can sit at the bottom of the canvas;
+- AI explanations appear as an operator copilot panel, not a chatbot bubble;
+- evidence/confidence badges should resemble forensic verification markers: `REAL`, `DERIVED`, `UNKNOWN`.
+
+### Visual quality bar
+
+The target is closer to a premium cyber-defense / GPU-cluster / AI-lab console than a generic SaaS dashboard.
+
+Do:
+- black space;
+- disciplined green;
+- crisp hierarchy;
+- dense but calm telemetry;
+- spatial depth;
+- precise micro-interactions.
+
+Do not:
+- Matrix code rain;
+- skulls, fake exploit text or cliché hacker graphics;
+- rainbow neon;
+- glowing every border;
+- fake command output;
+- decorative telemetry;
+- inaccessible low-contrast green-on-black text.
 
 ## AI layer — explain, discriminate, diagnose
 
