@@ -36,8 +36,11 @@ import { AgentTaskRuntime } from '../runtime/agent-task-runtime.js';
 import {
   completeTaskDispatchClaim,
   parseDispatchClaimLease,
+  recordDispatchAttemptEvent,
   releaseTaskDispatchClaim,
   renewTaskDispatchClaim,
+  type DispatchAttemptState,
+  type DispatchClaimLease,
 } from '../task-claim-store.js';
 
 interface LocalAgentPayload {
@@ -248,6 +251,34 @@ function isFinalBullAttempt(job: Job, error: unknown): boolean {
   if (error instanceof UnrecoverableError) return true;
   const attempts = Math.max(1, Number(job.opts.attempts ?? 1));
   return job.attemptsMade + 1 >= attempts;
+}
+
+async function recordDispatchAttemptSafely(
+  lease: DispatchClaimLease,
+  event: {
+    jobId: string;
+    attempt: number;
+    state: DispatchAttemptState;
+    error?: string;
+  }
+): Promise<void> {
+  try {
+    await recordDispatchAttemptEvent(lease, {
+      workerId: process.env.WORKER_ID?.trim() || null,
+      jobId: event.jobId,
+      attempt: event.attempt,
+      state: event.state,
+      ...(event.error ? { error: sanitizeLocalAgentError(event.error) } : {}),
+    });
+  } catch (err) {
+    logWorkerWarn('local-agents', 'Dispatch attempt evidence write failed', {
+      claim_id: lease.claimId,
+      task_id: lease.taskId,
+      job_id: event.jobId,
+      state: event.state,
+      error: sanitizeLocalAgentError(err instanceof Error ? err.message : String(err)),
+    });
+  }
 }
 
 async function processLocalAgentJob(
@@ -471,10 +502,21 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
         if (dispatchLease) {
           const ownership = await renewTaskDispatchClaim(dispatchLease);
           if (!ownership.renewed) {
+            await recordDispatchAttemptSafely(dispatchLease, {
+              jobId: job_id,
+              attempt: job.attemptsMade + 1,
+              state: 'claim_lost',
+              error: 'DISPATCH_CLAIM_LOST',
+            });
             throw new UnrecoverableError(
               'DISPATCH_CLAIM_LOST: active ownership lease is no longer held by this job'
             );
           }
+          await recordDispatchAttemptSafely(dispatchLease, {
+            jobId: job_id,
+            attempt: job.attemptsMade + 1,
+            state: 'started',
+          });
         }
 
         const result = payload.agent_task === undefined
@@ -550,6 +592,13 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           logWorkerError('local-agents', `${jobType} job ${job.id} failed: ${result.error}`);
         }
 
+        if (dispatchLease) {
+          await recordDispatchAttemptSafely(dispatchLease, {
+            jobId: job_id,
+            attempt: job.attemptsMade + 1,
+            state: 'completed',
+          });
+        }
         await finalizeDispatchClaimForPayload(payload, 'completed', 'validated_terminal_success');
         return result;
       } catch (err) {
@@ -573,7 +622,17 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           });
         }
 
-        if (isFinalBullAttempt(job, err)) {
+        const finalAttempt = isFinalBullAttempt(job, err);
+        if (dispatchLease) {
+          await recordDispatchAttemptSafely(dispatchLease, {
+            jobId: job_id,
+            attempt: job.attemptsMade + 1,
+            state: finalAttempt ? 'failed' : 'retrying',
+            error: errorMsg,
+          });
+        }
+
+        if (finalAttempt) {
           await finalizeDispatchClaimForPayload(payload, 'failed', 'terminal_failure');
         } else {
           logWorkerInfo('local-agents', 'Retaining dispatch claim across BullMQ retry', {
