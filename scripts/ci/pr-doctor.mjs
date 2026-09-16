@@ -88,6 +88,14 @@ async function failingChecks(pr, token) {
 async function dispatchFix(pr, failing, token) {
   const requestId = `pr-doctor:${pr.number}:${pr.head.sha.slice(0, 8)}`;
   const checkList = failing.map((c) => `- ${c.name}: ${c.details_url}${c.summary ? `\n  ${c.summary}` : ''}`).join('\n');
+  const changedFiles = await gh(
+    `repos/${REPO}/pulls/${pr.number}/files?per_page=100`,
+    { token }
+  );
+  const affectedPaths = (Array.isArray(changedFiles) ? changedFiles : [])
+    .map((file) => (typeof file?.filename === 'string' ? file.filename.trim() : ''))
+    .filter(Boolean)
+    .slice(0, 100);
 
   const payload = {
     tenant_slug: TENANT_SLUG,
@@ -120,6 +128,7 @@ async function dispatchFix(pr, failing, token) {
       pr_branch: pr.head.ref,
       pr_head_sha: pr.head.sha,
       failing_checks: failing.map((c) => c.name),
+      affected_paths: affectedPaths,
       github: {
         repository: REPO,
         run_id: process.env.GITHUB_RUN_ID ?? null,
