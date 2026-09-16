@@ -123,6 +123,7 @@ describe('compute-worker-router', () => {
       {},
       now,
     );
+    assert.ok(selected.length > 0, 'expected selectWorkers to still return the other capable workers');
     assert.equal(
       selected.some((row) => row.worker.workerId === crippled.workerId),
       false,
