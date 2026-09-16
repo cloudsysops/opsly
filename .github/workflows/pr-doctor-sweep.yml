@@ -2,8 +2,9 @@ name: PR doctor backlog sweep
 
 on:
   schedule:
-    # 23:20, 01:20 and 03:20 America/Bogota (UTC-5), staggered after night merge.
-    - cron: '20 4,6,8 * * *'
+    # Hourly safety-net for stale red PRs. New failures are handled event-driven
+    # by pr-doctor-on-check-failure.yml; this sweep catches missed/old state.
+    - cron: '20 * * * *'
   workflow_dispatch:
 
 permissions:
