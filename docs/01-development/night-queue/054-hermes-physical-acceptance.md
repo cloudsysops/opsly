@@ -5,6 +5,10 @@ priority: P1
 agent: local_hermes
 task_type: research
 owner: platform
+workstream: agent-runtime-acceptance
+conflict_key: agents/hermes/physical-acceptance
+semantic_scope: agent-runtime/hermes/read-only-smoke
+affected_paths: []
 environment: local
 cost_class: free_with_quota
 estimated_cost_usd: 0
