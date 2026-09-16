@@ -480,6 +480,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       logWorkerInfo('local-agents', `Processing ${jobType} job ${job.id}`);
       logWorkerLifecycle('start', 'local-agents', job);
 
+      let dispatchLease: DispatchClaimLease | null = null;
       try {
         const process = (signal?: AbortSignal) =>
           processLocalAgentJob(
@@ -498,7 +499,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           );
         }
 
-        const dispatchLease = parseDispatchClaimLease(payload.context?.dispatch_claim);
+        dispatchLease = parseDispatchClaimLease(payload.context?.dispatch_claim);
         if (dispatchLease) {
           const ownership = await renewTaskDispatchClaim(dispatchLease);
           if (!ownership.renewed) {
