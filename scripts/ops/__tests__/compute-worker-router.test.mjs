@@ -115,7 +115,7 @@ describe('compute-worker-router', () => {
 
   it('rejects a worker that lacks the required capability', () => {
     const registry = freshRegistry();
-    registry.workers[0].capabilities = ['ffmpeg'];
+    for (const worker of registry.workers) worker.capabilities = ['ffmpeg'];
     const selected = selectWorkers(
       registry,
       { capabilities: ['llm.local'], minVramGb: 8 },

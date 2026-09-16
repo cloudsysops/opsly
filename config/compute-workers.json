@@ -109,6 +109,34 @@
         "maxConcurrentGpuJobs": 1,
         "maxConcurrentCpuJobs": 2
       }
+    },
+    {
+      "workerId": "home-gpu-01",
+      "hostname": "desktop-smdqcia",
+      "role": "ephemeral-compute",
+      "class": "opportunistic",
+      "replaceable": true,
+      "connectivity": "tailscale-outbound",
+      "capabilities": [
+        "gpu.nvidia",
+        "cuda",
+        "video.render",
+        "image.generate",
+        "llm.local",
+        "embedding",
+        "ffmpeg",
+        "gpu.telemetry",
+        "nvidia.capture"
+      ],
+      "gpuVendor": "nvidia",
+      "gpuModel": "RTX 3060",
+      "vramGb": 12,
+      "ramGb": 8,
+      "cpuCores": 12,
+      "limits": {
+        "maxConcurrentGpuJobs": 1,
+        "maxConcurrentCpuJobs": 2
+      }
     }
   ]
 }
