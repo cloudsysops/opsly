@@ -123,6 +123,14 @@ export OBS_WEBSOCKET_PASSWORD="<from OBS websocket server settings>"
 python3 tools/live-automation/obs_capture_source_watcher.py
 ```
 
+`OBS_WEBSOCKET_HOST` defaults to `127.0.0.1`, which works when WSL2's
+localhost-forwarding reaches the Windows-side OBS listener (confirmed on
+pc-gamer-openclaw-01). On machines where that forwarding doesn't apply
+(confirmed on home-gpu-01/desktop-smdqcia — `127.0.0.1:4455` refuses the
+connection from WSL even though OBS listens on `0.0.0.0:4455`), set
+`OBS_WEBSOCKET_HOST` to the Windows host's own Tailscale IP instead
+(`tailscale status` on the Windows side, or `ipconfig`/`tailscale ip`).
+
 For a persistent user service:
 
 ```ini
