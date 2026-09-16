@@ -189,6 +189,65 @@ describe('local prompt-submit → local-agents queue', () => {
     expect(jobArg.payload.agent_task?.execution_mode).toBe('enqueue');
   });
 
+  it('agent:null routes executor work to the canonical live implementation runtime', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => new Response('', { status: 200 }));
+
+    try {
+      const { status, raw } = await postJson(
+        port,
+        '/api/local/prompt-submit',
+        {
+          tenant_slug: 'local',
+          request_id: 'auto-route-live-001',
+          agent: null,
+          agent_role: 'executor',
+          goal: 'implementation',
+          prompt_body: 'Inspect a synthetic implementation task without modifying files',
+        },
+        { Authorization: 'Bearer test-platform-admin' }
+      );
+
+      expect(status).toBe(202);
+      expect(JSON.parse(raw).job_type).toBe('local_opencode');
+      const queued = enqueueLocalAgentJob.mock.calls[0]![0] as { type: string };
+      expect(queued.type).toBe('local_opencode');
+    } finally {
+      fetchSpy.mockRestore();
+    }
+  });
+
+  it('agent:null falls back to the next live registered runtime when preferred is unhealthy', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+      return new Response('', { status: url.includes(':5004/') ? 503 : 200 });
+    });
+
+    try {
+      const { status, raw } = await postJson(
+        port,
+        '/api/local/prompt-submit',
+        {
+          tenant_slug: 'local',
+          request_id: 'auto-route-fallback-001',
+          agent: null,
+          agent_role: 'executor',
+          goal: 'implementation',
+          prompt_body: 'Inspect a synthetic fallback task without modifying files',
+        },
+        { Authorization: 'Bearer test-platform-admin' }
+      );
+
+      expect(status).toBe(202);
+      expect(JSON.parse(raw).job_type).toBe('local_aider');
+      const queued = enqueueLocalAgentJob.mock.calls[0]![0] as { type: string };
+      expect(queued.type).toBe('local_aider');
+    } finally {
+      fetchSpy.mockRestore();
+    }
+  });
+
   it('rejects write-capable agent work before execution when no ownership claim can be derived', async () => {
     const { status, raw } = await postJson(
       port,
