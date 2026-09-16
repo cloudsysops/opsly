@@ -18,6 +18,7 @@ jobs:
       - name: Checkout PR head
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Setup Node
@@ -43,7 +44,7 @@ jobs:
         run: |
           set -euo pipefail
           HEAD_SHA="$(git rev-parse HEAD)"
-          BASE_SHA="$(git rev-parse origin/main)"
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
           echo "head_sha=$HEAD_SHA"
           echo "base_sha=$BASE_SHA"
           echo "command=npx vitest run src/content-engine/__tests__/gameplay-channel.test.ts -t 'prepares a highlight as a rendered human-review draft'"
