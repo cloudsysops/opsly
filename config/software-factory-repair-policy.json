@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "mode": "bounded-auto-repair",
+  "max_auto_attempts": 1,
+  "require_expected_head_sha": true,
+  "auto_actions": {
+    "INFRA_TRANSIENT": [
+      "rerun_failed_jobs"
+    ]
+  },
+  "manual_only_failure_classes": [
+    "CODE",
+    "POLICY_GATE",
+    "UPSTREAM_DEPENDENCY",
+    "RUNTIME_UNAVAILABLE",
+    "EVIDENCE_INSUFFICIENT",
+    "BLOCKED_ACCESS"
+  ],
+  "forbidden_actions": [
+    "merge",
+    "deploy",
+    "rotate_secret",
+    "mutate_production_data",
+    "change_dns",
+    "change_routing",
+    "run_migration",
+    "modify_n8n_side_effects"
+  ],
+  "protected_policy_path": "config/pr-reconciliation-policy.json",
+  "trusted_apply_root_env": "OPSLY_SAFE_REPAIR_TRUSTED_ROOT",
+  "canonical_repository": "cloudsysops/opsly",
+  "transient_conclusions": [
+    "timed_out",
+    "startup_failure",
+    "stale"
+  ]
+}
