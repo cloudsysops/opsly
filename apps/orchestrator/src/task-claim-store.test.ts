@@ -15,6 +15,8 @@ import {
   completeTaskDispatchClaim,
   dispatchClaimRequestFromContext,
   parseDispatchClaimLease,
+  readDispatchAttemptHistory,
+  recordDispatchAttemptEvent,
   releaseTaskDispatchClaim,
   renewTaskDispatchClaim,
 } from './task-claim-store.js';
@@ -176,6 +178,70 @@ describe('task dispatch claim store', () => {
     const script = String(redis.eval.mock.calls[0]?.[0] ?? '');
     expect(script).toContain("HGETALL");
     expect(script).toContain("overlaps(existingPath, requestedPath)");
+  });
+
+  it('records bounded worker-attempt evidence without changing ownership keys', async () => {
+    redis.eval.mockResolvedValueOnce(2);
+    const lease = {
+      version: 'dispatch-claim-v1' as const,
+      claimId: 'claim-attempt',
+      tenantSlug: 'local',
+      taskId: 'wp-attempt',
+      workstream: 'factory',
+      descriptors: [
+        { dimension: 'task' as const, value: 'wp-attempt' },
+        { dimension: 'conflict' as const, value: 'factory/attempt' },
+      ],
+      acquiredAt: '2026-09-16T12:00:00.000Z',
+      expiresAt: '2026-09-16T16:00:00.000Z',
+    };
+
+    const length = await recordDispatchAttemptEvent(lease, {
+      workerId: 'home-gpu-01',
+      jobId: 'job-1',
+      attempt: 2,
+      state: 'retrying',
+      at: '2026-09-16T12:05:00.000Z',
+      error: 'synthetic failure',
+    });
+
+    expect(length).toBe(2);
+    expect(redis.eval).toHaveBeenCalledTimes(1);
+    const args = redis.eval.mock.calls[0]!;
+    expect(String(args[0])).toContain("RPUSH");
+    expect(String(args[0])).toContain("LTRIM");
+    expect(String(args[0])).toContain("PEXPIRE");
+    expect(String(args[2])).toContain('opsly:dispatch-attempt:v1:');
+    expect(String(args[3])).toContain('"workerId":"home-gpu-01"');
+    expect(String(args[3])).toContain('"state":"retrying"');
+  });
+
+  it('reads only valid bounded attempt-history records', async () => {
+    redis.eval.mockResolvedValueOnce([
+      JSON.stringify({
+        version: 'dispatch-attempt-v1',
+        claimId: 'claim-1',
+        tenantSlug: 'local',
+        taskId: 'wp-1',
+        workstream: 'factory',
+        workerId: 'worker-a',
+        jobId: 'job-1',
+        attempt: 1,
+        state: 'started',
+        at: '2026-09-16T12:00:00.000Z',
+      }),
+      'not-json',
+    ]);
+
+    const history = await readDispatchAttemptHistory({
+      tenantSlug: 'local',
+      taskId: 'wp-1',
+    });
+
+    expect(history).toHaveLength(1);
+    expect(history[0]?.workerId).toBe('worker-a');
+    expect(history[0]?.state).toBe('started');
+    expect(String(redis.eval.mock.calls[0]?.[0] ?? '')).toContain('LRANGE');
   });
 
   it('renews a lease only when every Redis descriptor is still owned by the claim', async () => {
