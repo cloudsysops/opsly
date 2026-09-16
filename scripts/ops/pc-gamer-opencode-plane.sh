@@ -51,6 +51,11 @@ if [[ -f infra/docker-compose.opslyquantum.gpu.yml ]]; then
   COMPOSE_BASE+=(-f infra/docker-compose.opslyquantum.gpu.yml)
 fi
 COMPOSE_WORKERS=("${COMPOSE_BASE[@]}" -f infra/docker-compose.pc-gamer-workers.yml)
+# Must match pc-gamer-docker-plane.sh's project name — without it, Docker
+# Compose falls back to a directory-derived default and this script's own
+# `up -d --force-recreate worker-openclaw` collides (Conflict: container
+# name already in use) with the container the canonical plane owns.
+export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-infra}"
 OVERNIGHT_WORKTREE="${OPSLY_OVERNIGHT_WORKTREE:-$HOME/opsly-overnight}"
 OVERNIGHT_BRANCH="${OPSLY_OVERNIGHT_BRANCH:-overnight/opencode}"
 OPENCODE_PORT="${OPSLY_OPENCODE_PORT:-5004}"
