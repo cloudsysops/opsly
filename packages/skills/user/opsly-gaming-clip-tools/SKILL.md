@@ -49,23 +49,27 @@ of these tools' native auto-post feature must stay disabled/unconfigured
 until that's resolved — that's a brand/consent decision, not a technical
 one.
 
-## What's actually installed where (live findings)
+## Observed machine state (not acceptance evidence)
+
+These are session observations from 2026-09-16, not a claim that the full
+runtime loop is already accepted. Durable watcher evidence is tracked in
+PR #1611 and the real-play acceptance run is tracked in issue #1619.
 
 - **pc-gamer-openclaw-01 (Mauro):**
-  - ShadowPlay Instant Replay: **active**, already producing real
-    recordings under `Videos\NVIDIA\<Game>\`.
-  - Overwolf + Outplayed: **installed**, `Videos\Overwolf\Outplayed\`
-    exists with an empty `temp-capture` folder and no recent activity
-    (last write Aug 2026) — tried once, not in active use.
-  - Medal.tv: installer placed at `C:\Users\PC MAURO\Downloads\MedalSetup.exe`
-    (2026-09-16) — needs Mauro to run it under his own Windows session; a
-    silent install run over SSH lands under the SSH account's profile
-    instead (Electron apps install per-user, not machine-wide), so it's
-    not usable from a different Windows account.
-- **home-gpu-01 (desktop-smdqcia):** Medal.tv installer downloaded
-  2026-09-16, install pending — machine was offline when attempted.
-  Whether this machine needs gameplay-clip tooling at all depends on
-  whether anyone actually games on it (open question as of this write-up).
+  - ShadowPlay Instant Replay was observed producing recordings under
+    `Videos\NVIDIA\<Game>\`; PR #1611 owns the scanner/runtime evidence.
+  - Overwolf + Outplayed were observed installed, with
+    `Videos\Overwolf\Outplayed\` present but no recent active capture
+    evidence beyond older files.
+  - Medal.tv installer was observed at
+    `C:\Users\PC MAURO\Downloads\MedalSetup.exe`. Installation under
+    Mauro's own interactive Windows profile and auto-publish=OFF are still
+    acceptance items in #1619.
+- **home-gpu-01 (desktop-smdqcia):** a Medal installer download was observed,
+  but installation/use is not part of the current gameplay acceptance path.
+
+Do not infer `LIVE`, `INSTALLED`, or end-to-end success from these notes
+without the linked runtime evidence.
 
 ## Why the canonical pipeline stays ShadowPlay + Content OS, not a third-party app
 
@@ -78,12 +82,11 @@ one.
    (`config/content-channels/icso-gaming-tbd.json` — subtitle style, safe
    area, transitions). A third-party app's auto-edit output doesn't go
    through that at all.
-3. **Already working.** `opsly-gameplay-watcher.service` (systemd --user,
-   runs headless in WSL2, no interactive Windows session needed) + the
-   ShadowPlay per-game folder scan is live on pc-gamer-openclaw-01 as of
-   this write-up, producing real Content OS draft projects from real
-   gameplay. Adding a second, differently-shaped detection tool on top
-   is redundant, not additive.
+3. **Existing canonical path.** `opsly-gameplay-watcher.service` +
+   ShadowPlay is the path under test; PR #1611 contains scanner/service
+   evidence. The full `new real gameplay → watcher → Content OS draft →
+   human review` loop is **not accepted yet** and must be proven in #1619.
+   Adding a second independently-owned publishing pipeline remains redundant.
 
 ## If a future task wants tool-native auto-post
 
