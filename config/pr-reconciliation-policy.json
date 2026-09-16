@@ -29,7 +29,12 @@
       "infra/docker-compose",
       ".github/workflows/night-merge",
       ".github/workflows/production-change-window",
-      ".github/workflows/validate-doppler"
+      ".github/workflows/validate-doppler",
+      "scripts/ops/software-factory-safe-repair.mjs",
+      "scripts/ops/lib/software-factory-repair-policy.mjs",
+      "config/software-factory-repair-policy.json",
+      ".github/workflows/",
+      "config/pr-reconciliation-policy.json"
     ],
     "allowAutoReconcile": false,
     "allowAutoMerge": false,

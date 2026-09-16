@@ -332,8 +332,12 @@ jobs:
           # Solo fallar en issues severity=error (el repo histórico tiene muchos style/info)
           shellcheck -S error scripts/*.sh
 
-      - name: compute-worker policy tests
-        run: node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs
+      - name: compute-worker and Software Factory policy tests
+        run: |
+          node --test \
+            scripts/ops/__tests__/compute-worker-router.test.mjs \
+            scripts/ops/__tests__/content-render-ffmpeg.test.mjs \
+            scripts/ops/__tests__/software-factory-repair-policy.test.mjs
 
       - name: Golden runtime topology contracts
         run: |
