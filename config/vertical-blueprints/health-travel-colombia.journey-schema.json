@@ -1,29 +1,36 @@
 {
-  "schema_version": "HealthTravelJourneyV1",
-  "description": "Commercial/coordination journey contract. Not a clinical record.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://op-sly.com/schemas/health-travel-colombia.journey.schema.json",
+  "title": "Health Travel Colombia Journey",
+  "description": "Commercial and coordination journey contract. Not a clinical record.",
+  "type": "object",
+  "additionalProperties": false,
   "required": [
     "journey_id",
     "tenant_slug",
     "traveler_ref",
     "status",
-    "requested_service",
+    "requested_service_category",
     "destination_country"
   ],
-  "fields": {
+  "properties": {
     "journey_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     },
     "tenant_slug": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
     },
     "traveler_ref": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     },
     "attribution_key": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"],
+      "maxLength": 256
     },
     "status": {
       "enum": [
@@ -40,103 +47,98 @@
         "cancelled"
       ]
     },
-    "requested_service": {
-      "type": "string"
+    "requested_service_category": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
     },
     "destination_country": {
       "const": "CO"
     },
     "destination_city": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"],
+      "maxLength": 120
     },
     "provider_ref": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"],
+      "maxLength": 128
     },
     "consultation_booking_ref": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"],
+      "maxLength": 128
     },
     "quote_ref": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"],
+      "maxLength": 128
     },
     "travel_refs": {
       "type": "array",
+      "maxItems": 50,
       "items": {
-        "type": "string"
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
       }
     },
     "lodging_refs": {
       "type": "array",
+      "maxItems": 50,
       "items": {
-        "type": "string"
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
       }
     },
     "transport_refs": {
       "type": "array",
+      "maxItems": 50,
       "items": {
-        "type": "string"
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
       }
     },
     "companion_count": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "maximum": 10
     },
     "preferred_language": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"],
+      "maxLength": 64
     },
     "mobility_coordination": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"],
+      "maxLength": 500,
+      "description": "Logistics/accessibility coordination only; do not include diagnoses or clinical history."
     },
     "commission_referral_id": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"],
+      "maxLength": 128
     },
     "next_action": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"],
+      "maxLength": 500
     },
     "next_action_owner": {
-      "enum": [
-        "traveler",
-        "provider",
-        "opsly",
-        "partner",
-        null
-      ]
+      "enum": ["traveler", "provider", "opsly", "partner", null]
     },
     "updated_at": {
       "type": "string",
       "format": "date-time"
     }
   },
-  "forbidden_fields": [
-    "diagnosis",
-    "medical_history",
-    "clinical_notes",
-    "prescription",
-    "lab_results",
-    "imaging",
-    "treatment_decision"
-  ]
+  "not": {
+    "anyOf": [
+      { "required": ["diagnosis"] },
+      { "required": ["medical_history"] },
+      { "required": ["clinical_notes"] },
+      { "required": ["prescription"] },
+      { "required": ["prescriptions"] },
+      { "required": ["lab_results"] },
+      { "required": ["imaging"] },
+      { "required": ["genetic_data"] },
+      { "required": ["treatment_decision"] }
+    ]
+  }
 }

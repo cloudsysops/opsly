@@ -69,6 +69,7 @@ done
 
 BASE="${ROOT}/config/vertical-blueprints/_base.json"
 VERT_FILE="${ROOT}/config/vertical-blueprints/${VERTICAL}.json"
+LAUNCH_SCHEMA="${ROOT}/config/client-launch.schema.json"
 OUT="${ROOT}/clients/${SLUG}.launch.json"
 
 if [[ ! -f "$VERT_FILE" ]]; then
@@ -95,18 +96,30 @@ MERGED="$(
   jq -n \
     --slurpfile base "$BASE" \
     --slurpfile vert "$VERT_FILE" \
+    --slurpfile contract "$LAUNCH_SCHEMA" \
     --arg slug "$SLUG" \
     --arg name "$BUSINESS_NAME" \
     --arg domain "$DOMAIN" \
     --arg email "$EMAIL" \
-    '$base[0] * $vert[0] | . + {
+    '($base[0] * $vert[0] | . + {
       tenant_slug: $slug,
       business_name: $name,
       domain: $domain,
       primary_email: $email
-    } | walk(
-      if type == "string" then gsub("\\{tenant_slug\\}"; $slug) else . end
-    )'
+    }) as $candidate
+    | ($candidate
+      | with_entries(
+          select(.key as $key | ($contract[0].properties | has($key)))
+        )
+      | walk(
+          if type == "string" then gsub("\\{tenant_slug\\}"; $slug) else . end
+        )
+      ) as $launch
+    | ($contract[0].required - ($launch | keys)) as $missing
+    | if ($missing | length) > 0
+      then error("launch contract missing required keys: " + ($missing | join(", ")))
+      else $launch
+      end'
 )"
 
 if [[ "$DRY_RUN" == true ]]; then
