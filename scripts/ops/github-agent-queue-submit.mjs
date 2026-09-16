@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {
+  buildReadOnlyQueueEnvelope,
   loadGovernedAgentRegistry,
   resolveGovernedAgent,
 } from './lib/github-agent-queue-admission.mjs';
@@ -73,7 +74,6 @@ function assertSafe(meta) {
     'status',
     'priority',
     'agent',
-    'task_type',
     'owner',
     'environment',
     'cost_class',
@@ -194,7 +194,10 @@ const payload = {
   request_id: requestId,
   idempotency_key: requestId,
   agent: governedAgent.opslyJobType,
-  agent_role: 'review',
+  agent_role:
+    governedAgent.taskType === 'research' || governedAgent.taskType === 'planning'
+      ? 'researcher'
+      : 'executor',
   max_steps: Number(meta.max_steps || 6),
   goal: String(meta.title || meta.id),
   prompt_body: body,
