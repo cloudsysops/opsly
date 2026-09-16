@@ -26,7 +26,9 @@ describe('compute-worker-router', () => {
     const registry = loadRegistry();
     assert.equal(registry.workers[0].workerId, 'pc-gamer-openclaw-01');
     assert.ok(registry.workers[0].capabilities.includes('video.render'));
+    assert.ok(registry.workers[0].capabilities.includes('review.independent'));
     assert.equal(registry.jobTypes['content.render.video'].queue, 'content-video');
+    assert.equal(registry.jobTypes['code.verify.independent'].queue, 'openclaw');
   });
 
   it('matches by capability instead of hostname', () => {
@@ -147,3 +149,17 @@ describe('compute-worker-router', () => {
     assert.equal(transcription.reason, 'runtime_not_installed');
   });
 });
+
+
+  it('routes independent code verification to the PC Gamer local LLM without release authority', () => {
+    const registry = freshRegistry();
+    const assignment = assignJob(registry, 'code.verify.independent', {}, now);
+    assert.equal(assignment.ok, true);
+    assert.equal(assignment.queue, 'openclaw');
+    assert.equal(assignment.jobName, 'ollama');
+    assert.equal(assignment.workerId, 'pc-gamer-openclaw-01');
+    assert.equal(
+      registry.workers[0].capabilities.includes('release-authority'),
+      false,
+    );
+  });
