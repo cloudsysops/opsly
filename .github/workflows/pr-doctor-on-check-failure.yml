@@ -1,0 +1,87 @@
+# Dispatch PR Doctor immediately after a trusted CI workflow fails.
+# This closes the timing gap where pull_request_target fires before CI has
+# completed and therefore cannot yet see a failing check.
+#
+# Security:
+# - workflow_run executes trusted default-branch code;
+# - checkout is pinned to main, never PR head;
+# - only same-repository PRs are eligible for write-agent dispatch;
+# - pr-doctor.mjs remains the authority for real-failure filtering and
+#   SHA-marker idempotency.
+
+name: PR doctor on failed checks
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+      - Structure Validation
+      - Security scan
+      - Dependency Audit Strict
+    types: [completed]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-doctor-check-failure-${{ github.repository }}-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Join tailnet (ephemeral, this job only)
+        uses: tailscale/github-action@v3
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Dispatch canonical PR Doctor for associated same-repo PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          OPSLY_ORCHESTRATOR_URL: http://100.120.151.91:3011
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
+          OPSLY_GITHUB_REPO: ${{ github.repository }}
+          FAILED_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -t ROWS < <(
+            gh api               -H 'Accept: application/vnd.github+json'               "/repos/${GITHUB_REPOSITORY}/commits/${FAILED_HEAD_SHA}/pulls"               --jq '.[] | select(.state == "open" and (.draft | not)) | [.number, .head.repo.full_name] | @tsv'
+          )
+
+          if [ "${#ROWS[@]}" -eq 0 ]; then
+            echo "No open non-draft PR associated with ${FAILED_HEAD_SHA}; nothing to dispatch."
+            exit 0
+          fi
+
+          for row in "${ROWS[@]}"; do
+            IFS=$'\t' read -r pr_number head_repo <<< "${row}"
+
+            if [ "${head_repo}" != "${GITHUB_REPOSITORY}" ]; then
+              echo "Skipping PR #${pr_number}: cross-repository head ${head_repo}."
+              continue
+            fi
+
+            echo "Running canonical PR Doctor for #${pr_number} after failed workflow."
+            node scripts/ci/pr-doctor.mjs --pr "${pr_number}"
+          done

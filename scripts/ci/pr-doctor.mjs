@@ -9,11 +9,10 @@
  * de workpacks gobernados (esto no vive bajo
  * docs/01-development/github-agent-queue/, es un submit directo).
  *
- * No fija el agente (agent: null) — que agent-task-core enrute al primer
- * agente capaz disponible (mismo principio que
- * apps/orchestrator/src/agents/executor-router.ts: cursor → claude-code →
- * shell). Así el fix de un PR no depende de que un agente específico esté
- * libre.
+ * No fija el agente (agent: null) — el Orchestrator usa el registry externo
+ * canónico + runtime health para seleccionar un agente dispatch-eligible y
+ * recorrer sus fallbacks. Así el fix de un PR no depende de un agente
+ * específico ni se encola a un runtime conocido como caído.
  *
  * Por qué corre en Tailscale efímero, no self-hosted: cloudsysops/opsly es
  * repo público (ver .github/workflows/github-agent-queue.yml).
@@ -89,6 +88,14 @@ async function failingChecks(pr, token) {
 async function dispatchFix(pr, failing, token) {
   const requestId = `pr-doctor:${pr.number}:${pr.head.sha.slice(0, 8)}`;
   const checkList = failing.map((c) => `- ${c.name}: ${c.details_url}${c.summary ? `\n  ${c.summary}` : ''}`).join('\n');
+  const changedFiles = await gh(
+    `repos/${REPO}/pulls/${pr.number}/files?per_page=100`,
+    { token }
+  );
+  const affectedPaths = (Array.isArray(changedFiles) ? changedFiles : [])
+    .map((file) => (typeof file?.filename === 'string' ? file.filename.trim() : ''))
+    .filter(Boolean)
+    .slice(0, 100);
 
   const payload = {
     tenant_slug: TENANT_SLUG,
@@ -112,9 +119,16 @@ async function dispatchFix(pr, failing, token) {
     ].join('\n'),
     context: {
       source: 'pr_doctor',
+      workpack_id: requestId,
+      workstream: `pr-doctor/${REPO}`,
+      conflict_key: `pr-doctor/pr-${pr.number}`,
+      semantic_scope: `pr-doctor/pr-${pr.number}/head-${pr.head.sha}`,
+      requires_pr: true,
       pr_number: pr.number,
       pr_branch: pr.head.ref,
+      pr_head_sha: pr.head.sha,
       failing_checks: failing.map((c) => c.name),
+      affected_paths: affectedPaths,
       github: {
         repository: REPO,
         run_id: process.env.GITHUB_RUN_ID ?? null,
