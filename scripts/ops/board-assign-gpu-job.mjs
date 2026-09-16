@@ -33,14 +33,29 @@ async function enqueueAssignment(assignment, options) {
   const tenantSlug = options.tenantSlug;
   const jobId = `board:${assignment.jobType}:${requestId}`;
   let payload;
-  if (assignment.jobType === 'ai.local.inference' || assignment.jobType === 'test.gpu') {
+  if (
+    assignment.jobType === 'ai.local.inference' ||
+    assignment.jobType === 'test.gpu' ||
+    assignment.jobType === 'code.verify.independent'
+  ) {
     payload = {
       type: 'ollama',
       tenant_slug: tenantSlug,
       request_id: requestId,
-      initiated_by: 'ai-board',
+      initiated_by:
+        assignment.jobType === 'code.verify.independent' ? 'sierra-control' : 'ai-board',
+      metadata:
+        assignment.jobType === 'code.verify.independent'
+          ? {
+              persona: 'sierra-independent-verifier',
+              auto_commit: false,
+              execution_node: assignment.workerId,
+              evidence_contract: 'IndependentVerifierEvidenceV1',
+            }
+          : undefined,
       payload: {
-        task_type: 'summarize',
+        task_type:
+          assignment.jobType === 'code.verify.independent' ? 'review' : 'summarize',
         prompt: options.prompt,
       },
     };
