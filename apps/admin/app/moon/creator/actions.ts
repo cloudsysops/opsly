@@ -1,11 +1,16 @@
 'use server';
 
 import { approveCreatorProject, rejectCreatorProject } from '@/lib/moon/creator-data';
-import { publishingPlatformValues, type PublishingPlatform } from '@intcloudsysops/content-studio/studio';
+import {
+  publishingPlatformValues,
+  type PublishingPlatform,
+} from '@intcloudsysops/content-studio/studio';
 import { revalidatePath } from 'next/cache';
 
 function selectedPlatforms(formData: FormData): PublishingPlatform[] {
-  const selected = publishingPlatformValues.filter((platform) => formData.get(`platform_${platform}`) === 'on');
+  const selected = publishingPlatformValues.filter(
+    (platform) => formData.get(`platform_${platform}`) === 'on'
+  );
   return selected.length ? selected : ['youtube'];
 }
 
@@ -25,6 +30,11 @@ export async function rejectCreatorProjectAction(formData: FormData): Promise<vo
   if (!tenantId || !projectId) {
     throw new Error('tenantId and projectId required');
   }
-  await rejectCreatorProject(tenantId, projectId, 'moon-human', 'Rejected from Moon Creator Studio');
+  await rejectCreatorProject(
+    tenantId,
+    projectId,
+    'moon-human',
+    'Rejected from Moon Creator Studio'
+  );
   revalidatePath('/moon/creator');
 }
