@@ -1,0 +1,68 @@
+name: GPU lab go-live
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Plan only or enqueue bounded GPU lab work'
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+        default: plan
+      task:
+        description: 'Optional exact task id from config/gpu-lab-tasks.json'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gpu-lab-control-plane
+  cancel-in-progress: false
+
+jobs:
+  gpu-lab:
+    # Control-plane execution only. Never move Doppler/master credentials to GPU nodes.
+    runs-on: [self-hosted, macOS]
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run bounded GPU lab plan/dispatch
+        env:
+          LAB_MODE: ${{ inputs.mode }}
+          LAB_TASK: ${{ inputs.task }}
+          EVIDENCE_FILE: runtime/evidence/gpu-lab-${{ github.run_id }}.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p runtime/evidence
+
+          args=(--json)
+          if [ -n "${LAB_TASK}" ]; then
+            args+=(--task "${LAB_TASK}")
+          fi
+          if [ "${LAB_MODE}" = "apply" ]; then
+            args+=(--apply)
+          fi
+
+          # Doppler stays on the controlled Mac. GPU workers receive no Doppler token.
+          doppler run --project ops-intcloudsysops --config prd --             node scripts/ops/gpu-lab-dispatch.mjs "${args[@]}" | tee "${EVIDENCE_FILE}"
+
+      - name: Publish GPU lab evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-lab-${{ inputs.mode }}-${{ github.run_id }}
+          path: runtime/evidence/gpu-lab-*.json
+          if-no-files-found: warn
+          retention-days: 14
