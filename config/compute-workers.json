@@ -20,66 +20,98 @@
     "content.render.video": {
       "queue": "content-video",
       "jobName": "render",
-      "requires": ["video.render", "ffmpeg"],
+      "requires": [
+        "video.render",
+        "ffmpeg"
+      ],
       "minVramGb": 0
     },
     "ai.local.inference": {
       "queue": "openclaw",
       "jobName": "ollama",
-      "requires": ["llm.local"],
+      "requires": [
+        "llm.local"
+      ],
       "minVramGb": 8
     },
     "content.generate.image": {
       "queue": "content-video",
       "jobName": "render",
-      "requires": ["image.generate"],
+      "requires": [
+        "image.generate"
+      ],
       "minVramGb": 8,
       "status": "capability-only"
     },
     "ai.embedding": {
       "queue": "openclaw",
       "jobName": "ollama",
-      "requires": ["embedding"],
+      "requires": [
+        "embedding"
+      ],
       "minVramGb": 4
     },
     "media.transcode": {
       "queue": "content-video",
       "jobName": "render",
-      "requires": ["ffmpeg"],
+      "requires": [
+        "ffmpeg"
+      ],
       "minVramGb": 0
     },
     "content.transcribe": {
       "queue": "content-video",
       "jobName": "transcribe",
-      "requires": ["ffmpeg"],
+      "requires": [
+        "ffmpeg"
+      ],
       "minVramGb": 0,
       "status": "capability-only"
     },
     "content.review": {
       "queue": "openclaw",
       "jobName": "ollama",
-      "requires": ["llm.local"],
+      "requires": [
+        "llm.local"
+      ],
       "minVramGb": 8
     },
     "universe.asset.generate": {
       "queue": "content-video",
       "jobName": "render",
-      "requires": ["image.generate"],
+      "requires": [
+        "image.generate"
+      ],
       "minVramGb": 8,
       "status": "capability-only"
     },
     "game.asset.build": {
       "queue": "content-video",
       "jobName": "render",
-      "requires": ["ffmpeg"],
+      "requires": [
+        "ffmpeg"
+      ],
       "minVramGb": 0,
       "status": "capability-only"
     },
     "test.gpu": {
       "queue": "openclaw",
       "jobName": "ollama",
-      "requires": ["gpu.nvidia"],
+      "requires": [
+        "gpu.nvidia"
+      ],
       "minVramGb": 0
+    },
+    "code.verify.independent": {
+      "queue": "openclaw",
+      "jobName": "ollama",
+      "requires": [
+        "llm.local",
+        "review.independent"
+      ],
+      "minVramGb": 8,
+      "execution": "read-only",
+      "result_contract": "IndependentVerifierEvidenceV1"
     }
   },
   "workers": [
@@ -98,7 +130,9 @@
         "embedding",
         "ffmpeg",
         "gpu.telemetry",
-        "nvidia.capture"
+        "nvidia.capture",
+        "review.independent",
+        "verifier.readonly"
       ],
       "gpuVendor": "nvidia",
       "gpuModel": "RTX 5070 Ti",
