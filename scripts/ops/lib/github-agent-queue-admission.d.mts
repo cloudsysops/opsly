@@ -20,3 +20,11 @@ export function resolveGovernedAgent(
 export function loadGovernedAgentRegistry(root: string): Promise<{
   workers: Record<string, Record<string, unknown>>;
 }>;
+
+
+export function buildReadOnlyQueueEnvelope(input: {
+  meta: Record<string, unknown>;
+  governedAgent: GovernedAgentResolution;
+  task: string;
+  requestId: string;
+}): Promise<Record<string, unknown>>;
