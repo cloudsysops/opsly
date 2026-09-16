@@ -190,6 +190,8 @@ describe('local prompt-submit → local-agents queue', () => {
   });
 
   it('agent:null routes executor work to the canonical live implementation runtime', async () => {
+    const previousOpenCodeUrl = process.env.OPSLY_OPENCODE_AGENT_URL;
+    process.env.OPSLY_OPENCODE_AGENT_URL = 'http://127.0.0.1:5004';
     const fetchSpy = vi
       .spyOn(globalThis, 'fetch')
       .mockImplementation(async () => new Response('', { status: 200 }));
@@ -215,10 +217,16 @@ describe('local prompt-submit → local-agents queue', () => {
       expect(queued.type).toBe('local_opencode');
     } finally {
       fetchSpy.mockRestore();
+      if (previousOpenCodeUrl === undefined) delete process.env.OPSLY_OPENCODE_AGENT_URL;
+      else process.env.OPSLY_OPENCODE_AGENT_URL = previousOpenCodeUrl;
     }
   });
 
   it('agent:null falls back to the next live registered runtime when preferred is unhealthy', async () => {
+    const previousOpenCodeUrl = process.env.OPSLY_OPENCODE_AGENT_URL;
+    const previousAiderUrl = process.env.OPSLY_AIDER_AGENT_URL;
+    process.env.OPSLY_OPENCODE_AGENT_URL = 'http://127.0.0.1:5004';
+    process.env.OPSLY_AIDER_AGENT_URL = 'http://127.0.0.1:5009';
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
       const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
       return new Response('', { status: url.includes(':5004/') ? 503 : 200 });
@@ -245,6 +253,10 @@ describe('local prompt-submit → local-agents queue', () => {
       expect(queued.type).toBe('local_aider');
     } finally {
       fetchSpy.mockRestore();
+      if (previousOpenCodeUrl === undefined) delete process.env.OPSLY_OPENCODE_AGENT_URL;
+      else process.env.OPSLY_OPENCODE_AGENT_URL = previousOpenCodeUrl;
+      if (previousAiderUrl === undefined) delete process.env.OPSLY_AIDER_AGENT_URL;
+      else process.env.OPSLY_AIDER_AGENT_URL = previousAiderUrl;
     }
   });
 
