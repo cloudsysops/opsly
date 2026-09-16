@@ -142,6 +142,18 @@ export async function runGpuLab(options = {}) {
       continue;
     }
 
+    // Lab work is optional background capacity. Unlike durable client/factory
+    // jobs, do not build a backlog while every matching GPU is offline/busy/
+    // degraded. A later control-plane pass can enqueue once capacity is ONLINE.
+    if (row.assignment.workerStatus !== 'ONLINE') {
+      results.push({
+        ...row,
+        status: 'DEFERRED',
+        reason: `preferred_worker_${String(row.assignment.workerStatus).toLowerCase()}`,
+      });
+      continue;
+    }
+
     const task = taskById.get(row.task_id);
     const enqueued = await enqueueAssignment(row.assignment, {
       redisUrl,
