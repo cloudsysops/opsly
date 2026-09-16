@@ -105,3 +105,71 @@ export async function loadGovernedAgentRegistry(root) {
   }
   return canonical.loadExternalAgentRegistry(root);
 }
+
+
+export async function buildReadOnlyQueueEnvelope({
+  meta,
+  governedAgent,
+  task,
+  requestId,
+}) {
+  let core;
+  try {
+    core = await import('@intcloudsysops/agent-task-core');
+  } catch {
+    throw new Error(
+      'canonical agent-task-core package is unavailable; build workspace packages before dispatch'
+    );
+  }
+  if (
+    typeof core.buildAgentTaskEnvelope !== 'function' ||
+    typeof core.evaluateAgentTaskPolicy !== 'function'
+  ) {
+    throw new Error('canonical AgentTaskEnvelopeV1 policy helpers are unavailable');
+  }
+
+  const envelope = core.buildAgentTaskEnvelope({
+    task,
+    tenantSlug: 'local',
+    taskType: governedAgent.taskType,
+    selectedAgent: governedAgent.opslyJobType,
+    requestedAgent: governedAgent.workerId,
+    requestId,
+    correlationId: requestId,
+    executionMode: 'enqueue',
+    localOnly: true,
+    writeAllowed: false,
+    networkAllowed: false,
+    browserAllowed: false,
+    maxAttempts: 1,
+    maxCostUsd: 0,
+    source: 'github-agent-queue',
+    actor: 'system',
+    metadata: {
+      workpack_id: String(meta.id),
+      workstream: String(meta.workstream),
+      conflict_key: String(meta.conflict_key),
+      registry_worker_id: governedAgent.workerId,
+      registry_provider: governedAgent.provider,
+      registry_cost_class: governedAgent.costClass,
+    },
+  });
+
+  const policy = core.evaluateAgentTaskPolicy(envelope, { tenantMaxCostUsd: 0 });
+  if (policy.decision !== 'allow') {
+    throw new Error(
+      `AgentTaskEnvelopeV1 policy denied GitHub Agent Queue task: ${policy.decision} (${policy.reasons.join(',')})`,
+    );
+  }
+  if (
+    envelope.task_type !== governedAgent.taskType ||
+    envelope.selected_agent !== governedAgent.opslyJobType ||
+    envelope.constraints.write_allowed !== false ||
+    envelope.constraints.network_allowed !== false ||
+    envelope.constraints.browser_allowed !== false ||
+    envelope.budget.max_cost_usd !== 0
+  ) {
+    throw new Error('AgentTaskEnvelopeV1 does not match governed read-only queue admission');
+  }
+  return envelope;
+}
