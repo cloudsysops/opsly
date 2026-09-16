@@ -51,6 +51,17 @@ export function requestIdForTask(task, now = new Date()) {
 
 export function selectLabTasks(manifest, taskId) {
   const max = Math.max(1, Math.min(Number(manifest.policy?.max_tasks_per_dispatch ?? 4), 12));
+
+  if (taskId) {
+    const selected = manifest.tasks.find((task) => task.id === taskId);
+    if (!selected) {
+      throw new Error(`Unknown gpu-lab task id: ${taskId}`);
+    }
+    if (selected.enabled !== true) {
+      throw new Error(`gpu-lab task is disabled: ${taskId}`);
+    }
+  }
+
   const enabled = manifest.tasks
     .filter((task) => task.enabled === true)
     .filter((task) => !taskId || task.id === taskId)
