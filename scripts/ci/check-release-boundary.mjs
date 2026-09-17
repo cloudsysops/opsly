@@ -35,12 +35,24 @@ const requiredPromotionContracts = [
   [/read -r -a release_pairs <<< \"\$RELEASE_SERVICE_IMAGES\"/, 'shared release mapping parser'],
   [/image=\"ghcr\.io\/cloudsysops\/intcloudsysops-\$\{image_service\}:\$\{RELEASE_SHA\}\"/, 'verification derived from canonical image mapping'],
   [/services\+=\(\"\$compose_service\"\)/, 'promotion service list derived from canonical mapping'],
+  [/rollback_guidance_on_fail:/, 'truthful rollback guidance input'],
+  [/--rollback-guidance-on-fail/, 'rollback guidance flag'],
+  [/Automatic rollback: not implemented/, 'explicit non-automatic rollback evidence'],
+  [/group:\s*production-release-promotion/, 'single production-promotion concurrency group'],
+  [/cancel-in-progress:\s*false/, 'non-cancelling serialized production promotion'],
 ];
 
 for (const [pattern, description] of requiredPromotionContracts) {
   if (!pattern.test(promote)) {
     throw new Error(`Release boundary violation: promotion workflow is missing ${description}`);
   }
+}
+
+if (/\n\s+rollback_on_fail:\s*\n/.test(promote)) {
+  throw new Error(
+    'Release boundary violation: workflow input rollback_on_fail implies automatic rollback. ' +
+      'Use rollback_guidance_on_fail until an evidenced automatic rollback path exists.',
+  );
 }
 
 const mappingBlock = promote.match(/RELEASE_SERVICE_IMAGES:\s*>-\s*\n([\s\S]*?)(?=\n\S|\nconcurrency:)/);
@@ -91,4 +103,4 @@ for (const [composeService, imageService] of expectedMappings) {
   }
 }
 
-console.log('Release boundary OK: main integration is separated from explicit production promotion, and every promoted compose service is bound to a verified immutable image.');
+console.log('Release boundary OK: main integration is separated from explicit production promotion, promoted services are bound to verified immutable images, and rollback semantics remain fail-closed and truthful.');
