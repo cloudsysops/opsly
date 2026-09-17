@@ -28,11 +28,13 @@ test('review tenant is fail-closed local-only', () => {
   assert.match(providerHints, /raw === 'ollama-code'/);
 });
 
-test('ollama-code bypasses cloud chains and targets codellama_local directly', () => {
+test('ollama-code bypasses cloud chains and targets Qwen2.5-Coder directly', () => {
   assert.match(textRoute, /providerHint === 'ollama-code'/);
-  assert.match(textRoute, /completeWithProviderId\('codellama_local', llmReq\)/);
+  assert.match(textRoute, /completeWithProviderId\('qwen_coder_local', llmReq\)/);
+  assert.doesNotMatch(textRoute, /completeWithProviderId\('codellama_local', llmReq\)/);
   assert.match(providers, /OLLAMA_CODE_MODEL/);
-  assert.match(providers, /'codellama:7b'/);
+  assert.match(providers, /qwen_coder_local:/);
+  assert.match(providers, /'qwen2\.5-coder:7b'/);
 });
 
 test('workflow pins the dedicated local-only review tenant', () => {
