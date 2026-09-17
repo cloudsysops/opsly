@@ -3,112 +3,212 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#070b1f" />
-  <title>Astral Games Lab</title>
+  <meta name="theme-color" content="#070914" />
+  <meta name="application-name" content="Opsly Games" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Opsly Games" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <title>Opsly Games</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <header class="topbar">
-    <a class="back" href="../">← Astral Arena</a>
-    <div>
-      <div class="eyebrow">ARENA + BRISSA</div>
-      <h1>Games Lab</h1>
-      <p>Prueba juegos, descubre mecánicas y conviértelas en ideas Astral.</p>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <header class="appbar">
+    <a class="brand" href="./" aria-label="Opsly Games">
+      <span class="brand-mark">✦</span>
+      <span>
+        <strong>Opsly Games</strong>
+        <small>Play · Discover · Create</small>
+      </span>
+    </a>
+
+    <div class="appbar-actions">
+      <button class="icon-button install-button" id="install-games" hidden title="Instalar Games">⇩</button>
+      <button class="icon-button" id="favorites-filter" aria-pressed="false" title="Favoritos">♡</button>
+      <a class="icon-button" href="./emulator.html" title="Emulator Lab">🎮</a>
+      <button class="avatar-button" id="surprise-top" title="Juego sorpresa">✨</button>
     </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <div>
-        <span class="pill">RETRO → PROTOTIPO → ASTRAL</span>
-        <h2>Jugar también es investigar.</h2>
+  <main class="shell" id="catalog-shell">
+    <section class="hero-console">
+      <div class="hero-copy">
+        <div class="eyebrow">OPSLY GAMES</div>
+        <h1>Todo empieza en Games.</h1>
         <p>
-          Los prototipos de esta página usan código y arte propios. El Emulator Lab
-          solo carga archivos locales que tengas derecho a usar.
+          Juegos listos para tocar, comparar y convertir en nuevas ideas Astral.
+          Sin cuentas. Sin nombres. Los favoritos se guardan solo en este dispositivo.
         </p>
+
+        <div class="hero-actions">
+          <button class="primary-cta" id="surprise-game">✨ Sorpréndeme</button>
+          <button class="secondary-cta" id="continue-game" hidden>▶ Continuar</button>
+        </div>
       </div>
-      <a class="primary-link" href="./emulator.html">Abrir Emulator Lab</a>
+
+      <div class="hero-orbit" aria-hidden="true">
+        <div class="orbit-card orbit-a">🦄</div>
+        <div class="orbit-card orbit-b">🦋</div>
+        <div class="orbit-card orbit-c">☄️</div>
+        <div class="orbit-card orbit-d">👭</div>
+        <div class="orbit-core">✦</div>
+      </div>
+    </section>
+
+    <section class="quick-picks" aria-label="Filtros de juegos">
+      <button class="filter-chip active" data-filter="all">Todos</button>
+      <button class="filter-chip" data-filter="favorite">❤️ Favoritos</button>
+      <button class="filter-chip" data-filter="touch">📱 iPhone</button>
+      <button class="filter-chip" data-filter="2P">👭 Juntas</button>
+      <button class="filter-chip" data-filter="adventure">🗺️ Aventura</button>
+      <button class="filter-chip" data-filter="arcade">⚡ Arcade</button>
+      <button class="filter-chip" data-filter="open-source">🧩 Open source</button>
     </section>
 
     <section>
-      <div class="section-title">
+      <div class="section-heading">
         <div>
-          <div class="eyebrow">RETRO ORIGINALS</div>
-          <h2>Prototipos clonables</h2>
+          <span class="eyebrow">NUESTROS JUEGOS</span>
+          <h2>Astral Universe</h2>
         </div>
-        <p>Inspirados en mecánicas clásicas, sin copiar personajes, música, nombres ni sprites.</p>
+        <p>Astral Arena vive aquí como uno de los juegos de la plataforma, junto a los experimentos y open-source originals.</p>
       </div>
+      <div class="game-grid featured-grid" id="first-party-grid"></div>
+    </section>
 
+    <section id="recent-section" hidden>
+      <div class="section-heading compact">
+        <div>
+          <span class="eyebrow">SEGUIR JUGANDO</span>
+          <h2>Recientes</h2>
+        </div>
+      </div>
+      <div class="game-rail" id="recent-grid"></div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">LISTOS PARA JUGAR</span>
+          <h2>Favoritos del Games Lab</h2>
+        </div>
+        <p>Un toque para jugar. ❤️ para guardar. ✨ para imaginar una versión nueva.</p>
+      </div>
+      <div class="game-grid featured-grid" id="featured-grid"></div>
+    </section>
+
+    <section class="library-section">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">ASTRAL REMIXES</span>
+          <h2>Nuestras versiones</h2>
+        </div>
+        <p>Tomamos mecánicas abiertas y las transformamos con personajes y expresión Astral.</p>
+      </div>
+      <div class="game-grid" id="clone-game-grid"></div>
+    </section>
+
+    <section class="library-section">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">OPEN-SOURCE ORIGINALS</span>
+          <h2>Juegos completos para explorar</h2>
+        </div>
+        <p>Compilados desde el commit original y con licencia/provenance conservada junto al build.</p>
+      </div>
+      <div class="game-grid" id="upstream-game-grid"></div>
+    </section>
+
+    <section class="library-section">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">ARCADE LAB</span>
+          <h2>Prototipos rápidos</h2>
+        </div>
+        <p>Sesiones cortas para descubrir qué mecánicas enganchan.</p>
+      </div>
       <div class="game-grid" id="game-grid"></div>
     </section>
 
-    <section class="playground" id="playground" hidden>
-      <div class="play-head">
-        <div>
-          <div class="eyebrow">PLAYTEST</div>
-          <h2 id="active-title">Juego</h2>
-          <p id="active-description"></p>
-        </div>
-        <button class="ghost" id="close-game">Cerrar</button>
+    <section class="lab-tools">
+      <div>
+        <span class="eyebrow">PARA PAPÁ / PLAYTEST</span>
+        <h2>Evidencia sin interrumpir el juego</h2>
+        <p>Duración, score y feedback quedan locales. No guardamos nombre, edad, voz, foto ni PII infantil.</p>
       </div>
-
-      <div class="canvas-shell">
-        <canvas id="game-canvas" width="960" height="540" aria-label="Retro game canvas"></canvas>
-      </div>
-
-      <div class="touch-row" id="touch-row">
-        <button data-control="left">◀</button>
-        <button data-control="action">●</button>
-        <button data-control="right">▶</button>
-      </div>
-
-      <div class="feedback">
-        <button data-feedback="love">❤️ Me gusta</button>
-        <button data-feedback="meh">🤔 Cambiaría algo</button>
-        <button data-feedback="clone">✨ Clonar mecánica</button>
-      </div>
-      <div id="feedback-note" class="note"></div>
-    </section>
-
-    <section>
-      <div class="section-title">
-        <div>
-          <div class="eyebrow">EMULATOR LAB</div>
-          <h2>Retro legal / homebrew</h2>
-        </div>
-      </div>
-      <div class="emulator-card">
-        <div>
-          <h3>Trae tu archivo legal</h3>
-          <p>
-            Carga un ROM/homebrew propio, dominio público o con licencia que permita su uso.
-            No almacenamos el archivo: el navegador lo abre localmente.
-          </p>
-        </div>
-        <div class="emulator-actions">
-          <a class="primary-link" href="./emulator.html">Elegir consola y cargar archivo</a>
-          <a class="secondary-link" href="./licenses.html">Licencias permitidas</a>
-        </div>
-      </div>
-    </section>
-
-    <section class="ideas">
-      <div class="section-title">
-        <div>
-          <div class="eyebrow">IDEAS GUARDADAS</div>
-          <h2>Clones conceptuales</h2>
-        </div>
-        <button class="ghost" id="export-ideas">Exportar JSON</button>
+      <div class="tool-actions">
+        <button class="ghost" id="export-playtests">Exportar playtests</button>
+        <button class="ghost" id="export-ideas">Exportar ideas</button>
+        <a class="ghost link-button" href="./licenses.html">Licencias</a>
       </div>
       <div id="idea-list" class="idea-list"></div>
     </section>
   </main>
 
-  <footer>
-    <p>Astral Games Lab · mecánicas propias + software open source con licencias verificadas.</p>
-  </footer>
+  <section class="theater" id="game-theater" hidden aria-label="Juego activo">
+    <div class="theater-topbar">
+      <button class="theater-back" id="close-game">← Juegos</button>
+
+      <div class="theater-title">
+        <span id="active-icon">✦</span>
+        <div>
+          <strong id="active-title">Juego</strong>
+          <small id="active-description"></small>
+        </div>
+      </div>
+
+      <div class="theater-actions">
+        <button class="icon-button" id="retry-game" aria-label="Reintentar" title="Reintentar">↻</button>
+        <button class="icon-button" id="next-game" aria-label="Siguiente juego" title="Siguiente juego">⏭</button>
+        <button class="icon-button" id="active-favorite" aria-label="Favorito">♡</button>
+        <button class="icon-button" id="fullscreen-game" aria-label="Pantalla completa">⛶</button>
+      </div>
+    </div>
+
+    <div class="stage-shell" id="stage-shell">
+      <canvas id="game-canvas" width="960" height="540" aria-label="Juego Astral"></canvas>
+      <iframe
+        id="upstream-frame"
+        title="Open-source game"
+        allow="fullscreen; autoplay"
+        hidden
+      ></iframe>
+
+      <div class="stage-loading" id="stage-loading" hidden>
+        <div class="spinner"></div>
+        <strong>Preparando juego…</strong>
+      </div>
+
+      <div class="rotate-hint" id="rotate-hint" hidden>
+        <span>↻</span>
+        <strong>Gira el teléfono</strong>
+        <small>Se juega mejor en horizontal</small>
+      </div>
+    </div>
+
+    <div class="touch-controls" id="touch-row">
+      <button class="touch-button left" data-control="left" aria-label="Izquierda">◀</button>
+      <button class="touch-button action" data-control="action" aria-label="Acción">✦</button>
+      <button class="touch-button right" data-control="right" aria-label="Derecha">▶</button>
+    </div>
+
+    <div class="theater-bottom">
+      <div class="feedback-strip">
+        <button data-feedback="love">❤️ Me encantó</button>
+        <button data-feedback="meh">🤔 Cambiaría algo</button>
+        <button data-feedback="clone">✨ Hagamos uno así</button>
+      </div>
+      <div id="feedback-note" class="feedback-note" aria-live="polite"></div>
+    </div>
+  </section>
 
   <script src="./originals.js"></script>
+  <script src="./clone-lab/catalog.js"></script>
+  <script src="./clone-lab/upstream-catalog.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
