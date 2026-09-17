@@ -1,0 +1,56 @@
+# Listmonk — email newsletter and marketing campaigns
+# Deploy: docker compose -f infra/docker-compose.listmonk.yml up -d
+# URL: https://mail.${PLATFORM_DOMAIN}
+# First run: docker compose -f infra/docker-compose.listmonk.yml run --rm listmonk ./listmonk --install
+
+services:
+  listmonk:
+    image: listmonk/listmonk:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8102:9000"
+    environment:
+      TZ: America/Bogota
+    volumes:
+      - listmonk-uploads:/listmonk/uploads
+    command: >
+      sh -c "./listmonk
+      --db-host=listmonk-db
+      --db-port=5432
+      --db-user=listmonk
+      --db-password=$${LISTMONK_DB_PASS}
+      --db-database=listmonk
+      --db-ssl-mode=disable"
+    depends_on:
+      - listmonk-db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.listmonk.rule=Host(`mail.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.listmonk.entrypoints=websecure"
+      - "traefik.http.routers.listmonk.tls=true"
+      - "traefik.http.routers.listmonk.tls.certresolver=letsencrypt"
+      - "traefik.http.services.listmonk.loadbalancer.server.port=9000"
+    networks:
+      - traefik-public
+      - listmonk-internal
+
+  listmonk-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - listmonk-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: listmonk
+      POSTGRES_PASSWORD: ${LISTMONK_DB_PASS}
+      POSTGRES_DB: listmonk
+    networks:
+      - listmonk-internal
+
+volumes:
+  listmonk-db-data:
+  listmonk-uploads:
+
+networks:
+  listmonk-internal:
+  traefik-public:
+    external: true
