@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  assertSmileTripCareCollisionOwned,
   buildHealthTravelOfferPatch,
   healthTravelCatalogSchema,
   healthTravelOfferIdentity,
@@ -8,6 +9,7 @@ import {
   isSmileTripCareOwnedMetadata,
   shouldPauseSyncedOffer,
   shouldPauseSyncedProvider,
+  SMILE_TRIP_CARE_SOURCE_FILTER,
 } from '../health-travel-catalog-sync';
 
 describe('Health Travel catalog sync contract', () => {
@@ -67,6 +69,52 @@ describe('Health Travel catalog sync contract', () => {
         city: 'Medellin',
       })
     ).toBe(false);
+  });
+
+  it('fails closed before adopting a provider collision owned by another source', () => {
+    expect(() =>
+      assertSmileTripCareCollisionOwned({
+        entity: 'Partner',
+        externalRef: 'provider-1',
+        existingId: 'partner-manual',
+        metadata: { source_system: 'opsly-manual' },
+      })
+    ).toThrow('Partner external_ref collision for provider-1');
+  });
+
+  it('fails closed before adopting an offer collision owned by another source', () => {
+    expect(() =>
+      assertSmileTripCareCollisionOwned({
+        entity: 'Offer',
+        externalRef: 'package-1',
+        existingId: 'offer-manual',
+        metadata: { source_system: 'opsly-manual' },
+      })
+    ).toThrow('Offer external_ref collision for package-1');
+  });
+
+  it('allows updates only when the colliding row is already SmileTripCare-owned', () => {
+    expect(() =>
+      assertSmileTripCareCollisionOwned({
+        entity: 'Partner',
+        externalRef: 'provider-1',
+        existingId: 'partner-owned',
+        metadata: { source_system: 'smile-trip-care' },
+      })
+    ).not.toThrow();
+    expect(() =>
+      assertSmileTripCareCollisionOwned({
+        entity: 'Offer',
+        externalRef: 'package-1',
+        existingId: 'offer-owned',
+        metadata: { source_system: 'smile-trip-care' },
+      })
+    ).not.toThrow();
+  });
+
+  it('uses one exact source-owned filter for provider and offer stale reconciliation', () => {
+    expect(SMILE_TRIP_CARE_SOURCE_FILTER).toEqual({ source_system: 'smile-trip-care' });
+    expect(Object.isFrozen(SMILE_TRIP_CARE_SOURCE_FILTER)).toBe(true);
   });
 
   it('pauses only stale source-synced providers', () => {
