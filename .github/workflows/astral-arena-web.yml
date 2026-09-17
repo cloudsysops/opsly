@@ -15,6 +15,7 @@ on:
       - 'lib/game-core/**'
       - 'lib/universe/**'
       - 'scripts/games/**'
+      - 'tools/games-lab/**'
       - '.github/workflows/astral-arena-web.yml'
       - '.dockerignore'
   pull_request:
@@ -29,6 +30,7 @@ on:
       - 'lib/game-core/**'
       - 'lib/universe/**'
       - 'scripts/games/**'
+      - 'tools/games-lab/**'
       - '.github/workflows/astral-arena-web.yml'
   workflow_dispatch:
     inputs:
@@ -192,7 +194,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Run Games Lab mobile button smoke
-        run: npx playwright test --config=playwright.games-lab.config.ts
+        run: npx playwright test --config=tools/games-lab/playwright.config.ts
 
       - name: Import project
         shell: bash
