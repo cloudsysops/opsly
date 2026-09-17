@@ -26,6 +26,9 @@ jobs:
       - name: Validate structure (strict CI mode)
         run: npm run validate:strict:ci
 
+      - name: Enforce staging-first release boundary
+        run: node scripts/ci/check-release-boundary.mjs
+
       - name: Report results
         if: failure()
         run: |
