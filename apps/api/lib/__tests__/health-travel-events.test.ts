@@ -54,6 +54,7 @@ describe('Health Travel end-to-end ingress', () => {
     consumeMock.mockReset();
     delete process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET;
     delete process.env.HEALTH_TRAVEL_TENANT_ID;
+    delete process.env.HEALTH_TRAVEL_TENANT_SLUG;
     delete process.env.OPSLY_EVENT_BUS_URL;
     delete process.env.OPSLY_EVENT_BUS_TOKEN;
   });
@@ -103,7 +104,7 @@ describe('Health Travel end-to-end ingress', () => {
 
   it('persists Revenue Core first and treats AI Board as secondary', async () => {
     process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET = 'secret';
-    process.env.HEALTH_TRAVEL_TENANT_ID = 'health-travel-colombia';
+    process.env.HEALTH_TRAVEL_TENANT_SLUG = 'health-travel-colombia';
     process.env.OPSLY_EVENT_BUS_URL = 'http://orchestrator:3011/events';
     process.env.OPSLY_EVENT_BUS_TOKEN = 'bus-token';
 
@@ -139,6 +140,7 @@ describe('Health Travel end-to-end ingress', () => {
   it('accepts a Revenue-persisted event when AI Board times out', async () => {
     vi.useFakeTimers();
     process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET = 'secret';
+    process.env.HEALTH_TRAVEL_TENANT_SLUG = 'health-travel-colombia';
     process.env.OPSLY_EVENT_BUS_URL = 'http://orchestrator:3011/events';
     consumeMock.mockResolvedValue({
       duplicate: false,
@@ -177,6 +179,7 @@ describe('Health Travel end-to-end ingress', () => {
 
   it('accepts a Revenue-persisted event even if AI Board is not configured', async () => {
     process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET = 'secret';
+    process.env.HEALTH_TRAVEL_TENANT_SLUG = 'health-travel-colombia';
     consumeMock.mockResolvedValue({
       duplicate: true,
       receiptId: 'receipt-1',
@@ -199,6 +202,7 @@ describe('Health Travel end-to-end ingress', () => {
 
   it('returns retryable failure when Revenue Core cannot persist', async () => {
     process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET = 'secret';
+    process.env.HEALTH_TRAVEL_TENANT_SLUG = 'health-travel-colombia';
     consumeMock.mockRejectedValue(new Error('database unavailable'));
 
     const raw = JSON.stringify(envelope());
