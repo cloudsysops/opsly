@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect';
 import { MoonShell } from '@/components/moon/moon-shell';
 import { Providers } from '@/components/providers';
@@ -17,6 +18,7 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <body className="min-h-screen font-sans antialiased">
+        <Script src="/runtime-config.js" strategy="beforeInteractive" />
         <Providers>
           <AuthSessionRedirect />
           <MoonShell>{children}</MoonShell>
