@@ -35,6 +35,10 @@ export const healthTravelCatalogSchema = z.object({
 
 export type HealthTravelCatalog = z.infer<typeof healthTravelCatalogSchema>;
 
+export const SMILE_TRIP_CARE_SOURCE_FILTER = Object.freeze({
+  source_system: 'smile-trip-care',
+});
+
 export function healthTravelProviderTypeToPartnerType(
   providerType: HealthTravelCatalog['providers'][number]['provider_type']
 ): 'health_provider' | 'travel_provider' {
@@ -63,6 +67,19 @@ export function isSmileTripCareOwnedMetadata(metadata: unknown): boolean {
     metadata &&
       typeof metadata === 'object' &&
       (metadata as Record<string, unknown>).source_system === 'smile-trip-care'
+  );
+}
+
+export function assertSmileTripCareCollisionOwned(params: {
+  entity: 'Partner' | 'Offer';
+  externalRef: string;
+  existingId: unknown;
+  metadata: unknown;
+}): void {
+  if (!params.existingId) return;
+  if (isSmileTripCareOwnedMetadata(params.metadata)) return;
+  throw new Error(
+    `${params.entity} external_ref collision for ${params.externalRef}: existing row is not owned by smile-trip-care`
   );
 }
 
@@ -186,11 +203,12 @@ export async function syncHealthTravelCatalog(
     if (existing.error) {
       throw new Error(`Partner lookup failed for ${provider.id}: ${existing.error.message}`);
     }
-    if (existing.data?.id && !isSmileTripCareOwnedMetadata(existing.data.metadata)) {
-      throw new Error(
-        `Partner external_ref collision for ${provider.id}: existing row is not owned by smile-trip-care`
-      );
-    }
+    assertSmileTripCareCollisionOwned({
+      entity: 'Partner',
+      externalRef: provider.id,
+      existingId: existing.data?.id,
+      metadata: existing.data?.metadata,
+    });
 
     const metadata = {
       ...(existing.data?.metadata && typeof existing.data.metadata === 'object'
@@ -267,11 +285,12 @@ export async function syncHealthTravelCatalog(
     if (existing.error) {
       throw new Error(`Offer lookup failed for ${offer.id}: ${existing.error.message}`);
     }
-    if (existing.data?.id && !isSmileTripCareOwnedMetadata(existing.data.metadata)) {
-      throw new Error(
-        `Offer external_ref collision for ${offer.id}: existing row is not owned by smile-trip-care`
-      );
-    }
+    assertSmileTripCareCollisionOwned({
+      entity: 'Offer',
+      externalRef: offer.id,
+      existingId: existing.data?.id,
+      metadata: existing.data?.metadata,
+    });
 
     const metadata = {
       ...(existing.data?.metadata && typeof existing.data.metadata === 'object'
@@ -316,13 +335,13 @@ export async function syncHealthTravelCatalog(
 
   // Reconcile records previously synchronized from SmileTripCare that are no
   // longer present in the approved/published source catalog. Manual Opsly
-  // partners/offers are untouched because only rows tagged source_system are
-  // eligible for this lifecycle transition.
+  // partners/offers are untouched because both queries use the same canonical
+  // source ownership filter tested below.
   const syncedPartners = await platform
     .from('revenue_partners')
     .select('id, external_ref, status, metadata')
     .eq('tenant_id', tenantId)
-    .contains('metadata', { source_system: 'smile-trip-care' });
+    .contains('metadata', SMILE_TRIP_CARE_SOURCE_FILTER);
 
   if (syncedPartners.error) {
     throw new Error(`Synced partner reconciliation lookup failed: ${syncedPartners.error.message}`);
@@ -353,7 +372,7 @@ export async function syncHealthTravelCatalog(
     .from('revenue_offers')
     .select('id, partner_id, external_ref, status, metadata')
     .eq('tenant_id', tenantId)
-    .contains('metadata', { source_system: 'smile-trip-care' });
+    .contains('metadata', SMILE_TRIP_CARE_SOURCE_FILTER);
 
   if (syncedOffers.error) {
     throw new Error(`Synced offer reconciliation lookup failed: ${syncedOffers.error.message}`);
