@@ -61,7 +61,8 @@ const DOMAIN_RULES = [
 ];
 
 // A production release/apply step is required after merge. This does NOT mean
-// the code itself has to wait for the production window to be merged.
+// the release itself is performed by the merge lane. Peskids/migrations remain
+// governed at integration time too because their review surface is sensitive.
 const RELEASE_REQUIRED_RULES = [
   /^apps\/peskids\//i,
   /^apps\/api\/(?:app\/api|lib)\/.*peskids/i,
@@ -75,8 +76,7 @@ const RELEASE_REQUIRED_RULES = [
 
 // These paths alter the control plane merely by being merged to main. Keep
 // them out of unattended daytime merge; independent review/governed merge is
-// required. Everything else may merge during the day because release is a
-// separate action.
+// required.
 const GOVERNED_MERGE_RULES = [
   /^\.github\/workflows\//i,
   /^scripts\/ci\//i,
@@ -98,7 +98,7 @@ const LABEL_SPECS = {
   'release:required': ['FBCA04', 'Merge is separate; a governed release/apply step is still required'],
   'release:none': ['C2E0C6', 'No production release is required for this change'],
   'merge:daytime': ['0E8A16', 'Eligible for governed merge during the day; merge does not imply deploy'],
-  'merge:governed': ['D93F0B', 'Control-plane/sensitive merge; requires explicit governed merge path'],
+  'merge:governed': ['D93F0B', 'Sensitive/control-plane integration; requires the governed merge lane'],
 };
 
 function normalizePath(value) {
@@ -116,11 +116,12 @@ export function classifyChangeImpact(paths) {
   if (domains.length === 0) domains.push('platform');
 
   const releaseRequired = normalized.some((path) => RELEASE_REQUIRED_RULES.some((rule) => rule.test(path)));
-  const governedMerge = normalized.some((path) => GOVERNED_MERGE_RULES.some((rule) => rule.test(path)));
+  const controlPlane = normalized.some((path) => GOVERNED_MERGE_RULES.some((rule) => rule.test(path)));
+  const governedMerge = controlPlane || releaseRequired || domains.includes('peskids');
 
   const labels = [
     ...domains.map((domain) => `impact:${domain}`),
-    ...(governedMerge ? ['impact:control-plane'] : []),
+    ...(controlPlane ? ['impact:control-plane'] : []),
     releaseRequired ? 'release:required' : 'release:none',
     governedMerge ? 'merge:governed' : 'merge:daytime',
   ];
