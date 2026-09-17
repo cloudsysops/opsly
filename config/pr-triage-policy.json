@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "priority_limits": {
+    "priority:P0": 3,
+    "priority:P1": 7
+  },
+  "labels": {
+    "priority:P0": {
+      "color": "B60205",
+      "description": "Mission Control critical path; maximum 3 open PRs"
+    },
+    "priority:P1": {
+      "color": "D93F0B",
+      "description": "Mission Control next-important work; maximum 7 open PRs"
+    },
+    "state:ready": {
+      "color": "0E8A16",
+      "description": "Real checks are green and the PR is not a draft"
+    },
+    "state:needs-fix": {
+      "color": "D73A4A",
+      "description": "At least one real, repairable check is failing"
+    },
+    "agent:working": {
+      "color": "5319E7",
+      "description": "PR Doctor dispatched a repair for the current head SHA"
+    },
+    "state:waiting-human": {
+      "color": "FBCA04",
+      "description": "Explicit human decision or approval is required"
+    },
+    "stack:blocked": {
+      "color": "BFD4F2",
+      "description": "Blocked by an explicit stack/dependency boundary"
+    },
+    "state:superseded": {
+      "color": "CFD3D7",
+      "description": "Replaced by a newer PR; candidate for governed cleanup"
+    }
+  },
+  "ignored_check_patterns": [
+    "production change window",
+    "opsly-independent-review",
+    "independent-review"
+  ],
+  "managed_state_labels": [
+    "state:ready",
+    "state:needs-fix",
+    "agent:working"
+  ]
+}
