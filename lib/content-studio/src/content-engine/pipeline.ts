@@ -80,6 +80,8 @@ export async function ingestOwnedVideo(options: {
   baseDir?: string;
 }): Promise<ContentProjectEnvelope> {
   const baseDir = options.baseDir ?? process.cwd();
+  const title = options.title ?? path.basename(options.filePath, path.extname(options.filePath));
+  const isGaming = options.tenantId === 'icso-gaming-tbd';
   const input: ContentProjectCreateInput = {
     tenantId: options.tenantId,
     channel:
@@ -91,14 +93,22 @@ export async function ingestOwnedVideo(options: {
         ? options.tenantId
         : 'opsly-universe',
     series: 'creator-studio',
-    title: options.title ?? path.basename(options.filePath, path.extname(options.filePath)),
-    goal: 'education',
+    title,
+    // NOVA_EXPLAINS/education/"¿Puede una IA reemplazar a un programador?" is
+    // the Opsly-universe explainer identity — it was being applied to every
+    // tenant regardless of channel, including real gameplay clips, which
+    // made no editorial sense for them. Gaming gets its own goal/template.
+    goal: isGaming ? 'engagement' : 'education',
     audience: 'general',
     format: 'youtube_short',
     mode: options.mode ?? 'repurpose',
-    portal: 'FUTURE',
-    formatTemplate: options.mode === 'commentary' ? 'NOVA_REACTS' : 'NOVA_EXPLAINS',
-    question: '¿Puede una IA reemplazar a un programador?',
+    portal: isGaming ? 'MOVE' : 'FUTURE',
+    formatTemplate: isGaming
+      ? 'GAMEPLAY_HIGHLIGHT'
+      : options.mode === 'commentary'
+        ? 'NOVA_REACTS'
+        : 'NOVA_EXPLAINS',
+    question: isGaming ? `Highlight: ${title}` : '¿Puede una IA reemplazar a un programador?',
   };
   let envelope = await createProjectEnvelope(input, baseDir);
   const probe = await probeMedia(options.filePath);

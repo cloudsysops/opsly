@@ -14,6 +14,10 @@ permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: auto-fix-main
+  cancel-in-progress: true
+
 jobs:
   review-and-fix:
     runs-on: ubuntu-latest
@@ -49,7 +53,7 @@ jobs:
           fi
           exit 0
 
-      - name: Open PR if changes (never commit directly to main)
+      - name: Open bounded PR if changes (never commit directly to main)
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -62,6 +66,15 @@ jobs:
 
           if [ -z "$(git status --porcelain)" ]; then
             echo "✅ No changes after auto-fix"
+            exit 0
+          fi
+
+          # Do not create an unbounded PR-per-main-SHA stream. If any auto-fix PR
+          # is already open, let that owner finish/rebase it before creating more WIP.
+          OPEN_AUTO_FIX="$(gh pr list --repo "${{ github.repository }}" \
+            --state open --search 'head:auto-fix/push-' --json number --jq 'length')"
+          if [ "${OPEN_AUTO_FIX}" -ge 1 ]; then
+            echo "⏭️ ${OPEN_AUTO_FIX} auto-fix PR already open; refusing duplicate WIP."
             exit 0
           fi
 
@@ -78,21 +91,15 @@ jobs:
           git commit -m "chore: auto-fix code quality on ${SHA_SHORT}"
           git push origin "HEAD:${BRANCH}"
 
-          PR_COUNT="$(gh pr list --repo "${{ github.repository }}" \
-            --head "${BRANCH}" --state open --json number --jq 'length')"
-          if [ "${PR_COUNT}" = "0" ]; then
-            PR_BODY="$(printf '%s\n\n%s\n\n%s' \
-              "Automated ESLint/Prettier fixes triggered by push to main." \
-              "Triggered by commit \`${SHA_SHORT}\`. Review before merging." \
-              "Workflow: ${RUN_URL}")"
-            gh pr create \
-              --repo "${{ github.repository }}" \
-              --base main \
-              --head "${BRANCH}" \
-              --title "chore: auto-fix code quality (${DATE} ${SHA_SHORT})" \
-              --body "${PR_BODY}"
-          else
-            echo "PR already open for ${BRANCH}; skipping."
-          fi
+          PR_BODY="$(printf '%s\n\n%s\n\n%s' \
+            "Automated ESLint/Prettier fixes triggered by push to main." \
+            "Triggered by commit \`${SHA_SHORT}\`. Review before merging. Only one auto-fix PR may remain open at a time." \
+            "Workflow: ${RUN_URL}")"
+          gh pr create \
+            --repo "${{ github.repository }}" \
+            --base main \
+            --head "${BRANCH}" \
+            --title "chore: auto-fix code quality (${DATE} ${SHA_SHORT})" \
+            --body "${PR_BODY}"
 
-          echo "✅ PR created (not direct push) for branch ${BRANCH}"
+          echo "✅ Bounded auto-fix PR created for branch ${BRANCH}"

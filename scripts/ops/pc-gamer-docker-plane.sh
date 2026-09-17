@@ -185,20 +185,25 @@ dump_plan() {
 }
 
 # Stale containers (Created/Exited) with fixed names block `compose up` (Conflict).
-# Keep running ones; remove only non-running name collisions.
+# Keep running ones only if they already belong to THIS compose project — a
+# container started by a different entrypoint (e.g. ensure-ollama-local.sh's
+# own `opslyquantum` project) still collides on `docker compose up` by name
+# even while running, since compose ownership is a daemon-side label, not a
+# name match. Remove/adopt anything not labeled for $COMPOSE_PROJECT_NAME.
 reconcile_named_containers() {
   local names=(opsly-pc-gamer-worker-openclaw opslyquantum-ollama)
-  local name id status
+  local name id status project
   [[ "$DRY_RUN" == "true" ]] && return 0
   for name in "${names[@]}"; do
     id="$(docker ps -aq --filter "name=^/${name}$" 2>/dev/null || true)"
     [[ -n "$id" ]] || continue
     status="$(docker inspect -f '{{.State.Status}}' "$id" 2>/dev/null || echo missing)"
-    if [[ "$status" == "running" ]]; then
-      echo "[pc-gamer-docker] keep running $name"
+    project="$(docker inspect -f '{{ index .Config.Labels "com.docker.compose.project" }}' "$id" 2>/dev/null || echo "")"
+    if [[ "$status" == "running" && "$project" == "$COMPOSE_PROJECT_NAME" ]]; then
+      echo "[pc-gamer-docker] keep running $name (project=$project)"
       continue
     fi
-    echo "[pc-gamer-docker] removing stale $name (status=$status)"
+    echo "[pc-gamer-docker] removing $name (status=$status project=${project:-none}, not owned by project=$COMPOSE_PROJECT_NAME)"
     docker rm -f "$id" >/dev/null 2>&1 || true
   done
 }

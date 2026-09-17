@@ -10,7 +10,7 @@ import {
   MoonSkeleton,
   MoonStatusBadge,
 } from '@/components/moon/primitives';
-import { getSystemMetrics } from '@/lib/api-client';
+import { getHealthTravelRuntimeSummary, getSystemMetrics } from '@/lib/api-client';
 import type { MoonHealthTone } from '@/lib/moon/tenant-card';
 
 const SERVICES = [
@@ -28,6 +28,13 @@ export default function MoonHealthPage(): React.ReactElement {
   const { data, error, isLoading } = useSWR('moon-health-system', () => getSystemMetrics(), {
     revalidateOnFocus: false,
   });
+  const {
+    data: healthTravel,
+    error: healthTravelError,
+    isLoading: healthTravelLoading,
+  } = useSWR('moon-health-health-travel', () => getHealthTravelRuntimeSummary(30), {
+    revalidateOnFocus: false,
+  });
   const live = data?.mock !== true;
   const ramTone: MoonHealthTone =
     data && data.ram_total_gb > 0 && data.ram_used_gb / data.ram_total_gb > 0.85
@@ -35,6 +42,18 @@ export default function MoonHealthPage(): React.ReactElement {
       : data && data.ram_total_gb > 0 && data.ram_used_gb / data.ram_total_gb > 0.7
         ? 'warning'
         : 'healthy';
+  const healthTravelTone: MoonHealthTone =
+    healthTravel?.connectivity.status === 'healthy'
+      ? 'healthy'
+      : healthTravel?.connectivity.status === 'unavailable'
+        ? 'critical'
+        : 'unknown';
+  const healthTravelActivityTone: MoonHealthTone =
+    healthTravel?.activity.status === 'recent'
+      ? 'healthy'
+      : healthTravel?.activity.status === 'quiet'
+        ? 'warning'
+        : 'unknown';
 
   return (
     <div className="space-y-6">
@@ -50,6 +69,58 @@ export default function MoonHealthPage(): React.ReactElement {
           </Link>
         }
       />
+      {healthTravelLoading ? <MoonSkeleton /> : null}
+      {healthTravelError ? (
+        <MoonErrorState message={`Health Travel: ${String(healthTravelError.message)}`} />
+      ) : null}
+      {healthTravel ? (
+        <MoonCard className="space-y-4 p-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-display text-sm font-semibold">Health Travel Colombia</h2>
+            <MoonConfidenceBadge confidence="REAL" />
+            <MoonStatusBadge tone={healthTravelTone}>
+              {healthTravel.connectivity.status}
+            </MoonStatusBadge>
+            <MoonStatusBadge tone={healthTravelActivityTone}>
+              activity: {healthTravel.activity.status}
+            </MoonStatusBadge>
+          </div>
+          <p className="text-xs text-slate-400">
+            Runtime connectivity and business activity are separate signals. No patient PII or
+            clinical records are read by Moon.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+            {[
+              ['Leads', healthTravel.counts.leads],
+              ['Consults scheduled', healthTravel.counts.consultations_scheduled],
+              ['Consults completed', healthTravel.counts.consultations_completed],
+              ['Quotes', healthTravel.counts.quotes_sent],
+              ['Bookings', healthTravel.counts.bookings_started],
+              ['Deposits', healthTravel.counts.deposits_paid],
+              ['Completed', healthTravel.counts.journeys_completed],
+              ['Reconcile', healthTravel.counts.reconciliation_required],
+            ].map(([label, value]) => (
+              <div key={String(label)} className="rounded-lg border border-white/10 p-3">
+                <p className="text-[11px] text-slate-500">{label}</p>
+                <p className="mt-1 font-mono text-lg">{value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
+            <span>
+              Last event: {healthTravel.activity.last_event_type ?? 'none'} ·{' '}
+              {healthTravel.activity.last_event_at ?? 'never'}
+            </span>
+            <span>
+              Probe: {healthTravel.connectivity.http_status ?? 'n/a'}
+              {healthTravel.connectivity.latency_ms !== null
+                ? ` · ${healthTravel.connectivity.latency_ms}ms`
+                : ''}
+            </span>
+            <span>Window: {healthTravel.window_days}d</span>
+          </div>
+        </MoonCard>
+      ) : null}
       {isLoading ? <MoonSkeleton /> : null}
       {error ? <MoonErrorState message={String(error.message)} /> : null}
       {data ? (

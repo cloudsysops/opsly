@@ -18,6 +18,11 @@ const MAX_CLAIM_TTL_MS = 8 * 60 * 60 * 1000;
 const DEFAULT_COMPLETED_TASK_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const MIN_COMPLETED_TASK_TTL_MS = 24 * 60 * 60 * 1000;
 const MAX_COMPLETED_TASK_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+const ATTEMPT_KEY_PREFIX = 'opsly:dispatch-attempt:v1';
+const DEFAULT_ATTEMPT_HISTORY_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const MIN_ATTEMPT_HISTORY_TTL_MS = 24 * 60 * 60 * 1000;
+const MAX_ATTEMPT_HISTORY_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+const MAX_ATTEMPT_HISTORY_EVENTS = 50;
 
 export interface DispatchClaimRequest extends DispatchClaimInput {
   tenantSlug: string;
@@ -44,6 +49,27 @@ export interface DispatchClaimConflict {
   existingWorkstream: string | null;
 }
 
+export type DispatchAttemptState =
+  | 'started'
+  | 'retrying'
+  | 'completed'
+  | 'failed'
+  | 'claim_lost';
+
+export interface DispatchAttemptEvent {
+  version: 'dispatch-attempt-v1';
+  claimId: string;
+  tenantSlug: string;
+  taskId: string;
+  workstream: string;
+  workerId: string | null;
+  jobId: string | null;
+  attempt: number;
+  state: DispatchAttemptState;
+  at: string;
+  error?: string;
+}
+
 export type DispatchClaimResult =
   | { acquired: true; lease: DispatchClaimLease }
   | { acquired: false; conflict: DispatchClaimConflict };
@@ -67,6 +93,22 @@ function boundedCompletedTaskTtlMs(
     MAX_COMPLETED_TASK_TTL_MS,
     Math.max(MIN_COMPLETED_TASK_TTL_MS, Math.floor(parsed))
   );
+}
+
+function boundedAttemptHistoryTtlMs(
+  raw = process.env.OPSLY_DISPATCH_ATTEMPT_HISTORY_TTL_MS
+): number {
+  const parsed = Number(raw ?? DEFAULT_ATTEMPT_HISTORY_TTL_MS);
+  if (!Number.isFinite(parsed)) return DEFAULT_ATTEMPT_HISTORY_TTL_MS;
+  return Math.min(
+    MAX_ATTEMPT_HISTORY_TTL_MS,
+    Math.max(MIN_ATTEMPT_HISTORY_TTL_MS, Math.floor(parsed))
+  );
+}
+
+function attemptHistoryRedisKey(tenantSlug: string, taskId: string): string {
+  const digest = createHash('sha256').update(`${tenantSlug}\0${taskId}`).digest('hex');
+  return `${ATTEMPT_KEY_PREFIX}:${digest}`;
 }
 
 function descriptorRedisKey(tenantSlug: string, descriptor: DispatchClaimDescriptor): string {
@@ -325,6 +367,90 @@ export async function acquireTaskDispatchClaim(
       expiresAt: new Date(acquiredAt.getTime() + ttlMs).toISOString(),
     },
   };
+}
+
+export async function recordDispatchAttemptEvent(
+  lease: DispatchClaimLease,
+  event: {
+    workerId?: string | null;
+    jobId?: string | null;
+    attempt: number;
+    state: DispatchAttemptState;
+    at?: string;
+    error?: string;
+  }
+): Promise<number> {
+  if (
+    lease.version !== DISPATCH_CLAIM_VERSION ||
+    !lease.claimId.trim() ||
+    !lease.taskId.trim()
+  ) {
+    return 0;
+  }
+
+  const record: DispatchAttemptEvent = {
+    version: 'dispatch-attempt-v1',
+    claimId: lease.claimId,
+    tenantSlug: lease.tenantSlug,
+    taskId: lease.taskId,
+    workstream: lease.workstream,
+    workerId: event.workerId?.trim() || null,
+    jobId: event.jobId?.trim() || null,
+    attempt: Math.max(1, Math.floor(Number(event.attempt) || 1)),
+    state: event.state,
+    at: event.at ?? new Date().toISOString(),
+    ...(event.error ? { error: event.error.slice(0, 300) } : {}),
+  };
+
+  const script = `
+    redis.call('RPUSH', KEYS[1], ARGV[1])
+    redis.call('LTRIM', KEYS[1], -tonumber(ARGV[2]), -1)
+    redis.call('PEXPIRE', KEYS[1], ARGV[3])
+    return redis.call('LLEN', KEYS[1])
+  `;
+  const client = (await localAgentQueue.client) as unknown as RedisLike;
+  const raw = await client.eval(
+    script,
+    1,
+    attemptHistoryRedisKey(lease.tenantSlug, lease.taskId),
+    JSON.stringify(record),
+    MAX_ATTEMPT_HISTORY_EVENTS,
+    boundedAttemptHistoryTtlMs()
+  );
+  return Number(raw ?? 0);
+}
+
+export async function readDispatchAttemptHistory(params: {
+  tenantSlug: string;
+  taskId: string;
+}): Promise<DispatchAttemptEvent[]> {
+  const tenantSlug = params.tenantSlug.trim();
+  const taskId = params.taskId.trim();
+  if (!tenantSlug || !taskId) return [];
+
+  const script = `return redis.call('LRANGE', KEYS[1], 0, -1)`;
+  const client = (await localAgentQueue.client) as unknown as RedisLike;
+  const raw = await client.eval(script, 1, attemptHistoryRedisKey(tenantSlug, taskId));
+  if (!Array.isArray(raw)) return [];
+
+  return raw.flatMap((item) => {
+    if (typeof item !== 'string') return [];
+    try {
+      const parsed = JSON.parse(item) as DispatchAttemptEvent;
+      if (
+        parsed?.version !== 'dispatch-attempt-v1' ||
+        typeof parsed.claimId !== 'string' ||
+        typeof parsed.taskId !== 'string' ||
+        typeof parsed.workstream !== 'string' ||
+        typeof parsed.at !== 'string'
+      ) {
+        return [];
+      }
+      return [parsed];
+    } catch {
+      return [];
+    }
+  });
 }
 
 export async function renewTaskDispatchClaim(

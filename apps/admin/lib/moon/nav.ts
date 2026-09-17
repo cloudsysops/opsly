@@ -54,7 +54,8 @@ export const MOON_NAV_SECTIONS: MoonNavSection[] = [
     items: [
       { href: '/moon/support', label: 'Soporte', legacyHref: '/feedback' },
       { href: '/invitations', label: 'Invitaciones' },
-      { href: '/mission-control', label: 'Runtime MC' },
+      { href: '/mission-control', label: 'Mission Control' },
+      { href: '/mission-control/workstreams', label: 'Workstreams' },
       { href: '/moon/settings', label: 'Settings', legacyHref: '/settings' },
     ],
   },
@@ -63,6 +64,9 @@ export const MOON_NAV_SECTIONS: MoonNavSection[] = [
 export function isMoonNavActive(pathname: string, href: string): boolean {
   if (href === '/moon') {
     return pathname === '/moon' || pathname === '/dashboard' || pathname === '/';
+  }
+  if (href === '/mission-control') {
+    return pathname === '/mission-control';
   }
   if (pathname === href || pathname.startsWith(`${href}/`)) {
     return true;
