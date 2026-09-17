@@ -49,7 +49,13 @@ export function evaluateCandidate({ pr, labels, checkRuns, statuses, route }) {
 
   if (route === 'daytime') {
     if (!labelSet.has('merge:daytime')) reasons.push('missing-merge:daytime');
+    // Defense in depth: a stale/manually-added merge:daytime label must never
+    // override protected release surfaces or Peskids. The trusted classifier
+    // already routes these to merge:governed; admission independently enforces it.
+    if (labelSet.has('release:required')) reasons.push('release-required');
+    if (labelSet.has('impact:peskids')) reasons.push('peskids-protected');
     if (labelSet.has('impact:control-plane')) reasons.push('control-plane');
+    if (labelSet.has('merge:governed')) reasons.push('conflicting-governed-route');
   } else if (route === 'night') {
     if (!labelSet.has('night-merge')) reasons.push('missing-night-merge');
   } else {
