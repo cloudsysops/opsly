@@ -4,13 +4,26 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+function first(env, ...names) {
+  for (const name of names) {
+    const value = String(env[name] ?? '').trim();
+    if (value) return value;
+  }
+  return '';
+}
+
 export function buildPublicRuntimeConfig(env = process.env) {
   return {
-    apiUrl: String(env.NEXT_PUBLIC_API_URL ?? '').trim(),
-    supabaseUrl: String(env.NEXT_PUBLIC_SUPABASE_URL ?? '').trim(),
-    supabaseAnonKey: String(env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '').trim(),
-    supportEmail: String(env.NEXT_PUBLIC_SUPPORT_EMAIL ?? '').trim(),
-    platformDomain: String(env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? env.PLATFORM_DOMAIN ?? '').trim(),
+    apiUrl: first(env, 'NEXT_PUBLIC_API_URL', 'PUBLIC_API_URL'),
+    supabaseUrl: first(env, 'SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL'),
+    supabaseAnonKey: first(
+      env,
+      'SUPABASE_ANON_KEY',
+      'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    ),
+    supportEmail: first(env, 'NEXT_PUBLIC_SUPPORT_EMAIL', 'SUPPORT_EMAIL'),
+    platformDomain: first(env, 'NEXT_PUBLIC_PLATFORM_DOMAIN', 'PLATFORM_DOMAIN'),
   };
 }
 
