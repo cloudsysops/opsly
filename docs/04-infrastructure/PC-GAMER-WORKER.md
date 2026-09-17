@@ -1,7 +1,7 @@
 ---
 status: active
 owner: operations
-last_review: 2026-09-11
+last_review: 2026-09-17
 type: infrastructure
 tags:
   - opsly/infrastructure
@@ -39,6 +39,38 @@ Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orches
 **Regla:** el PC gamer **ejecuta**. La nube **decide y guarda el estado**. Si el PC se apaga, Opsly sigue; los jobs GPU quedan en BullMQ (`QUEUED`).
 
 Enrutar por **capacidad** (`gpu.nvidia`, `video.render`, `llm.local`, `ffmpeg`), no por hostname. Registro: [`config/compute-workers.json`](../../config/compute-workers.json). CLI: `npm run compute:workers` / `npm run compute:assign -- --job content.render.video`.
+
+## Nodos gamer e identidad de worker
+
+Hay **dos inventarios distintos** y no se deben mezclar:
+
+| Archivo | Qué es | Fuente de verdad de |
+|---------|--------|---------------------|
+| [`config/compute-workers.json`](../../config/compute-workers.json) | Registry del **scheduler** — capacidades, VRAM, `workerId` | Ruteo de jobs y `GET /api/admin/compute-workers` |
+| [`infra/nodes-registry.json`](../../infra/nodes-registry.json) | Inventario **ops** — acceso SSH/Tailscale (`node`, `host`, `user`, `role`, `status`) | Onboarding/operación (no define workers) |
+
+**Nunca** crear un segundo worker registry (regla de `AGENTS.md`). El `workerId` vive **solo** en `config/compute-workers.json`; `nodes-registry.json` no lo duplica. CLI del inventario: `./scripts/manage-cluster-nodes.sh list|add|remove|get`.
+
+### Identidad canónica por nodo
+
+El `WORKER_ID` de `.env.worker` **debe** coincidir con el `workerId` de `config/compute-workers.json`. El heartbeat se publica en `opsly:worker:heartbeat:${WORKER_ID}`.
+
+| Tailscale | Hardware | `workerId` |
+|-----------|----------|------------|
+| `desktop-smdqcia` (WSL2, este host) | RTX 3060 12 GB · 8 GB RAM | `home-gpu-01` |
+| `pc-gamer` (Windows + WSL2) | RTX 5070 Ti 16.3 GB · 32 GB RAM | `pc-gamer-openclaw-01` |
+| `desktop-smdqcia-1` | pendiente WSL2 | `desktop-smdqcia-1` |
+| `pc-gamer-openclaw-01-wsl` | offline | `pc-gamer-openclaw-01-wsl` |
+
+Plantilla: [`infra/pc-gamer.env.example`](../../infra/pc-gamer.env.example). Onboarding paso a paso: [`COMPUTE-WORKER-ONBOARDING.md`](../runbooks/COMPUTE-WORKER-ONBOARDING.md).
+
+**Incidente de identidad resuelto (2026-09-17):** `desktop-smdqcia` publicaba heartbeat bajo `pc-gamer-openclaw-01` (ID reservado a la RTX 5070 Ti). El scheduler mostraba `pc-gamer-openclaw-01` ONLINE con telemetría de la RTX 3060 de este host y `home-gpu-01` OFFLINE, pese a ser el nodo real. Efecto: un job `ai.local.inference` (minVram 8) se enrutaba a una máquina de 16 GB que no era. Corrección: `.env.worker` de este host → `WORKER_ID=home-gpu-01`, scripts sin default compartido (fallan cerrado si falta `WORKER_ID`), y guard en `pc-gamer-docker-plane.sh`. Verificar con:
+
+```bash
+node scripts/ops/compute-worker-router.mjs --status
+# home-gpu-01 -> ONLINE (desktop-smdqcia, RTX 3060)
+# pc-gamer-openclaw-01 -> OFFLINE (pc-gamer, RTX 5070 Ti)
+```
 
 ## Reglas no negociables
 

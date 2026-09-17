@@ -45,9 +45,9 @@ nodes = data.get("nodes", [])
 if not nodes:
     print("No hay nodos registrados.")
     raise SystemExit(0)
-print(f"{'NAME':<24} {'ROLE':<10} {'HOST':<20} {'USER':<16} {'STATUS'}")
+print(f"{'NAME':<26} {'ROLE':<10} {'HOST':<18} {'STATUS'}")
 for n in nodes:
-    print(f"{n.get('name',''):<24} {n.get('role',''):<10} {n.get('host',''):<20} {n.get('user',''):<16} {n.get('status','')}")
+    print(f"{n.get('name',''):<26} {n.get('role',''):<10} {n.get('host',''):<18} {n.get('status','')}")
 PY
 }
 
@@ -71,7 +71,7 @@ node = {
     "status": "active",
     "created_at": datetime.now(timezone.utc).isoformat(),
 }
-nodes.append(node)
+nodes.insert(0, node)
 data["updated_at"] = datetime.now(timezone.utc).isoformat()
 with open(path, "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2)

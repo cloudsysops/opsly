@@ -10,7 +10,7 @@
 set -euo pipefail
 
 JSON=false
-WORKER_ID="${WORKER_ID:-pc-gamer-openclaw-01}"
+WORKER_ID="${WORKER_ID:-}"
 # Legacy heartbeat key also accepted
 WORKER_ID_LEGACY="${WORKER_ID_LEGACY:-pc-gamer}"
 TS_HOST="${PC_GAMER_TAILSCALE_HOST:-pc-gamer}"
@@ -36,6 +36,16 @@ if [[ -z "${REDIS_URL:-}" && -f .env.worker ]]; then
   # shellcheck disable=SC1091
   source .env.worker
   set +a
+fi
+
+# WORKER_ID puede venir del entorno o de .env.worker; el default compartido
+# hacía que nodos distintos leyeran el pulso equivocado.
+if [[ -z "$WORKER_ID" && -f .env.worker ]]; then
+  WORKER_ID="$(grep -E '^WORKER_ID=' .env.worker | tail -1 | cut -d= -f2-)"
+fi
+if [[ -z "$WORKER_ID" ]]; then
+  echo "check-pc-gamer-online: WORKER_ID no definido (export WORKER_ID o .env.worker)" >&2
+  exit 1
 fi
 
 tailscale_ok=false

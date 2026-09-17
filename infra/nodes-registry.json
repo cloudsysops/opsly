@@ -1,6 +1,7 @@
 {
-  "version": 1,
-  "updated_at": "2026-04-13T00:00:00Z",
+  "version": 3,
+  "updated_at": "2026-09-17T00:00:00Z",
+  "description": "Inventario operativo de nodos (acceso SSH/Tailscale). NO es el registry de workers: el ruteo por capacidad vive en config/compute-workers.json.",
   "nodes": [
     {
       "name": "opsly-admin",
@@ -24,7 +25,39 @@
       "user": "vps-dragon",
       "role": "control",
       "status": "active",
-      "notes": "VPS control plane"
+      "notes": "VPS control plane (Redis broker + orchestrator)"
+    },
+    {
+      "name": "desktop-smdqcia",
+      "host": "100.115.197.109",
+      "user": "cboteros",
+      "role": "worker",
+      "status": "active",
+      "notes": "Host actual (WSL2) + RTX 3060 12GB + Ollama; worker plane Docker"
+    },
+    {
+      "name": "desktop-smdqcia-1",
+      "host": "100.117.5.102",
+      "user": "cboteros",
+      "role": "worker",
+      "status": "pending",
+      "notes": "PC Windows via Tailscale; requiere WSL2 + setup-compute-worker.sh"
+    },
+    {
+      "name": "pc-gamer",
+      "host": "100.74.88.103",
+      "user": "cboteros",
+      "role": "worker",
+      "status": "offline",
+      "notes": "PC gamer Windows (offline); requiere WSL2 + setup-compute-worker.sh"
+    },
+    {
+      "name": "pc-gamer-openclaw-01-wsl",
+      "host": "100.71.164.56",
+      "user": "cboteros",
+      "role": "worker",
+      "status": "offline",
+      "notes": "PC gamer WSL2 (offline)"
     }
   ]
 }
