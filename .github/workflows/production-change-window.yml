@@ -1,4 +1,7 @@
-# Gate merges/deploys that can affect production (Peskids live).
+# Gate production release timing without coupling normal code integration to deploy.
+# `merge:daytime` is assigned only by the trusted-base Change Impact classifier.
+# A merge through the governed bot uses GITHUB_TOKEN and therefore does not trigger
+# the push-based Deploy workflow. Production release/apply remains separately gated.
 # See docs/runbooks/PRODUCTION-CHANGE-WINDOW.md
 
 name: Production change window
@@ -53,19 +56,21 @@ jobs:
           else
             echo "hotfix=false" >> "$GITHUB_OUTPUT"
           fi
-          if echo "$labels" | grep -qi '"safe-daytime"'; then
+          # merge:daytime is a trusted classifier decision: integration may
+          # happen now, while release:required still keeps activation separate.
+          if echo "$labels" | grep -Eqi '"(safe-daytime|merge:daytime)"'; then
             echo "safe=true" >> "$GITHUB_OUTPUT"
           else
             echo "safe=false" >> "$GITHUB_OUTPUT"
           fi
-          # Queued for automatic night merge — CI must go green by day without merging.
+          # Queued for governed night integration. This does not authorize deploy.
           if echo "$labels" | grep -qi '"night-merge"'; then
             echo "night_merge=true" >> "$GITHUB_OUTPUT"
           else
             echo "night_merge=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Enforce night window for prod-impact PRs
+      - name: Enforce integration policy
         env:
           HOTFIX_PROD: ${{ steps.labels.outputs.hotfix == 'true' && '1' || '0' }}
           SAFE_DAYTIME: ${{ steps.labels.outputs.safe == 'true' && '1' || '0' }}
@@ -78,7 +83,7 @@ jobs:
           if [ "${#PATHS[@]}" -eq 0 ]; then
             echo "No file list (dispatch or empty diff) — clock notice only"
             node scripts/ci/check-production-change-window.mjs --check-now || \
-              echo "::notice::Outside night window; prod-impact merges need label or night."
+              echo "::notice::Outside night window; production release remains separately gated."
             exit 0
           fi
           node scripts/ci/check-production-change-window.mjs --mode pr --paths "${PATHS[@]}"
