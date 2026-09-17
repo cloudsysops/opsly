@@ -118,5 +118,17 @@
     "ctaStyle": "familia",
     "captionStyle": "simple kids",
     "visualTreatment": "soft water palette"
+  },
+  {
+    "id": "GAMEPLAY_HIGHLIGHT",
+    "hookStyle": "mejor jugada del clip",
+    "sceneStructure": ["HOOK", "PLAY", "REACTION", "REPLAY", "OUTCOME"],
+    "pace": "fast",
+    "targetDurationSec": 30,
+    "character": "NØVA",
+    "portal": "MOVE",
+    "ctaStyle": "síguenos para más plays",
+    "captionStyle": "hype short",
+    "visualTreatment": "gameplay full-frame + reaction overlay"
   }
 ]

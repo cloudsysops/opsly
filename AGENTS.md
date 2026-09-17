@@ -2816,6 +2816,36 @@ Las 4 pasan CI completo; el único check en rojo en las 4 es `production-change-
 
 ---
 
+## 🔄 Estado Actual (2026-09-15 — Ghostty Linux support (PR #1600) + verificación GPU pc-gamer)
+
+**Agente:** Claude
+**Rama:** sesión iniciada sobre `fix/pc-gamer-compose-project-reconcile` (rama original, con cambios de pc-gamer sin commitear, sin tocar); el trabajo de Ghostty se separó a una rama nueva `chore/ghostty-linux-config` para no mezclar temas.
+
+### Verificación GPU / drivers (worker pc-gamer, WSL2 Ubuntu 26.04)
+
+- GPU: RTX 3060, driver 560.94, CUDA 12.6 (`nvidia-smi`).
+- Docker 29.8.1 + `nvidia-container-toolkit` 1.20.0 instalado, runtime `nvidia` registrado (default sigue siendo `runc`; se invoca con `--gpus`/`--runtime nvidia`).
+- `nvidia-smi -q -d PERSISTENCE_MODE` y `--query-gpu=persistence_mode` hacen **segfault** — no es bug de esta VM: WSL2 no soporta persistence mode por la paravirtualización de GPU. No recomendar esa opción en workers WSL2.
+- Update de drivers vía NVIDIA App: no se puede disparar desde acá (bash en WSL2 no controla la GUI de Windows); el usuario lo gestiona desde el host Windows.
+- Pendiente: usuario iba a correr `sudo apt install -y nvtop` manualmente (pide password interactivo, no ejecutable desde la sesión del agente).
+
+### Ghostty: soporte Linux — PR #1600 (ready for review)
+
+`scripts/install-ghostty-config.sh` solo soportaba macOS (symlink a Application Support). Se extendió para detectar OS y, en Linux, generar `~/.config/ghostty/config` fusionando el perfil canónico (`config/ghostty/config`: tema Catppuccin Mocha, JetBrains Mono, keybinds, etc.) con un archivo nuevo `config/ghostty/config.linux-override` que preserva el auto-attach a la sesión tmux `opsly-harness` (en vez de caer a un shell plano). Validado con `ghostty +validate-config` en esta máquina. Commit `9f7366a`, PR https://github.com/cloudsysops/opsly/pull/1600, pusheado y marcado ready for review.
+
+Nota de proceso: el primer intento de commit se hizo mal — arrastró 2 archivos que ya estaban `staged` de antes en la rama original (`package-lock.json`, `scripts/ops/pc-gamer-opencode-plane.sh`), sin relación con Ghostty. Se detectó antes del push, se deshizo con `git reset --soft` (commit todavía local, sin upstream) y se rehizo limpio. Lección para próximas sesiones: revisar la columna de *staged* de `git status --short` línea por línea antes de commitear, no asumir que "lo que yo agregué" es lo único que queda staged.
+
+Pendiente sin resolver: el usuario preguntó por qué una ventana nueva de Ghostty "clona" la que ya tiene abierta — es el flag `-A` de `tmux new-session` (attach-or-create), comparte la misma sesión entre ventanas por diseño del harness. Se le ofreció cambiarlo a sesiones independientes por ventana; **no eligió opción todavía**.
+
+### Próximos pasos
+
+1. Confirmar merge de PR #1600 (Ghostty Linux support) a `main`.
+2. Usuario: correr `sudo apt install -y nvtop` en el worker pc-gamer si todavía lo quiere.
+3. Decidir si el comportamiento de tmux compartido entre ventanas de Ghostty se mantiene o se cambia a sesiones independientes.
+4. Los cambios sin commitear en `fix/pc-gamer-compose-project-reconcile` (`apps/orchestrator/package.json`, `package-lock.json`, `scripts/ops/pc-gamer-opencode-plane.sh`, `scripts/setup-compute-worker.sh`) siguen intactos y sin tocar — no son de esta sesión de Ghostty, retomar en su propio contexto.
+
+---
+
 ## Enlaces relacionados
 
 - [[.github/index|.github]]
