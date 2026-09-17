@@ -1,6 +1,7 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { isAdminPublicDemoEnabled } from '@/lib/admin-public-demo';
+import { getAuthPublicConfig } from '@/lib/auth-public-config';
 import { isPathUnderAuthSurface } from '../../../../lib/runtime/src/tenant-auth-surface';
 
 const ADMIN_AUTH_SURFACE = {
@@ -28,9 +29,12 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     request,
   });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) {
+  const {
+    supabaseUrl: url,
+    supabaseAnonKey: anon,
+    configured,
+  } = getAuthPublicConfig();
+  if (!configured) {
     const pathname = request.nextUrl.pathname;
     const isAuthPublic = isPathUnderAuthSurface(pathname, ADMIN_AUTH_SURFACE);
     const isLogin = pathname === '/login' || pathname.startsWith('/login/');
