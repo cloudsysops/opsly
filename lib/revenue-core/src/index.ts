@@ -73,4 +73,4 @@ export function summarizeCommissionEvents(events: CommissionEventLike[]) {
   };
 }
 
-export * from './health-travel';
+export * from './health-travel.js';
