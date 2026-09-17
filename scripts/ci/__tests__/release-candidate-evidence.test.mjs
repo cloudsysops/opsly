@@ -31,7 +31,7 @@ function baseEnv(overrides = {}) {
   };
 }
 
-test('blocks candidate until external gates, migration safety and readiness are bound', () => {
+test('blocks candidate and marks unbound external gates pending', () => {
   const candidate = buildReleaseCandidateEvidence(baseEnv());
   assert.equal(candidate.status, 'blocked');
   assert.deepEqual(candidate.blockers.sort(), [
@@ -39,6 +39,11 @@ test('blocks candidate until external gates, migration safety and readiness are 
     'migration_safety_not_bound',
     'release_readiness_not_authorized',
   ]);
+  assert.equal(candidate.gates.ci, 'pending');
+  assert.equal(candidate.gates.security, 'pending');
+  assert.equal(candidate.gates.independent_verification, 'pending');
+  assert.equal(candidate.gates.staging_health, 'passed');
+  assert.equal(candidate.gates.e2e, 'passed');
 });
 
 test('allows ready only when every staging digest matches production and all readiness gates are explicit', () => {
@@ -53,6 +58,8 @@ test('allows ready only when every staging digest matches production and all rea
   assert.equal(candidate.status, 'ready');
   assert.equal(candidate.blockers.length, 0);
   assert.equal(candidate.artifacts.length, services.length);
+  assert.equal(candidate.gates.ci, 'passed');
+  assert.equal(candidate.gates.security, 'passed');
   assert.equal(candidate.gates.independent_verification, 'passed');
 });
 
