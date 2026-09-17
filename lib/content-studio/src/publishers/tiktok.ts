@@ -6,6 +6,7 @@ import type {
 } from '../types.js';
 
 const TIKTOK_API_BASE = 'https://open.tiktokapis.com/v2';
+const MAX_SINGLE_CHUNK_BYTES = 64 * 1024 * 1024;
 
 interface TikTokInitResponse {
   data?: {
@@ -30,8 +31,9 @@ interface TikTokInitResponse {
  *   dry-run / human-approval gate lives above this layer (see
  *   content-engine/publishing.ts `assertHumanApprovedPublish`), not here, so
  *   this class stays a plain, testable API wrapper.
- * - Single-chunk upload only (`total_chunk_count: 1`); TikTok requires
- *   multi-chunk uploads above 64 MB — not implemented here.
+ * - Single-chunk upload only (`total_chunk_count: 1`); files above 64 MB fail
+ *   closed before any network request because multi-chunk upload is not yet
+ *   implemented here.
  */
 export class TikTokPublisher {
   constructor(private readonly credentials: TikTokCredentials) {
@@ -44,6 +46,11 @@ export class TikTokPublisher {
     const stat = statSync(request.file_path);
     if (!stat.isFile() || stat.size === 0) {
       throw new Error(`Video file not found or empty: ${request.file_path}`);
+    }
+    if (stat.size > MAX_SINGLE_CHUNK_BYTES) {
+      throw new Error(
+        `TikTok single-chunk upload limit exceeded: ${stat.size} bytes > ${MAX_SINGLE_CHUNK_BYTES} bytes`
+      );
     }
 
     const initResponse = await fetch(`${TIKTOK_API_BASE}/post/publish/video/init/`, {
