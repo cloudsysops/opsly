@@ -1,4 +1,8 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig, devices } from '@playwright/test';
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 export default defineConfig({
   testDir: './e2e',
@@ -23,6 +27,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'python3 -m http.server 4173 --bind 127.0.0.1 --directory apps/game-astral-arena/web/games',
+    cwd: repoRoot,
     url: 'http://127.0.0.1:4173/index.html',
     reuseExistingServer: false,
     timeout: 15_000,
