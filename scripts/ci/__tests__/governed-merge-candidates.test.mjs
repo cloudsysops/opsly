@@ -21,7 +21,7 @@ const approvedStatus = [{ context: 'opsly-independent-review', state: 'success' 
 test('daytime candidate requires ready + daytime route + independent review', () => {
   const result = evaluateCandidate({
     pr: basePr,
-    labels: ['state:ready', 'merge:daytime', 'impact:content'],
+    labels: ['state:ready', 'merge:daytime', 'release:none', 'impact:content'],
     checkRuns: greenChecks,
     statuses: approvedStatus,
     route: 'daytime',
@@ -32,7 +32,7 @@ test('daytime candidate requires ready + daytime route + independent review', ()
 test('production-window failure is not a code failure for merge-only route', () => {
   const result = evaluateCandidate({
     pr: basePr,
-    labels: ['state:ready', 'merge:daytime', 'release:required', 'impact:peskids'],
+    labels: ['state:ready', 'merge:daytime', 'release:none', 'impact:content'],
     checkRuns: greenChecks,
     statuses: approvedStatus,
     route: 'daytime',
@@ -40,10 +40,34 @@ test('production-window failure is not a code failure for merge-only route', () 
   assert.equal(result.eligible, true);
 });
 
+test('release-required surface cannot enter daytime auto merge even with a stale manual label', () => {
+  const result = evaluateCandidate({
+    pr: basePr,
+    labels: ['state:ready', 'merge:daytime', 'release:required', 'impact:infra'],
+    checkRuns: greenChecks,
+    statuses: approvedStatus,
+    route: 'daytime',
+  });
+  assert.equal(result.eligible, false);
+  assert.ok(result.reasons.includes('release-required'));
+});
+
+test('Peskids cannot enter daytime auto merge even with a stale manual label', () => {
+  const result = evaluateCandidate({
+    pr: basePr,
+    labels: ['state:ready', 'merge:daytime', 'release:required', 'impact:peskids'],
+    checkRuns: greenChecks,
+    statuses: approvedStatus,
+    route: 'daytime',
+  });
+  assert.equal(result.eligible, false);
+  assert.ok(result.reasons.includes('peskids-protected'));
+});
+
 test('control-plane changes cannot enter daytime auto merge', () => {
   const result = evaluateCandidate({
     pr: basePr,
-    labels: ['state:ready', 'merge:daytime', 'impact:control-plane'],
+    labels: ['state:ready', 'merge:daytime', 'release:none', 'impact:control-plane'],
     checkRuns: greenChecks,
     statuses: approvedStatus,
     route: 'daytime',
@@ -52,10 +76,22 @@ test('control-plane changes cannot enter daytime auto merge', () => {
   assert.ok(result.reasons.includes('control-plane'));
 });
 
+test('conflicting governed route cannot enter daytime auto merge', () => {
+  const result = evaluateCandidate({
+    pr: basePr,
+    labels: ['state:ready', 'merge:daytime', 'merge:governed', 'release:none'],
+    checkRuns: greenChecks,
+    statuses: approvedStatus,
+    route: 'daytime',
+  });
+  assert.equal(result.eligible, false);
+  assert.ok(result.reasons.includes('conflicting-governed-route'));
+});
+
 test('hard blockers win over green checks', () => {
   const result = evaluateCandidate({
     pr: basePr,
-    labels: ['state:ready', 'merge:daytime', 'state:waiting-human'],
+    labels: ['state:ready', 'merge:daytime', 'release:none', 'state:waiting-human'],
     checkRuns: greenChecks,
     statuses: approvedStatus,
     route: 'daytime',
@@ -67,7 +103,7 @@ test('hard blockers win over green checks', () => {
 test('pending or failed real checks block merge', () => {
   const result = evaluateCandidate({
     pr: basePr,
-    labels: ['state:ready', 'merge:daytime'],
+    labels: ['state:ready', 'merge:daytime', 'release:none'],
     checkRuns: [{ id: 9, name: 'test-unit', status: 'completed', conclusion: 'failure' }],
     statuses: approvedStatus,
     route: 'daytime',
@@ -79,7 +115,7 @@ test('pending or failed real checks block merge', () => {
 test('stale duplicate failure is ignored when newer same-name rerun is green', () => {
   const result = evaluateCandidate({
     pr: basePr,
-    labels: ['state:ready', 'merge:daytime'],
+    labels: ['state:ready', 'merge:daytime', 'release:none'],
     checkRuns: [
       { id: 10, name: 'test-unit', status: 'completed', conclusion: 'success' },
       { id: 9, name: 'test-unit', status: 'completed', conclusion: 'failure' },
