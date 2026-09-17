@@ -10,8 +10,7 @@ on:
   pull_request_target:
     types: [synchronize, opened, ready_for_review, labeled, unlabeled]
   # Reconcile promptly when the independent-review commit status changes.
-  # Status events do not carry a PR number, so the job rechecks the bounded
-  # governed backlog using exact current head SHAs.
+  # A status event is scoped back to the open PR(s) whose current head is that SHA.
   status: {}
   schedule:
     - cron: "0 */6 * * *"
@@ -23,6 +22,8 @@ permissions:
   statuses: read
 
 concurrency:
+  # A status event may legitimately map one SHA to multiple PRs. One job owns
+  # that SHA and processes all matching open PRs, so cancellation is safe.
   group: auto-label-night-merge-${{ github.repository }}-${{ github.event.pull_request.number || github.event.sha || 'schedule' }}
   cancel-in-progress: true
 
@@ -35,6 +36,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           SINGLE_PR: ${{ github.event.pull_request.number }}
+          STATUS_SHA: ${{ github.event.sha }}
+          EVENT_NAME: ${{ github.event_name }}
         shell: bash
         run: |
           set -euo pipefail
@@ -44,9 +47,19 @@ jobs:
             local snapshot
             snapshot="$(gh api "repos/$REPO/pulls/$pr")"
 
-            local is_draft
+            local is_draft state sha
             is_draft="$(echo "$snapshot" | jq -r '.draft')"
+            state="$(echo "$snapshot" | jq -r '.state')"
+            sha="$(echo "$snapshot" | jq -r '.head.sha')"
+            [ "$state" = "open" ] || { echo "#$pr not open — skip"; return; }
             [ "$is_draft" = "true" ] && { echo "#$pr draft — skip"; return; }
+
+            # On a status event, never act on a PR whose current head moved away
+            # from the commit that emitted the status.
+            if [ "$EVENT_NAME" = "status" ] && [ "$sha" != "$STATUS_SHA" ]; then
+              echo "#$pr head moved ($sha != $STATUS_SHA) — skip"
+              return
+            fi
 
             local labels
             labels="$(gh api "repos/$REPO/issues/$pr/labels" --jq '[.[].name]')"
@@ -71,9 +84,15 @@ jobs:
 
             has_label "night-merge" && { echo "#$pr already night-merge — skip"; return; }
 
-            local sha review_state
-            sha="$(echo "$snapshot" | jq -r '.head.sha')"
-            review_state="$(gh api "repos/$REPO/commits/$sha/status" --jq '[.statuses[] | select(.context == "opsly-independent-review")][0].state // "missing"')"
+            local status_json review_state
+            status_json="$(gh api "repos/$REPO/commits/$sha/status")"
+            review_state="$(echo "$status_json" | jq -r '
+              if (.statuses | type) != "array" then
+                "malformed"
+              else
+                ([.statuses[] | select(.context == "opsly-independent-review")][0].state // "missing")
+              end
+            ')"
             if [ "$review_state" != "success" ]; then
               echo "#$pr independent review=$review_state — skip"
               return
@@ -85,6 +104,19 @@ jobs:
 
           if [ -n "${SINGLE_PR:-}" ]; then
             label_if_eligible "$SINGLE_PR"
+          elif [ "$EVENT_NAME" = "status" ] && [ -n "${STATUS_SHA:-}" ]; then
+            # GitHub's commit→PR association is authoritative for status events.
+            # Process every matching open PR, while label_if_eligible rechecks the
+            # exact current head before mutation.
+            mapfile -t prs < <(
+              gh api \
+                -H "Accept: application/vnd.github+json" \
+                "repos/$REPO/commits/$STATUS_SHA/pulls" \
+                --jq '.[] | select(.state == "open") | .number'
+            )
+            for pr in "${prs[@]}"; do
+              [ -n "$pr" ] && label_if_eligible "$pr"
+            done
           else
             gh pr list \
               --repo "$REPO" \
