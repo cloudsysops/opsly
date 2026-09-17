@@ -287,6 +287,7 @@ jobs:
       - build-staging-candidate
       - deploy-staging-candidate
     runs-on: ubuntu-latest
+    environment: staging
     permissions:
       contents: read
       packages: read
@@ -297,9 +298,9 @@ jobs:
       STAGING_API_URL: https://api.${{ secrets.STAGING_PLATFORM_DOMAIN }}
       PRODUCT: ${{ inputs.product }}
     steps:
+      # Use the workflow branch for evidence tooling/schema. The candidate itself
+      # was already built and deployed from RELEASE_SHA in the previous jobs.
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ env.RELEASE_SHA }}
 
       - uses: actions/setup-node@v4
         with:
@@ -349,7 +350,6 @@ jobs:
 
       - name: Build blocked-or-ready candidate evidence
         env:
-          STAGING_DIGESTS_JSON: ${{ steps.noop.outputs.unused }}
           EXTERNAL_GATES_BOUND: "false"
           MIGRATION_SAFE_FOR_PROMOTION: "false"
           ALLOW_READY: "false"
