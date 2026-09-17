@@ -52,7 +52,7 @@ jobs:
         run: node scripts/ci/pr-triage.mjs --pr "${{ github.event.pull_request.number }}"
 
       - name: Triage PR from completed workflow
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.pull_requests[0].number
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.pull_requests != null && github.event.workflow_run.pull_requests[0] != null && github.event.workflow_run.pull_requests[0].number != null
         env:
           GITHUB_TOKEN: ${{ github.token }}
           OPSLY_GITHUB_REPO: ${{ github.repository }}
