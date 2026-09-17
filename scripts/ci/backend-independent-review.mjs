@@ -6,8 +6,9 @@
  * (.github/workflows/trusted-independent-review.yml).
  *
  * Este reviewer no usa Codex, Copilot, OpenAI, Anthropic ni otro fallback cloud.
- * `provider_hint=ollama-code` llama directamente a `codellama_local`; si el
- * provider local no está disponible, la revisión falla cerrada.
+ * `provider_hint=ollama-code` llama directamente a `qwen_coder_local`
+ * (Qwen2.5-Coder por defecto); si Ollama o el modelo no están disponibles, la
+ * revisión falla cerrada.
  *
  * Dos formas de correr esto (misma lógica, distinta identidad de posteo):
  *
