@@ -355,8 +355,9 @@ jobs:
           ALLOW_READY: "false"
         run: |
           set -euo pipefail
-          export STAGING_DIGESTS_JSON="$(cat evidence/staging-digests.json)"
-          export PRODUCTION_DIGESTS_JSON="$(cat production-digests.json)"
+          STAGING_DIGESTS_JSON="$(cat evidence/staging-digests.json)"
+          PRODUCTION_DIGESTS_JSON="$(cat production-digests.json)"
+          export STAGING_DIGESTS_JSON PRODUCTION_DIGESTS_JSON
           node scripts/ci/create-release-candidate-evidence.mjs release-candidate.json
           jq . release-candidate.json
 
