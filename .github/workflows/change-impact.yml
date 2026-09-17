@@ -81,3 +81,40 @@ jobs:
           while read -r pr; do
             classify_pr "$pr"
           done
+
+      - name: Publish routing snapshot
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.pr == 0)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          snapshot="$(gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --limit 100 \
+            --json number,title,baseRefName,isDraft,labels)"
+
+          {
+            echo '## Open PR routing snapshot'
+            echo
+            echo '| PR | Base | Impact | Merge | Release | State |'
+            echo '| --- | --- | --- | --- | --- | --- |'
+            echo "$snapshot" | jq -r '
+              sort_by(.number) | reverse[] |
+              (.labels | map(.name)) as $labels |
+              ($labels | map(select(startswith("impact:"))) | join(", ")) as $impact |
+              ($labels | map(select(startswith("merge:"))) | join(", ")) as $merge |
+              ($labels | map(select(startswith("release:"))) | join(", ")) as $release |
+              ($labels | map(select(startswith("state:") or startswith("stack:") or startswith("agent:"))) | join(", ")) as $state |
+              "| #\(.number) \(.title | gsub("\\|"; "/")) | `\(.baseRefName)` | \($impact // "") | \($merge // "") | \($release // "") | \(if .isDraft then "draft" else ($state // "") end) |"'
+            echo
+            echo '### Queue counts'
+            echo "$snapshot" | jq -r '
+              [.[].labels | map(.name)] as $all |
+              "- daytime: \([$all[] | select(index("merge:daytime"))] | length)",
+              "- governed: \([$all[] | select(index("merge:governed"))] | length)",
+              "- release required: \([$all[] | select(index("release:required"))] | length)",
+              "- stack blocked: \([$all[] | select(index("stack:blocked"))] | length)"'
+          } >> "$GITHUB_STEP_SUMMARY"
