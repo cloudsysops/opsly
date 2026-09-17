@@ -102,3 +102,55 @@ cp infra/systemd/opsly-pc-gamer-content-retention.timer ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now opsly-pc-gamer-content-retention.timer
 ```
+
+## OBS display-capture source watcher
+
+Mauro opens OBS himself, on his own schedule, from his interactive Windows
+session — launching OBS into that session from outside is unreliable (it can
+start as a process without ever getting real desktop/window-station access,
+so its UI and WebSocket server never come up) and is out of scope for
+automation. `tools/live-automation/obs_capture_source_watcher.py` instead
+polls the OBS WebSocket bridge from WSL and, once OBS is reachable, ensures
+the current program scene has a `monitor_capture` (display-capture) source —
+creating one only if it's missing. It never touches streaming
+(`start_stream`/`stop_stream` stay blocked, same as
+`tools/live-automation/dispatch.py`), and it's idempotent — safe to leave
+running indefinitely, and self-healing if the source is later removed.
+
+```bash
+cd ~/opsly
+export OBS_WEBSOCKET_PASSWORD="<from OBS websocket server settings>"
+python3 tools/live-automation/obs_capture_source_watcher.py
+```
+
+`OBS_WEBSOCKET_HOST` defaults to `127.0.0.1`, which works when WSL2's
+localhost-forwarding reaches the Windows-side OBS listener (confirmed on
+pc-gamer-openclaw-01). On machines where that forwarding doesn't apply
+(confirmed on home-gpu-01/desktop-smdqcia — `127.0.0.1:4455` refuses the
+connection from WSL even though OBS listens on `0.0.0.0:4455`), set
+`OBS_WEBSOCKET_HOST` to the Windows host's own Tailscale IP instead
+(`tailscale status` on the Windows side, or `ipconfig`/`tailscale ip`).
+
+For a persistent user service:
+
+```ini
+[Unit]
+Description=Opsly OBS display-capture source watcher
+
+[Service]
+WorkingDirectory=%h/opsly
+Environment=OBS_WEBSOCKET_PASSWORD=REPLACE_ME
+ExecStart=/usr/bin/python3 tools/live-automation/obs_capture_source_watcher.py
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+```
+
+Save it as `~/.config/systemd/user/opsly-obs-capture-watcher.service`, then:
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now opsly-obs-capture-watcher
+systemctl --user status opsly-obs-capture-watcher
+```

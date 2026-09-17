@@ -937,6 +937,25 @@
       ]
     },
     {
+      "name": "opsly-gaming-clip-tools",
+      "version": "1.0.0",
+      "description": "Third-party gameplay-clip/auto-highlight software (Medal.tv, Overwolf/Outplayed, ShadowPlay) evaluated for Mauro's workflow — what's installed where, why the canonical pipeline stays Content OS.",
+      "category": "reference",
+      "priority": "medium",
+      "usage": "Evaluating Medal.tv/Overwolf/Outplayed for gameplay clips; deciding whether to route content through a third-party auto-publish tool instead of Content OS",
+      "path": "skills/user/opsly-gaming-clip-tools/",
+      "triggers": [
+        "medal.tv",
+        "medal",
+        "overwolf",
+        "outplayed",
+        "auto-clip",
+        "auto highlight",
+        "gaming clip software",
+        "shadowplay"
+      ]
+    },
+    {
       "name": "opsly-revenue-agent",
       "version": "1.0.0",
       "description": "Governed Revenue Agent for opportunity qualification, matching, attribution and commission reconciliation.",

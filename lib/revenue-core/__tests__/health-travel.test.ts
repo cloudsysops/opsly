@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { planHealthTravelRevenueEvent } from '../src/health-travel';
+import { planHealthTravelRevenueEvent } from '../src/health-travel.js';
 
 describe('planHealthTravelRevenueEvent', () => {
   it('creates attribution without inventing a provider for a new lead', () => {
