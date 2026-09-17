@@ -3,8 +3,10 @@
 # It loads the evaluator from the trusted base SHA and has only the minimum
 # write capability required to publish one commit status on the PR head.
 #
-# Repository administration must require the "opsly-independent-review"
-# status in branch protection/rulesets after this workflow lands.
+# Bot policy: only github-actions[bot] is trusted, and only because it is the
+# identity used by .github/workflows/backend-independent-review.yml running the
+# Opsly Open Review Agent from a trusted base checkout. Human OWNER/MEMBER/
+# COLLABORATOR approvals remain valid through the evaluator.
 
 name: Trusted independent review
 
@@ -14,7 +16,7 @@ on:
   pull_request_review:
     types: [submitted, dismissed]
   issue_comment:
-    types: [created, edited, deleted]
+    types: [deleted]
 
 permissions:
   contents: read
@@ -34,12 +36,7 @@ jobs:
       (
         github.event_name == 'issue_comment' &&
         github.event.issue.pull_request != null &&
-        (
-          github.event.action == 'deleted' ||
-          github.actor == 'chatgpt-codex-connector[bot]' ||
-          github.actor == 'github-copilot[bot]' ||
-          github.actor == 'copilot-pull-request-reviewer[bot]'
-        )
+        github.event.action == 'deleted'
       )
     runs-on: ubuntu-latest
     steps:
@@ -79,28 +76,23 @@ jobs:
           PR_NUMBER: ${{ steps.pr.outputs.number }}
           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
           PR_AUTHOR: ${{ steps.pr.outputs.author }}
-          # github-actions[bot] is trusted here specifically because it is only
-          # ever the poster for scripts/ci/backend-independent-review.mjs
-          # (.github/workflows/backend-independent-review.yml), which itself
-          # only runs the reviewer logic from the trusted base SHA and calls
-          # our own LLM Gateway over an ephemeral Tailscale join — never
-          # executes PR-head code. Do not add it here for any other purpose.
-          INDEPENDENT_REVIEW_BOTS: "chatgpt-codex-connector[bot],github-copilot[bot],copilot-pull-request-reviewer[bot],github-actions[bot]"
+          INDEPENDENT_REVIEW_BOTS: "github-actions[bot]"
         shell: bash
         run: |
           set -euo pipefail
 
-          # Bootstrap behavior: before this gate has landed on the base branch,
-          # do not execute a missing evaluator and do not fabricate a success.
-          # The workflow itself is therefore non-authoritative until main
-          # contains check-independent-review.mjs.
           if [ ! -f scripts/ci/check-independent-review.mjs ]; then
             echo "::error::Independent review evaluator is not present on trusted base SHA"
             exit 1
           fi
 
           set +e
-          node scripts/ci/check-independent-review.mjs             --repo "$GITHUB_REPOSITORY"             --pr "$PR_NUMBER"             --head "$HEAD_SHA"             --author "$PR_AUTHOR"             > independent-review.json 2>&1
+          node scripts/ci/check-independent-review.mjs \
+            --repo "$GITHUB_REPOSITORY" \
+            --pr "$PR_NUMBER" \
+            --head "$HEAD_SHA" \
+            --author "$PR_AUTHOR" \
+            > independent-review.json 2>&1
           rc=$?
           set -e
 
@@ -108,12 +100,16 @@ jobs:
 
           if [ "$rc" -eq 0 ]; then
             state="success"
-            description="Independent review verified for final head SHA"
+            description="Open-source independent review verified for final head SHA"
           else
             state="failure"
-            description="Independent review missing, stale, or has blocking findings"
+            description="Open-source independent review missing, stale, or blocking"
           fi
 
-          gh api --method POST             "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA"             -f state="$state"             -f context="opsly-independent-review"             -f description="$description"
+          gh api --method POST \
+            "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
+            -f state="$state" \
+            -f context="opsly-independent-review" \
+            -f description="$description"
 
           exit "$rc"
