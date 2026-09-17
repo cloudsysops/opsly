@@ -44,7 +44,6 @@ jobs:
 
       - name: Apply impact labels
         env:
-          GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           EVENT_PR: ${{ github.event.pull_request.number }}
@@ -53,34 +52,19 @@ jobs:
         run: |
           set -euo pipefail
 
-          classify_pr() {
-            local pr="$1"
-            [ -n "$pr" ] && [ "$pr" != "0" ] || return 0
-            echo "Classifying PR #$pr"
-            node scripts/ci/change-impact.mjs --pr "$pr"
-          }
-
           if [ -n "${EVENT_PR:-}" ]; then
-            classify_pr "$EVENT_PR"
+            node scripts/ci/change-impact.mjs --pr "$EVENT_PR"
             exit 0
           fi
 
           if [ -n "${INPUT_PR:-}" ] && [ "$INPUT_PR" != "0" ]; then
-            classify_pr "$INPUT_PR"
+            node scripts/ci/change-impact.mjs --pr "$INPUT_PR"
             exit 0
           fi
 
-          # Scheduled/manual backlog reconciliation. The classifier preserves
-          # non-managed state labels and rewrites only impact:/merge:/release:.
-          gh pr list \
-            --repo "$GITHUB_REPOSITORY" \
-            --state open \
-            --limit 100 \
-            --json number \
-            --jq '.[].number' |
-          while read -r pr; do
-            classify_pr "$pr"
-          done
+          # One process reconciles the complete open backlog. It ensures the
+          # managed labels once, then classifies each PR from its actual paths.
+          node scripts/ci/change-impact.mjs --all-open --json
 
       - name: Publish routing snapshot
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.pr == 0)
@@ -108,7 +92,7 @@ jobs:
               ($labels | map(select(startswith("merge:"))) | join(", ")) as $merge |
               ($labels | map(select(startswith("release:"))) | join(", ")) as $release |
               ($labels | map(select(startswith("state:") or startswith("stack:") or startswith("agent:"))) | join(", ")) as $state |
-              "| #\(.number) \(.title | gsub("\\|"; "/")) | `\(.baseRefName)` | \($impact // "") | \($merge // "") | \($release // "") | \(if .isDraft then "draft" else ($state // "") end) |"'
+              "| #\(.number) \(.title | gsub("\\|"; "/")) | `\(.baseRefName)` | \($impact) | \($merge) | \($release) | \(if .isDraft then "draft" else $state end) |"'
             echo
             echo '### Queue counts'
             echo "$snapshot" | jq -r '
