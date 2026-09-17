@@ -9,6 +9,10 @@ name: Auto-label governed night merge
 on:
   pull_request_target:
     types: [synchronize, opened, ready_for_review, labeled, unlabeled]
+  # Reconcile promptly when the independent-review commit status changes.
+  # Status events do not carry a PR number, so the job rechecks the bounded
+  # governed backlog using exact current head SHAs.
+  status: {}
   schedule:
     - cron: "0 */6 * * *"
   workflow_dispatch: {}
@@ -19,7 +23,7 @@ permissions:
   statuses: read
 
 concurrency:
-  group: auto-label-night-merge-${{ github.repository }}-${{ github.event.pull_request.number || 'schedule' }}
+  group: auto-label-night-merge-${{ github.repository }}-${{ github.event.pull_request.number || github.event.sha || 'schedule' }}
   cancel-in-progress: true
 
 jobs:
