@@ -28,6 +28,14 @@ permissions:
   contents: read
   packages: read
 
+env:
+  # Single source of truth: <docker-compose service>=<GHCR image suffix>.
+  # `app` intentionally runs the `intcloudsysops-api` image.
+  RELEASE_SERVICE_IMAGES: >-
+    app=api admin=admin portal=portal icso=icso mcp=mcp
+    llm-gateway=llm-gateway orchestrator=orchestrator hermes=hermes
+    context-builder=context-builder
+
 concurrency:
   group: production-release-promotion
   cancel-in-progress: false
@@ -75,10 +83,16 @@ jobs:
           RELEASE_SHA: ${{ steps.candidate.outputs.release_sha }}
         run: |
           set -euo pipefail
-          services=(api admin portal icso llm-gateway orchestrator hermes context-builder mcp)
-          for service in "${services[@]}"; do
-            image="ghcr.io/cloudsysops/intcloudsysops-${service}:${RELEASE_SHA}"
-            echo "Verifying ${image}"
+          read -r -a release_pairs <<< "$RELEASE_SERVICE_IMAGES"
+          for pair in "${release_pairs[@]}"; do
+            compose_service="${pair%%=*}"
+            image_service="${pair#*=}"
+            if [ -z "$compose_service" ] || [ -z "$image_service" ] || [ "$compose_service" = "$pair" ]; then
+              echo "Invalid RELEASE_SERVICE_IMAGES entry: $pair" >&2
+              exit 1
+            fi
+            image="ghcr.io/cloudsysops/intcloudsysops-${image_service}:${RELEASE_SHA}"
+            echo "Verifying compose service ${compose_service} -> ${image}"
             docker pull "$image" >/dev/null
           done
 
@@ -87,6 +101,7 @@ jobs:
           STAGING_API_URL: ${{ inputs.staging_api_url }}
         run: |
           set -euo pipefail
+          test -n "${STAGING_API_URL:-}" || { echo "staging_api_url is required" >&2; exit 1; }
           curl --fail --silent --show-error --max-time 15 \
             "${STAGING_API_URL%/}/api/health" >/dev/null
 
@@ -143,13 +158,14 @@ jobs:
           RELEASE_SHA: ${{ env.RELEASE_SHA }}
           GITHUB_DEPLOY_TOKEN: ${{ github.token }}
           GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          RELEASE_SERVICE_IMAGES: ${{ env.RELEASE_SERVICE_IMAGES }}
         with:
           host: ${{ env.VPS_TARGET_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 2m
           command_timeout: 30m
-          envs: RELEASE_SHA,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
+          envs: RELEASE_SHA,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,RELEASE_SERVICE_IMAGES
           script: |
             set -euo pipefail
             cd /opt/opsly
@@ -176,8 +192,19 @@ jobs:
             export CONTEXT_BUILDER_IMAGE_TAG="$RELEASE_SHA"
             export ICSO_APP_IMAGE="ghcr.io/cloudsysops/intcloudsysops-icso:${RELEASE_SHA}"
 
+            read -r -a release_pairs <<< "$RELEASE_SERVICE_IMAGES"
+            services=()
+            for pair in "${release_pairs[@]}"; do
+              compose_service="${pair%%=*}"
+              image_service="${pair#*=}"
+              if [ -z "$compose_service" ] || [ -z "$image_service" ] || [ "$compose_service" = "$pair" ]; then
+                echo "Invalid RELEASE_SERVICE_IMAGES entry: $pair" >&2
+                exit 1
+              fi
+              services+=("$compose_service")
+            done
+
             cd /opt/opsly/infra
-            services=(app admin portal icso mcp llm-gateway orchestrator hermes context-builder)
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull "${services[@]}"
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml \
               up -d --no-deps --force-recreate "${services[@]}"
@@ -191,6 +218,8 @@ jobs:
           ROLLBACK_ON_FAIL: ${{ inputs.rollback_on_fail }}
         run: |
           set -euo pipefail
+          test -n "${STAGING_API_URL:-}" || { echo "staging_api_url is required" >&2; exit 1; }
+          test -n "${PROD_API_URL:-}" || { echo "production_api_url is required" >&2; exit 1; }
           rollback_flag=()
           if [ "$ROLLBACK_ON_FAIL" = "true" ]; then
             rollback_flag=(--rollback-on-fail)
