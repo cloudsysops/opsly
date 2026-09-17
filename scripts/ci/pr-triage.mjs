@@ -42,7 +42,7 @@ export function isIgnoredCheck(name, patterns) {
   return patterns.some((pattern) => value.includes(normalize(pattern)));
 }
 
-export function classifyChecks(checkRuns, ignoredPatterns) {
+export function classifyChecks(checkRuns, ignoredPatterns, requiredChecks = []) {
   const relevant = (checkRuns ?? []).filter((run) => !isIgnoredCheck(run?.name, ignoredPatterns));
   if (relevant.length === 0) {
     return { state: 'unknown', failures: [], relevant };
@@ -64,7 +64,13 @@ export function classifyChecks(checkRuns, ignoredPatterns) {
     return { state: 'needs-fix', failures: terminalBad, relevant };
   }
 
-  return { state: 'ready', failures: [], relevant };
+  const observedNames = new Set(relevant.map((run) => normalize(run?.name)));
+  const missingRequired = requiredChecks.filter((name) => !observedNames.has(normalize(name)));
+  if (missingRequired.length > 0) {
+    return { state: 'pending', failures: [], relevant, missingRequired };
+  }
+
+  return { state: 'ready', failures: [], relevant, missingRequired: [] };
 }
 
 export function hasDoctorMarker(comments, headSha) {
@@ -167,7 +173,7 @@ async function triagePr(pr, policy, dryRun) {
   }
 
   const checks = await fetchChecks(pr.head.sha);
-  const classification = classifyChecks(checks, policy.ignored_check_patterns);
+  const classification = classifyChecks(checks, policy.ignored_check_patterns, policy.ready_required_checks ?? []);
 
   let desired = [];
   if (classification.state === 'needs-fix') {
