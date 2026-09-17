@@ -28,6 +28,14 @@ permissions:
   contents: read
   packages: read
 
+env:
+  # Single source of truth: <docker-compose service>=<GHCR image suffix>.
+  # `app` intentionally runs the `intcloudsysops-api` image.
+  RELEASE_SERVICE_IMAGES: >-
+    app=api admin=admin portal=portal icso=icso mcp=mcp
+    llm-gateway=llm-gateway orchestrator=orchestrator hermes=hermes
+    context-builder=context-builder
+
 concurrency:
   group: production-release-promotion
   cancel-in-progress: false
@@ -75,10 +83,16 @@ jobs:
           RELEASE_SHA: ${{ steps.candidate.outputs.release_sha }}
         run: |
           set -euo pipefail
-          services=(api admin portal icso llm-gateway orchestrator hermes context-builder mcp)
-          for service in "${services[@]}"; do
-            image="ghcr.io/cloudsysops/intcloudsysops-${service}:${RELEASE_SHA}"
-            echo "Verifying ${image}"
+          read -r -a release_pairs <<< "$RELEASE_SERVICE_IMAGES"
+          for pair in "${release_pairs[@]}"; do
+            compose_service="${pair%%=*}"
+            image_service="${pair#*=}"
+            if [ -z "$compose_service" ] || [ -z "$image_service" ] || [ "$compose_service" = "$pair" ]; then
+              echo "Invalid RELEASE_SERVICE_IMAGES entry: $pair" >&2
+              exit 1
+            fi
+            image="ghcr.io/cloudsysops/intcloudsysops-${image_service}:${RELEASE_SHA}"
+            echo "Verifying compose service ${compose_service} -> ${image}"
             docker pull "$image" >/dev/null
           done
 
@@ -87,6 +101,7 @@ jobs:
           STAGING_API_URL: ${{ inputs.staging_api_url }}
         run: |
           set -euo pipefail
+          test -n "${STAGING_API_URL:-}" || { echo "staging_api_url is required" >&2; exit 1; }
           curl --fail --silent --show-error --max-time 15 \
             "${STAGING_API_URL%/}/api/health" >/dev/null
 
@@ -101,6 +116,9 @@ jobs:
     env:
       RELEASE_SHA: ${{ needs.validate-candidate.outputs.release_sha }}
       TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      # One canonical host is used by validation, Tailscale probing and SSH.
+      # VPS_SSH_HOST is preferred for tailnet-only SSH; VPS_HOST is the fallback.
+      VPS_TARGET_HOST: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -108,8 +126,6 @@ jobs:
 
       - name: Validate required production access
         env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
@@ -117,13 +133,11 @@ jobs:
           set -euo pipefail
           test -n "${VPS_USER:-}" || { echo "Missing VPS_USER" >&2; exit 1; }
           test -n "${VPS_SSH_KEY:-}" || { echo "Missing VPS_SSH_KEY" >&2; exit 1; }
-          test -n "${VPS_SSH_HOST:-${VPS_HOST:-}}" || { echo "Missing VPS_SSH_HOST or VPS_HOST" >&2; exit 1; }
+          test -n "${VPS_TARGET_HOST:-}" || { echo "Missing VPS_SSH_HOST or VPS_HOST" >&2; exit 1; }
           test -n "${PLATFORM_DOMAIN:-}" || { echo "Missing PLATFORM_DOMAIN" >&2; exit 1; }
 
       - name: Detect Tailscale access
         id: tailscale
-        env:
-          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
         run: |
           if [ -n "${TAILSCALE_AUTHKEY:-}" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
@@ -136,7 +150,7 @@ jobs:
         uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
-          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
+          ping_host: ${{ env.VPS_TARGET_HOST }}
 
       - name: Promote immutable images on VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -144,13 +158,14 @@ jobs:
           RELEASE_SHA: ${{ env.RELEASE_SHA }}
           GITHUB_DEPLOY_TOKEN: ${{ github.token }}
           GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          RELEASE_SERVICE_IMAGES: ${{ env.RELEASE_SERVICE_IMAGES }}
         with:
-          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          host: ${{ env.VPS_TARGET_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 2m
           command_timeout: 30m
-          envs: RELEASE_SHA,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
+          envs: RELEASE_SHA,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,RELEASE_SERVICE_IMAGES
           script: |
             set -euo pipefail
             cd /opt/opsly
@@ -165,7 +180,6 @@ jobs:
               echo "Missing workflow GHCR credentials" >&2
               exit 1
             fi
-            docker logout ghcr.io 2>/dev/null || true
             echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
 
             export APP_IMAGE_TAG="$RELEASE_SHA"
@@ -178,8 +192,19 @@ jobs:
             export CONTEXT_BUILDER_IMAGE_TAG="$RELEASE_SHA"
             export ICSO_APP_IMAGE="ghcr.io/cloudsysops/intcloudsysops-icso:${RELEASE_SHA}"
 
+            read -r -a release_pairs <<< "$RELEASE_SERVICE_IMAGES"
+            services=()
+            for pair in "${release_pairs[@]}"; do
+              compose_service="${pair%%=*}"
+              image_service="${pair#*=}"
+              if [ -z "$compose_service" ] || [ -z "$image_service" ] || [ "$compose_service" = "$pair" ]; then
+                echo "Invalid RELEASE_SERVICE_IMAGES entry: $pair" >&2
+                exit 1
+              fi
+              services+=("$compose_service")
+            done
+
             cd /opt/opsly/infra
-            services=(app admin portal icso mcp llm-gateway orchestrator hermes context-builder)
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull "${services[@]}"
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml \
               up -d --no-deps --force-recreate "${services[@]}"
@@ -193,6 +218,8 @@ jobs:
           ROLLBACK_ON_FAIL: ${{ inputs.rollback_on_fail }}
         run: |
           set -euo pipefail
+          test -n "${STAGING_API_URL:-}" || { echo "staging_api_url is required" >&2; exit 1; }
+          test -n "${PROD_API_URL:-}" || { echo "production_api_url is required" >&2; exit 1; }
           rollback_flag=()
           if [ "$ROLLBACK_ON_FAIL" = "true" ]; then
             rollback_flag=(--rollback-on-fail)
