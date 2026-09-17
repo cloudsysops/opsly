@@ -5,6 +5,7 @@ import {
   healthTravelOfferIdentity,
   healthTravelPackageTypeToOfferType,
   healthTravelProviderTypeToPartnerType,
+  isSmileTripCareOwnedMetadata,
   shouldPauseSyncedOffer,
   shouldPauseSyncedProvider,
 } from '../health-travel-catalog-sync';
@@ -49,6 +50,23 @@ describe('Health Travel catalog sync contract', () => {
     });
     expect(patch).not.toHaveProperty('price_from');
     expect(patch).not.toHaveProperty('price_to');
+  });
+
+  it('recognizes only explicit SmileTripCare metadata ownership', () => {
+    expect(isSmileTripCareOwnedMetadata({ source_system: 'smile-trip-care' })).toBe(true);
+    expect(isSmileTripCareOwnedMetadata({ source_system: 'manual' })).toBe(false);
+    expect(isSmileTripCareOwnedMetadata({})).toBe(false);
+    expect(isSmileTripCareOwnedMetadata(null)).toBe(false);
+  });
+
+  it('never treats unrelated metadata as catalog ownership', () => {
+    expect(
+      isSmileTripCareOwnedMetadata({
+        source_system: 'opsly-manual',
+        source_provider_type: 'clinic',
+        city: 'Medellin',
+      })
+    ).toBe(false);
   });
 
   it('pauses only stale source-synced providers', () => {
