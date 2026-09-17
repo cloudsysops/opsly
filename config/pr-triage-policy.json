@@ -47,5 +47,16 @@
     "state:ready",
     "state:needs-fix",
     "agent:working"
+  ],
+  "ready_required_checks": [
+    "Structure Integrity / validate-structure",
+    "Workflow Lint",
+    "lint",
+    "test-unit",
+    "test-integration",
+    "build",
+    "scripts-check",
+    "secret-scan",
+    "Trivy Security Scan"
   ]
 }
