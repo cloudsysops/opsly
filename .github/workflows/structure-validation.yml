@@ -29,6 +29,9 @@ jobs:
       - name: Enforce staging-first release boundary
         run: node scripts/ci/check-release-boundary.mjs
 
+      - name: Validate same-digest parity inventory contracts
+        run: node --test scripts/ci/__tests__/release-artifact-parity.test.mjs
+
       - name: Report results
         if: failure()
         run: |
