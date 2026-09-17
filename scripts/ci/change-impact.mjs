@@ -137,7 +137,7 @@ export function classifyChangeImpact(paths) {
 }
 
 async function gh(pathname, { method = 'GET', body } = {}) {
-  if (!TOKEN) throw new Error('GITHUB_TOKEN/GH_TOKEN is required for --pr mode');
+  if (!TOKEN) throw new Error('GITHUB_TOKEN/GH_TOKEN is required for --pr/--all-open mode');
   const response = await fetch(`https://api.github.com/${pathname}`, {
     method,
     headers: {
@@ -173,12 +173,22 @@ async function prPaths(prNumber) {
   return files;
 }
 
+async function openPrNumbers() {
+  const numbers = [];
+  for (let page = 1; page <= 5; page += 1) {
+    const chunk = await gh(`repos/${REPO}/pulls?state=open&per_page=100&page=${page}`);
+    numbers.push(...chunk.map((pr) => pr.number));
+    if (chunk.length < 100) break;
+  }
+  return numbers;
+}
+
 function isManagedLabel(name) {
   return MANAGED_LABEL_PREFIXES.some((prefix) => name.startsWith(prefix));
 }
 
-async function applyPr(prNumber) {
-  await ensureLabels();
+async function applyPr(prNumber, { ensure = true } = {}) {
+  if (ensure) await ensureLabels();
   const [issue, paths] = await Promise.all([
     gh(`repos/${REPO}/issues/${prNumber}`),
     prPaths(prNumber),
@@ -191,9 +201,10 @@ async function applyPr(prNumber) {
 }
 
 function parseArgs(argv) {
-  const args = { pr: null, paths: [], json: false };
+  const args = { pr: null, allOpen: false, paths: [], json: false };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--pr') args.pr = Number(argv[++i]);
+    else if (argv[i] === '--all-open') args.allOpen = true;
     else if (argv[i] === '--json') args.json = true;
     else if (argv[i] === '--paths') args.paths.push(...argv.slice(i + 1));
   }
@@ -202,8 +213,22 @@ function parseArgs(argv) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const result = args.pr ? await applyPr(args.pr) : classifyChangeImpact(args.paths);
-  console.log(args.json || args.pr ? JSON.stringify(result, null, 2) : result.labels.join('\n'));
+  let result;
+
+  if (args.allOpen) {
+    await ensureLabels();
+    const results = [];
+    for (const prNumber of await openPrNumbers()) {
+      results.push(await applyPr(prNumber, { ensure: false }));
+    }
+    result = results;
+  } else if (args.pr) {
+    result = await applyPr(args.pr);
+  } else {
+    result = classifyChangeImpact(args.paths);
+  }
+
+  console.log(args.json || args.pr || args.allOpen ? JSON.stringify(result, null, 2) : result.labels.join('\n'));
 }
 
 if (import.meta.url === new URL(`file://${process.argv[1]}`).href) {
