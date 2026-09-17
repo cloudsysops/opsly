@@ -21,7 +21,7 @@ export interface ProviderDefinition {
 }
 
 const ollamaBase = process.env.OLLAMA_URL ?? 'http://localhost:11434';
-const ollamaCodeModel = process.env.OLLAMA_CODE_MODEL?.trim() || 'codellama:7b';
+const ollamaCodeModel = process.env.OLLAMA_CODE_MODEL?.trim() || 'qwen2.5-coder:7b';
 const openRouterBase = 'https://openrouter.ai/api/v1';
 const deepseekBase = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com/v1').replace(/\/$/, '');
 const deepseekModel =
@@ -84,6 +84,18 @@ export const PROVIDERS = {
     healthKey: 'llama_local',
   },
   /**
+   * Apache-2.0 local coding model used by the Opsly Open Review Agent.
+   * Override with OLLAMA_CODE_MODEL only to another approved local model.
+   */
+  qwen_coder_local: {
+    model: ollamaCodeModel,
+    kind: 'ollama',
+    cost_per_1k_input: 0,
+    cost_per_1k_output: 0,
+    baseUrl: ollamaBase.replace(/\/$/, ''),
+    healthKey: 'llama_local',
+  },
+  /**
    * DeepSeek (API compatible OpenAI). Modelo por defecto V4 Flash.
    * Override: `DEEPSEEK_MODEL`, base: `DEEPSEEK_BASE_URL`.
    */
@@ -104,12 +116,12 @@ export const PROVIDERS = {
     healthKey: 'deepseek',
   },
   codellama_local: {
-    model: ollamaCodeModel,
+    model: 'codellama:7b',
     kind: 'ollama',
     cost_per_1k_input: 0,
     cost_per_1k_output: 0,
     baseUrl: ollamaBase.replace(/\/$/, ''),
-    healthKey: 'codellama_local',
+    healthKey: 'llama_local',
   },
   openrouter_cheap: {
     model: 'mistralai/mistral-7b-instruct-v0.1',
@@ -251,7 +263,7 @@ export function getProvidersByPreference(preference: RoutingPreference): Provide
   }
   if (preference === 'code') {
     const tail = ds ? [e('deepseek_chat')] : [];
-    return [e('codellama_local'), e('gpt4o'), ...tail, e('llama_local')];
+    return [e('qwen_coder_local'), e('codellama_local'), e('gpt4o'), ...tail, e('llama_local')];
   }
   const nv = nvidiaChainEntry();
   if (ds) {
