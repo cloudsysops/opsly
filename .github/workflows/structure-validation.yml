@@ -29,6 +29,9 @@ jobs:
       - name: Enforce staging-first release boundary
         run: node scripts/ci/check-release-boundary.mjs
 
+      - name: Validate immutable rollback-plan contracts
+        run: node --test scripts/deploy/__tests__/release-rollback-plan.test.mjs
+
       - name: Report results
         if: failure()
         run: |
