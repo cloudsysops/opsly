@@ -42,6 +42,7 @@
 'use strict';
 
 import { evaluateIndependentReview } from './check-independent-review.mjs';
+import { buildFileAwareReviewContext } from './backend-review-context.mjs';
 
 const REPO = process.env.OPSLY_GITHUB_REPO ?? 'cloudsysops/opsly';
 // Dos identidades posibles para postear la review (nunca el autor del PR):
@@ -64,9 +65,6 @@ const GATEWAY_URL = process.env.LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
 const TENANT_SLUG = process.env.OPSLY_REVIEW_TENANT ?? 'opsly-ci-review';
 
 const CLEAN_PHRASE = "Codex Review: Didn't find any major issues.";
-// LLM Gateway /v1/text rejects prompts above 16k chars. Keep enough margin for
-// system instructions + PR/check metadata so large PRs are still reviewable.
-const MAX_REVIEW_DIFF_CHARS = 10_000;
 
 function parseArgs(argv) {
   const out = { dryRun: false, pr: null, limit: 5 };
@@ -128,22 +126,9 @@ async function alreadyReviewed(pr, token) {
   });
 }
 
-async function fetchDiff(pr, token) {
-  const resp = await fetch(`https://api.github.com/repos/${REPO}/pulls/${pr.number}`, {
-    headers: {
-      Accept: 'application/vnd.github.v3.diff',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  if (!resp.ok) throw new Error(`diff fetch failed: ${resp.status}`);
-  const text = await resp.text();
-  // The gateway hard-fails above 16k chars. Bound only the diff portion and
-  // leave margin for review instructions / PR metadata. The reviewer remains
-  // fail-closed; truncation is explicit in the prompt instead of turning a
-  // large PR into an infrastructure failure.
-  return text.length > MAX_REVIEW_DIFF_CHARS
-    ? `${text.slice(0, MAX_REVIEW_DIFF_CHARS)}\n\n[...diff truncado por presupuesto de review...]`
-    : text;
+async function fetchReviewContext(pr, token) {
+  const files = await fetchAll(`repos/${REPO}/pulls/${pr.number}/files`, token);
+  return buildFileAwareReviewContext(files);
 }
 
 /**
@@ -159,7 +144,11 @@ async function fetchDiff(pr, token) {
 async function reviewWithGateway({ pr, diff, failingChecks }) {
   const system = [
     'Eres el revisor independiente de Opsly (monorepo cloudsysops/opsly).',
-    'Revisa el diff de un PR generado por un agente autónomo.',
+    'Revisa el contexto de cambios de un PR generado por un agente autónomo.',
+    'El contexto está separado por archivo y puede contener marcadores de omisión del centro',
+    'de un patch para respetar el presupuesto del gateway. Esos marcadores describen el prompt,',
+    'NO son código del repositorio y NO deben reportarse como P0/P1/P2. Evalúa solo defectos',
+    'demostrables en el código visible; si falta evidencia para una conclusión, no inventes el defecto.',
     'Responde EXACTAMENTE en uno de estos dos formatos, sin nada más:',
     `1) Si no hay problemas bloqueantes: la línea literal "${CLEAN_PHRASE}"`,
     '2) Si hay problemas: una lista con severidad "P0 <hallazgo>", "P1 <hallazgo>" o',
@@ -175,7 +164,7 @@ async function reviewWithGateway({ pr, diff, failingChecks }) {
       ? `Checks de CI en rojo ahora mismo: ${failingChecks.join(', ')}`
       : 'Checks de CI: sin fallas registradas al momento de revisar.',
     '',
-    '--- DIFF ---',
+    '--- FILE-AWARE REVIEW CONTEXT ---',
     diff,
   ].join('\n');
 
@@ -296,7 +285,7 @@ async function main() {
     let verdict;
     try {
       const [diff, failing] = await Promise.all([
-        fetchDiff(pr, READ_TOKEN),
+        fetchReviewContext(pr, READ_TOKEN),
         failingCheckNames(pr, READ_TOKEN),
       ]);
       verdict = await reviewWithGateway({ pr, diff, failingChecks: failing });
