@@ -8,12 +8,12 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const result = await syncHealthTravelCatalog();
     return Response.json({ ok: true, ...result });
-  } catch (error) {
+  } catch {
+    // Fail closed without returning upstream/DB/provider details to the caller.
     return Response.json(
       {
         ok: false,
         error: 'Health Travel catalog sync failed',
-        detail: error instanceof Error ? error.message : String(error),
       },
       { status: 502 }
     );
