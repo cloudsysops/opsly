@@ -26,6 +26,9 @@ export function supersededNumbers(body) {
   for (const rawLine of String(body ?? '').split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!/\b(?:supersedes?|replaces?)\b/i.test(line)) continue;
+    // Fail closed on explicitly ambiguous alternatives. "Supersedes #1 and #2"
+    // is deterministic; "Supersedes #1 or #2" is not.
+    if (/\bor\b/i.test(line)) continue;
     for (const match of line.matchAll(/#(\d+)/g)) found.add(Number(match[1]));
   }
   return [...found].filter((number) => Number.isInteger(number) && number > 0);
