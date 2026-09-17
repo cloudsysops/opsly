@@ -19,21 +19,20 @@ Run:
 node scripts/ci/check-release-artifact-parity.mjs --json
 ```
 
-The auditor reports build-time environment coupling for API, Admin and Portal. `--enforce` intentionally remains red until every blocker is removed.
+`--enforce` intentionally remains red until every blocker is removed.
 
-### API
+### API — READY
 
-- `PLATFORM_DOMAIN`
-- `NEXT_PUBLIC_ADMIN_URL`
+API build-time domain coupling is removed. `apps/api/lib/cors-origins.ts` resolves allowed origins at request/runtime and the platform compose already loads `/opt/opsly/.env` into the API container. No CORS wildcard or auth relaxation was introduced.
 
-### Admin
+### Admin — 4 blockers
 
 - `NEXT_PUBLIC_ADMIN_PUBLIC_DEMO`
 - `NEXT_PUBLIC_API_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_SUPABASE_URL`
 
-### Portal
+### Portal — 5 blockers
 
 - `NEXT_PUBLIC_API_URL`
 - `NEXT_PUBLIC_PLATFORM_DOMAIN`
@@ -41,9 +40,11 @@ The auditor reports build-time environment coupling for API, Admin and Portal. `
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPPORT_EMAIL`
 
+Total remaining blockers: **9**.
+
 ## Execution order
 
-1. Remove API build-time domain coupling by resolving CORS/public origins from runtime configuration without widening auth/CORS semantics.
+1. ✅ Remove API build-time domain coupling without widening auth/CORS semantics.
 2. Introduce one canonical public runtime-config contract for Admin/Portal. It may expose only values already intended to be public (API base URL, Supabase public URL/anon key, support email, public domain, demo flag where policy allows).
 3. Migrate Admin consumers to the runtime contract without changing session/auth behavior.
 4. Migrate Portal consumers to the same contract without changing session/auth behavior.
