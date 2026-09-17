@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, truncateSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -42,6 +42,22 @@ describe('TikTokPublisher', () => {
         privacy_level: 'SELF_ONLY',
       })
     ).rejects.toThrow();
+  });
+
+  it('fails closed above the 64 MB single-chunk ceiling without network calls', async () => {
+    const oversizedPath = join(dir, 'oversized.mp4');
+    truncateSync(oversizedPath, 64 * 1024 * 1024 + 1);
+
+    const publisher = new TikTokPublisher(validCredentials);
+    await expect(
+      publisher.publish({
+        file_path: oversizedPath,
+        title: 'too large',
+        privacy_level: 'SELF_ONLY',
+      })
+    ).rejects.toThrow(/single-chunk upload limit exceeded/);
+
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('publishes and returns a publish_id on success', async () => {
