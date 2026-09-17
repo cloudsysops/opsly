@@ -217,7 +217,7 @@
     "content:astral:chapter1:plan": "node scripts/content/astral-chapter1-plan.mjs",
     "content:astral:chapter1:plan:json": "node scripts/content/astral-chapter1-plan.mjs --json",
     "game:astral:ui:contract": "node scripts/games/validate-games-lab-ui-contract.mjs",
-    "game:astral:ui:smoke": "playwright test --config=playwright.games-lab.config.ts"
+    "game:astral:ui:smoke": "playwright test --config=tools/games-lab/playwright.config.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
