@@ -103,32 +103,54 @@ function replacementEvidence(closedPulls) {
 }
 
 async function markSuperseded(target, replacement, dryRun) {
-  const decision = closeDecision({ target, replacement });
-  const result = {
+  let decision = closeDecision({ target, replacement });
+  let result = {
     target: target.number,
     replacement: replacement.number,
     close: decision.close,
     reasons: decision.reasons,
+    revalidated: false,
   };
   if (!decision.close || dryRun) return result;
 
-  const currentLabels = (target.labels ?? []).map((label) => label.name);
+  // Re-read both sides immediately before mutation. The backlog scan is only
+  // discovery evidence; it must never authorize a close after labels/state or
+  // timestamps changed while this run was waiting to process the candidate.
+  const [freshTarget, freshReplacement] = await Promise.all([
+    gh(`repos/${REPO}/pulls/${target.number}`),
+    gh(`repos/${REPO}/pulls/${replacement.number}`),
+  ]);
+  decision = closeDecision({ target: freshTarget, replacement: freshReplacement });
+  result = {
+    target: freshTarget.number,
+    replacement: freshReplacement.number,
+    close: decision.close,
+    reasons: decision.reasons,
+    revalidated: true,
+  };
+  if (!decision.close) return result;
+
+  // Close first after the fresh fail-closed decision. Label/comment annotation
+  // follows so our own issue mutations cannot make the target appear newly
+  // updated and invalidate the decision we just re-read.
+  await gh(`repos/${REPO}/pulls/${freshTarget.number}`, {
+    method: 'PATCH',
+    body: { state: 'closed' },
+  });
+
+  const currentLabels = (freshTarget.labels ?? []).map((label) => label.name);
   if (!currentLabels.includes('state:superseded')) {
-    await gh(`repos/${REPO}/issues/${target.number}/labels`, {
+    await gh(`repos/${REPO}/issues/${freshTarget.number}/labels`, {
       method: 'POST',
       body: { labels: ['state:superseded'] },
     });
   }
 
-  await gh(`repos/${REPO}/issues/${target.number}/comments`, {
+  await gh(`repos/${REPO}/issues/${freshTarget.number}/comments`, {
     method: 'POST',
     body: {
-      body: `Backlog Janitor: closing as superseded by merged PR #${replacement.number}. Evidence is the explicit \`Supersedes #${target.number}\`/replacement reference in that merged PR. No branch deletion or code mutation performed.`,
+      body: `Backlog Janitor: closed as superseded by merged PR #${freshReplacement.number}. Evidence is the explicit \`Supersedes #${freshTarget.number}\`/replacement reference in that merged PR. The target and replacement were re-read immediately before closure. No branch deletion or code mutation performed.`,
     },
-  });
-  await gh(`repos/${REPO}/pulls/${target.number}`, {
-    method: 'PATCH',
-    body: { state: 'closed' },
   });
   return result;
 }
