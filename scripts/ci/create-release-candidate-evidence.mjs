@@ -93,11 +93,13 @@ export function buildReleaseCandidateEvidence(env = process.env) {
     }
   }
 
+  const externalGatesBound = env.EXTERNAL_GATES_BOUND === 'true';
+
   if (env.MIGRATION_SAFE_FOR_PROMOTION !== 'true') {
     blockers.push('migration_safety_not_bound');
   }
 
-  if (env.EXTERNAL_GATES_BOUND !== 'true') {
+  if (!externalGatesBound) {
     blockers.push('ci_security_independent_review_not_bound');
   }
 
@@ -119,12 +121,11 @@ export function buildReleaseCandidateEvidence(env = process.env) {
     staging_run_id: stagingRunId,
     artifacts,
     gates: {
-      ci: env.EXTERNAL_GATES_BOUND === 'true' ? 'passed' : 'not_required',
-      security: env.EXTERNAL_GATES_BOUND === 'true' ? 'passed' : 'not_required',
+      ci: externalGatesBound ? 'passed' : 'pending',
+      security: externalGatesBound ? 'passed' : 'pending',
       staging_health: 'passed',
       e2e: 'passed',
-      independent_verification:
-        env.EXTERNAL_GATES_BOUND === 'true' ? 'passed' : 'not_required',
+      independent_verification: externalGatesBound ? 'passed' : 'pending',
     },
     migration: {
       requires_approval: env.MIGRATION_REQUIRES_APPROVAL === 'true',
