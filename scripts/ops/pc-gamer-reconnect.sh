@@ -96,7 +96,7 @@ start_machine_claim_heartbeat() {
       sleep "$interval"
       if ! node "$SCRIPT_DIR/machine-claim.mjs" acquire --machine "$MACHINE_CLAIM_NAME" --holder "$MACHINE_CLAIM_HOLDER" --ttl "$MACHINE_CLAIM_TTL" >/dev/null; then
         echo "[reconnect] ERROR: lost machine claim for $MACHINE_CLAIM_NAME; refusing further work" >&2
-        kill -TERM "$" 2>/dev/null || true
+        kill -TERM "$$" 2>/dev/null || true
         exit 1
       fi
     done
