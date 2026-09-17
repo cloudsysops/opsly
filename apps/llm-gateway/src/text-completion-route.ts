@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
-import { GatewayHttpError, llmCallDirect } from './llm-direct.js';
+import { completeWithProviderId, GatewayHttpError, llmCallDirect } from './llm-direct.js';
 import type { RoutingBias } from './routing-hints.js';
 import type { LLMRequest, LlmProviderHint, TenantPlan } from './types.js';
 import { parseProviderHintBody } from './parse-provider-hint.js';
@@ -65,8 +65,11 @@ function parseUsageMetadataField(v: unknown): Record<string, unknown> | undefine
 }
 
 /**
- * Completado de texto vía `llmCallDirect` (cadena cheap → Ollama local si está sano).
- * No parsea JSON de planner; uso interno orchestrator / demos.
+ * Completado de texto interno.
+ *
+ * `provider_hint=ollama-code` es una ruta local estricta: llama directamente al
+ * provider `codellama_local` y no entra a ninguna cadena cloud. Las demás
+ * solicitudes conservan la política de `llmCallDirect` y el perfil del tenant.
  */
 export async function handleTextCompletionHttp(
   req: IncomingMessage,
@@ -165,7 +168,7 @@ export async function handleTextCompletionHttp(
     messages: [{ role: 'user', content: userContent }],
     ...(systemText !== undefined ? { system: systemText } : {}),
     legacy_pipeline: true,
-    model: 'cheap',
+    model: providerHint === 'ollama-code' ? 'code' : 'cheap',
     routing_bias: routingBias ?? 'cost',
     ...(providerHint !== undefined ? { provider_hint: providerHint } : {}),
     max_tokens: 1024,
@@ -177,7 +180,9 @@ export async function handleTextCompletionHttp(
   };
 
   try {
-    const out = await llmCallDirect(llmReq);
+    const out = providerHint === 'ollama-code'
+      ? await completeWithProviderId('codellama_local', llmReq)
+      : await llmCallDirect(llmReq);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
