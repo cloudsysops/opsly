@@ -1,0 +1,383 @@
+# Opsly — exact-SHA QA/staging execution for ReleaseCandidateV1 evidence.
+# This workflow never activates production and never moves the divergent staging branch.
+name: Stage Release Candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: "Full 40-character commit SHA already contained in main"
+        required: true
+        type: string
+      product:
+        description: "ReleaseCandidateV1 product identifier"
+        required: false
+        default: "opsly-platform"
+        type: string
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: qa-release-candidate
+  cancel-in-progress: true
+
+jobs:
+  validate-candidate:
+    name: Validate exact main candidate
+    runs-on: ubuntu-latest
+    outputs:
+      release_sha: ${{ steps.candidate.outputs.release_sha }}
+      staging_image_tag: ${{ steps.candidate.outputs.staging_image_tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate candidate SHA ancestry
+        id: candidate
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "release_sha must be a full 40-character lowercase commit SHA" >&2
+            exit 1
+          fi
+          git fetch origin main --no-tags
+          git cat-file -e "${RELEASE_SHA}^{commit}"
+          if ! git merge-base --is-ancestor "$RELEASE_SHA" origin/main; then
+            echo "Refusing QA candidate: $RELEASE_SHA is not contained in origin/main" >&2
+            exit 1
+          fi
+          echo "release_sha=$RELEASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "staging_image_tag=${RELEASE_SHA}-staging" >> "$GITHUB_OUTPUT"
+
+  build-staging-candidate:
+    name: Build exact SHA with staging-only config
+    needs: validate-candidate
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      packages: write
+    env:
+      RELEASE_SHA: ${{ needs.validate-candidate.outputs.release_sha }}
+      STAGING_IMAGE_TAG: ${{ needs.validate-candidate.outputs.staging_image_tag }}
+      STAGING_PLATFORM_DOMAIN: ${{ secrets.STAGING_PLATFORM_DOMAIN }}
+      STAGING_NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
+      STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      PROD_NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPPORT_EMAIL: ${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Validate isolated staging config
+        run: |
+          set -euo pipefail
+          for key in STAGING_PLATFORM_DOMAIN STAGING_NEXT_PUBLIC_SUPABASE_URL STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY; do
+            if [ -z "${!key:-}" ]; then
+              echo "Missing required staging secret: $key" >&2
+              exit 1
+            fi
+          done
+          if [ -n "${PROD_NEXT_PUBLIC_SUPABASE_URL:-}" ] && [ "$STAGING_NEXT_PUBLIC_SUPABASE_URL" = "$PROD_NEXT_PUBLIC_SUPABASE_URL" ]; then
+            echo "Refusing QA candidate: staging Supabase URL matches production" >&2
+            exit 1
+          fi
+
+      - name: Build and push exact-SHA staging images
+        run: |
+          set -euo pipefail
+          registry="ghcr.io/cloudsysops"
+
+          docker buildx build --push -f apps/api/Dockerfile \
+            -t "$registry/intcloudsysops-api:$STAGING_IMAGE_TAG" \
+            --build-arg "PLATFORM_DOMAIN=$STAGING_PLATFORM_DOMAIN" .
+
+          docker buildx build --push -f apps/admin/Dockerfile \
+            -t "$registry/intcloudsysops-admin:$STAGING_IMAGE_TAG" \
+            --build-arg "NEXT_PUBLIC_SUPABASE_URL=$STAGING_NEXT_PUBLIC_SUPABASE_URL" \
+            --build-arg "NEXT_PUBLIC_SUPABASE_ANON_KEY=$STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY" \
+            --build-arg "NEXT_PUBLIC_API_URL=https://api.$STAGING_PLATFORM_DOMAIN" \
+            --build-arg "NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false" .
+
+          docker buildx build --push -f apps/portal/Dockerfile \
+            -t "$registry/intcloudsysops-portal:$STAGING_IMAGE_TAG" \
+            --build-arg "NEXT_PUBLIC_SUPABASE_URL=$STAGING_NEXT_PUBLIC_SUPABASE_URL" \
+            --build-arg "NEXT_PUBLIC_SUPABASE_ANON_KEY=$STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY" \
+            --build-arg "NEXT_PUBLIC_API_URL=https://api.$STAGING_PLATFORM_DOMAIN" \
+            --build-arg "NEXT_PUBLIC_SUPPORT_EMAIL=$NEXT_PUBLIC_SUPPORT_EMAIL" \
+            --build-arg "NEXT_PUBLIC_PLATFORM_DOMAIN=$STAGING_PLATFORM_DOMAIN" .
+
+          docker buildx build --push -f apps/icso/Dockerfile \
+            -t "$registry/intcloudsysops-icso:$STAGING_IMAGE_TAG" \
+            --build-arg "NEXT_PUBLIC_SITE_URL=https://intcloudsysops.com" .
+
+          docker buildx build --push -f apps/llm-gateway/Dockerfile \
+            -t "$registry/intcloudsysops-llm-gateway:$STAGING_IMAGE_TAG" .
+          docker buildx build --push -f apps/orchestrator/Dockerfile \
+            -t "$registry/intcloudsysops-orchestrator:$STAGING_IMAGE_TAG" .
+          docker buildx build --push -f Dockerfile.hermes \
+            -t "$registry/intcloudsysops-hermes:$STAGING_IMAGE_TAG" .
+          docker buildx build --push -f apps/context-builder/Dockerfile \
+            -t "$registry/intcloudsysops-context-builder:$STAGING_IMAGE_TAG" .
+          docker buildx build --push -f apps/mcp/Dockerfile \
+            -t "$registry/intcloudsysops-mcp:$STAGING_IMAGE_TAG" .
+
+      - name: Resolve immutable staging digests
+        run: |
+          set -euo pipefail
+          digests='{}'
+          for service in api admin portal icso llm-gateway orchestrator hermes context-builder mcp; do
+            image="ghcr.io/cloudsysops/intcloudsysops-${service}:${STAGING_IMAGE_TAG}"
+            docker pull "$image" >/dev/null
+            repo_digest="$(docker image inspect --format '{{index .RepoDigests 0}}' "$image")"
+            digest="${repo_digest##*@}"
+            if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+              echo "Could not resolve immutable digest for $image" >&2
+              exit 1
+            fi
+            digests="$(jq --arg service "$service" --arg digest "$digest" '. + {($service): $digest}' <<<"$digests")"
+          done
+          printf '%s\n' "$digests" > staging-digests.json
+
+      - name: Upload staging digest evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-digests-${{ env.RELEASE_SHA }}
+          path: staging-digests.json
+          if-no-files-found: error
+          retention-days: 30
+
+  deploy-staging-candidate:
+    name: Deploy exact candidate to staging only
+    needs:
+      - validate-candidate
+      - build-staging-candidate
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      packages: read
+    env:
+      RELEASE_SHA: ${{ needs.validate-candidate.outputs.release_sha }}
+      STAGING_IMAGE_TAG: ${{ needs.validate-candidate.outputs.staging_image_tag }}
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      STAGING_PLATFORM_DOMAIN: ${{ secrets.STAGING_PLATFORM_DOMAIN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+
+      - name: Validate required staging access
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "${VPS_USER:-}" || { echo "Missing VPS_USER" >&2; exit 1; }
+          test -n "${VPS_SSH_KEY:-}" || { echo "Missing VPS_SSH_KEY" >&2; exit 1; }
+          test -n "${VPS_SSH_HOST:-${VPS_HOST:-}}" || { echo "Missing VPS_SSH_HOST or VPS_HOST" >&2; exit 1; }
+          test -n "${STAGING_PLATFORM_DOMAIN:-}" || { echo "Missing STAGING_PLATFORM_DOMAIN" >&2; exit 1; }
+
+      - name: Detect Tailscale access
+        id: tailscale
+        run: |
+          if [ -n "${TAILSCALE_AUTHKEY:-}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Connect Tailscale for staging SSH
+        if: steps.tailscale.outputs.enabled == 'true'
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
+
+      - name: Deploy exact SHA candidate via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          RELEASE_SHA: ${{ env.RELEASE_SHA }}
+          STAGING_IMAGE_TAG: ${{ env.STAGING_IMAGE_TAG }}
+          STAGING_PLATFORM_DOMAIN: ${{ env.STAGING_PLATFORM_DOMAIN }}
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 30m
+          envs: RELEASE_SHA,STAGING_IMAGE_TAG,STAGING_PLATFORM_DOMAIN,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
+          script: |
+            set -euo pipefail
+            DEPLOY_PATH=/opt/opsly-staging
+            REPO_URL=git@github.com:cloudsysops/opsly.git
+
+            mkdir -p "$(dirname "$DEPLOY_PATH")"
+            if [ ! -d "$DEPLOY_PATH/.git" ]; then
+              git clone "$REPO_URL" "$DEPLOY_PATH"
+            fi
+
+            cd "$DEPLOY_PATH"
+            git fetch origin main --no-tags
+            git cat-file -e "${RELEASE_SHA}^{commit}"
+            git checkout --detach "$RELEASE_SHA"
+
+            export APP_IMAGE_TAG="$STAGING_IMAGE_TAG"
+            export ADMIN_IMAGE_TAG="$STAGING_IMAGE_TAG"
+            export PORTAL_IMAGE_TAG="$STAGING_IMAGE_TAG"
+            export MCP_IMAGE_TAG="$STAGING_IMAGE_TAG"
+            export LLM_GATEWAY_IMAGE_TAG="$STAGING_IMAGE_TAG"
+            export ORCHESTRATOR_IMAGE_TAG="$STAGING_IMAGE_TAG"
+            export HERMES_IMAGE_TAG="$STAGING_IMAGE_TAG"
+            export CONTEXT_BUILDER_IMAGE_TAG="$STAGING_IMAGE_TAG"
+            export ICSO_APP_IMAGE="ghcr.io/cloudsysops/intcloudsysops-icso:${STAGING_IMAGE_TAG}"
+
+            cd "$DEPLOY_PATH/infra"
+            docker logout ghcr.io 2>/dev/null || true
+            echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
+
+            services=(app admin portal icso mcp llm-gateway orchestrator hermes context-builder)
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml pull "${services[@]}"
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml \
+              up -d --no-deps --force-recreate "${services[@]}"
+
+            sleep 30
+            for i in 1 2 3 4 5 6; do
+              if curl -sfk --max-time 15 "https://api.${STAGING_PLATFORM_DOMAIN}/api/health" >/dev/null; then
+                echo "Staging health OK for exact candidate ${RELEASE_SHA}"
+                exit 0
+              fi
+              echo "Staging health attempt ${i}/6 failed"
+              sleep 15
+            done
+            echo "Staging candidate health failed" >&2
+            exit 1
+
+      - name: Staging E2E dry-run
+        run: |
+          set -euo pipefail
+          bash scripts/test-e2e-invite-flow.sh \
+            --api-url "https://api.${STAGING_PLATFORM_DOMAIN}" \
+            --dry-run
+
+  release-candidate-evidence:
+    name: Emit fail-closed ReleaseCandidateV1 evidence
+    needs:
+      - validate-candidate
+      - build-staging-candidate
+      - deploy-staging-candidate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    env:
+      RELEASE_SHA: ${{ needs.validate-candidate.outputs.release_sha }}
+      STAGING_RUN_ID: ${{ github.run_id }}
+      STAGING_DEPLOYMENT: opsly-staging-candidate
+      STAGING_API_URL: https://api.${{ secrets.STAGING_PLATFORM_DOMAIN }}
+      PRODUCT: ${{ inputs.product }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies and build canonical candidate schema
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run build -w @intcloudsysops/types
+
+      - name: Test fail-closed candidate evidence builder
+        run: node --test scripts/ci/__tests__/release-candidate-evidence.test.mjs
+
+      - name: Download staging digest evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: staging-digests-${{ env.RELEASE_SHA }}
+          path: evidence
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Resolve production-candidate digests without activating production
+        run: |
+          set -euo pipefail
+          digests='{}'
+          for service in api admin portal icso llm-gateway orchestrator hermes context-builder mcp; do
+            image="ghcr.io/cloudsysops/intcloudsysops-${service}:${RELEASE_SHA}"
+            if docker pull "$image" >/dev/null 2>&1; then
+              repo_digest="$(docker image inspect --format '{{index .RepoDigests 0}}' "$image")"
+              digest="${repo_digest##*@}"
+              if [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+                digests="$(jq --arg service "$service" --arg digest "$digest" '. + {($service): $digest}' <<<"$digests")"
+              fi
+            else
+              echo "Production candidate image not present yet: $image"
+            fi
+          done
+          printf '%s\n' "$digests" > production-digests.json
+
+      - name: Build blocked-or-ready candidate evidence
+        env:
+          STAGING_DIGESTS_JSON: ${{ steps.noop.outputs.unused }}
+          EXTERNAL_GATES_BOUND: "false"
+          MIGRATION_SAFE_FOR_PROMOTION: "false"
+          ALLOW_READY: "false"
+        run: |
+          set -euo pipefail
+          export STAGING_DIGESTS_JSON="$(cat evidence/staging-digests.json)"
+          export PRODUCTION_DIGESTS_JSON="$(cat production-digests.json)"
+          node scripts/ci/create-release-candidate-evidence.mjs release-candidate.json
+          jq . release-candidate.json
+
+      - name: Upload ReleaseCandidateV1 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-candidate-${{ env.RELEASE_SHA }}
+          path: |
+            release-candidate.json
+            evidence/staging-digests.json
+            production-digests.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Summarize candidate state
+        run: |
+          {
+            echo "## ReleaseCandidateV1 staging evidence"
+            echo "- SHA: \`${RELEASE_SHA}\`"
+            echo "- Status: \`$(jq -r .status release-candidate.json)\`"
+            echo "- Staging run: \`${STAGING_RUN_ID}\`"
+            echo "- Blockers:"
+            jq -r '.blockers[]? | "  - `" + . + "`"' release-candidate.json
+          } >> "$GITHUB_STEP_SUMMARY"
