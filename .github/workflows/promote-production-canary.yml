@@ -18,8 +18,8 @@ on:
         required: false
         type: string
         default: "https://api.op-sly.com"
-      rollback_on_fail:
-        description: "Request rollback handling if post-promotion smoke fails"
+      rollback_guidance_on_fail:
+        description: "Fail closed and emit rollback-required guidance after a failed smoke; this does not auto-rollback"
         required: false
         type: boolean
         default: true
@@ -37,6 +37,8 @@ env:
     context-builder=context-builder
 
 concurrency:
+  # GitHub serializes all promotions in this group. `cancel-in-progress: false`
+  # queues a second dispatch rather than interrupting an in-flight production change.
   group: production-release-promotion
   cancel-in-progress: false
 
@@ -145,11 +147,13 @@ jobs:
             echo "enabled=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Connect Tailscale for production SSH
+      - name: Connect Tailscale for production SSH and verify target reachability
         if: steps.tailscale.outputs.enabled == 'true'
         uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          # The composite action uses Tailscale's `ping` input and fails the
+          # step if this target cannot be reached before SSH begins.
           ping_host: ${{ env.VPS_TARGET_HOST }}
 
       - name: Promote immutable images on VPS
@@ -211,23 +215,23 @@ jobs:
 
             echo "Promoted immutable release ${RELEASE_SHA}"
 
-      - name: Production smoke
+      - name: Production smoke (fail closed; rollback is not automated)
         env:
           STAGING_API_URL: ${{ inputs.staging_api_url }}
           PROD_API_URL: ${{ inputs.production_api_url }}
-          ROLLBACK_ON_FAIL: ${{ inputs.rollback_on_fail }}
+          ROLLBACK_GUIDANCE_ON_FAIL: ${{ inputs.rollback_guidance_on_fail }}
         run: |
           set -euo pipefail
           test -n "${STAGING_API_URL:-}" || { echo "staging_api_url is required" >&2; exit 1; }
           test -n "${PROD_API_URL:-}" || { echo "production_api_url is required" >&2; exit 1; }
-          rollback_flag=()
-          if [ "$ROLLBACK_ON_FAIL" = "true" ]; then
-            rollback_flag=(--rollback-on-fail)
+          guidance_flag=()
+          if [ "$ROLLBACK_GUIDANCE_ON_FAIL" = "true" ]; then
+            guidance_flag=(--rollback-guidance-on-fail)
           fi
           bash scripts/deploy/promote-canary.sh \
             --staging-api-url "$STAGING_API_URL" \
             --prod-api-url "$PROD_API_URL" \
-            "${rollback_flag[@]}"
+            "${guidance_flag[@]}"
 
       - name: Record promoted candidate
         if: success()
@@ -238,4 +242,5 @@ jobs:
             echo "- Immutable image tag: \`${RELEASE_SHA}\`"
             echo "- QA/staging health gate: passed"
             echo "- Production smoke: passed"
+            echo "- Automatic rollback: not implemented; failures remain fail-closed"
           } >> "$GITHUB_STEP_SUMMARY"
