@@ -5,11 +5,6 @@ on:
   push:
   pull_request:
 
-concurrency:
-  # Push and PR events for the same branch must not run this expensive validator twice.
-  group: validate-context-${{ github.event.pull_request.head.ref || github.ref_name }}
-  cancel-in-progress: true
-
 jobs:
   validate:
     runs-on: ubuntu-latest

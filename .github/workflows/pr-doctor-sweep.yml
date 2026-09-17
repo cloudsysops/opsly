@@ -1,0 +1,48 @@
+name: PR doctor backlog sweep
+
+on:
+  schedule:
+    # Hourly safety-net for stale red PRs. New failures are handled event-driven
+    # by pr-doctor-on-check-failure.yml; this sweep catches missed/old state.
+    - cron: '20 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-doctor-backlog-sweep-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Join tailnet (ephemeral, this job only)
+        uses: tailscale/github-action@v3
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Sweep stale red PRs through canonical PR Doctor
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          OPSLY_ORCHESTRATOR_URL: http://100.120.151.91:3011
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
+          OPSLY_GITHUB_REPO: ${{ github.repository }}
+          OPSLY_DOCTOR_SWEEP_MAX_PRS: '12'
+        run: node scripts/ci/pr-doctor-sweep.mjs

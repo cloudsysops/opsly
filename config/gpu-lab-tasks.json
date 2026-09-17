@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "purpose": "Keep the Opsly AI lab productive with bounded, synthetic, non-production GPU work.",
+  "policy": {
+    "tenant_slug": "intcloudsysops",
+    "customer_data_allowed": false,
+    "production_access_allowed": false,
+    "peskids_allowed": false,
+    "publishing_allowed": false,
+    "financial_execution_allowed": false,
+    "max_tasks_per_dispatch": 4
+  },
+  "tasks": [
+    {
+      "id": "lab-gpu-runtime-smoke",
+      "enabled": true,
+      "priority": "P0",
+      "job_type": "test.gpu",
+      "cadence": "hourly",
+      "prompt": "Return exactly OPSLY_GPU_LAB_OK plus the local model name. Do not include secrets, personal data, customer data, or external calls.",
+      "goal": "Prove at least one canonical GPU worker can execute a local GPU-backed task."
+    },
+    {
+      "id": "lab-local-inference",
+      "enabled": true,
+      "priority": "P0",
+      "job_type": "ai.local.inference",
+      "cadence": "hourly",
+      "prompt": "Summarize in at most 5 bullets what an AI and software agency lab should verify before accepting client work. Use no customer data and make no external calls.",
+      "goal": "Exercise local LLM capacity with a useful agency operations prompt."
+    },
+    {
+      "id": "lab-content-review",
+      "enabled": true,
+      "priority": "P1",
+      "job_type": "content.review",
+      "cadence": "daily",
+      "prompt": "Review this synthetic agency content concept: 'AI automation for local businesses: lead capture, follow-up, dashboard, reporting.' Return 3 improvements and 2 compliance cautions. No customer data.",
+      "goal": "Exercise the local content-review capability without publishing."
+    },
+    {
+      "id": "lab-video-render-smoke",
+      "enabled": true,
+      "priority": "P1",
+      "job_type": "content.render.video",
+      "cadence": "daily",
+      "title": "Opsly AI Agency Lab — local GPU render smoke",
+      "goal": "Exercise the canonical content-video queue with a synthetic non-publishing asset."
+    },
+    {
+      "id": "lab-image-generation",
+      "enabled": false,
+      "priority": "P2",
+      "job_type": "content.generate.image",
+      "cadence": "manual",
+      "goal": "Enable only after an image-generation runtime is physically installed and accepted."
+    },
+    {
+      "id": "lab-transcription",
+      "enabled": false,
+      "priority": "P2",
+      "job_type": "content.transcribe",
+      "cadence": "manual",
+      "goal": "Enable only after the canonical transcription adapter is physically installed and accepted."
+    }
+  ]
+}
