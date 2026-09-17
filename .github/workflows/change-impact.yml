@@ -3,12 +3,16 @@ name: Change impact classification
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review]
+  schedule:
+    # Reconcile the existing backlog too, not only newly-opened PRs.
+    - cron: "7 */6 * * *"
   workflow_dispatch:
     inputs:
       pr:
-        description: "PR number to classify"
-        required: true
+        description: "Single PR number to classify (leave 0 to reconcile all open PRs)"
+        required: false
         type: number
+        default: 0
 
 permissions:
   contents: read
@@ -16,7 +20,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: change-impact-${{ github.repository }}-${{ github.event.pull_request.number || inputs.pr }}
+  group: change-impact-${{ github.repository }}-${{ github.event.pull_request.number || inputs.pr || 'backlog' }}
   cancel-in-progress: true
 
 jobs:
@@ -40,7 +44,40 @@ jobs:
 
       - name: Apply impact labels
         env:
+          GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
-        run: node scripts/ci/change-impact.mjs --pr "$PR_NUMBER"
+          EVENT_PR: ${{ github.event.pull_request.number }}
+          INPUT_PR: ${{ inputs.pr }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          classify_pr() {
+            local pr="$1"
+            [ -n "$pr" ] && [ "$pr" != "0" ] || return 0
+            echo "Classifying PR #$pr"
+            node scripts/ci/change-impact.mjs --pr "$pr"
+          }
+
+          if [ -n "${EVENT_PR:-}" ]; then
+            classify_pr "$EVENT_PR"
+            exit 0
+          fi
+
+          if [ -n "${INPUT_PR:-}" ] && [ "$INPUT_PR" != "0" ]; then
+            classify_pr "$INPUT_PR"
+            exit 0
+          fi
+
+          # Scheduled/manual backlog reconciliation. The classifier preserves
+          # non-managed state labels and rewrites only impact:/merge:/release:.
+          gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --limit 100 \
+            --json number \
+            --jq '.[].number' |
+          while read -r pr; do
+            classify_pr "$pr"
+          done
