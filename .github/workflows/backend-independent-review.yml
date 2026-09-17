@@ -8,8 +8,9 @@
 #
 # ubuntu-latest se une a Tailscale efímeramente para alcanzar el LLM Gateway
 # interno. El script solicita provider_hint=ollama-code y el Gateway despacha
-# directamente a codellama_local. Si Ollama no está disponible, el job falla
-# cerrado; no existe fallback a OpenAI/Anthropic/otros proveedores cloud.
+# directamente a qwen_coder_local (Qwen2.5-Coder por defecto). Si Ollama o el
+# modelo no están disponibles, el job falla cerrado; no existe fallback a
+# OpenAI/Anthropic/otros proveedores cloud.
 
 name: Open-source independent review
 
