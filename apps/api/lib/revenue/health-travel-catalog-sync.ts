@@ -58,6 +58,14 @@ function countryCode(country: string): string | null {
   return null;
 }
 
+export function isSmileTripCareOwnedMetadata(metadata: unknown): boolean {
+  return Boolean(
+    metadata &&
+      typeof metadata === 'object' &&
+      (metadata as Record<string, unknown>).source_system === 'smile-trip-care'
+  );
+}
+
 export function shouldPauseSyncedProvider(params: {
   externalRef: string | null | undefined;
   status: string | null | undefined;
@@ -178,6 +186,11 @@ export async function syncHealthTravelCatalog(
     if (existing.error) {
       throw new Error(`Partner lookup failed for ${provider.id}: ${existing.error.message}`);
     }
+    if (existing.data?.id && !isSmileTripCareOwnedMetadata(existing.data.metadata)) {
+      throw new Error(
+        `Partner external_ref collision for ${provider.id}: existing row is not owned by smile-trip-care`
+      );
+    }
 
     const metadata = {
       ...(existing.data?.metadata && typeof existing.data.metadata === 'object'
@@ -253,6 +266,11 @@ export async function syncHealthTravelCatalog(
       .maybeSingle();
     if (existing.error) {
       throw new Error(`Offer lookup failed for ${offer.id}: ${existing.error.message}`);
+    }
+    if (existing.data?.id && !isSmileTripCareOwnedMetadata(existing.data.metadata)) {
+      throw new Error(
+        `Offer external_ref collision for ${offer.id}: existing row is not owned by smile-trip-care`
+      );
     }
 
     const metadata = {
