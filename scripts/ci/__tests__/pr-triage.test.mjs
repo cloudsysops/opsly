@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 
 import { classifyChecks, hasDoctorMarker, isIgnoredCheck } from '../pr-triage.mjs';
 
@@ -58,4 +59,11 @@ test('marks ready after all configured core gates are terminal-green', () => {
 
   assert.equal(result.state, 'ready');
   assert.deepEqual(result.missingRequired, []);
+});
+
+test('workflow_run triage fails closed when GitHub reports no associated PR', () => {
+  const workflow = fs.readFileSync('.github/workflows/pr-triage.yml', 'utf8');
+  assert.match(workflow, /github\.event\.workflow_run\.pull_requests != null/);
+  assert.match(workflow, /github\.event\.workflow_run\.pull_requests\[0\] != null/);
+  assert.match(workflow, /github\.event\.workflow_run\.pull_requests\[0\]\.number != null/);
 });
