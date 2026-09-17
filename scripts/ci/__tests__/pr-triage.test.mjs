@@ -38,3 +38,24 @@ test('recognizes PR Doctor ownership only for current head', () => {
 test('matches ignored checks case-insensitively', () => {
   assert.equal(isIgnoredCheck('Opsly-Independent-Review', ignored), true);
 });
+
+test('does not mark ready until every configured core gate has been observed', () => {
+  const result = classifyChecks([
+    { name: 'lint', status: 'completed', conclusion: 'success' },
+    { name: 'build', status: 'completed', conclusion: 'success' },
+  ], ignored, ['lint', 'build', 'test-unit']);
+
+  assert.equal(result.state, 'pending');
+  assert.deepEqual(result.missingRequired, ['test-unit']);
+});
+
+test('marks ready after all configured core gates are terminal-green', () => {
+  const result = classifyChecks([
+    { name: 'lint', status: 'completed', conclusion: 'success' },
+    { name: 'build', status: 'completed', conclusion: 'success' },
+    { name: 'test-unit', status: 'completed', conclusion: 'success' },
+  ], ignored, ['lint', 'build', 'test-unit']);
+
+  assert.equal(result.state, 'ready');
+  assert.deepEqual(result.missingRequired, []);
+});
