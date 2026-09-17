@@ -163,6 +163,7 @@ a { color: inherit; }
   height: 420px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(112, 245, 221, .14), transparent 65%);
+  pointer-events: none;
 }
 
 .eyebrow {
@@ -736,7 +737,7 @@ a { color: inherit; }
 @media (max-width: 390px) {
   .appbar-actions .icon-button:nth-child(2) { display: none; }
   .hero-copy h1 { font-size: 37px; }
-  .theater-actions #active-favorite { display: none; }
+  .theater-actions #active-favorite { display: grid; }
 }
 
 .empty-state {
@@ -835,5 +836,13 @@ a { color: inherit; }
     animation-duration: .001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
+  }
+}
+
+
+/* Keep Playwright/browser scroll-to-click targets clear of sticky chrome on mobile. */
+@media (max-width: 560px) {
+  #surprise-game {
+    scroll-margin-top: 150px;
   }
 }
