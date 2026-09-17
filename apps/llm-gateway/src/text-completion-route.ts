@@ -51,16 +51,12 @@ function prefixForTask(task: OllamaTaskType | undefined): string {
 }
 
 function isTaskType(v: unknown): v is OllamaTaskType | undefined {
-  if (v === undefined) {
-    return true;
-  }
+  if (v === undefined) return true;
   return v === 'analyze' || v === 'generate' || v === 'review' || v === 'summarize';
 }
 
 function parseUsageMetadataField(v: unknown): Record<string, unknown> | undefined {
-  if (typeof v !== 'object' || v === null || Array.isArray(v)) {
-    return undefined;
-  }
+  if (typeof v !== 'object' || v === null || Array.isArray(v)) return undefined;
   return v as Record<string, unknown>;
 }
 
@@ -68,17 +64,16 @@ function parseUsageMetadataField(v: unknown): Record<string, unknown> | undefine
  * Completado de texto interno.
  *
  * `provider_hint=ollama-code` es una ruta local estricta: llama directamente al
- * provider `codellama_local` y no entra a ninguna cadena cloud. Las demás
- * solicitudes conservan la política de `llmCallDirect` y el perfil del tenant.
+ * provider `qwen_coder_local` (Qwen2.5-Coder por defecto) y no entra a ninguna
+ * cadena cloud. Las demás solicitudes conservan la política de `llmCallDirect`
+ * y el perfil del tenant.
  */
 export async function handleTextCompletionHttp(
   req: IncomingMessage,
   res: ServerResponse
 ): Promise<boolean> {
   const pathOnly = req.url?.split('?')[0] ?? '/';
-  if (req.method !== 'POST' || pathOnly !== '/v1/text') {
-    return false;
-  }
+  if (req.method !== 'POST' || pathOnly !== '/v1/text') return false;
 
   let bodyRaw: string;
   try {
@@ -134,15 +129,12 @@ export async function handleTextCompletionHttp(
 
   let tenantPlan: TenantPlan | undefined;
   const tp = body.tenant_plan;
-  if (tp === 'startup' || tp === 'business' || tp === 'enterprise') {
-    tenantPlan = tp;
-  }
+  if (tp === 'startup' || tp === 'business' || tp === 'enterprise') tenantPlan = tp;
 
   const requestId =
     typeof body.request_id === 'string' && body.request_id.length > 0
       ? body.request_id
       : randomUUID();
-
   const userId =
     typeof body.user_id === 'string' && body.user_id.length > 0 ? body.user_id : undefined;
   const feature =
@@ -155,7 +147,6 @@ export async function handleTextCompletionHttp(
       ? routingRaw
       : undefined;
   const providerHint = parseProviderHintBody(body.provider_hint);
-
   const systemRaw = body.system;
   const systemText =
     typeof systemRaw === 'string' && systemRaw.trim().length > 0 ? systemRaw.trim() : undefined;
@@ -180,9 +171,10 @@ export async function handleTextCompletionHttp(
   };
 
   try {
-    const out = providerHint === 'ollama-code'
-      ? await completeWithProviderId('codellama_local', llmReq)
-      : await llmCallDirect(llmReq);
+    const out =
+      providerHint === 'ollama-code'
+        ? await completeWithProviderId('qwen_coder_local', llmReq)
+        : await llmCallDirect(llmReq);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
