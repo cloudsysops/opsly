@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { quoteCommission, summarizeCommissionEvents } from '../src/index';
+import { quoteCommission, summarizeCommissionEvents } from '../src/index.js';
 
 describe('quoteCommission', () => {
   it('quotes flat commission', () => {
