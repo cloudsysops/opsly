@@ -21,6 +21,7 @@ export interface ProviderDefinition {
 }
 
 const ollamaBase = process.env.OLLAMA_URL ?? 'http://localhost:11434';
+const ollamaCodeModel = process.env.OLLAMA_CODE_MODEL?.trim() || 'codellama:7b';
 const openRouterBase = 'https://openrouter.ai/api/v1';
 const deepseekBase = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com/v1').replace(/\/$/, '');
 const deepseekModel =
@@ -103,7 +104,7 @@ export const PROVIDERS = {
     healthKey: 'deepseek',
   },
   codellama_local: {
-    model: 'codellama:34b',
+    model: ollamaCodeModel,
     kind: 'ollama',
     cost_per_1k_input: 0,
     cost_per_1k_output: 0,
