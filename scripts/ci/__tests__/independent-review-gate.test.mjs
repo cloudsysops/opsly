@@ -7,6 +7,8 @@ import {
 } from '../check-independent-review.mjs';
 
 const head = '9491d6028d1234567890abcdefabcdefabcdef12';
+const openReviewClean =
+  "Open-Source Review: Didn't find any major issues.\n\nReviewed commit: `9491d6028d`\nReviewer: Opsly Open Review Agent\nRuntime: Ollama local / `codellama:7b`\nCloud fallback: disabled\nProvider cost: $0";
 
 test('commitMatches accepts exact and reviewed prefixes only', () => {
   assert.equal(commitMatches(head, head), true);
@@ -14,13 +16,8 @@ test('commitMatches accepts exact and reviewed prefixes only', () => {
   assert.equal(commitMatches(head, 'deadbeef'), false);
 });
 
-test('extractReviewedCommit reads Codex review comments', () => {
-  assert.equal(
-    extractReviewedCommit(
-      "Codex Review: Didn't find any major issues.\n\n**Reviewed commit:** `9491d6028d`"
-    ),
-    '9491d6028d'
-  );
+test('extractReviewedCommit reads Open Review Agent evidence', () => {
+  assert.equal(extractReviewedCommit(openReviewClean), '9491d6028d');
 });
 
 test('accepts a human approval only when it targets the final head', () => {
@@ -85,11 +82,20 @@ test('does not accept approval from an untrusted public user', () => {
 });
 
 test('ignores untrusted P1/P2 review comments as a public-repo DoS vector', () => {
-  assert.equal(
+  assert.deepEqual(
     evaluateIndependentReview({
       headSha: head,
       author: 'author',
-      reviews: [],
+      reviews: [
+        {
+          id: 2,
+          state: 'APPROVED',
+          commit_id: head,
+          submitted_at: '2026-09-13T12:01:00Z',
+          user: { login: 'github-actions[bot]' },
+          body: openReviewClean,
+        },
+      ],
       reviewComments: [
         {
           commit_id: head,
@@ -98,15 +104,9 @@ test('ignores untrusted P1/P2 review comments as a public-repo DoS vector', () =
           body: '**P1 Badge** fake blocker',
         },
       ],
-      issueComments: [
-        {
-          user: { login: 'chatgpt-codex-connector[bot]' },
-          body:
-            "Codex Review: Didn't find any major issues.\n\n**Reviewed commit:** `9491d6028d`",
-        },
-      ],
-    }).ok,
-    true
+      issueComments: [],
+    }),
+    { ok: true, reason: 'clean_bot_review:github-actions[bot]' }
   );
 });
 
@@ -131,28 +131,56 @@ test('never counts the PR author as independent reviewer', () => {
   );
 });
 
-test('accepts a clean Codex final-head comment', () => {
+test('accepts a clean Open Review Agent final-head review', () => {
   assert.deepEqual(
     evaluateIndependentReview({
       headSha: head,
       author: 'author',
-      reviews: [],
-      issueComments: [
+      reviews: [
         {
-          user: { login: 'chatgpt-codex-connector[bot]' },
-          body:
-            "Codex Review: Didn't find any major issues.\n\n**Reviewed commit:** `9491d6028d`",
+          id: 1,
+          state: 'APPROVED',
+          commit_id: head,
+          submitted_at: '2026-09-13T12:00:00Z',
+          user: { login: 'github-actions[bot]' },
+          body: openReviewClean,
         },
       ],
+      issueComments: [],
     }),
     {
       ok: true,
-      reason: 'clean_bot_comment:chatgpt-codex-connector[bot]',
+      reason: 'clean_bot_review:github-actions[bot]',
     }
   );
 });
 
-test('rejects stale Codex clean comments and usage-limit chatter', () => {
+test('rejects Codex and Copilot bot evidence after open-source migration', () => {
+  for (const login of [
+    'chatgpt-codex-connector[bot]',
+    'github-copilot[bot]',
+    'copilot-pull-request-reviewer[bot]',
+  ]) {
+    const decision = evaluateIndependentReview({
+      headSha: head,
+      author: 'author',
+      reviews: [
+        {
+          id: 1,
+          state: 'APPROVED',
+          commit_id: head,
+          submitted_at: '2026-09-13T12:00:00Z',
+          user: { login },
+          body: "Codex Review: Didn't find any major issues.",
+        },
+      ],
+      issueComments: [],
+    });
+    assert.equal(decision.ok, false, login);
+  }
+});
+
+test('rejects stale Open Review Agent comments', () => {
   assert.equal(
     evaluateIndependentReview({
       headSha: head,
@@ -160,13 +188,9 @@ test('rejects stale Codex clean comments and usage-limit chatter', () => {
       reviews: [],
       issueComments: [
         {
-          user: { login: 'chatgpt-codex-connector[bot]' },
+          user: { login: 'github-actions[bot]' },
           body:
-            "Codex Review: Didn't find any major issues.\n\n**Reviewed commit:** `1234567890`",
-        },
-        {
-          user: { login: 'chatgpt-codex-connector[bot]' },
-          body: 'You have reached your Codex usage limits for code reviews.',
+            "Open-Source Review: Didn't find any major issues.\n\nReviewed commit: `1234567890`",
         },
       ],
     }).ok,
@@ -174,35 +198,38 @@ test('rejects stale Codex clean comments and usage-limit chatter', () => {
   );
 });
 
-test('current-head P1/P2 inline findings block even when a clean bot comment exists', () => {
+test('current-head P1/P2 findings from the open-source reviewer block a clean review', () => {
   assert.deepEqual(
     evaluateIndependentReview({
       headSha: head,
       author: 'author',
-      reviews: [],
+      reviews: [
+        {
+          id: 1,
+          state: 'APPROVED',
+          commit_id: head,
+          submitted_at: '2026-09-13T12:00:00Z',
+          user: { login: 'github-actions[bot]' },
+          body: openReviewClean,
+        },
+      ],
       reviewComments: [
         {
           commit_id: head,
-          user: { login: 'chatgpt-codex-connector[bot]' },
+          user: { login: 'github-actions[bot]' },
           body: '**P1 Badge** duplicate commission risk',
         },
       ],
-      issueComments: [
-        {
-          user: { login: 'chatgpt-codex-connector[bot]' },
-          body:
-            "Codex Review: Didn't find any major issues.\n\n**Reviewed commit:** `9491d6028d`",
-        },
-      ],
+      issueComments: [],
     }),
     {
       ok: false,
-      reason: 'current_head_finding:chatgpt-codex-connector[bot]',
+      reason: 'current_head_finding:github-actions[bot]',
     }
   );
 });
 
-test('latest changes-requested review on the head blocks the gate', () => {
+test('latest changes-requested human review on the head blocks the gate', () => {
   assert.deepEqual(
     evaluateIndependentReview({
       headSha: head,
@@ -234,31 +261,33 @@ test('latest changes-requested review on the head blocks the gate', () => {
   );
 });
 
-
-test('current-head P0 findings block the gate', () => {
+test('current-head P0 findings from the open-source reviewer block the gate', () => {
   const decision = evaluateIndependentReview({
     headSha: head,
     author: 'author',
-    reviews: [],
+    reviews: [
+      {
+        id: 1,
+        state: 'APPROVED',
+        commit_id: head,
+        submitted_at: '2026-09-13T12:00:00Z',
+        user: { login: 'github-actions[bot]' },
+        body: openReviewClean,
+      },
+    ],
     reviewComments: [
       {
         commit_id: head,
-        user: { login: 'chatgpt-codex-connector[bot]' },
+        user: { login: 'github-actions[bot]' },
         body: '**P0 Badge** critical release blocker',
       },
     ],
-    issueComments: [
-      {
-        user: { login: 'chatgpt-codex-connector[bot]' },
-        body:
-          "Codex Review: Didn't find any major issues.\\n\\n**Reviewed commit:** `9491d6028d`",
-      },
-    ],
+    issueComments: [],
   });
   assert.equal(decision.ok, false);
 });
 
-test('trusted current-head review body findings block an earlier approval', () => {
+test('trusted current-head human review body findings block an earlier approval', () => {
   assert.deepEqual(
     evaluateIndependentReview({
       headSha: head,
@@ -288,28 +317,22 @@ test('trusted current-head review body findings block an earlier approval', () =
   );
 });
 
-test('allowlisted bot cannot independently approve its own PR', () => {
-  const bot = 'chatgpt-codex-connector[bot]';
+test('Open Review Agent cannot independently approve its own PR', () => {
+  const bot = 'github-actions[bot]';
   const decision = evaluateIndependentReview({
     headSha: head,
     author: bot,
     reviews: [
       {
         id: 1,
-        state: 'COMMENTED',
+        state: 'APPROVED',
         commit_id: head,
         submitted_at: '2026-09-13T12:00:00Z',
         user: { login: bot },
-        body: "Codex Review: Didn't find any major issues.",
+        body: openReviewClean,
       },
     ],
-    issueComments: [
-      {
-        user: { login: bot },
-        body:
-          "Codex Review: Didn't find any major issues.\\n\\n**Reviewed commit:** `9491d6028d`",
-      },
-    ],
+    issueComments: [],
   });
   assert.equal(decision.ok, false);
   assert.equal(decision.reason, 'no_independent_review_for_final_head');
