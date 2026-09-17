@@ -22,11 +22,15 @@ afterEach(() => {
 });
 
 describe('runtime governor internal capacity boundary', () => {
-  it('uses top-level limits when no tenant plan is supplied, while explicit free stays tier-limited', async () => {
+  it('uses top-level limits when no tenant plan is supplied, while explicit customer tiers stay unchanged', async () => {
     const cfg = await loadRuntimeGovernorConfig();
 
     expect(effectiveLimits(cfg).max_parallel_jobs).toBe(2);
     expect(effectiveLimits(cfg, 'free').max_parallel_jobs).toBe(1);
+    expect(effectiveLimits(cfg, 'startup').max_parallel_jobs).toBe(1);
+    expect(effectiveLimits(cfg, 'pro').max_parallel_jobs).toBe(2);
+    expect(effectiveLimits(cfg, 'business').max_parallel_jobs).toBe(3);
+    expect(effectiveLimits(cfg, 'enterprise').max_parallel_jobs).toBe(5);
   });
 
   it('admits two internal local jobs and rejects a third without approval', async () => {
