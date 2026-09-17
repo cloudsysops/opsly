@@ -13,20 +13,23 @@ test('Content Studio is daytime-mergeable without implying deploy', () => {
   assert.ok(result.labels.includes('release:none'));
 });
 
-test('Peskids code may merge separately but still requires a production release', () => {
+test('Peskids remains governed and requires a separate production release', () => {
   const result = classifyChangeImpact(['apps/peskids/app/page.tsx']);
   assert.ok(result.domains.includes('peskids'));
   assert.equal(result.releaseRequired, true);
-  assert.equal(result.governedMerge, false);
-  assert.ok(result.labels.includes('merge:daytime'));
+  assert.equal(result.governedMerge, true);
+  assert.equal(result.mergeRoute, 'governed');
+  assert.ok(result.labels.includes('merge:governed'));
   assert.ok(result.labels.includes('release:required'));
 });
 
-test('migration is release-required but not a reason to couple merge to deploy', () => {
+test('migration requires governed merge and a separate release/apply step', () => {
   const result = classifyChangeImpact(['supabase/migrations/0109_example.sql']);
   assert.ok(result.domains.includes('infra'));
   assert.equal(result.releaseRequired, true);
-  assert.equal(result.mergeRoute, 'daytime');
+  assert.equal(result.governedMerge, true);
+  assert.equal(result.mergeRoute, 'governed');
+  assert.ok(result.labels.includes('release:required'));
 });
 
 test('CI workflow changes stay on governed merge route', () => {
@@ -46,4 +49,14 @@ test('shared runtime and health travel can be independently classified', () => {
   assert.ok(result.domains.includes('shared-runtime'));
   assert.ok(result.domains.includes('health-travel'));
   assert.equal(result.governedMerge, false);
+  assert.equal(result.mergeRoute, 'daytime');
+});
+
+test('deploy script cannot enter unattended daytime merge lane', () => {
+  const result = classifyChangeImpact(['scripts/peskids-deploy-vps.sh']);
+  assert.equal(result.releaseRequired, true);
+  assert.equal(result.governedMerge, true);
+  assert.equal(result.mergeRoute, 'governed');
+  assert.ok(result.labels.includes('impact:peskids'));
+  assert.ok(result.labels.includes('impact:infra'));
 });
