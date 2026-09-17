@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const releaseGateStateSchema = z.enum(['passed', 'not_required']);
+export const releaseGateStateSchema = z.enum(['passed', 'not_required', 'pending', 'failed']);
 
 export const releaseArtifactV1Schema = z.object({
   kind: z.enum(['container_image', 'build_artifact', 'git_sha']),
