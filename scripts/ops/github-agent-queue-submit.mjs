@@ -249,10 +249,11 @@ if (!submit.response.ok) {
           `workstream=${submit.body.existing_workstream || 'unknown'} ` +
           `claim=${submit.body.existing_claim_id || 'unknown'}`
       );
+    } else {
+      throw new Error(
+        `${submit.body.dispatch_decision}: ${submit.body.conflict_dimension || 'scope'} is already owned`
+      );
     }
-    throw new Error(
-      `${submit.body.dispatch_decision}: ${submit.body.conflict_dimension || 'scope'} is already owned`
-    );
   }
   if (!existingCompletedJobId) {
     throw new Error(`submit failed HTTP ${submit.response.status}`);
