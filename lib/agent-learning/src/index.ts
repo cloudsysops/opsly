@@ -37,3 +37,14 @@ export type {
   ExecutionEvidenceV1,
 } from './execution-evidence-v1.js';
 export { normalizeExecutionEvidenceV1 } from './execution-evidence-v1.js';
+
+export type {
+  WorkTerminalStateV1,
+  WorkHandoffV1,
+  WorkClosureCheckV1,
+} from './work-handoff-v1.js';
+export {
+  normalizeWorkHandoffV1,
+  checkWorkClosureV1,
+  assertWorkClosureV1,
+} from './work-handoff-v1.js';
