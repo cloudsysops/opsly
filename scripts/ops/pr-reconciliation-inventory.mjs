@@ -175,6 +175,7 @@ for (const pull of pulls) {
   records.push({
     number: pull.number,
     title: pull.title,
+    draft: pull.draft === true,
     url: pull.html_url,
     head: pull.head.ref,
     headSha: pull.head.sha,
