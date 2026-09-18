@@ -96,6 +96,7 @@ test('PR Doctor supports exact-head review repair without weakening reviewer pol
   const source = await fs.readFile(path.join(root, 'scripts/ci/pr-doctor.mjs'), 'utf8');
   assert.match(source, /--review-blocked/);
   assert.match(source, /review\.commit_id === pr\.head\.sha/);
+  assert.match(source, /github-actions\[bot\]/);
   assert.match(source, /PR Doctor: review fix dispatched for/);
   assert.match(source, /No toques production-change-window ni debilites opsly-independent-review/);
   assert.match(source, /conflict_key: `pr-reconcile\/pr-\$\{pr\.number\}`/);
