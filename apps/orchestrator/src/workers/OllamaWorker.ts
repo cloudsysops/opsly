@@ -1,6 +1,7 @@
 import { Job } from 'bullmq';
 import { meterPlannerLlmFireAndForget } from '../metering/usage-events-meter.js';
 import { createWorker } from './create-worker.js';
+import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
 import type { OrchestratorJob } from '../types.js';
 import {
   logWorkerInfo,
@@ -52,6 +53,11 @@ type DirectOllamaResponse = {
 };
 
 async function callDirectOllama(taskType: string, prompt: string): Promise<TextGatewayResponse> {
+  const guarded = guardLlmTextPrompt(prompt);
+  if (!guarded.ok) {
+    throw new Error(`direct Ollama prompt rejected: ${guarded.error}`);
+  }
+
   const base = directOllamaBaseUrl();
   const model = directOllamaModel();
   const timeoutRaw = Number(process.env.OPSLY_OLLAMA_DIRECT_TIMEOUT_MS ?? 120_000);
@@ -65,7 +71,7 @@ async function callDirectOllama(taskType: string, prompt: string): Promise<TextG
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model,
-      messages: [{ role: 'user', content: directTaskPrompt(taskType, prompt) }],
+      messages: [{ role: 'user', content: directTaskPrompt(taskType, guarded.prompt) }],
       stream: false,
       options: { temperature: 0.2 },
     }),
