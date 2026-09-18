@@ -39,7 +39,18 @@ const TENANT_SLUG = process.env.OPSLY_DOCTOR_TENANT ?? 'platform';
 
 // production-change-window y opsly-independent-review ya tienen su propio
 // manejo (night-merge.yml / backend-independent-review.yml) — no duplicar.
-const IGNORED_CHECKS = new Set(['production-change-window', 'opsly-independent-review', 'independent-review']);
+const IGNORED_CHECKS = new Set([
+  'production-change-window',
+  'production change window',
+  'opsly-independent-review',
+  'independent-review',
+  'open-source-review',
+  'open-source independent review',
+]);
+
+function isIgnoredCheckName(name) {
+  return IGNORED_CHECKS.has(String(name ?? '').trim().toLowerCase());
+}
 const MARKER_PREFIX = 'PR Doctor: fix dispatched for';
 
 function parseArgs(argv) {
@@ -77,7 +88,7 @@ async function alreadyDispatched(pr, shortSha, token) {
 async function failingChecks(pr, token) {
   const combined = await gh(`repos/${REPO}/commits/${pr.head.sha}/check-runs?per_page=100`, { token });
   return (combined.check_runs ?? [])
-    .filter((c) => c.conclusion === 'failure' && !IGNORED_CHECKS.has(c.name))
+    .filter((c) => c.conclusion === 'failure' && !isIgnoredCheckName(c.name))
     .map((c) => ({
       name: c.name,
       details_url: c.details_url,
