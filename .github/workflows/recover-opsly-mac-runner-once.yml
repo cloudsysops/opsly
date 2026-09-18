@@ -57,11 +57,16 @@ jobs:
       - name: Assert trusted same-repo recovery context
         if: github.event_name == 'pull_request'
         shell: bash
+        env:
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_ACTOR: ${{ github.actor }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          test "${{ github.event.pull_request.head.repo.full_name }}" = "${{ github.repository }}"
-          test "${{ github.event.pull_request.head.ref }}" = "fix/recover-opsly-mac-runner-out-of-band"
-          test "${{ github.actor }}" = "cboteros"
+          test "${HEAD_REPO}" = "${REPO}"
+          test "${HEAD_REF}" = "fix/recover-opsly-mac-runner-out-of-band"
+          test "${HEAD_ACTOR}" = "cboteros"
           echo "trusted_same_repo_recovery=true"
 
       - name: Require Tailscale auth
