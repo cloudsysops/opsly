@@ -93,7 +93,33 @@ jobs:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
           ping_host: ${{ env.VPS_TARGET_HOST }}
 
-      - name: Recover existing Mac runner through VPS
+      - name: Probe GitHub to VPS SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 2m
+          script: |
+            set -euo pipefail
+            echo "VPS_SSH_OK"
+            hostname
+
+      - name: Probe VPS to Opsly Mac SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 2m
+          script: |
+            set -euo pipefail
+            command -v ssh >/dev/null
+            ssh -o BatchMode=yes -o ConnectTimeout=10 opsly-admin-from-vps 'echo OPSLY_ADMIN_SSH_OK && hostname'
+
+      - name: Repair existing Mac runner
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.VPS_TARGET_HOST }}
@@ -104,17 +130,6 @@ jobs:
           script: |
             set -euo pipefail
 
-            command -v ssh >/dev/null
-
-            if ! ssh -o BatchMode=yes -o ConnectTimeout=10 opsly-admin-from-vps 'echo OPSLY_ADMIN_SSH_OK' >/tmp/opsly-admin-probe.txt 2>&1; then
-              echo "BLOCKER_OPSLY_ADMIN_SSH"
-              sed -n '1,20p' /tmp/opsly-admin-probe.txt || true
-              rm -f /tmp/opsly-admin-probe.txt
-              exit 78
-            fi
-            rm -f /tmp/opsly-admin-probe.txt
-            echo "opsly_admin_ssh=ready"
-
             ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
             set -euo pipefail
 
@@ -122,7 +137,7 @@ jobs:
             echo "mac_user=$(whoami)"
 
             repo=""
-            for candidate in               "$HOME/opsly-control"               "$HOME/src/opsly-control"               "$HOME/Projects/opsly-control"               "$HOME/Documents/opsly-control"; do
+            for candidate in "$HOME/opsly-control" "$HOME/src/opsly-control" "$HOME/Projects/opsly-control" "$HOME/Documents/opsly-control"; do
               if [[ -d "$candidate/.git" ]]; then
                 repo="$candidate"
                 break
@@ -161,14 +176,8 @@ jobs:
             command -v gh >/dev/null || { echo "BLOCKER_LOCAL_GH_MISSING"; exit 78; }
             command -v doppler >/dev/null || { echo "BLOCKER_LOCAL_DOPPLER_MISSING"; exit 78; }
 
-            if ! gh auth status >/dev/null 2>&1; then
-              echo "BLOCKER_LOCAL_GH_AUTH"
-              exit 78
-            fi
-            if ! doppler me >/dev/null 2>&1; then
-              echo "BLOCKER_LOCAL_DOPPLER_AUTH"
-              exit 78
-            fi
+            gh auth status >/dev/null 2>&1 || { echo "BLOCKER_LOCAL_GH_AUTH"; exit 78; }
+            doppler me >/dev/null 2>&1 || { echo "BLOCKER_LOCAL_DOPPLER_AUTH"; exit 78; }
 
             bash scripts/configure-agent-queue-gh.sh --no-dispatch
             bash scripts/configure-agent-queue-gh.sh --check-only
