@@ -1,0 +1,151 @@
+name: Recover Opsly Mac Runner Once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/recover-opsly-mac-runner-once.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/recover-opsly-mac-runner-once.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: recover-opsly-mac-runner-once
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate recovery contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .github/actions/tailscale-connect/action.yml
+          test -f scripts/setup-vps-ssh-to-opsly-admin.sh
+          echo "recovery_path=github-hosted->tailscale->vps->opsly-admin"
+          echo "runner_policy=existing-only"
+          echo "production_mutation=forbidden"
+          echo "OPSLY_MAC_RECOVERY_CONTRACT_OK"
+
+  recover:
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      VPS_TARGET_HOST: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate remote recovery prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for key in TAILSCALE_AUTHKEY VPS_TARGET_HOST VPS_USER VPS_SSH_KEY; do
+            if [ -z "${!key:-}" ]; then
+              echo "::error::Missing required recovery secret: $key"
+              missing=1
+            fi
+          done
+          test "$missing" -eq 0
+
+      - name: Connect GitHub-hosted runner to Opsly tailnet
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          ping_host: ${{ env.VPS_TARGET_HOST }}
+
+      - name: Recover existing Mac runner through VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 8m
+          script: |
+            set -euo pipefail
+
+            command -v ssh >/dev/null
+
+            if ! ssh -o BatchMode=yes -o ConnectTimeout=10 opsly-admin-from-vps 'echo OPSLY_ADMIN_SSH_OK' >/tmp/opsly-admin-probe.txt 2>&1; then
+              echo "BLOCKER_OPSLY_ADMIN_SSH"
+              sed -n '1,20p' /tmp/opsly-admin-probe.txt || true
+              rm -f /tmp/opsly-admin-probe.txt
+              exit 78
+            fi
+            rm -f /tmp/opsly-admin-probe.txt
+            echo "opsly_admin_ssh=ready"
+
+            ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
+            set -euo pipefail
+
+            echo "mac_host=$(hostname)"
+            echo "mac_user=$(whoami)"
+
+            repo=""
+            for candidate in               "$HOME/opsly-control"               "$HOME/src/opsly-control"               "$HOME/Projects/opsly-control"               "$HOME/Documents/opsly-control"; do
+              if [[ -d "$candidate/.git" ]]; then
+                repo="$candidate"
+                break
+              fi
+            done
+
+            if [[ -z "$repo" ]]; then
+              repo="$(find "$HOME" -maxdepth 4 -type d -name opsly-control -exec test -d '{}/.git' ';' -print -quit 2>/dev/null || true)"
+            fi
+
+            if [[ -z "$repo" || ! -d "$repo/.git" ]]; then
+              echo "BLOCKER_OPSLY_CONTROL_CHECKOUT_NOT_FOUND"
+              exit 78
+            fi
+
+            origin="$(git -C "$repo" remote get-url origin 2>/dev/null || true)"
+            case "$origin" in
+              *cloudsysops/opsly-control*) ;;
+              *)
+                echo "BLOCKER_UNEXPECTED_CONTROL_REPO_ORIGIN"
+                exit 78
+                ;;
+            esac
+
+            if [[ -n "$(git -C "$repo" status --porcelain)" ]]; then
+              echo "BLOCKER_OPSLY_CONTROL_DIRTY_WORKTREE"
+              git -C "$repo" status --short | head -30
+              exit 78
+            fi
+
+            git -C "$repo" fetch origin main
+            git -C "$repo" checkout main
+            git -C "$repo" pull --ff-only origin main
+
+            cd "$repo"
+            command -v gh >/dev/null || { echo "BLOCKER_LOCAL_GH_MISSING"; exit 78; }
+            command -v doppler >/dev/null || { echo "BLOCKER_LOCAL_DOPPLER_MISSING"; exit 78; }
+
+            if ! gh auth status >/dev/null 2>&1; then
+              echo "BLOCKER_LOCAL_GH_AUTH"
+              exit 78
+            fi
+            if ! doppler me >/dev/null 2>&1; then
+              echo "BLOCKER_LOCAL_DOPPLER_AUTH"
+              exit 78
+            fi
+
+            bash scripts/configure-agent-queue-gh.sh --no-dispatch
+            bash scripts/configure-agent-queue-gh.sh --check-only
+
+            echo "OPSLY_MAC_RUNNER_RECOVERY_OK"
+            REMOTE_MAC
