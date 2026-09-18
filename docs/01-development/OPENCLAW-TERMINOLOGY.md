@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-09-12
 type: guide
 tags:
   - opsly/development
@@ -15,7 +15,7 @@ Evita usar **«OpenClaw»** solo para referirte al servicio Docker de colas: en 
 
 | Nombre corto | Qué es | Dónde / cómo |
 | -------------- | ------ | -------------- |
-| **OpenClaw CLI** | Binario **`openclaw`** (OpenClaw 2026.x), Node **≥ 22.12**. Gateway WebSocket, `tui`, `agent`, `onboard`, canales, etc. | Máquina operador o VPS; **no** es el contenedor `opsly_orchestrator`. |
+| **OpenClaw CLI** | Binario **`openclaw`**. Incluye Gateway/TUI y el modo headless `agent exec`. | Runtime externo; Opsly usa `agent exec` para tareas efímeras, no un Gateway persistente como boundary de AgentTask. |
 | **Orquestador Opsly** (o **BullMQ Orchestrator**) | Servicio **`apps/orchestrator`**: colas BullMQ, workers, `processIntent`, health típico **3011**. Incluye **módulos TypeScript** bajo `src/openclaw/` (router/control layer) — es código de **rutado Opsly**, no el binario npm. | Docker `opsly_orchestrator` + Redis. |
 | **Capa OpenClaw (código)** | Reglas `applyOpenClawControlLayer`, `registry`, `runOpenClawController` dentro del **Orquestador Opsly**. | Repo: `apps/orchestrator/src/openclaw/`. |
 | **MCP Opsly** | Servidor de herramientas para agentes externos. | Docker `opsly_mcp`, puerto **3003**. |
@@ -23,16 +23,40 @@ Evita usar **«OpenClaw»** solo para referirte al servicio Docker de colas: en 
 
 ## Límite de responsabilidades (importante)
 
-**El Orquestador Opsly (`apps/orchestrator`) no es un «orquestador de procesos del CLI OpenClaw».** No levanta, no vigila y no multiplexa los binarios `openclaw` en el VPS.
+**El Orquestador Opsly (`apps/orchestrator`) no administra un pool persistente de procesos OpenClaw.** Para AgentTask, Opsly puede invocar el CLI externo mediante el bridge `local_openclaw` y una sesión efímera que ejecuta `openclaw agent exec`. Gateway/TUI siguen siendo superficies separadas de operador/canales.
 
 - **Varios agentes / varias instancias OpenClaw CLI** (gateway, TUI, varios canales, etc.) → eso lo resolvés con **el propio CLI**, systemd, tmux o el patrón que documentamos para VPS (`docs/04-infrastructure/OPENCLAW-CLI-VPS-META-ORCHESTRATOR.md`). Ahí los binarios ya están en el host; Opsly no sustituye esa capa.
-- **Orquestador Opsly** → colas BullMQ, workers TypeScript (Cursor, n8n, Discord, `local_*`, etc.), rutado de **intents** y políticas en código. Convive con el CLI; **no lo reemplaza** ni centraliza su ciclo de vida.
+- **Orquestador Opsly** → colas BullMQ, `AgentTaskEnvelopeV1`, workers `local_*`, política y selección de runtime. Puede invocar `local_openclaw` por el bridge canónico cuando esté explícitamente habilitado; no mantiene agentes OpenClaw AI persistentes.
 
 Si alguien dice «orquestador» sin calificar, en Opsly lo por defecto es **Orquestador Opsly (BullMQ)** salvo que el contexto sea explícitamente **CLI / tmux / varios openclaw en el VPS**.
 
+
+## Runtime canónico OpenClaw en Opsly
+
+```text
+AgentTaskEnvelopeV1
+→ BullMQ local-agents
+→ local_openclaw
+→ bridge autenticado :5012
+→ Session Manager
+→ opsly-task-* temporal
+→ openclaw agent exec
+→ resultado
+→ teardown
+```
+
+Estado actual: registrado pero **disabled/held** hasta aceptación física. El Mac no consume `local_openclaw` por defecto.
+
+No confundir este flujo con:
+
+- `openclaw gateway` persistente para canales/UI;
+- la cola histórica BullMQ `openclaw`;
+- módulos TypeScript `apps/orchestrator/src/openclaw/`.
+
 ## Regla de lenguaje
 
-- Decís **«levantá el OpenClaw CLI»** o **`openclaw gateway`** → el npm global.  
+- Decís **«ejecutá OpenClaw como AgentTask»** → `local_openclaw` + `openclaw agent exec` efímero.  
+- Decís **«levantá el OpenClaw Gateway»** → superficie persistente del CLI para canales/operación; no es el runtime AgentTask.  
 - Decís **«el orquestador no encola»** o **«revisá BullMQ»** → **Orquestador Opsly** (`apps/orchestrator`).  
 - Decís **«el router OpenClaw eligió local_claude»** → **capa TS** dentro del orquestador.
 

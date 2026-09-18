@@ -47,6 +47,7 @@ export const contentFormatTemplateValues = [
   'SPORT_SCIENCE',
   'OPSLY_STORY',
   'SPLASHITOS_LEARNS',
+  'GAMEPLAY_HIGHLIGHT',
 ] as const;
 export type ContentFormatTemplate = (typeof contentFormatTemplateValues)[number];
 

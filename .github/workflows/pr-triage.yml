@@ -1,0 +1,66 @@
+name: Mission Control PR triage
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
+  workflow_run:
+    workflows:
+      - CI
+      - Security scan
+      - Structure Validation
+      - Validate agent context
+      - Opsly Games Web Preview
+    types: [completed]
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  checks: read
+
+concurrency:
+  group: mission-control-pr-triage-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Contract tests
+        run: node --test scripts/ci/__tests__/pr-triage.test.mjs
+
+      - name: Triage current PR
+        if: github.event_name == 'pull_request_target'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          OPSLY_GITHUB_REPO: ${{ github.repository }}
+        run: node scripts/ci/pr-triage.mjs --pr "${{ github.event.pull_request.number }}"
+
+      - name: Triage PR from completed workflow
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.pull_requests != null && github.event.workflow_run.pull_requests[0] != null && github.event.workflow_run.pull_requests[0].number != null
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          OPSLY_GITHUB_REPO: ${{ github.repository }}
+        run: node scripts/ci/pr-triage.mjs --pr "${{ github.event.workflow_run.pull_requests[0].number }}"
+
+      - name: Reconcile open PR board
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          OPSLY_GITHUB_REPO: ${{ github.repository }}
+        run: node scripts/ci/pr-triage.mjs --open
