@@ -1,0 +1,56 @@
+name: Hotfix PC Gamer Sync Once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hotfix-pc-gamer-sync-once.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hotfix-pc-gamer-sync-once
+  cancel-in-progress: false
+
+jobs:
+  sync-worker:
+    runs-on: [self-hosted, macOS]
+    timeout-minutes: 10
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Sync PC gamer to main and recreate worker/OpenCode plane
+        env:
+          PC_GAMER_BRANCH: main
+          PC_GAMER_SSH_HOST: pc-gamer
+        run: |
+          set -euo pipefail
+          chmod +x scripts/ops/pc-gamer-reconnect.sh
+          ./scripts/ops/pc-gamer-reconnect.sh --wait=180 --with-opencode
+
+      - name: Verify physical worker runtime
+        env:
+          PC_GAMER_SSH_HOST: pc-gamer
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes -o ConnectTimeout=20 "$PC_GAMER_SSH_HOST"             wsl -d Ubuntu -u root -e bash -s <<'REMOTE'
+          set -euo pipefail
+          sudo -u devops bash -lc '
+            set -euo pipefail
+            cd /home/devops/opsly
+            echo "worker_head=$(git rev-parse HEAD)"
+            docker inspect -f "worker_status={{.State.Status}}" opsly-pc-gamer-worker-openclaw
+            curl -fsS http://127.0.0.1:5004/health
+            echo
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+            echo "ollama_local=ok"
+            grep -q "callDirectOllama(taskType, prompt)" apps/orchestrator/src/workers/OllamaWorker.ts
+            echo "worker_code_fix=present"
+          '
+          REMOTE
