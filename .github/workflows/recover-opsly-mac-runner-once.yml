@@ -46,6 +46,7 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     environment: production
+    environment: production
     timeout-minutes: 12
     env:
       TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
