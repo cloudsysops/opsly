@@ -105,23 +105,13 @@ jobs:
           registry="ghcr.io/cloudsysops"
 
           docker buildx build --push -f apps/api/Dockerfile \
-            -t "$registry/intcloudsysops-api:$STAGING_IMAGE_TAG" \
-            --build-arg "PLATFORM_DOMAIN=$STAGING_PLATFORM_DOMAIN" .
+            -t "$registry/intcloudsysops-api:$STAGING_IMAGE_TAG" .
 
           docker buildx build --push -f apps/admin/Dockerfile \
-            -t "$registry/intcloudsysops-admin:$STAGING_IMAGE_TAG" \
-            --build-arg "NEXT_PUBLIC_SUPABASE_URL=$STAGING_NEXT_PUBLIC_SUPABASE_URL" \
-            --build-arg "NEXT_PUBLIC_SUPABASE_ANON_KEY=$STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY" \
-            --build-arg "NEXT_PUBLIC_API_URL=https://api.$STAGING_PLATFORM_DOMAIN" \
-            --build-arg "NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false" .
+            -t "$registry/intcloudsysops-admin:$STAGING_IMAGE_TAG" .
 
           docker buildx build --push -f apps/portal/Dockerfile \
-            -t "$registry/intcloudsysops-portal:$STAGING_IMAGE_TAG" \
-            --build-arg "NEXT_PUBLIC_SUPABASE_URL=$STAGING_NEXT_PUBLIC_SUPABASE_URL" \
-            --build-arg "NEXT_PUBLIC_SUPABASE_ANON_KEY=$STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY" \
-            --build-arg "NEXT_PUBLIC_API_URL=https://api.$STAGING_PLATFORM_DOMAIN" \
-            --build-arg "NEXT_PUBLIC_SUPPORT_EMAIL=$NEXT_PUBLIC_SUPPORT_EMAIL" \
-            --build-arg "NEXT_PUBLIC_PLATFORM_DOMAIN=$STAGING_PLATFORM_DOMAIN" .
+            -t "$registry/intcloudsysops-portal:$STAGING_IMAGE_TAG" .
 
           docker buildx build --push -f apps/icso/Dockerfile \
             -t "$registry/intcloudsysops-icso:$STAGING_IMAGE_TAG" \
