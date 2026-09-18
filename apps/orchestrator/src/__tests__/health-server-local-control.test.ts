@@ -2,9 +2,10 @@ import http from 'node:http';
 import { once } from 'node:events';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { enqueueJob, enqueueLocalAgentJob } = vi.hoisted(() => ({
+const { enqueueJob, enqueueLocalAgentJob, countLocalAgentQueueLoad } = vi.hoisted(() => ({
   enqueueJob: vi.fn(async () => ({ id: 'openclaw-job' })),
   enqueueLocalAgentJob: vi.fn(async () => ({ id: 'local-agents-job' })),
+  countLocalAgentQueueLoad: vi.fn(async () => ({ ok: true, active: 0, waiting: 0, delayed: 0 })),
 }));
 
 vi.mock('../queue.js', () => {
@@ -12,6 +13,7 @@ vi.mock('../queue.js', () => {
     connection: {},
     enqueueJob,
     enqueueLocalAgentJob,
+    countLocalAgentQueueLoad,
     orchestratorQueue: {
       getJob: vi.fn(),
     },
