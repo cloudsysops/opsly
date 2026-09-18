@@ -64,20 +64,27 @@ jobs:
           test "${{ github.actor }}" = "cboteros"
           echo "trusted_same_repo_recovery=true"
 
-      - name: Validate remote recovery prerequisites
+      - name: Require Tailscale auth
         shell: bash
         run: |
           set -euo pipefail
-          missing=0
-          for key in TAILSCALE_AUTHKEY VPS_TARGET_HOST VPS_USER VPS_SSH_KEY; do
-            if [ -n "${!key:-}" ]; then
-              echo "$key=present"
-            else
-              echo "$key=missing"
-              missing=1
-            fi
-          done
-          test "$missing" -eq 0
+          test -n "${TAILSCALE_AUTHKEY:-}" || { echo "TAILSCALE_AUTHKEY=missing"; exit 1; }
+          echo "TAILSCALE_AUTHKEY=present"
+
+      - name: Require VPS target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${VPS_TARGET_HOST:-}" || { echo "VPS_TARGET_HOST=missing"; exit 1; }
+          test -n "${VPS_USER:-}" || { echo "VPS_USER=missing"; exit 1; }
+          echo "vps_target=present"
+
+      - name: Require VPS SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${VPS_SSH_KEY:-}" || { echo "VPS_SSH_KEY=missing"; exit 1; }
+          echo "VPS_SSH_KEY=present"
 
       - name: Connect GitHub-hosted runner to Opsly tailnet
         uses: ./.github/actions/tailscale-connect
