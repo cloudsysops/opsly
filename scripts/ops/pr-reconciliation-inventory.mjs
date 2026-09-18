@@ -20,8 +20,11 @@ const repository = process.env.GITHUB_REPOSITORY || 'cloudsysops/opsly';
 const token = process.env.GITHUB_TOKEN;
 const outputPath = process.env.RECONCILIATION_OUTPUT || 'pr-reconciliation-inventory.json';
 const policyPath = process.env.RECONCILIATION_POLICY || 'config/pr-reconciliation-policy.json';
+const triagePolicyPath = process.env.PR_TRIAGE_POLICY || 'config/pr-triage-policy.json';
 const policy = JSON.parse(await fs.readFile(policyPath, 'utf8'));
+const triagePolicy = JSON.parse(await fs.readFile(triagePolicyPath, 'utf8'));
 const protectedPatterns = (policy.protected?.patterns || []).map((pattern) => String(pattern).toLowerCase());
+const ignoredCheckPatterns = (triagePolicy.ignored_check_patterns || []).map((pattern) => String(pattern).toLowerCase());
 
 if (protectedPatterns.length === 0) {
   console.error(`Reconciliation policy has no protected patterns: ${policyPath}`);
@@ -98,25 +101,43 @@ function unresolvedReviewState(reviews) {
   return [...latestByUser.values()].some((review) => review.state === 'CHANGES_REQUESTED');
 }
 
+function ignoredCheck(name) {
+  const value = String(name || '').toLowerCase();
+  return ignoredCheckPatterns.some((pattern) => value.includes(pattern));
+}
+
 function checkSummary(checkRuns) {
-  const relevant = checkRuns.filter((run) => !['skipped', 'neutral'].includes(run.conclusion));
-  const pending = relevant.filter((run) => !run.conclusion || ['queued', 'in_progress', 'waiting', 'pending'].includes(run.status));
-  const failed = relevant.filter((run) => ['failure', 'timed_out', 'cancelled', 'action_required', 'startup_failure'].includes(run.conclusion));
+  const relevant = checkRuns.filter(
+    (run) => !['skipped', 'neutral'].includes(run.conclusion) && !ignoredCheck(run.name)
+  );
+  const pending = relevant.filter(
+    (run) => !run.conclusion || ['queued', 'in_progress', 'waiting', 'pending'].includes(run.status)
+  );
+  const failed = relevant.filter((run) =>
+    ['failure', 'timed_out', 'cancelled', 'action_required', 'startup_failure'].includes(run.conclusion)
+  );
   return {
-    total: checkRuns.length,
+    total: relevant.length,
     pending: pending.map((run) => run.name),
     failed: failed.map((run) => run.name),
+    ignored: checkRuns.filter((run) => ignoredCheck(run.name)).map((run) => run.name),
   };
 }
 
+function latestStatusByContext(statuses, context) {
+  return (statuses || [])
+    .filter((status) => status.context === context)
+    .sort((a, b) => Date.parse(b.updated_at || b.created_at || 0) - Date.parse(a.updated_at || a.created_at || 0))[0] ?? null;
+}
+
 function chooseLane(record) {
-  if (record.protected) return 'PROTECTED';
   if (record.supersededBy.length > 0) return 'SUPERSEDED';
-  if (record.reviewBlocked) return 'REVIEW_BLOCKED';
   if (record.checks.failed.length > 0) return 'CHECK_FAILED';
   if (record.mergeable === false || record.mergeableState === 'dirty') return 'CONFLICTED';
   if (record.behindBy > 0) return 'BEHIND';
   if (record.checks.pending.length > 0) return 'CHECK_PENDING';
+  if (record.reviewBlocked || record.independentReview.state !== 'success') return 'REVIEW_BLOCKED';
+  if (record.protected) return 'PROTECTED';
   if (record.mergeable === true) return 'MERGE_READY';
   return 'UNKNOWN';
 }
@@ -126,14 +147,24 @@ const openPullNumbers = new Set(pulls.map((pull) => pull.number));
 const records = [];
 
 for (const pull of pulls) {
-  const [detail, files, reviews, comments, compare, checks] = await Promise.all([
+  const [detail, files, reviews, comments, compare, checks, combinedStatus] = await Promise.all([
     gh(`/repos/${owner}/${repo}/pulls/${pull.number}`),
     listPaged(`/repos/${owner}/${repo}/pulls/${pull.number}/files`),
     listPaged(`/repos/${owner}/${repo}/pulls/${pull.number}/reviews`),
     listPaged(`/repos/${owner}/${repo}/issues/${pull.number}/comments`),
     gh(`/repos/${owner}/${repo}/compare/${encodeURIComponent(pull.base.ref)}...${encodeURIComponent(pull.head.ref)}`),
     gh(`/repos/${owner}/${repo}/commits/${pull.head.sha}/check-runs?per_page=100`),
+    gh(`/repos/${owner}/${repo}/commits/${pull.head.sha}/status`),
   ]);
+
+  const independentStatus = latestStatusByContext(
+    combinedStatus.statuses || [],
+    'opsly-independent-review'
+  );
+  const reviewBlocked =
+    unresolvedReviewState(reviews) ||
+    independentStatus?.state === 'failure' ||
+    independentStatus?.state === 'error';
 
   records.push({
     number: pull.number,
@@ -147,7 +178,12 @@ for (const pull of pulls) {
     aheadBy: compare.ahead_by ?? 0,
     behindBy: compare.behind_by ?? 0,
     protected: containsProtectedSurface(pull, files),
-    reviewBlocked: unresolvedReviewState(reviews),
+    reviewBlocked,
+    independentReview: {
+      state: independentStatus?.state ?? 'missing',
+      updatedAt: independentStatus?.updated_at ?? independentStatus?.created_at ?? null,
+      description: independentStatus?.description ?? null,
+    },
     supersedes: supersededByReference(pull, comments, openPullNumbers),
     supersededBy: [],
     checks: checkSummary(checks.check_runs || []),
