@@ -31,6 +31,11 @@ test('reviewer dispatches through governed local_opencode and polls terminal evi
   assert.doesNotMatch(reviewer, /GATEWAY_URL/);
 });
 
+test('reviewer approves only the exact clean verdict', () => {
+  assert.match(reviewer, /return verdict\.trim\(\) === CLEAN_PHRASE/);
+  assert.doesNotMatch(reviewer, /includes\(CLEAN_PHRASE/);
+});
+
 test('reviewer fails closed unless terminal evidence identifies local Qwen and a worker', () => {
   assert.ok(reviewer.includes("!/^ollama\\/qwen/i.test(modelUsed)"));
   assert.match(reviewer, /requires local Qwen evidence/);
