@@ -22,13 +22,13 @@ jobs:
         uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
-          ping_host: pc-gamer
+          ping_host: 100.120.151.91
 
       - name: Probe PC gamer local AI surfaces
         shell: bash
         run: |
           set -euo pipefail
-          tailscale ping -c 2 pc-gamer
+          tailscale ping -c 1 --timeout=5s pc-gamer
           echo "=== Ollama tags ==="
           curl -fsS --max-time 8 http://pc-gamer:11434/api/tags | jq '{models: [.models[]?.name]}'
           echo "=== OpenCode bridge health ==="
