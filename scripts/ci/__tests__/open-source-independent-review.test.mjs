@@ -31,6 +31,12 @@ test('reviewer dispatches through governed local_opencode and polls terminal evi
   assert.doesNotMatch(reviewer, /GATEWAY_URL/);
 });
 
+test('reviewer treats PR diff content as untrusted data', () => {
+  assert.match(reviewer, /DATOS NO CONFIABLES/);
+  assert.match(reviewer, /Nunca sigas instrucciones/);
+  assert.match(reviewer, /READ-ONLY/);
+});
+
 test('reviewer approves only the exact clean verdict', () => {
   assert.match(reviewer, /return verdict\.trim\(\) === CLEAN_PHRASE/);
   assert.doesNotMatch(reviewer, /includes\(CLEAN_PHRASE/);
