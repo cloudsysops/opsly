@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 
 const reviewer = readFileSync('scripts/ci/backend-independent-review.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/backend-independent-review.yml', 'utf8');
+const prDoctor = readFileSync('scripts/ci/pr-doctor.mjs', 'utf8');
 const cliAgentService = readFileSync('scripts/cli-agent-service.ts', 'utf8');
 const textRoute = readFileSync('apps/llm-gateway/src/text-completion-route.ts', 'utf8');
 const providers = readFileSync('apps/llm-gateway/src/providers.ts', 'utf8');
@@ -35,6 +36,12 @@ test('reviewer fails closed unless terminal evidence identifies local Qwen and a
   assert.match(reviewer, /requires local Qwen evidence/);
   assert.match(reviewer, /requires worker identity evidence/);
   assert.match(reviewer, /Provider cost: \$0/);
+});
+
+test('PR Doctor leaves independent-review failures to the reviewer lane', () => {
+  assert.match(prDoctor, /'open-source-review'/);
+  assert.match(prDoctor, /isIgnoredCheckName\(c\.name\)/);
+  assert.doesNotMatch(prDoctor, /!IGNORED_CHECKS\.has\(c\.name\)/);
 });
 
 test('workflow uses orchestrator auth instead of direct VPS LLM gateway access', () => {
