@@ -1,65 +1,104 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-07-27
+last_review: 2026-09-17
 ---
 
-# Ventana de cambios en producción (noche)
+# Ventana de cambios en producción
 
-Peskids y el control plane Opsly están **operativos de día**. Para no interferir con matrículas, WhatsApp, admin y clases:
+Peskids y el control plane Opsly están operativos de día. La regla canónica separa integración de activación:
+
+```text
+merge != release != activation
+```
+
+`main` representa verdad de integración. Llegar a `main` no autoriza ni ejecuta un deploy de Peskids, una migración, una activación n8n ni una mutación de producción.
 
 ## Regla
 
 | Acción | Cuándo |
-|--------|--------|
-| Promoción/deploy a producción de runtime / infra / migraciones | Solo en **ventana nocturna** `America/Bogota` **22:00–06:00** |
-| Deploy a VPS / GHCR de Peskids (u otros tenants en prod) | Misma ventana nocturna |
-| Docs, skills, reglas Cursor, copy sin runtime | **Sí de día** (sin label) |
-| Cambio mínimo que **no** afecta producción ni operación | De día solo con label GitHub **`safe-daytime`** |
-| Emergencia (outage / seguridad) | De día con label **`hotfix-prod`** + aprobación humana |
+|---|---|
+| Integración automática de Content / Games / Health Travel / Platform sin `release:required` | Puede ocurrir de día con `merge:daytime` y todos los gates exact-head |
+| Integración de Peskids, migraciones, control-plane o superficies sensibles | `merge:governed`; fuera del auto-merge diurno |
+| Promoción/deploy a producción de runtime / infra / migraciones | Solo en ventana nocturna `America/Bogota` **22:00–06:00** salvo hotfix autorizado |
+| Deploy a VPS / GHCR de Peskids u otros tenants en prod | Misma ventana nocturna salvo hotfix autorizado |
+| Emergencia de producción | `hotfix-prod` + aprobación humana / contrato del workflow correspondiente |
 
 ## Ventana nocturna
 
-- Zona: **`America/Bogota`**
-- Horario permitido: **22:00 inclusive → 06:00 exclusive**
-- Fuera de esa franja, la promoción de producción falla. El merge a `main` no despliega Peskids.
+- Zona: `America/Bogota`
+- Permitida: **22:00 inclusive → 06:00 exclusive**
+- Fuera de esa franja, los workflows de promoción/aplicación de producción deben fallar cerrados.
+- Un merge a `main` no despliega Peskids.
 
-## Paths de impacto (noche o hotfix)
+## Clasificación de impacto
 
-- `apps/**` (incluye Peskids, API, portal, admin, …)
-- `infra/**`
-- `supabase/**`
-- `scripts/` de deploy/VPS/peskids (`*deploy*`, `peskids-*`, `vps-*`, …)
-- `.github/workflows/deploy*.yml`
+El clasificador confiable asigna labels por paths:
 
-## Paths seguros de día (solo estos en el PR)
+- `impact:peskids`
+- `impact:health-travel`
+- `impact:games`
+- `impact:content`
+- `impact:platform`
+- `impact:shared-runtime`
+- `impact:infra`
+- `impact:control-plane`
 
-- `docs/**`, `*.md` de gobernanza, `.cursor/**`, `.agents/**`, `skills/**`
-- Plantillas GitHub que no despliegan
+Además asigna una ruta de integración y una obligación de release:
 
-Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
+- `merge:daytime`: integración automática permitida si el PR está `state:ready`, sin blockers, mergeable y con revisión independiente sobre el head exacto;
+- `merge:governed`: integración sensible; nunca entra a la cola diurna automática;
+- `release:none`: el merge no deja una activación de producción pendiente;
+- `release:required`: después del merge todavía se necesita un release/apply independiente y gobernado.
 
-## Labels
+## Superficies protegidas
+
+Peskids y cualquier superficie `release:required` quedan fuera del auto-merge diurno aunque alguien añada manualmente un label incorrecto. El admission gate vuelve a validar de forma independiente:
+
+- `release:required` → bloquea daytime;
+- `impact:peskids` → bloquea daytime;
+- `impact:control-plane` → bloquea daytime;
+- `merge:governed` junto a `merge:daytime` → bloquea daytime por conflicto.
+
+Esto es defensa en profundidad frente a labels viejos o manuales.
+
+## Peskids
+
+Peskids es actualmente un tenant/producto protegido. Sus cambios se clasifican `merge:governed` y, cuando corresponda, `release:required`.
+
+El flujo esperado es:
+
+```text
+PR Peskids
+  → CI + revisión
+  → governed merge
+  → main
+  → release candidate explícito
+  → ventana de producción
+  → deploy / smoke / rollback del release
+```
+
+No se encadena un Deploy de Peskids después de merges de Games, Content, Health Travel u otros dominios.
+
+## Migraciones e infraestructura
+
+`supabase/migrations/**`, scripts de deploy/rebuild y superficies equivalentes son `release:required + merge:governed`.
+
+Mergear una migración significa versionar el cambio en `main`; no significa aplicarla.
+
+## Night merge
+
+`night-merge` significa **cola de integración nocturna**, no permiso de deploy. Solo se auto-etiquetan PRs gobernados que estén `state:ready`, sin blockers y con `opsly-independent-review=success` sobre el head exacto. Los cambios de control-plane requieren encolado explícito y no se auto-etiquetan.
+
+Ver [NIGHT-MERGE.md](NIGHT-MERGE.md).
+
+## Labels de excepción
 
 | Label | Uso |
-|-------|-----|
-| `night-merge` | Cola de **merge automático nocturno** (01:00 Bogotá): CI verde de día (este label **pasa** el gate `production-change-window` sin autorizar merge diurno) → squash-merge → Deploy → smoke → rollback si falla. Ver [`NIGHT-MERGE.md`](NIGHT-MERGE.md) |
-| `safe-daytime` | Humano certifica: no afecta prod/ops; merge de día OK |
-| `hotfix-prod` | Emergencia; merge/deploy de día OK |
-
-## Merge mientras duermes
-
-1. De día: PR revisado, CI verde y staging verificado.
-2. En la ventana: ejecutar **Promote Peskids release candidate** con el SHA completo.
-3. Si deploy o smoke fallan, se restaura el último artefacto SHA conocido.
-
-## Agentes / Cursor
-
-Se puede mergear Peskids/runtime de día cuando CI y revisión estén verdes; no se puede promover a producción de día. `night-merge` queda para compatibilidad. Ver `.cursor/rules/production-change-window.mdc`.
-
-## Nightly merge + upgrades + cleanup
-
-PRs con label **`night-merge`** se squash-mergean a la **01:00 America/Bogota**. Después: nightly-ops (~01:15) y **Night cleanup** (03:30) con revisión anterior/posterior. Ver [`NIGHTLY-OPS-UPGRADE.md`](NIGHTLY-OPS-UPGRADE.md) y [`NIGHT-CLEANUP.md`](NIGHT-CLEANUP.md).
+|---|---|
+| `safe-daytime` | Compatibilidad/manual para cambios certificados como no operativos; no reemplaza la clasificación canónica |
+| `hotfix-prod` | Emergencia real de producción; debe conservar aprobación humana y gates del workflow |
+| `night-merge` | Cola nocturna de integración; no autoriza release |
 
 ## Comandos
 
@@ -67,19 +106,21 @@ PRs con label **`night-merge`** se squash-mergean a la **01:00 America/Bogota**.
 # ¿Estamos en ventana? (exit 0 = sí)
 node scripts/ci/check-production-change-window.mjs --check-now
 
-# Simular paths de un PR
-node scripts/ci/check-production-change-window.mjs --paths apps/peskids/app/page.tsx
+# Clasificar paths sin mutar GitHub
+node scripts/ci/change-impact.mjs --paths lib/content-studio/src/index.ts
+node scripts/ci/change-impact.mjs --paths apps/peskids/app/page.tsx
 ```
 
-## Enforce en GitHub
+## Enforcement
 
-1. Workflow **Production change window** en PRs (status check).
-2. Añadir check **`production-change-window`** a branch protection de `main` (Settings → Branches).
-3. Deploy Peskids: gate nocturno + input `force_daytime` en `workflow_dispatch`.
+1. `Change impact classification` asigna rutas desde trusted `main`.
+2. Daytime/Night admission vuelve a validar blockers, checks y revisión exact-head.
+3. Peskids/release-required/control-plane no pueden entrar al daytime bot.
+4. Los workflows de release/aplicación conservan la ventana nocturna y sus propias aprobaciones.
+5. Un cambio de control-plane no puede certificarse ni mergearse a sí mismo mediante la automatización que introduce.
 
-### Peskids Docker gotcha (2026-09-10)
+### Peskids Docker gotcha
 
-- Next **15.5** en `apps/peskids`: `next build` ya usa webpack. **No** pasar `--webpack` ni `--turbopack` en `apps/peskids/Dockerfile`.
-- Ese flag rompe GHCR (`unknown option '--webpack'`) y deja prod atrás de `main`.
-- Guard CI: `scripts/ci/check-peskids-docker-build-flags.sh` (job `scripts-check`).
-- Tras merge a `main`: Actions → **Deploy Peskids**. De día solo con `force_daytime=true` + label `hotfix-prod` / humano.
+- Next 15.5 en `apps/peskids`: `next build` ya usa webpack; no pasar `--webpack` ni `--turbopack` en `apps/peskids/Dockerfile`.
+- Guard CI: `scripts/ci/check-peskids-docker-build-flags.sh`.
+- Tras un governed merge, el deploy sigue siendo una acción de release separada.

@@ -1,19 +1,10 @@
-# Governed night integration queue.
-# IMPORTANT: merge != release. This workflow never dispatches Deploy and never
-# applies migrations/n8n/production changes. Release workflows own activation.
-name: Night merge
+name: Daytime merge
 
 on:
   schedule:
-    # America/Bogota = UTC-5 year-round: 23:00, 01:00, 03:00 local.
-    - cron: "0 4,6,8 * * *"
+    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
-      force:
-        description: "Skip night-window clock gate (emergency/test only)"
-        type: boolean
-        required: false
-        default: false
       dry_run:
         description: "List eligible PRs without merging"
         type: boolean
@@ -47,14 +38,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Enforce night window
-        if: inputs.force != true
-        run: node scripts/ci/check-production-change-window.mjs --check-now
-
       - name: Admission contract tests
         run: node --test scripts/ci/__tests__/governed-merge-candidates.test.mjs
 
-      - name: Merge bounded night batch
+      - name: Merge bounded daytime batch
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
@@ -63,19 +50,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t PRS < <(node scripts/ci/governed-merge-candidates.mjs --route night --limit 3)
+          mapfile -t PRS < <(node scripts/ci/governed-merge-candidates.mjs --route daytime --limit 3)
           if [ "${#PRS[@]}" -eq 0 ]; then
-            echo "No exact-head night candidates"
+            echo "No exact-head daytime candidates"
             exit 0
           fi
 
           for pr in "${PRS[@]}"; do
             sha="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" --jq '.head.sha')"
-            echo "night candidate #$pr @$sha"
+            echo "daytime candidate #$pr @$sha"
             if [ "$DRY_RUN" = "1" ]; then
               continue
             fi
-            # Merge only. GITHUB_TOKEN prevents push-triggered Deploy recursion.
+            # GITHUB_TOKEN merge intentionally does not trigger push-based Deploy.
+            # Release/activation is a separate governed action.
             gh pr merge "$pr" \
               --repo "$GITHUB_REPOSITORY" \
               --squash \

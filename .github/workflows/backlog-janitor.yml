@@ -1,0 +1,61 @@
+name: Backlog Janitor
+
+on:
+  schedule:
+    - cron: "23 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Report only; do not close PRs"
+        type: boolean
+        required: false
+        default: false
+      limit:
+        description: "Maximum superseded PRs to process"
+        type: number
+        required: false
+        default: 10
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: backlog-janitor-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Janitor contract tests
+        run: node --test scripts/ci/__tests__/backlog-janitor.test.mjs
+
+      - name: Reconcile explicit superseded PRs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == true && '1' || '0' }}
+          LIMIT: ${{ github.event_name == 'workflow_dispatch' && inputs.limit || 10 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--limit "$LIMIT" --json)
+          if [ "$DRY_RUN" = "1" ]; then
+            args+=(--dry-run)
+          fi
+          node scripts/ci/backlog-janitor.mjs "${args[@]}"
