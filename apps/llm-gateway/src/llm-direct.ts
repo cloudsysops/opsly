@@ -127,6 +127,7 @@ async function invokeOpenAiCompatible(
   };
 }
 
+// Local Ollama cold starts on CPU workers routinely exceed 1s; keep this runtime-tunable.
 function parseLocalTimeoutMs(): number {
   const raw = process.env.LLM_GATEWAY_LOCAL_TIMEOUT_MS;
   if (!raw) {
