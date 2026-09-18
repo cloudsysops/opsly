@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/hotfix-orchestrator-agent-services-once.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *'
 
 concurrency:
   group: hotfix-orchestrator-agent-services-once
@@ -17,15 +20,50 @@ permissions:
 jobs:
   gate:
     runs-on: ubuntu-latest
+    outputs:
+      repair_needed: ${{ steps.probe.outputs.repair_needed }}
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Connect Tailscale for read-only runtime probe
+        if: env.TAILSCALE_AUTHKEY != ''
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
+
+      - name: Probe current orchestrator runtime
+        id: probe
+        env:
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repair_needed=true
+          body="$(curl -fsS --max-time 8 \
+            -H "Authorization: Bearer ${PLATFORM_ADMIN_TOKEN}" \
+            http://100.120.151.91:3011/api/local/state 2>/dev/null || true)"
+          if [ -n "$body" ] \
+            && ! grep -q 'Failed to load agent services config' <<<"$body" \
+            && grep -q '"success":true' <<<"$body"; then
+            repair_needed=false
+            echo "AGENT_SERVICES_RUNTIME_ALREADY_OK"
+          else
+            echo "AGENT_SERVICES_RUNTIME_REPAIR_NEEDED"
+          fi
+          echo "repair_needed=$repair_needed" >> "$GITHUB_OUTPUT"
+
       - name: Production change window
+        if: steps.probe.outputs.repair_needed == 'true'
         run: |
           set -euo pipefail
           node scripts/ci/check-production-change-window.mjs --mode deploy
 
   build:
     needs: gate
+    if: needs.gate.outputs.repair_needed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +82,8 @@ jobs:
           tags: ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
 
   deploy:
-    needs: build
+    needs: [gate, build]
+    if: needs.gate.outputs.repair_needed == 'true' && needs.build.result == 'success'
     runs-on: ubuntu-latest
     environment: production
     permissions:
