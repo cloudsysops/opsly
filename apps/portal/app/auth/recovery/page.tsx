@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { AuthRecoveryHandler } from '@/components/auth/auth-recovery-handler';
+import { getRuntimeSupabasePublicConfig } from '@/lib/runtime-env';
 
 type Props = {
   searchParams: Promise<{ code?: string; next?: string }>;
@@ -26,9 +27,9 @@ export default async function AuthRecoveryPage({
     nextParam && nextParam.startsWith('/') ? nextParam : '/update-password';
 
   if (code) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
-    if (!url || !anon) {
+    const { supabaseUrl: url, supabaseAnonKey: anon, configured } =
+      getRuntimeSupabasePublicConfig();
+    if (!configured) {
       redirect('/login?error=auth_not_configured');
     }
 

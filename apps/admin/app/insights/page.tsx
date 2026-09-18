@@ -4,6 +4,7 @@
  */
 
 import { createServerSupabase } from '@/lib/supabase/server';
+import { getRuntimeApiBaseUrl } from '@/lib/runtime-env';
 
 type InsightType =
   | 'churn_risk'
@@ -110,8 +111,9 @@ export default async function InsightsPage({
     if (tenant) {
       tenantName = tenant.name || tenant.slug;
 
+      const apiBase = getRuntimeApiBaseUrl();
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/tenants/${tenantSlug}/insights?status=active&limit=50`,
+        `${apiBase}/api/tenants/${tenantSlug}/insights?status=active&limit=50`,
         {
           headers: {
             Authorization: `Bearer ${process.env.ADMIN_SESSION_TOKEN || ''}`,

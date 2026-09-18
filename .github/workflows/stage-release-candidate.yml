@@ -52,16 +52,16 @@ jobs:
             exit 1
           fi
           echo "release_sha=$RELEASE_SHA" >> "$GITHUB_OUTPUT"
-          echo "staging_image_tag=${RELEASE_SHA}-staging" >> "$GITHUB_OUTPUT"
+          echo "staging_image_tag=$RELEASE_SHA" >> "$GITHUB_OUTPUT"
 
   build-staging-candidate:
-    name: Build exact SHA with staging-only config
+    name: Verify exact-SHA candidate images for QA
     needs: validate-candidate
     runs-on: ubuntu-latest
     environment: staging
     permissions:
       contents: read
-      packages: write
+      packages: read
     env:
       RELEASE_SHA: ${{ needs.validate-candidate.outputs.release_sha }}
       STAGING_IMAGE_TAG: ${{ needs.validate-candidate.outputs.staging_image_tag }}
@@ -75,8 +75,6 @@ jobs:
         with:
           ref: ${{ env.RELEASE_SHA }}
           fetch-depth: 1
-
-      - uses: docker/setup-buildx-action@v3
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -99,46 +97,7 @@ jobs:
             exit 1
           fi
 
-      - name: Build and push exact-SHA staging images
-        run: |
-          set -euo pipefail
-          registry="ghcr.io/cloudsysops"
-
-          docker buildx build --push -f apps/api/Dockerfile \
-            -t "$registry/intcloudsysops-api:$STAGING_IMAGE_TAG" \
-            --build-arg "PLATFORM_DOMAIN=$STAGING_PLATFORM_DOMAIN" .
-
-          docker buildx build --push -f apps/admin/Dockerfile \
-            -t "$registry/intcloudsysops-admin:$STAGING_IMAGE_TAG" \
-            --build-arg "NEXT_PUBLIC_SUPABASE_URL=$STAGING_NEXT_PUBLIC_SUPABASE_URL" \
-            --build-arg "NEXT_PUBLIC_SUPABASE_ANON_KEY=$STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY" \
-            --build-arg "NEXT_PUBLIC_API_URL=https://api.$STAGING_PLATFORM_DOMAIN" \
-            --build-arg "NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false" .
-
-          docker buildx build --push -f apps/portal/Dockerfile \
-            -t "$registry/intcloudsysops-portal:$STAGING_IMAGE_TAG" \
-            --build-arg "NEXT_PUBLIC_SUPABASE_URL=$STAGING_NEXT_PUBLIC_SUPABASE_URL" \
-            --build-arg "NEXT_PUBLIC_SUPABASE_ANON_KEY=$STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY" \
-            --build-arg "NEXT_PUBLIC_API_URL=https://api.$STAGING_PLATFORM_DOMAIN" \
-            --build-arg "NEXT_PUBLIC_SUPPORT_EMAIL=$NEXT_PUBLIC_SUPPORT_EMAIL" \
-            --build-arg "NEXT_PUBLIC_PLATFORM_DOMAIN=$STAGING_PLATFORM_DOMAIN" .
-
-          docker buildx build --push -f apps/icso/Dockerfile \
-            -t "$registry/intcloudsysops-icso:$STAGING_IMAGE_TAG" \
-            --build-arg "NEXT_PUBLIC_SITE_URL=https://intcloudsysops.com" .
-
-          docker buildx build --push -f apps/llm-gateway/Dockerfile \
-            -t "$registry/intcloudsysops-llm-gateway:$STAGING_IMAGE_TAG" .
-          docker buildx build --push -f apps/orchestrator/Dockerfile \
-            -t "$registry/intcloudsysops-orchestrator:$STAGING_IMAGE_TAG" .
-          docker buildx build --push -f Dockerfile.hermes \
-            -t "$registry/intcloudsysops-hermes:$STAGING_IMAGE_TAG" .
-          docker buildx build --push -f apps/context-builder/Dockerfile \
-            -t "$registry/intcloudsysops-context-builder:$STAGING_IMAGE_TAG" .
-          docker buildx build --push -f apps/mcp/Dockerfile \
-            -t "$registry/intcloudsysops-mcp:$STAGING_IMAGE_TAG" .
-
-      - name: Resolve immutable staging digests
+      - name: Resolve immutable QA-tested candidate digests
         run: |
           set -euo pipefail
           digests='{}'
@@ -178,6 +137,9 @@ jobs:
       STAGING_IMAGE_TAG: ${{ needs.validate-candidate.outputs.staging_image_tag }}
       TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
       STAGING_PLATFORM_DOMAIN: ${{ secrets.STAGING_PLATFORM_DOMAIN }}
+      STAGING_NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
+      STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_SUPPORT_EMAIL: ${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -195,6 +157,8 @@ jobs:
           test -n "${VPS_SSH_KEY:-}" || { echo "Missing VPS_SSH_KEY" >&2; exit 1; }
           test -n "${VPS_SSH_HOST:-${VPS_HOST:-}}" || { echo "Missing VPS_SSH_HOST or VPS_HOST" >&2; exit 1; }
           test -n "${STAGING_PLATFORM_DOMAIN:-}" || { echo "Missing STAGING_PLATFORM_DOMAIN" >&2; exit 1; }
+          test -n "${STAGING_NEXT_PUBLIC_SUPABASE_URL:-}" || { echo "Missing STAGING_NEXT_PUBLIC_SUPABASE_URL" >&2; exit 1; }
+          test -n "${STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY:-}" || { echo "Missing STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY" >&2; exit 1; }
 
       - name: Detect Tailscale access
         id: tailscale
@@ -218,6 +182,10 @@ jobs:
           RELEASE_SHA: ${{ env.RELEASE_SHA }}
           STAGING_IMAGE_TAG: ${{ env.STAGING_IMAGE_TAG }}
           STAGING_PLATFORM_DOMAIN: ${{ env.STAGING_PLATFORM_DOMAIN }}
+          PLATFORM_DOMAIN: ${{ env.STAGING_PLATFORM_DOMAIN }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ env.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPPORT_EMAIL: ${{ env.NEXT_PUBLIC_SUPPORT_EMAIL }}
           GITHUB_DEPLOY_TOKEN: ${{ github.token }}
           GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
         with:
@@ -226,7 +194,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 2m
           command_timeout: 30m
-          envs: RELEASE_SHA,STAGING_IMAGE_TAG,STAGING_PLATFORM_DOMAIN,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
+          envs: RELEASE_SHA,STAGING_IMAGE_TAG,STAGING_PLATFORM_DOMAIN,PLATFORM_DOMAIN,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPPORT_EMAIL,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
           script: |
             set -euo pipefail
             DEPLOY_PATH=/opt/opsly-staging

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from '@/lib/supabase/server';
 import { getSessionAuthToken } from '@/lib/session-auth';
+import { getRuntimeApiBaseUrl } from '@/lib/runtime-env';
 
 export async function POST(): Promise<NextResponse> {
   try {
@@ -12,7 +13,7 @@ export async function POST(): Promise<NextResponse> {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const base = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
+    const base = getRuntimeApiBaseUrl();
     const token = await getSessionAuthToken();
     if (!base) {
       return NextResponse.json({ error: 'API URL not configured' }, { status: 500 });

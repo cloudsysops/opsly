@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from '@/lib/supabase/server';
+import { getRuntimeSupabasePublicConfig } from '@/lib/runtime-env';
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -16,7 +17,7 @@ export async function GET(): Promise<NextResponse> {
       }
     }
 
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const { supabaseUrl: url } = getRuntimeSupabasePublicConfig();
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !serviceKey) {
       return NextResponse.json(

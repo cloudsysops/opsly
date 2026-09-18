@@ -1,6 +1,7 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { PORTAL_DEMO_COOKIE } from '@/lib/demo-tenant';
+import { getRuntimeSupabasePublicConfig } from '@/lib/runtime-env';
 import {
   isInviteSurfacePath,
   isLoginSurfacePath,
@@ -23,12 +24,12 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     request,
   });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const { supabaseUrl: url, supabaseAnonKey: anon, configured } =
+    getRuntimeSupabasePublicConfig();
 
   let user = null;
 
-  if (url && anon) {
+  if (configured) {
     const supabase = createServerClient(url, anon, {
       cookies: {
         getAll() {

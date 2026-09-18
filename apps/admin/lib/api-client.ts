@@ -1,3 +1,4 @@
+import { getPublicRuntimeConfig } from './public-runtime-config';
 import { getSessionAuthToken } from './session-auth';
 import type {
   AgentsTeamResponse,
@@ -35,8 +36,8 @@ function inferApiBaseFromAdminHost(hostname: string): string | null {
 }
 
 function getBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_API_URL;
-  if (base && base.length > 0) {
+  const base = getPublicRuntimeConfig().apiUrl?.trim();
+  if (base) {
     return base.replace(/\/$/, '');
   }
   if (globalThis.window !== undefined) {

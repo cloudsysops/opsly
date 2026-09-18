@@ -6,9 +6,11 @@ import { Topbar } from '@/components/layout/Topbar';
 import { CyberParticles } from '@/components/layout/CyberParticles';
 import { HackerHud } from '@/components/layout/HackerHud';
 import { CapacityAlertBanner } from '@/components/layout/CapacityAlertBanner';
+import { getPublicRuntimeConfig } from '@/lib/public-runtime-config';
 
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const runtime = getPublicRuntimeConfig();
   if (pathname === '/login') {
     return <div className="min-h-screen bg-ops-bg">{children}</div>;
   }
@@ -25,7 +27,7 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
         <footer className="holo-border mx-6 mb-4 rounded-xl px-6 py-3 font-mono text-[11px] text-ops-gray">
           Opsly Platform v{process.env.NEXT_PUBLIC_APP_VERSION ?? '1.0'} &middot;{' '}
           {process.env.NEXT_PUBLIC_ENV ?? 'staging'} &middot;{' '}
-          {process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? 'op-sly.com'}
+          {runtime.platformDomain?.trim() || 'op-sly.com'}
         </footer>
       </div>
     </div>

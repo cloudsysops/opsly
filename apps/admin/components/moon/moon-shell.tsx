@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { MoonSidebar } from '@/components/moon/moon-sidebar';
 import { MoonHeader } from '@/components/moon/moon-header';
 import { CapacityAlertBanner } from '@/components/layout/CapacityAlertBanner';
+import { getPublicRuntimeConfig } from '@/lib/public-runtime-config';
 
 /**
  * Opsly Moon chrome — evolves apps/admin without a second app.
@@ -11,6 +12,7 @@ import { CapacityAlertBanner } from '@/components/layout/CapacityAlertBanner';
  */
 export function MoonShell({ children }: { children: React.ReactNode }): React.ReactElement {
   const pathname = usePathname();
+  const runtime = getPublicRuntimeConfig();
   if (pathname === '/login' || pathname.startsWith('/invite')) {
     return <div className="min-h-screen bg-[#050914]">{children}</div>;
   }
@@ -26,7 +28,7 @@ export function MoonShell({ children }: { children: React.ReactNode }): React.Re
         <footer className="mx-4 mb-4 rounded-xl border border-white/10 px-4 py-3 font-mono text-[11px] text-slate-500 sm:mx-6">
           Opsly Moon · v{process.env.NEXT_PUBLIC_APP_VERSION ?? '1.0'} ·{' '}
           {process.env.NEXT_PUBLIC_ENV ?? 'staging'} ·{' '}
-          {process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? 'op-sly.com'} · sin MRR ficticio
+          {runtime.platformDomain?.trim() || 'op-sly.com'} · sin MRR ficticio
         </footer>
       </div>
     </div>

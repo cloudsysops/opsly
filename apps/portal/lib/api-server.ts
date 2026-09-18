@@ -1,10 +1,11 @@
 import { headers } from 'next/headers';
+import { getRuntimeApiBaseUrl } from '@/lib/runtime-env';
 
 /** Server Components: `NEXT_PUBLIC_API_URL` o host `portal.*` / localhost. */
 export async function getApiBaseUrlServer(): Promise<string> {
-  const env = process.env.NEXT_PUBLIC_API_URL?.trim();
-  if (env && env.length > 0) {
-    return env.replace(/\/$/, '');
+  const env = getRuntimeApiBaseUrl();
+  if (env) {
+    return env;
   }
   const h = await headers();
   const host = h.get('x-forwarded-host') ?? h.get('host') ?? '';

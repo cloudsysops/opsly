@@ -1,7 +1,6 @@
 'use server';
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ?? 'http://localhost:3000';
+import { getRuntimeApiBaseUrl } from '@/lib/runtime-env';
 
 export type CheckoutPlan = 'startup' | 'business';
 
@@ -14,7 +13,8 @@ export async function createCheckoutSession(
   slug: string,
   plan: CheckoutPlan
 ): Promise<CheckoutResult> {
-  const res = await fetch(`${API_BASE}/api/checkout/session`, {
+  const apiBase = getRuntimeApiBaseUrl() || 'http://localhost:3000';
+  const res = await fetch(`${apiBase}/api/checkout/session`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, slug, plan }),

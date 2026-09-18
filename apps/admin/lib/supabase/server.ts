@@ -1,11 +1,11 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { getAuthPublicConfig } from '@/lib/auth-public-config';
 
 export async function createServerSupabase() {
   const cookieStore = await cookies();
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) {
+  const { supabaseUrl: url, supabaseAnonKey: anon, configured } = getAuthPublicConfig();
+  if (!configured) {
     throw new Error('Missing Supabase URL or anon key');
   }
   return createServerClient(url, anon, {

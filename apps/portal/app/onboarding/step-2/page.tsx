@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { getPublicRuntimeConfig } from '@/lib/public-runtime-config';
 
 function ServicePreview({
   icon,
@@ -56,7 +57,7 @@ function Step2Content() {
   const plan = params.get('plan') ?? 'startup';
 
   const platformDomain =
-    process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.replace(/^https?:\/\//u, '').replace(/\/$/u, '') ||
+    getPublicRuntimeConfig().platformDomain?.replace(/^https?:\/\//u, '').replace(/\/$/u, '') ||
     'op-sly.com';
   const n8nUrl = `n8n-${slug}.${platformDomain}`;
   const uptimeUrl = `uptime-${slug}.${platformDomain}`;

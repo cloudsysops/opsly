@@ -194,6 +194,7 @@ services:
     env_file:
       - ../.env
     environment:
+      PLATFORM_DOMAIN: ${PLATFORM_DOMAIN}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       ORCHESTRATOR_INTERNAL_URL: ${ORCHESTRATOR_INTERNAL_URL:-http://orchestrator:3011}
       OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-queue-only}
@@ -256,6 +257,11 @@ services:
       - ../.env
     environment:
       PORT: '3001'
+      PLATFORM_DOMAIN: ${PLATFORM_DOMAIN}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      NEXT_PUBLIC_API_URL: https://api.${PLATFORM_DOMAIN}
+      NEXT_PUBLIC_PLATFORM_DOMAIN: ${PLATFORM_DOMAIN}
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=traefik-public'

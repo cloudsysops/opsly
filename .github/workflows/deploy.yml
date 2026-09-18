@@ -129,8 +129,6 @@ jobs:
           tags: |
             ghcr.io/cloudsysops/intcloudsysops-api:latest
             ghcr.io/cloudsysops/intcloudsysops-api:${{ github.sha }}
-          build-args: |
-            PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}
 
       - name: Build and push Admin image
         uses: docker/build-push-action@v5
@@ -141,11 +139,6 @@ jobs:
           tags: |
             ghcr.io/cloudsysops/intcloudsysops-admin:latest
             ghcr.io/cloudsysops/intcloudsysops-admin:${{ github.sha }}
-          build-args: |
-            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}
-            NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false
 
       - name: Build and push Portal image
         uses: docker/build-push-action@v5
@@ -156,12 +149,6 @@ jobs:
           tags: |
             ghcr.io/cloudsysops/intcloudsysops-portal:latest
             ghcr.io/cloudsysops/intcloudsysops-portal:${{ github.sha }}
-          build-args: |
-            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}
-            NEXT_PUBLIC_SUPPORT_EMAIL=${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
-            NEXT_PUBLIC_PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}
 
       - name: Build and push ICSO marketing image
         uses: docker/build-push-action@v5
@@ -378,8 +365,6 @@ jobs:
           tags: |
             ghcr.io/cloudsysops/intcloudsysops-api:staging
             ghcr.io/cloudsysops/intcloudsysops-api:${{ github.sha }}
-          build-args: |
-            PLATFORM_DOMAIN=${{ steps.staging_domain.outputs.domain }}
 
       - name: Build and push Admin image (staging)
         uses: docker/build-push-action@v5
@@ -390,11 +375,6 @@ jobs:
           tags: |
             ghcr.io/cloudsysops/intcloudsysops-admin:staging
             ghcr.io/cloudsysops/intcloudsysops-admin:${{ github.sha }}
-          build-args: |
-            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            NEXT_PUBLIC_API_URL=https://api.${{ steps.staging_domain.outputs.domain }}
-            NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false
 
       - name: Build and push Portal image (staging)
         uses: docker/build-push-action@v5
@@ -405,12 +385,6 @@ jobs:
           tags: |
             ghcr.io/cloudsysops/intcloudsysops-portal:staging
             ghcr.io/cloudsysops/intcloudsysops-portal:${{ github.sha }}
-          build-args: |
-            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            NEXT_PUBLIC_API_URL=https://api.${{ steps.staging_domain.outputs.domain }}
-            NEXT_PUBLIC_SUPPORT_EMAIL=${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
-            NEXT_PUBLIC_PLATFORM_DOMAIN=${{ steps.staging_domain.outputs.domain }}
 
       - name: Build and push ICSO marketing image (staging)
         uses: docker/build-push-action@v5
