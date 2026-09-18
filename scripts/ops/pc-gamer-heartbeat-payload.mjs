@@ -59,7 +59,7 @@ function defaultCapabilities() {
 export function buildHeartbeatPayload(env = process.env) {
   const gpu = queryNvidia();
   return {
-    workerId: env.WORKER_ID || 'pc-gamer-openclaw-01',
+    workerId: env.WORKER_ID || osHostname().toLowerCase(),
     hostname: env.HOSTNAME || osHostname(),
     status: 'online',
     at: new Date().toISOString(),
