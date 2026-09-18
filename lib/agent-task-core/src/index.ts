@@ -63,3 +63,16 @@ export {
   type DispatchClaimDimension,
   type DispatchConflictDecision,
 } from './dispatch-claim.js';
+
+export {
+  HERMES_ARMY_CONTROLLER_VERSION,
+  buildHermesCommanderPrompt,
+  parseHermesCommanderResult,
+  inspectArmyGraph,
+  armyNodeDisposition,
+  buildArmyNodePrompt,
+  buildArmyNodeSubmitBody,
+  type ArmyGraphIssue,
+  type ArmyNodeDisposition,
+  type ArmyNodeSubmitBody,
+} from './hermes-army-controller.js';
