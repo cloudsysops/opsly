@@ -696,12 +696,9 @@ jobs:
       - build-and-push
       - build-mcp
       - verify-runtime-images
-    # Solo producción: imágenes GHCR + compose. En staging este job no corre (build-* están skipped).
-    # verify-runtime-images tiene continue-on-error: true — deploy corre si build tuvo éxito.
-    if: |
-      github.ref_name == 'main' &&
-      needs.build-and-push.result == 'success' &&
-      needs.build-mcp.result == 'success'
+    # CIRCUIT BREAKER: ordinary main integration must never activate production.
+    # Production promotion is governed separately; see #1448 / #1635.
+    if: false
     runs-on: ubuntu-latest
     environment: production
     permissions:
