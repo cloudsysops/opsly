@@ -1,20 +1,10 @@
 import { createBrowserClient } from '@supabase/ssr';
+import { getPublicRuntimeConfig } from '@/lib/public-runtime-config';
 
 export function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) {
-    // Fallback for build without env - creates dummy client for prerendering
-    const fallbackUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-    const fallbackAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
-    return createBrowserClient(fallbackUrl, fallbackAnon, {
-      auth: {
-        detectSessionInUrl: true,
-        flowType: 'pkce',
-        experimental: { passkey: true },
-      },
-    });
-  }
+  const runtime = getPublicRuntimeConfig();
+  const url = runtime.supabaseUrl?.trim() || 'https://placeholder.supabase.co';
+  const anon = runtime.supabaseAnonKey?.trim() || 'placeholder';
   return createBrowserClient(url, anon, {
     auth: {
       detectSessionInUrl: true,
