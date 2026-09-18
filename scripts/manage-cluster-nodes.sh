@@ -71,7 +71,7 @@ node = {
     "status": "active",
     "created_at": datetime.now(timezone.utc).isoformat(),
 }
-nodes.append(node)
+nodes.insert(0, node)
 data["updated_at"] = datetime.now(timezone.utc).isoformat()
 with open(path, "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2)
