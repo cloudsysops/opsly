@@ -157,13 +157,6 @@ export function effectiveLimits(
   cfg: RuntimeGovernorConfig,
   tenantPlan?: string,
 ): GovernorStatusSnapshot['effective_limits'] {
-<<<<<<< HEAD
-=======
-  // Internal automation intentionally omits tenant_plan. In that case use the
-  // top-level governor boundary. Tier overrides apply only when a caller
-  // explicitly identifies a customer plan; otherwise undefined would silently
-  // collapse to the free tier and make top-level internal limits unreachable.
->>>>>>> 859bd9a90 (fix(governor): use top-level limits for internal automation)
   // Internal automation intentionally omits tenant_plan. In that case use the
   // top-level governor boundary. Tier overrides apply only when a caller
   // explicitly identifies a customer plan; otherwise undefined would silently

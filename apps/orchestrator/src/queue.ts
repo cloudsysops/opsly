@@ -178,7 +178,7 @@ export interface LocalAgentQueueLoad {
   delayed: number;
 }
 
-/** In-flight local-agents queue load: active + queued + delayed jobs. */
+/** In-flight local-agents queue load: jobs enqueued but not terminal (active + queued + delayed). */
 export async function countLocalAgentQueueLoad(): Promise<LocalAgentQueueLoad> {
   try {
     const counts = await Promise.race([
@@ -199,6 +199,7 @@ export async function countLocalAgentQueueLoad(): Promise<LocalAgentQueueLoad> {
   }
 }
 
+/** Bounded wait so a stuck/unreachable Redis falls back to in-memory accounting instead of hanging the governor. */
 function queueCountsTimeout(ms: number): Promise<null> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(null), ms);
