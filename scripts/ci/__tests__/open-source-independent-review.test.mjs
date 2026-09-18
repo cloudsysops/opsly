@@ -28,7 +28,7 @@ test('reviewer dispatches through governed local_opencode and polls terminal evi
 });
 
 test('reviewer fails closed unless terminal evidence identifies local Qwen and a worker', () => {
-  assert.match(reviewer, /\^ollama\\\/qwen\/i);
+  assert.ok(reviewer.includes("!/^ollama\\/qwen/i.test(modelUsed)"));
   assert.match(reviewer, /requires local Qwen evidence/);
   assert.match(reviewer, /requires worker identity evidence/);
   assert.match(reviewer, /Provider cost: \$0/);
