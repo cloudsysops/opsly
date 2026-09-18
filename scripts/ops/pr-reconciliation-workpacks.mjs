@@ -31,13 +31,17 @@ const workpacks = inventory.pullRequests
       pr.lane === 'CHECK_FAILED'
         ? (pr.protected ? 'DIAGNOSE_ONLY' : 'REPAIR')
         : pr.lane === 'REVIEW_BLOCKED'
-          ? 'REQUEST_INDEPENDENT_REVIEW'
+          ? (pr.changesRequested ? (pr.protected ? 'DIAGNOSE_ONLY' : 'REPAIR_REVIEW_BLOCKER') : 'REQUEST_INDEPENDENT_REVIEW')
           : pr.protected
             ? 'ESCALATE'
             : pr.lane === 'BEHIND'
               ? 'UPDATE_BRANCH_CANDIDATE'
               : 'CONFLICT_RECONCILIATION',
-    writeAllowed: pr.lane === 'CHECK_FAILED' && pr.protected !== true,
+    writeAllowed:
+      pr.protected !== true &&
+      (pr.lane === 'CHECK_FAILED' || (pr.lane === 'REVIEW_BLOCKED' && pr.changesRequested === true)),
+    changesRequested: pr.changesRequested === true,
+    independentReview: pr.independentReview ?? { state: 'missing', needsRun: true },
     behindBy: pr.behindBy,
     aheadBy: pr.aheadBy,
     instructions: [
