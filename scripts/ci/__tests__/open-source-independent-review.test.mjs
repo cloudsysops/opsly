@@ -24,7 +24,7 @@ test('reviewer dispatches through governed local_opencode and polls terminal evi
   assert.match(reviewer, /production_deploy: false/);
   assert.match(reviewer, /paid_infra_required: false/);
   assert.match(reviewer, /Cloud fallback: disabled/);
-  assert.doesNotMatch(reviewer, /fetch\(\`${GATEWAY_URL}\/v1\/text/);
+  assert.doesNotMatch(reviewer, /GATEWAY_URL/);
 });
 
 test('reviewer fails closed unless terminal evidence identifies local Qwen and a worker', () => {
