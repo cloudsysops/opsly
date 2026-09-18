@@ -7,6 +7,7 @@ import { LlmUsageCard } from '@/components/llm-usage-card';
 import { ServiceCard } from '@/components/service-card';
 import { healthFromReachable } from '@/components/status-badge';
 import { requirePortalPayloadWithUsageAndInsights } from '@/lib/portal-server';
+import { getRuntimeSupportEmail } from '@/lib/runtime-env';
 
 export default async function ManagedDashboardPage(): Promise<ReactElement> {
   const { payload: data, usage, insights } = await requirePortalPayloadWithUsageAndInsights();
@@ -19,7 +20,7 @@ export default async function ManagedDashboardPage(): Promise<ReactElement> {
 
   const allHealthy = data.health.n8n_reachable && data.health.uptime_reachable;
   const displayName = data.name || data.slug;
-  const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() ?? '';
+  const supportEmail = getRuntimeSupportEmail();
 
   return (
     <PortalShell title={`Tus Automatizaciones - ${displayName}`} showModeLink tenantSlug={data.slug}>
