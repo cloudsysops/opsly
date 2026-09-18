@@ -1,6 +1,7 @@
 import type { Json } from './types';
 import { parseServiceUrls } from './service-urls';
 import { resolveTenantSiteTarget } from '../../../lib/runtime/src/tenant-site-routing';
+import { getPublicRuntimeConfig } from './public-runtime-config';
 
 /** Cómo opera el tenant respecto al control plane Opsly. */
 export type TenantDeploymentMode = 'incubated' | 'dedicated';
@@ -39,11 +40,7 @@ function normalizeOrigin(url: string): string {
 }
 
 function platformDomain(): string {
-  return (
-    process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim() ||
-    process.env.PLATFORM_DOMAIN?.trim() ||
-    'op-sly.com'
-  );
+  return getPublicRuntimeConfig().platformDomain?.trim() || 'op-sly.com';
 }
 
 function resolveIncubatedStaffOrigin(slug: string): string | null {
