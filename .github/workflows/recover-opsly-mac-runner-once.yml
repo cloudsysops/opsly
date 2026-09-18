@@ -48,8 +48,8 @@ jobs:
     timeout-minutes: 12
     env:
       TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
-      VPS_TARGET_HOST: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
-      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_TARGET_HOST: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
+      VPS_USER: ${{ secrets.VPS_USER || 'vps-dragon' }}
       VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
     steps:
       - uses: actions/checkout@v4
@@ -70,8 +70,10 @@ jobs:
           set -euo pipefail
           missing=0
           for key in TAILSCALE_AUTHKEY VPS_TARGET_HOST VPS_USER VPS_SSH_KEY; do
-            if [ -z "${!key:-}" ]; then
-              echo "::error::Missing required recovery secret: $key"
+            if [ -n "${!key:-}" ]; then
+              echo "$key=present"
+            else
+              echo "$key=missing"
               missing=1
             fi
           done
