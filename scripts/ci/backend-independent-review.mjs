@@ -282,7 +282,7 @@ async function reviewWithLocalWorker({ pr, diff, failingChecks }) {
 }
 
 function isClean(verdict) {
-  return verdict.toLowerCase().includes(CLEAN_PHRASE.toLowerCase());
+  return verdict.trim() === CLEAN_PHRASE;
 }
 
 async function submitReview(pr, verdict, modelUsed, workerId, token) {
