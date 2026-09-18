@@ -31,6 +31,10 @@
  */
 'use strict';
 
+import fs from 'node:fs/promises';
+import { isIgnoredCheck } from './pr-triage.mjs';
+
+const POLICY_PATH = new URL('../../config/pr-triage-policy.json', import.meta.url);
 const REPO = process.env.OPSLY_GITHUB_REPO ?? 'cloudsysops/opsly';
 const READ_TOKEN = (process.env.GITHUB_TOKEN ?? '').trim();
 const ORCHESTRATOR_URL = (process.env.OPSLY_ORCHESTRATOR_URL ?? 'http://100.120.151.91:3011').replace(/\/$/, '');
@@ -39,7 +43,17 @@ const TENANT_SLUG = process.env.OPSLY_DOCTOR_TENANT ?? 'platform';
 
 // production-change-window y opsly-independent-review ya tienen su propio
 // manejo (night-merge.yml / backend-independent-review.yml) — no duplicar.
-const IGNORED_CHECKS = new Set(['production-change-window', 'opsly-independent-review', 'independent-review']);
+let ignoredPatternsCache = null;
+
+async function ignoredCheckPatterns() {
+  if (ignoredPatternsCache) return ignoredPatternsCache;
+  const policy = JSON.parse(await fs.readFile(POLICY_PATH, 'utf8'));
+  const patterns = Array.isArray(policy?.ignored_check_patterns)
+    ? policy.ignored_check_patterns.map(String)
+    : [];
+  ignoredPatternsCache = patterns;
+  return patterns;
+}
 const MARKER_PREFIX = 'PR Doctor: fix dispatched for';
 
 function parseArgs(argv) {
@@ -75,9 +89,12 @@ async function alreadyDispatched(pr, shortSha, token) {
 }
 
 async function failingChecks(pr, token) {
-  const combined = await gh(`repos/${REPO}/commits/${pr.head.sha}/check-runs?per_page=100`, { token });
+  const [combined, ignoredPatterns] = await Promise.all([
+    gh(`repos/${REPO}/commits/${pr.head.sha}/check-runs?per_page=100`, { token }),
+    ignoredCheckPatterns(),
+  ]);
   return (combined.check_runs ?? [])
-    .filter((c) => c.conclusion === 'failure' && !IGNORED_CHECKS.has(c.name))
+    .filter((c) => c.conclusion === 'failure' && !isIgnoredCheck(c.name, ignoredPatterns))
     .map((c) => ({
       name: c.name,
       details_url: c.details_url,

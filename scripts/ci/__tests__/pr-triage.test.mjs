@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 import { classifyChecks, hasDoctorMarker, isIgnoredCheck } from '../pr-triage.mjs';
 
-const ignored = ['production change window', 'opsly-independent-review', 'independent-review'];
+const ignored = ['production change window', 'opsly-independent-review', 'independent-review', 'open-source-review', 'open-source independent review'];
 
 test('ignores governance-only failures', () => {
   const result = classifyChecks([
@@ -38,6 +38,8 @@ test('recognizes PR Doctor ownership only for current head', () => {
 
 test('matches ignored checks case-insensitively', () => {
   assert.equal(isIgnoredCheck('Opsly-Independent-Review', ignored), true);
+  assert.equal(isIgnoredCheck('open-source-review', ignored), true);
+  assert.equal(isIgnoredCheck('Open-source independent review', ignored), true);
 });
 
 test('does not mark ready until every configured core gate has been observed', () => {
