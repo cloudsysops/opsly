@@ -16,6 +16,12 @@ on:
     types: [completed]
     branches: [main]
   workflow_dispatch:
+    inputs:
+      force_daytime:
+        description: 'Emergency — deploy outside America/Bogota 22:00–06:00 window'
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-panini-lab-${{ github.ref }}
@@ -31,6 +37,10 @@ jobs:
     outputs:
       sha: ${{ steps.sha.outputs.sha }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
       - id: sha
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -38,6 +48,13 @@ jobs:
           else
             echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Production change window
+        env:
+          FORCE_DAYTIME: ${{ github.event_name == 'workflow_dispatch' && inputs.force_daytime && '1' || '0' }}
+        run: |
+          set -euo pipefail
+          node scripts/ci/check-production-change-window.mjs --mode deploy
 
   build-and-push:
     needs: gate
@@ -136,8 +153,21 @@ jobs:
 
             export PANINI_IMAGE_TAG
 
-            doppler run --project ops-intcloudsysops --config prd -- \
-              docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml pull
+            pull_panini() {
+              local attempt
+              for attempt in 1 2 3; do
+                if doppler run --project ops-intcloudsysops --config prd -- \
+                  docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml pull; then
+                  echo "Panini image pull OK (attempt $attempt)"
+                  return 0
+                fi
+                echo "::warning::Panini image pull failed (attempt $attempt/3); waiting for Docker/containerd leases to settle"
+                sleep $((attempt * 15))
+              done
+              echo "::error::Panini image pull failed after 3 attempts"
+              return 1
+            }
+            pull_panini
 
             docker rm -f panini-lab 2>/dev/null || true
 
@@ -149,9 +179,8 @@ jobs:
               docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d traefik app admin portal
             cd ..
 
-            bash /opt/opsly/scripts/docker-prune-after-deploy.sh 2>/dev/null \
-              || { docker image prune -af || true; docker builder prune -af 2>/dev/null || true; }
-
+            # Do not prune here. Multiple tenant deploys may share this Docker daemon;
+            # pruning while another workflow pulls can invalidate containerd leases.
             sleep 8
             for i in 1 2 3 4 5; do
               if curl -sf http://127.0.0.1:3005/dashboard >/dev/null 2>&1; then
