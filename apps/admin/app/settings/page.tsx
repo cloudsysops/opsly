@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { PLAN_MRR_USD, PLAN_PORT_BASE } from '@/lib/plans';
+import { getPublicRuntimeConfig } from '@/lib/public-runtime-config';
 import { useState } from 'react';
 
 function maskUrl(url: string | undefined): string {
@@ -36,7 +37,7 @@ function parseJsonSafe(text: string): { error?: string } {
 }
 
 export default function SettingsPage() {
-  const domain = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? '—';
+  const domain = getPublicRuntimeConfig().platformDomain?.trim() || '—';
   const version = process.env.NEXT_PUBLIC_APP_VERSION ?? '0.0.0';
   const discord = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL ?? '';
   const stripeOk = process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_CONFIGURED === 'true';
