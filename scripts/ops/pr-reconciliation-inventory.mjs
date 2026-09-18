@@ -89,7 +89,7 @@ function supersededByReference(pull, comments, openPullNumbers) {
   return matches.map((match) => Number(match[1])).filter((number) => openPullNumbers.has(number));
 }
 
-function unresolvedReviewState(reviews) {
+function unresolvedReviewState(reviews, headSha) {
   const latestByUser = new Map();
   for (const review of reviews) {
     if (!review.user?.login) continue;
@@ -98,7 +98,9 @@ function unresolvedReviewState(reviews) {
     const previousSubmitted = Date.parse(previous?.submitted_at || 0);
     if (!previous || submitted >= previousSubmitted) latestByUser.set(review.user.login, review);
   }
-  return [...latestByUser.values()].some((review) => review.state === 'CHANGES_REQUESTED');
+  return [...latestByUser.values()].some(
+    (review) => review.state === 'CHANGES_REQUESTED' && review.commit_id === headSha
+  );
 }
 
 function ignoredCheck(name) {
@@ -161,7 +163,7 @@ for (const pull of pulls) {
     combinedStatus.statuses || [],
     'opsly-independent-review'
   );
-  const changesRequested = unresolvedReviewState(reviews);
+  const changesRequested = unresolvedReviewState(reviews, pull.head.sha);
   const independentState = independentStatus?.state ?? 'missing';
   const reviewBlocked =
     changesRequested ||
