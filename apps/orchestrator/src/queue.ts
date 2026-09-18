@@ -171,6 +171,40 @@ export async function enqueueLocalAgentJob(
 }
 
 
+export interface LocalAgentQueueLoad {
+  ok: boolean;
+  active: number;
+  waiting: number;
+  delayed: number;
+}
+
+/** In-flight local-agents queue load: active + queued + delayed jobs. */
+export async function countLocalAgentQueueLoad(): Promise<LocalAgentQueueLoad> {
+  try {
+    const counts = await Promise.race([
+      localAgentQueue.getJobCounts('waiting', 'active', 'delayed', 'failed', 'completed', 'paused'),
+      queueCountsTimeout(1500),
+    ]);
+    if (counts === null) {
+      return { ok: false, active: 0, waiting: 0, delayed: 0 };
+    }
+    return {
+      ok: true,
+      active: counts.active ?? 0,
+      waiting: counts.waiting ?? 0,
+      delayed: counts.delayed ?? 0,
+    };
+  } catch {
+    return { ok: false, active: 0, waiting: 0, delayed: 0 };
+  }
+}
+
+function queueCountsTimeout(ms: number): Promise<null> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(null), ms);
+  });
+}
+
 export async function probeLocalAgentQueue(): Promise<{
   ok: boolean;
   redis_ping: string;
