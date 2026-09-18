@@ -100,7 +100,7 @@ export type MissionControlExecutionProjectionV1 = {
 };
 
 function githubState(
-  pr: FactoryPullRequestInputV1,
+  pr: FactoryPullRequestInputV1
 ): Extract<ExecutionActivityStateV1, 'REVIEW' | 'MERGE_READY' | 'BLOCKED'> {
   if (
     pr.merge_readiness === 'BLOCKED' ||
@@ -188,11 +188,7 @@ export function buildMissionControlExecutionProjectionV1(input: {
     const workId = session.work_id ?? `session:${session.session_id}`;
     const existing = byWork.get(workId);
     const state: ExecutionActivityStateV1 =
-      session.status === 'running'
-        ? 'RUNNING'
-        : session.status === 'failed'
-          ? 'ERROR'
-          : 'BLOCKED';
+      session.status === 'running' ? 'RUNNING' : session.status === 'failed' ? 'ERROR' : 'BLOCKED';
     const blocker =
       session.status === 'waiting_approval'
         ? 'runtime session is waiting for approval'
@@ -261,13 +257,10 @@ export function buildMissionControlExecutionProjectionV1(input: {
     byWork.set(pr.work_id, {
       work_id: pr.work_id,
       agent_id:
-        pr.agent_id ??
-        (pr.transport === 'human_relay' ? 'human-relay' : 'autonomous-worker'),
+        pr.agent_id ?? (pr.transport === 'human_relay' ? 'human-relay' : 'autonomous-worker'),
       transport: pr.transport,
       session_type:
-        pr.transport === 'human_relay'
-          ? 'interactive_subscription'
-          : 'orchestrated_runtime',
+        pr.transport === 'human_relay' ? 'interactive_subscription' : 'orchestrated_runtime',
       state: githubState(pr),
       machine: null,
       workstream: pr.workstream,

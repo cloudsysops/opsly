@@ -8,20 +8,18 @@ test('separates autonomous and human-relay capability from observed activity', (
     execution_sources: {
       registry_driven_admission: true,
       handoff_available: true,
-      registered_workers: [
-        { id: 'opencode', enabled: true, opsly_job_type: 'local_opencode' },
-      ],
+      registered_workers: [{ id: 'opencode', enabled: true, opsly_job_type: 'local_opencode' }],
     },
   });
 
   assert.equal(projection.sources.length, 2);
   assert.equal(
     projection.sources.find((source) => source.transport === 'autonomous')?.available,
-    true,
+    true
   );
   assert.equal(
     projection.sources.find((source) => source.transport === 'human_relay')?.available,
-    true,
+    true
   );
   assert.equal(projection.activities.length, 0);
 });
@@ -38,15 +36,21 @@ test('does not invent human-relay activity when only the adapter is available', 
   assert.equal(projection.activities.length, 0);
   assert.equal(
     projection.sources.find((source) => source.transport === 'human_relay')?.available,
-    true,
+    true
   );
 });
 
 test('keeps capability unknown when the read-only source probe is absent', () => {
   const projection = buildMissionControlExecutionProjectionV1({});
 
-  assert.equal(projection.sources.every((source) => source.confidence === 'UNKNOWN'), true);
-  assert.equal(projection.sources.every((source) => source.available === false), true);
+  assert.equal(
+    projection.sources.every((source) => source.confidence === 'UNKNOWN'),
+    true
+  );
+  assert.equal(
+    projection.sources.every((source) => source.available === false),
+    true
+  );
 });
 
 test('an active DispatchClaimV1 means CLAIMED, never RUNNING by itself', () => {

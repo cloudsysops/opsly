@@ -716,7 +716,6 @@ export async function executeAgentIdeMcpTool(
 
 export type { OllamaDemoJobStatus } from './types';
 
-
 export async function getHealthTravelRuntimeSummary(
   days = 30
 ): Promise<HealthTravelRuntimeSummaryResponse> {

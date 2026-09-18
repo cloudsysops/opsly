@@ -7,10 +7,7 @@ const MAX_EVENT_ROWS = 5000;
 const RECENT_ACTIVITY_HOURS = 24;
 const PROBE_TIMEOUT_MS = 2500;
 
-export type HealthTravelConnectivity =
-  | 'healthy'
-  | 'unavailable'
-  | 'not_configured';
+export type HealthTravelConnectivity = 'healthy' | 'unavailable' | 'not_configured';
 
 export type HealthTravelActivity = 'recent' | 'quiet' | 'never_seen';
 
@@ -59,14 +56,10 @@ export function summarizeHealthTravelReceipts(
   rows: readonly ReceiptRow[],
   now = new Date()
 ): Pick<HealthTravelRuntimeSummary, 'activity' | 'counts'> {
-  const sorted = [...rows].sort(
-    (a, b) => Date.parse(b.occurred_at) - Date.parse(a.occurred_at)
-  );
+  const sorted = [...rows].sort((a, b) => Date.parse(b.occurred_at) - Date.parse(a.occurred_at));
   const last = sorted[0] ?? null;
   const hoursSince =
-    last === null
-      ? null
-      : Math.max(0, (now.getTime() - Date.parse(last.occurred_at)) / 3_600_000);
+    last === null ? null : Math.max(0, (now.getTime() - Date.parse(last.occurred_at)) / 3_600_000);
 
   const counts = {
     leads: 0,
@@ -111,7 +104,11 @@ export function summarizeHealthTravelReceipts(
   return {
     activity: {
       status:
-        last === null ? 'never_seen' : (hoursSince ?? Infinity) <= RECENT_ACTIVITY_HOURS ? 'recent' : 'quiet',
+        last === null
+          ? 'never_seen'
+          : (hoursSince ?? Infinity) <= RECENT_ACTIVITY_HOURS
+            ? 'recent'
+            : 'quiet',
       last_event_at: last?.occurred_at ?? null,
       last_event_type: last?.event_type ?? null,
       hours_since_last_event: hoursSince,
@@ -213,9 +210,7 @@ export async function getHealthTravelRuntimeSummary(params?: {
 
   const [connectivity, summary] = await Promise.all([
     connectivityPromise,
-    Promise.resolve(
-      summarizeHealthTravelReceipts((receiptResult.data ?? []) as ReceiptRow[])
-    ),
+    Promise.resolve(summarizeHealthTravelReceipts((receiptResult.data ?? []) as ReceiptRow[])),
   ]);
 
   return {
