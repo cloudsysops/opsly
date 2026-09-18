@@ -1,8 +1,10 @@
 import { createBrowserClient, createServerClient, type SetAllCookies } from '@supabase/ssr';
+import { getPublicRuntimeConfig } from '@/lib/public-runtime-config';
 
-function readPublicSupabaseConfig(): { url: string; anon: string } | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+function readBrowserSupabaseConfig(): { url: string; anon: string } | null {
+  const runtime = getPublicRuntimeConfig();
+  const url = runtime.supabaseUrl?.trim() ?? '';
+  const anon = runtime.supabaseAnonKey?.trim() ?? '';
   if (!url || !anon) {
     return null;
   }
@@ -11,7 +13,7 @@ function readPublicSupabaseConfig(): { url: string; anon: string } | null {
 
 async function getBrowserAuthToken(): Promise<string | null> {
   try {
-    const config = readPublicSupabaseConfig();
+    const config = readBrowserSupabaseConfig();
     if (config === null) {
       return null;
     }
@@ -36,10 +38,12 @@ async function getBrowserAuthToken(): Promise<string | null> {
  */
 async function getServerAuthToken(): Promise<string | null> {
   try {
-    const config = readPublicSupabaseConfig();
-    if (config === null) {
+    const { getAuthPublicConfig } = await import('@/lib/auth-public-config');
+    const runtime = getAuthPublicConfig();
+    if (!runtime.configured) {
       return null;
     }
+    const config = { url: runtime.supabaseUrl, anon: runtime.supabaseAnonKey };
     const cookieStore = await import('next/headers').then((m) => m.cookies());
     const supabase = createServerClient(config.url, config.anon, {
       cookies: {
