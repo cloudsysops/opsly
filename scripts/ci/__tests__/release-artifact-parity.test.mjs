@@ -45,12 +45,8 @@ test('current platform images expose only remaining Admin/Portal same-digest blo
   const byService = Object.fromEntries(audit.services.map((service) => [service.service, service]));
   assert.deepEqual(byService.api.environment_coupled_build_args, []);
   assert.equal(byService.api.same_digest_ready, true);
-  assert.deepEqual(byService.admin.environment_coupled_build_args, [
-    'NEXT_PUBLIC_ADMIN_PUBLIC_DEMO',
-    'NEXT_PUBLIC_API_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    'NEXT_PUBLIC_SUPABASE_URL',
-  ]);
+  assert.deepEqual(byService.admin.environment_coupled_build_args, []);
+  assert.equal(byService.admin.same_digest_ready, true);
   assert.deepEqual(byService.portal.environment_coupled_build_args, [
     'NEXT_PUBLIC_API_URL',
     'NEXT_PUBLIC_PLATFORM_DOMAIN',
@@ -59,7 +55,6 @@ test('current platform images expose only remaining Admin/Portal same-digest blo
     'NEXT_PUBLIC_SUPPORT_EMAIL',
   ]);
 
-  assert.equal(audit.blockers.length, 9);
-  assert.ok(audit.blockers.includes('build_time_environment_coupling:admin:NEXT_PUBLIC_SUPABASE_URL'));
+  assert.equal(audit.blockers.length, 5);
   assert.ok(audit.blockers.includes('build_time_environment_coupling:portal:NEXT_PUBLIC_PLATFORM_DOMAIN'));
 });
