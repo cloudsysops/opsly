@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRuntimeApiBaseUrl } from '@/lib/runtime-env';
 
 export const runtime = 'nodejs';
 
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ?? '';
+  const apiBase = getRuntimeApiBaseUrl();
   if (!apiBase) {
     return NextResponse.json({ error: 'NEXT_PUBLIC_API_URL is not configured' }, { status: 500 });
   }
