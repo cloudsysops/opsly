@@ -91,6 +91,7 @@ jobs:
         run: |
           node --test scripts/ops/__tests__/pr-reconciliation-agent-envelopes.test.mjs
           node --test scripts/ops/__tests__/pr-reconciliation-dispatch-plan.test.mjs
+          node --test scripts/ops/__tests__/pr-reconciliation-flow.test.mjs
           node --test scripts/ops/__tests__/pr-reconciliation-cleanup-candidates.test.mjs
           node --test scripts/ops/__tests__/software-factory-telemetry.test.mjs
           node --test scripts/ops/__tests__/software-factory-cleanup-plan.test.mjs
