@@ -101,3 +101,18 @@ test('PR Doctor supports exact-head review repair without weakening reviewer pol
   assert.match(source, /No toques production-change-window ni debilites opsly-independent-review/);
   assert.match(source, /conflict_key: `pr-reconcile\/pr-\$\{pr\.number\}`/);
 });
+
+
+test('PR Doctor defers cleanly when no runtime is currently eligible', async () => {
+  const source = await fs.readFile(path.join(root, 'scripts/ci/pr-doctor.mjs'), 'utf8');
+  assert.match(source, /NO_DISPATCH_ELIGIBLE_AGENT/);
+  assert.match(source, /DEFERRED_RUNTIME/);
+  assert.match(source, /deferred:\s*true/);
+  assert.match(source, /se reintentará en el próximo reconciliation sweep/);
+});
+
+test('reconciliation sweeps backlog every twenty minutes with bounded dispatch', async () => {
+  const workflow = await fs.readFile(path.join(root, '.github/workflows/pr-reconciliation-inventory.yml'), 'utf8');
+  assert.match(workflow, /cron: '7,27,47 \* \* \* \*'/);
+  assert.match(workflow, /RECONCILIATION_MAX_DISPATCH: '8'/);
+});

@@ -192,6 +192,16 @@ async function dispatchFix(pr, failing, token, { reviewBlocked = false } = {}) {
   });
   if (!resp.ok) {
     const detail = await resp.text().catch(() => '');
+    if (
+      resp.status === 503 &&
+      (detail.includes('NO_DISPATCH_ELIGIBLE_AGENT') || detail.includes('runtime_unknown'))
+    ) {
+      return {
+        deferred: true,
+        reason: 'runtime_unavailable',
+        detail: detail.slice(0, 500),
+      };
+    }
     throw new Error(`prompt-submit ${resp.status}: ${detail.slice(0, 500)}`);
   }
   const result = await resp.json();
@@ -256,6 +266,12 @@ async function main() {
   }
 
   const result = await dispatchFix(pr, failing, READ_TOKEN, { reviewBlocked: args.reviewBlocked });
+  if (result?.deferred === true) {
+    console.log(
+      `#${pr.number} DEFERRED_RUNTIME — no hay worker elegible todavía; se reintentará en el próximo reconciliation sweep.`
+    );
+    return;
+  }
   console.log(`#${pr.number} fix despachado:`, JSON.stringify(result).slice(0, 300));
 }
 
