@@ -36,7 +36,13 @@ jobs:
           echo "OPSLY_MAC_RECOVERY_CONTRACT_OK"
 
   recover:
-    if: github.event_name != 'pull_request'
+    if: >-
+      github.event_name != 'pull_request' ||
+      (
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.event.pull_request.head.ref == 'fix/recover-opsly-mac-runner-out-of-band' &&
+        github.actor == 'cboteros'
+      )
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -47,6 +53,16 @@ jobs:
       VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Assert trusted same-repo recovery context
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.event.pull_request.head.repo.full_name }}" = "${{ github.repository }}"
+          test "${{ github.event.pull_request.head.ref }}" = "fix/recover-opsly-mac-runner-out-of-band"
+          test "${{ github.actor }}" = "cboteros"
+          echo "trusted_same_repo_recovery=true"
 
       - name: Validate remote recovery prerequisites
         shell: bash
