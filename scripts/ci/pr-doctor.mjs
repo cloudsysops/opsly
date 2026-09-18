@@ -102,7 +102,12 @@ async function blockingReviews(pr, token) {
     }
   }
   return [...latestByUser.values()]
-    .filter((review) => review.state === 'CHANGES_REQUESTED' && review.commit_id === pr.head.sha)
+    .filter(
+      (review) =>
+        review.state === 'CHANGES_REQUESTED' &&
+        review.commit_id === pr.head.sha &&
+        ['github-actions[bot]', 'github-actions'].includes(review.user?.login)
+    )
     .map((review) => ({
       name: `review:${review.user?.login ?? 'unknown'}`,
       details_url: review.html_url ?? pr.html_url,
