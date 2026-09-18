@@ -1,13 +1,11 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { getRuntimeSupabasePublicConfig } from '@/lib/runtime-env';
 
 function getSupabaseConfig(): { url: string; anon: string } | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? '';
-  if (!url || !anon) {
-    return null;
-  }
-  return { url, anon };
+  const { supabaseUrl: url, supabaseAnonKey: anon, configured } =
+    getRuntimeSupabasePublicConfig();
+  return configured ? { url, anon } : null;
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
