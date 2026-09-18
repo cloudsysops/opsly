@@ -168,6 +168,9 @@ jobs:
       STAGING_IMAGE_TAG: ${{ needs.validate-candidate.outputs.staging_image_tag }}
       TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
       STAGING_PLATFORM_DOMAIN: ${{ secrets.STAGING_PLATFORM_DOMAIN }}
+      STAGING_NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
+      STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_SUPPORT_EMAIL: ${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -185,6 +188,8 @@ jobs:
           test -n "${VPS_SSH_KEY:-}" || { echo "Missing VPS_SSH_KEY" >&2; exit 1; }
           test -n "${VPS_SSH_HOST:-${VPS_HOST:-}}" || { echo "Missing VPS_SSH_HOST or VPS_HOST" >&2; exit 1; }
           test -n "${STAGING_PLATFORM_DOMAIN:-}" || { echo "Missing STAGING_PLATFORM_DOMAIN" >&2; exit 1; }
+          test -n "${STAGING_NEXT_PUBLIC_SUPABASE_URL:-}" || { echo "Missing STAGING_NEXT_PUBLIC_SUPABASE_URL" >&2; exit 1; }
+          test -n "${STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY:-}" || { echo "Missing STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY" >&2; exit 1; }
 
       - name: Detect Tailscale access
         id: tailscale
@@ -208,6 +213,10 @@ jobs:
           RELEASE_SHA: ${{ env.RELEASE_SHA }}
           STAGING_IMAGE_TAG: ${{ env.STAGING_IMAGE_TAG }}
           STAGING_PLATFORM_DOMAIN: ${{ env.STAGING_PLATFORM_DOMAIN }}
+          PLATFORM_DOMAIN: ${{ env.STAGING_PLATFORM_DOMAIN }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ env.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPPORT_EMAIL: ${{ env.NEXT_PUBLIC_SUPPORT_EMAIL }}
           GITHUB_DEPLOY_TOKEN: ${{ github.token }}
           GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
         with:
@@ -216,7 +225,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 2m
           command_timeout: 30m
-          envs: RELEASE_SHA,STAGING_IMAGE_TAG,STAGING_PLATFORM_DOMAIN,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
+          envs: RELEASE_SHA,STAGING_IMAGE_TAG,STAGING_PLATFORM_DOMAIN,PLATFORM_DOMAIN,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPPORT_EMAIL,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
           script: |
             set -euo pipefail
             DEPLOY_PATH=/opt/opsly-staging
