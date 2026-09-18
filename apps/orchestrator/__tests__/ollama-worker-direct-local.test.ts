@@ -29,6 +29,14 @@ describe('OllamaWorker direct local mode', () => {
     expect(source).not.toMatch(/callDirectOllama[\s\S]{0,300}catch[\s\S]{0,300}gatewayBaseUrl/);
   });
 
+  it('preserves prompt-guard before direct local inference', () => {
+    const source = readFileSync('apps/orchestrator/src/workers/OllamaWorker.ts', 'utf8');
+    expect(source).toContain("import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard'");
+    expect(source).toContain('const guarded = guardLlmTextPrompt(prompt)');
+    expect(source).toContain('direct Ollama prompt rejected');
+    expect(source).toContain('directTaskPrompt(taskType, guarded.prompt)');
+  });
+
   it('records zero local cost and physical worker identity evidence', () => {
     const source = readFileSync('apps/orchestrator/src/workers/OllamaWorker.ts', 'utf8');
     expect(source).toContain('cost_usd: 0');
