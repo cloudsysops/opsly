@@ -58,3 +58,26 @@ jobs:
           }
           probe home-gpu-01 100.115.197.109
           probe pc-gamer 100.74.88.103
+
+      - name: Read canonical runtime worker state
+        env:
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== compute workers ==="
+          curl -fsS --max-time 12 \
+            -H "Authorization: Bearer $PLATFORM_ADMIN_TOKEN" \
+            https://api.op-sly.com/api/admin/compute-workers \
+            | jq '{workers,queues,updated_at}'
+          echo "=== orchestrator local agents ==="
+          curl -fsS --max-time 12 \
+            -H "Authorization: Bearer $PLATFORM_ADMIN_TOKEN" \
+            http://100.120.151.91:3011/api/local/state \
+            | jq '{control_mode,agents,jobs_recent}'
+          echo "=== local queue ==="
+          curl -fsS --max-time 12 \
+            -H "Authorization: Bearer $PLATFORM_ADMIN_TOKEN" \
+            http://100.120.151.91:3011/api/local/queue-health \
+            | jq .
+
