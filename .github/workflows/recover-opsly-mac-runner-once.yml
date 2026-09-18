@@ -23,7 +23,6 @@ jobs:
     timeout-minutes: 2
     steps:
       - uses: actions/checkout@v4
-
       - name: Validate recovery contract
         shell: bash
         run: |
@@ -70,22 +69,19 @@ jobs:
         run: |
           set -euo pipefail
           test -n "${TAILSCALE_AUTHKEY:-}" || { echo "TAILSCALE_AUTHKEY=missing"; exit 1; }
-          echo "TAILSCALE_AUTHKEY=present"
 
       - name: Require VPS target
         shell: bash
         run: |
           set -euo pipefail
-          test -n "${VPS_TARGET_HOST:-}" || { echo "VPS_TARGET_HOST=missing"; exit 1; }
-          test -n "${VPS_USER:-}" || { echo "VPS_USER=missing"; exit 1; }
-          echo "vps_target=present"
+          test -n "${VPS_TARGET_HOST:-}"
+          test -n "${VPS_USER:-}"
 
       - name: Require VPS SSH key
         shell: bash
         run: |
           set -euo pipefail
           test -n "${VPS_SSH_KEY:-}" || { echo "VPS_SSH_KEY=missing"; exit 1; }
-          echo "VPS_SSH_KEY=present"
 
       - name: Connect GitHub-hosted runner to Opsly tailnet
         uses: ./.github/actions/tailscale-connect
@@ -116,71 +112,9 @@ jobs:
           command_timeout: 2m
           script: |
             set -euo pipefail
-            command -v ssh >/dev/null
             ssh -o BatchMode=yes -o ConnectTimeout=10 opsly-admin-from-vps 'echo OPSLY_ADMIN_SSH_OK && hostname'
 
-      - name: Probe Mac control checkout
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.VPS_TARGET_HOST }}
-          username: ${{ env.VPS_USER }}
-          key: ${{ env.VPS_SSH_KEY }}
-          timeout: 2m
-          command_timeout: 3m
-          script: |
-            set -euo pipefail
-            ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
-            set -euo pipefail
-            echo "mac_host=$(hostname)"
-            echo "mac_user=$(whoami)"
-
-            repo=""
-            for candidate in "$HOME/opsly-control" "$HOME/src/opsly-control" "$HOME/Projects/opsly-control" "$HOME/Documents/opsly-control"; do
-              if [[ -d "$candidate/.git" ]]; then
-                repo="$candidate"
-                break
-              fi
-            done
-            if [[ -z "$repo" ]]; then
-              repo="$(find "$HOME" -maxdepth 4 -type d -name opsly-control -exec test -d '{}/.git' ';' -print -quit 2>/dev/null || true)"
-            fi
-            [[ -n "$repo" && -d "$repo/.git" ]] || { echo "BLOCKER_OPSLY_CONTROL_CHECKOUT_NOT_FOUND"; exit 78; }
-
-            origin="$(git -C "$repo" remote get-url origin 2>/dev/null || true)"
-            case "$origin" in
-              *cloudsysops/opsly-control*) ;;
-              *) echo "BLOCKER_UNEXPECTED_CONTROL_REPO_ORIGIN"; exit 78 ;;
-            esac
-
-            [[ -z "$(git -C "$repo" status --porcelain)" ]] || {
-              echo "BLOCKER_OPSLY_CONTROL_DIRTY_WORKTREE"
-              git -C "$repo" status --short | head -30
-              exit 78
-            }
-
-            echo "OPSLY_CONTROL_CHECKOUT_OK"
-            REMOTE_MAC
-
-      - name: Probe Mac operator auth
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.VPS_TARGET_HOST }}
-          username: ${{ env.VPS_USER }}
-          key: ${{ env.VPS_SSH_KEY }}
-          timeout: 2m
-          command_timeout: 3m
-          script: |
-            set -euo pipefail
-            ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
-            set -euo pipefail
-            command -v gh >/dev/null || { echo "BLOCKER_LOCAL_GH_MISSING"; exit 78; }
-            command -v doppler >/dev/null || { echo "BLOCKER_LOCAL_DOPPLER_MISSING"; exit 78; }
-            gh auth status >/dev/null 2>&1 || { echo "BLOCKER_LOCAL_GH_AUTH"; exit 78; }
-            doppler me >/dev/null 2>&1 || { echo "BLOCKER_LOCAL_DOPPLER_AUTH"; exit 78; }
-            echo "MAC_OPERATOR_AUTH_OK"
-            REMOTE_MAC
-
-      - name: Probe Mac control checkout
+      - name: Locate Mac opsly-control checkout
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.VPS_TARGET_HOST }}
@@ -199,12 +133,50 @@ jobs:
             if [[ -z "$repo" ]]; then
               repo="$(find "$HOME" -maxdepth 4 -type d -name opsly-control -exec test -d '{}/.git' ';' -print -quit 2>/dev/null || true)"
             fi
-            test -n "$repo" && test -d "$repo/.git" || { echo "BLOCKER_OPSLY_CONTROL_CHECKOUT_NOT_FOUND"; exit 78; }
-            origin="$(git -C "$repo" remote get-url origin 2>/dev/null || true)"
-            case "$origin" in *cloudsysops/opsly-control*) ;; *) echo "BLOCKER_UNEXPECTED_CONTROL_REPO_ORIGIN"; exit 78;; esac
-            [[ -z "$(git -C "$repo" status --porcelain)" ]] || { echo "BLOCKER_OPSLY_CONTROL_DIRTY_WORKTREE"; exit 78; }
+            [[ -n "$repo" && -d "$repo/.git" ]] || { echo "BLOCKER_OPSLY_CONTROL_CHECKOUT_NOT_FOUND"; exit 78; }
             printf '%s\n' "$repo" > "$HOME/.opsly-control-recovery-path"
-            echo "MAC_CONTROL_CHECKOUT_OK"
+            echo "MAC_CONTROL_CHECKOUT_FOUND"
+            REMOTE_MAC
+
+      - name: Verify Mac control checkout origin
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 3m
+          script: |
+            set -euo pipefail
+            ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
+            set -euo pipefail
+            repo="$(cat "$HOME/.opsly-control-recovery-path")"
+            origin="$(git -C "$repo" remote get-url origin 2>/dev/null || true)"
+            case "$origin" in
+              *cloudsysops/opsly-control*) echo "MAC_CONTROL_ORIGIN_OK" ;;
+              *) echo "BLOCKER_UNEXPECTED_CONTROL_REPO_ORIGIN"; exit 78 ;;
+            esac
+            REMOTE_MAC
+
+      - name: Verify Mac control checkout clean
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 3m
+          script: |
+            set -euo pipefail
+            ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
+            set -euo pipefail
+            repo="$(cat "$HOME/.opsly-control-recovery-path")"
+            if [[ -n "$(git -C "$repo" status --porcelain)" ]]; then
+              echo "BLOCKER_OPSLY_CONTROL_DIRTY_WORKTREE"
+              git -C "$repo" status --short | head -30
+              exit 78
+            fi
+            echo "MAC_CONTROL_WORKTREE_CLEAN"
             REMOTE_MAC
 
       - name: Probe Mac operator auth
