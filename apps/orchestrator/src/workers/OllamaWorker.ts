@@ -1,6 +1,7 @@
 import { Job } from 'bullmq';
 import { meterPlannerLlmFireAndForget } from '../metering/usage-events-meter.js';
 import { createWorker } from './create-worker.js';
+import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
 import type { OrchestratorJob } from '../types.js';
 import {
   logWorkerInfo,
@@ -15,6 +16,81 @@ function gatewayBaseUrl(): string {
   const raw =
     process.env.LLM_GATEWAY_URL ?? process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? DEFAULT_GATEWAY;
   return raw.replace(/\/$/, '');
+}
+
+
+export function directOllamaEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.OPSLY_OLLAMA_DIRECT === 'true' || env.OPSLY_EPHEMERAL_WORKER === 'true';
+}
+
+export function directOllamaBaseUrl(env: NodeJS.ProcessEnv = process.env): string {
+  return (env.OLLAMA_URL?.trim() || 'http://127.0.0.1:11434').replace(/\/$/, '');
+}
+
+export function directOllamaModel(env: NodeJS.ProcessEnv = process.env): string {
+  return env.OLLAMA_MODEL?.trim() || 'llama3.2';
+}
+
+function directTaskPrompt(taskType: string, prompt: string): string {
+  switch (taskType) {
+    case 'analyze':
+      return `Analyze the following and suggest improvements:\n\n${prompt}`;
+    case 'generate':
+      return `Generate concise code or text for the following request:\n\n${prompt}`;
+    case 'review':
+      return `Review the following for bugs and risks:\n\n${prompt}`;
+    case 'summarize':
+    default:
+      return `Summarize the following in one short paragraph:\n\n${prompt}`;
+  }
+}
+
+type DirectOllamaResponse = {
+  message?: { content?: string };
+  response?: string;
+  prompt_eval_count?: number;
+  eval_count?: number;
+};
+
+async function callDirectOllama(taskType: string, prompt: string): Promise<TextGatewayResponse> {
+  const guarded = guardLlmTextPrompt(prompt);
+  if (!guarded.ok) {
+    throw new Error(`direct Ollama prompt rejected: ${guarded.error}`);
+  }
+
+  const base = directOllamaBaseUrl();
+  const model = directOllamaModel();
+  const timeoutRaw = Number(process.env.OPSLY_OLLAMA_DIRECT_TIMEOUT_MS ?? 120_000);
+  const timeoutMs =
+    Number.isFinite(timeoutRaw) && timeoutRaw >= 1_000 && timeoutRaw <= 900_000
+      ? timeoutRaw
+      : 120_000;
+
+  const res = await fetch(`${base}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: 'user', content: directTaskPrompt(taskType, guarded.prompt) }],
+      stream: false,
+      options: { temperature: 0.2 },
+    }),
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    throw new Error(`direct Ollama HTTP ${res.status}: ${detail.slice(0, 200)}`);
+  }
+  const body = (await res.json()) as DirectOllamaResponse;
+  return {
+    content: body.message?.content ?? body.response ?? '',
+    llm: {
+      model_used: model,
+      tokens_input: Math.max(0, body.prompt_eval_count ?? 0),
+      tokens_output: Math.max(0, body.eval_count ?? 0),
+      cost_usd: 0,
+    },
+  };
 }
 
 type TextGatewayResponse = {
@@ -278,11 +354,15 @@ async function processOllamaJob(job: Job) {
       ? payload.task_type
       : 'summarize';
 
-  const url = `${gatewayBaseUrl()}/v1/text`;
   const t0 = Date.now();
-  let res: Response;
-  try {
-    res = await fetch(url, {
+  let json: TextGatewayResponse;
+  if (directOllamaEnabled()) {
+    // Ephemeral GPU workers are intentionally local-only. If their local Ollama
+    // is unavailable, fail closed here; never bounce back to the VPS/cloud chain.
+    json = await callDirectOllama(taskType, prompt);
+  } else {
+    const url = `${gatewayBaseUrl()}/v1/text`;
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -294,16 +374,13 @@ async function processOllamaJob(job: Job) {
       }),
       signal: AbortSignal.timeout(120_000),
     });
-  } catch (err) {
-    throw err;
-  }
 
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`ollama gateway HTTP ${res.status}: ${errText.slice(0, 200)}`);
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`ollama gateway HTTP ${res.status}: ${errText.slice(0, 200)}`);
+    }
+    json = (await res.json()) as TextGatewayResponse;
   }
-
-  const json = (await res.json()) as TextGatewayResponse;
   const tokensIn = Math.max(0, json.llm?.tokens_input ?? 0);
   const tokensOut = Math.max(0, json.llm?.tokens_output ?? 0);
   meterPlannerLlmFireAndForget(tenantSlug, data.tenant_id, {
@@ -332,6 +409,8 @@ async function processOllamaJob(job: Job) {
     content_preview: typeof json.content === 'string' ? json.content.slice(0, 500) : '',
     cost_usd: json.llm?.cost_usd ?? 0,
     model_used: json.llm?.model_used ?? 'unknown',
+    direct_ollama: directOllamaEnabled(),
+    worker_id: process.env.WORKER_ID ?? null,
     auto_commit: autoCommit,
   };
 }
