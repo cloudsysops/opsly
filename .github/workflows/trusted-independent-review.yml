@@ -1,0 +1,115 @@
+# Trusted independent-review evidence for PR head commits.
+# SECURITY: this workflow never executes PR-head code.
+# It loads the evaluator from the trusted base SHA and has only the minimum
+# write capability required to publish one commit status on the PR head.
+#
+# Bot policy: only github-actions[bot] is trusted, and only because it is the
+# identity used by .github/workflows/backend-independent-review.yml running the
+# Opsly Open Review Agent from a trusted base checkout. Human OWNER/MEMBER/
+# COLLABORATOR approvals remain valid through the evaluator.
+
+name: Trusted independent review
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted, dismissed]
+  issue_comment:
+    types: [deleted]
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+  statuses: write
+
+concurrency:
+  group: trusted-independent-review-${{ github.repository }}-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  independent-review:
+    if: >-
+      github.event_name == 'pull_request_target' ||
+      github.event_name == 'pull_request_review' ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request != null &&
+        github.event.action == 'deleted'
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve pull request metadata
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$PR_NUMBER" ]; then
+            echo "::error::Unable to resolve pull request number"
+            exit 1
+          fi
+
+          pr_json="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")"
+          {
+            echo "number=$PR_NUMBER"
+            echo "base_sha=$(jq -r '.base.sha' <<<"$pr_json")"
+            echo "head_sha=$(jq -r '.head.sha' <<<"$pr_json")"
+            echo "author=$(jq -r '.user.login' <<<"$pr_json")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Checkout trusted reviewer gate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.base_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Evaluate independent review and publish head status
+        id: review
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+          PR_AUTHOR: ${{ steps.pr.outputs.author }}
+          INDEPENDENT_REVIEW_BOTS: "github-actions[bot]"
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ ! -f scripts/ci/check-independent-review.mjs ]; then
+            echo "::error::Independent review evaluator is not present on trusted base SHA"
+            exit 1
+          fi
+
+          set +e
+          node scripts/ci/check-independent-review.mjs \
+            --repo "$GITHUB_REPOSITORY" \
+            --pr "$PR_NUMBER" \
+            --head "$HEAD_SHA" \
+            --author "$PR_AUTHOR" \
+            > independent-review.json 2>&1
+          rc=$?
+          set -e
+
+          cat independent-review.json
+
+          if [ "$rc" -eq 0 ]; then
+            state="success"
+            description="Open-source independent review verified for final head SHA"
+          else
+            state="failure"
+            description="Open-source independent review missing, stale, or blocking"
+          fi
+
+          gh api --method POST \
+            "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
+            -f state="$state" \
+            -f context="opsly-independent-review" \
+            -f description="$description"
+
+          exit "$rc"

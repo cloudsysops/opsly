@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "policy_id": "health-travel-colombia-provider-scoring",
+  "status": "proposed",
+  "hard_gates": [
+    "provider_status=approved",
+    "contract_status=active",
+    "credentials_reviewed=true",
+    "service_category_match=true",
+    "destination_match=true"
+  ],
+  "dimensions": [
+    {
+      "id": "service_fit",
+      "weight": 0.25,
+      "source": "approved_provider_profile"
+    },
+    {
+      "id": "credential_quality",
+      "weight": 0.2,
+      "source": "provider_verification"
+    },
+    {
+      "id": "availability_fit",
+      "weight": 0.15,
+      "source": "booking_availability"
+    },
+    {
+      "id": "language_fit",
+      "weight": 0.1,
+      "source": "provider_profile"
+    },
+    {
+      "id": "logistics_fit",
+      "weight": 0.1,
+      "source": "journey_requirements"
+    },
+    {
+      "id": "price_transparency",
+      "weight": 0.1,
+      "source": "approved_offer"
+    },
+    {
+      "id": "response_sla",
+      "weight": 0.05,
+      "source": "operational_metrics"
+    },
+    {
+      "id": "quality_evidence",
+      "weight": 0.05,
+      "source": "verified_quality_sources"
+    }
+  ],
+  "commercial_terms": {
+    "included_in_quality_score": false,
+    "expose_separately": true,
+    "rule": "Commission may break a tie only after quality/fit scoring and human-review rules; it may never override failed hard gates."
+  },
+  "decision_policy": {
+    "max_shortlist": 3,
+    "minimum_score": 0.65,
+    "human_approval_required_before_outbound": true,
+    "explain_rejections": true,
+    "confidence_required": true
+  },
+  "prohibited": [
+    "rank solely by commission",
+    "infer credentials",
+    "fabricate availability",
+    "fabricate savings",
+    "recommend clinical treatment"
+  ]
+}

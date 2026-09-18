@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { mkdtempSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {
   isFileStable,
+  listVideoFiles,
   loadDedupState,
   pickCommand,
   saveDedupState,
@@ -56,5 +57,35 @@ describe('PC-gamer gameplay watcher', () => {
       cmd: 'prepare-highlight',
       args: ['--tenant', 'icso-gaming-tbd', '--file', '/videos/obs/valorant-clip.mp4'],
     });
+  });
+
+  it('routes an instant-replay file when highlightsDir is not configured', () => {
+    expect(
+      pickCommand('/videos/nvidia/Valorant/clip.DVR.mp4', {
+        instantReplayDir: '/videos/nvidia',
+      }),
+    ).toEqual({
+      cmd: 'prepare-session',
+      args: ['--tenant', 'icso-gaming-tbd', '--file', '/videos/nvidia/Valorant/clip.DVR.mp4'],
+    });
+  });
+
+  it('finds recordings one level deep, matching NVIDIA ShadowPlay per-game subfolders', () => {
+    const root = mkdtempSync(path.join(os.tmpdir(), 'nvidia-capture-root-'));
+    mkdirSync(path.join(root, 'Valorant'));
+    mkdirSync(path.join(root, 'Desktop'));
+    writeFileSync(path.join(root, 'Valorant', 'clip-01.DVR.mp4'), 'x');
+    writeFileSync(path.join(root, 'Valorant', 'clip-02.mp4'), 'x');
+    writeFileSync(path.join(root, 'Desktop', 'clip-03.mp4'), 'x');
+    writeFileSync(path.join(root, 'notes.txt'), 'not a video');
+
+    const found = listVideoFiles(root).sort();
+    expect(found).toEqual(
+      [
+        path.join(root, 'Desktop', 'clip-03.mp4'),
+        path.join(root, 'Valorant', 'clip-01.DVR.mp4'),
+        path.join(root, 'Valorant', 'clip-02.mp4'),
+      ].sort(),
+    );
   });
 });

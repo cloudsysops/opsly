@@ -9,7 +9,12 @@ PLATFORM_DOMAIN="${PLATFORM_DOMAIN:-op-sly.com}"
 SMOKE_API_URL="${SMOKE_API_URL:-https://api.${PLATFORM_DOMAIN}/api/health}"
 # Prod Peskids is www.peskids.com — peskids.op-sly.com is a 308, not the live site.
 SMOKE_PESKIDS_URL="${SMOKE_PESKIDS_URL:-https://www.peskids.com/api/health}"
-DEPLOY_WAIT_SECONDS="${DEPLOY_WAIT_SECONDS:-1500}"
+# 1500s (25min) was too short — two consecutive live runs on 2026-09-14/15
+# timed out and triggered a false-alarm rollback while Deploy was still
+# genuinely in_progress; the first one actually finished at ~50min total.
+# 3000s still isn't a hard guarantee, but matches observed reality instead
+# of an arbitrary guess.
+DEPLOY_WAIT_SECONDS="${DEPLOY_WAIT_SECONDS:-3000}"
 DEPLOY_DISPATCH_AFTER_SECONDS="${DEPLOY_DISPATCH_AFTER_SECONDS:-120}"
 DRY_RUN="${DRY_RUN:-0}"
 FORCE="${NIGHT_MERGE_FORCE:-0}"
@@ -218,17 +223,44 @@ wait_for_deploy() {
   return 1
 }
 
+smoke_once() {
+  local url="$1" code
+  code="$(curl -sS -o /tmp/night-merge-smoke.out -w '%{http_code}' --max-time 25 -L "${url}" 2>/tmp/night-merge-smoke.err || true)"
+  printf '%s' "${code}"
+}
+
+# TLS-layer curl failures against ${url} (e.g. "certificate has expired",
+# CURLE_SSL_CACERT=60) have been observed against a certificate independently
+# verified valid (curl + openssl from an unrelated network) — consistent
+# with runner-local CA-store or clock staleness rather than a real prod
+# outage. Refresh the runner's trust store once (best-effort, never fatal —
+# a hosted runner may lack the package or sudo) and retry a few times before
+# treating it as a genuine failure, so a transient runner-side blip doesn't
+# trigger an unnecessary rollback of an otherwise-clean merge.
 smoke() {
-  local url code
+  local url code attempt
   if [[ "${SMOKE_PESKIDS_URL}" == *peskids.op-sly.com* && "${SMOKE_PESKIDS_URL}" != *peskids-staging* ]]; then
     warn "Peskids prod is https://www.peskids.com — refusing peskids.op-sly.com"
     return 1
   fi
   for url in "${SMOKE_API_URL}" "${SMOKE_PESKIDS_URL}"; do
-    code="$(curl -sS -o /tmp/night-merge-smoke.out -w '%{http_code}' --max-time 25 -L "${url}" || true)"
+    code="$(smoke_once "${url}")"
+    if [[ ! "${code}" =~ ^2 ]] && grep -qi 'certificate' /tmp/night-merge-smoke.err 2>/dev/null; then
+      warn "smoke ${url} → HTTP ${code} (TLS error, retrying after CA refresh): $(cat /tmp/night-merge-smoke.err 2>/dev/null)"
+      sudo update-ca-certificates >/dev/null 2>&1 || true
+      for attempt in 1 2 3; do
+        sleep 5
+        code="$(smoke_once "${url}")"
+        [[ "${code}" =~ ^2 ]] && break
+        warn "smoke ${url} retry ${attempt}/3 → HTTP ${code}"
+      done
+    fi
     log "smoke ${url} → HTTP ${code}"
     if [[ ! "${code}" =~ ^2 ]]; then
-      warn "Smoke failed for ${url}"
+      warn "Smoke failed for ${url}: $(cat /tmp/night-merge-smoke.err 2>/dev/null)"
+      curl -v --max-time 10 "${url}" >/tmp/night-merge-smoke-verbose.out 2>&1 || true
+      warn "diagnostic curl -v (system date: $(date -u)):"
+      cat /tmp/night-merge-smoke-verbose.out >&2 || true
       return 1
     fi
   done
