@@ -1,3 +1,5 @@
+import { getPublicRuntimeConfig } from './public-runtime-config';
+
 function inferApiBaseFromPortalHost(hostname: string): string | null {
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return 'http://127.0.0.1:3000';
@@ -9,7 +11,7 @@ function inferApiBaseFromPortalHost(hostname: string): string | null {
 }
 
 export function getApiBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_API_URL?.trim();
+  const base = getPublicRuntimeConfig().apiUrl?.trim();
   if (base && base.length > 0) {
     return base.replace(/\/$/, '');
   }
