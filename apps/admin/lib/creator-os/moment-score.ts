@@ -69,7 +69,7 @@ export function bandForMomentScore(score: number): MomentBand {
 }
 
 export function scoreMoment(signals: MomentSignals): MomentScoreResult {
-  const reasons = (Object.keys(MOMENT_WEIGHTS) as MomentSignalKey[]).map(signal => {
+  const reasons = (Object.keys(MOMENT_WEIGHTS) as MomentSignalKey[]).map((signal) => {
     const value = signals[signal];
     assertNormalizedSignal(signal, value);
     const weight = MOMENT_WEIGHTS[signal];
@@ -104,7 +104,7 @@ const DOWNGRADE_MAP: Record<Exclude<MomentBand, 'ignore'>, Exclude<MomentBand, '
 
 export function applyMomentDecision(
   candidate: MomentScoreResult,
-  decision: MomentDecision,
+  decision: MomentDecision
 ): MomentDecisionResult {
   if (!candidate.shouldGenerate || candidate.band === 'ignore') {
     throw new Error('cannot decide a Moment that is below the generation threshold');
