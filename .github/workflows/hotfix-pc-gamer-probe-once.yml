@@ -1,0 +1,35 @@
+name: Hotfix PC Gamer Probe Once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hotfix-pc-gamer-probe-once.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Connect Tailscale
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          ping_host: pc-gamer
+
+      - name: Probe PC gamer local AI surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          tailscale ping -c 2 pc-gamer
+          echo "=== Ollama tags ==="
+          curl -fsS --max-time 8 http://pc-gamer:11434/api/tags | jq '{models: [.models[]?.name]}'
+          echo "=== OpenCode bridge health ==="
+          curl -fsS --max-time 8 http://pc-gamer:5004/health | jq '{status,service,agent,dry_run,auth_required,auth_configured}'
