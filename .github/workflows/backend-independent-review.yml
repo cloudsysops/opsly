@@ -1,16 +1,15 @@
-# Opsly Open Review Agent — genera la review con nuestro LLM Gateway y una
-# ruta Ollama local explícita; no usa Copilot/Codex ni fallback cloud.
+# Opsly Open Review Agent — genera la review mediante el orchestrator gobernado
+# y local_opencode -> Ollama/Qwen en compute local; no usa Copilot/Codex ni fallback cloud.
 #
 # SEGURIDAD: mismo patrón que trusted-independent-review.yml — el paso que corre
 # scripts/ci/backend-independent-review.mjs hace checkout de la BASE SHA
 # confiable, nunca ejecuta código del PR head. Solo lee el PR (diff, checks,
 # reviews existentes) vía API de GitHub.
 #
-# ubuntu-latest se une a Tailscale efímeramente para alcanzar el LLM Gateway
-# interno. El script solicita provider_hint=ollama-code y el Gateway despacha
-# directamente a qwen_coder_local (Qwen2.5-Coder por defecto). Si Ollama o el
-# modelo no están disponibles, el job falla cerrado; no existe fallback a
-# OpenAI/Anthropic/otros proveedores cloud.
+# ubuntu-latest se une a Tailscale efímeramente para alcanzar el orchestrator
+# interno. El script encola una tarea read-only local_opencode y espera evidencia
+# terminal de un modelo ollama/qwen*. Si no hay worker/Qwen local, falla cerrado;
+# no existe fallback a OpenAI/Anthropic/otros proveedores cloud.
 
 name: Open-source independent review
 
@@ -62,8 +61,9 @@ jobs:
       - name: Run Opsly Open Review Agent
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          LLM_GATEWAY_URL: http://100.120.151.91:3010
+          OPSLY_ORCHESTRATOR_URL: http://100.120.151.91:3011
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
           OPSLY_GITHUB_REPO: ${{ github.repository }}
-          OPSLY_REVIEW_TENANT: opsly-ci-open-source-review
+          OPSLY_REVIEW_POLL_SECONDS: '420'
         run: |
           node scripts/ci/backend-independent-review.mjs --pr "${{ github.event.pull_request.number }}"
