@@ -161,10 +161,14 @@ for (const pull of pulls) {
     combinedStatus.statuses || [],
     'opsly-independent-review'
   );
+  const changesRequested = unresolvedReviewState(reviews);
+  const independentState = independentStatus?.state ?? 'missing';
   const reviewBlocked =
-    unresolvedReviewState(reviews) ||
-    independentStatus?.state === 'failure' ||
-    independentStatus?.state === 'error';
+    changesRequested ||
+    independentState === 'failure' ||
+    independentState === 'error' ||
+    independentState === 'missing' ||
+    independentState === 'pending';
 
   records.push({
     number: pull.number,
@@ -179,8 +183,10 @@ for (const pull of pulls) {
     behindBy: compare.behind_by ?? 0,
     protected: containsProtectedSurface(pull, files),
     reviewBlocked,
+    changesRequested,
     independentReview: {
-      state: independentStatus?.state ?? 'missing',
+      state: independentState,
+      needsRun: !changesRequested && independentState !== 'success',
       updatedAt: independentStatus?.updated_at ?? independentStatus?.created_at ?? null,
       description: independentStatus?.description ?? null,
     },
