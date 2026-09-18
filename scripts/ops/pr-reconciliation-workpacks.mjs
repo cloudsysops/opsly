@@ -15,7 +15,7 @@ const priority = {
 };
 
 const workpacks = inventory.pullRequests
-  .filter((pr) => actionable.has(pr.lane) && pr.supersededBy.length === 0)
+  .filter((pr) => pr.draft !== true && actionable.has(pr.lane) && pr.supersededBy.length === 0)
   .map((pr) => ({
     id: `pr-${pr.number}`,
     prNumber: pr.number,
