@@ -43,6 +43,9 @@ export const PESKIDS_CANONICAL_EVENT_NAMES = [
   'followup.overdue',
   'lead.renewal_due',
   'student.attendance_risk',
+  'swim.mission.assigned',
+  'swim.mission.completed',
+  'swim.mission.cancelled',
 ] as const;
 
 export const PESKIDS_DEPRECATED_TRIAL_EVENT_NAMES = [
