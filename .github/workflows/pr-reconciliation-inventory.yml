@@ -3,7 +3,7 @@ name: PR Reconciliation Inventory
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 * * * *'
+    - cron: '7,27,47 * * * *'
 
 permissions:
   contents: read
