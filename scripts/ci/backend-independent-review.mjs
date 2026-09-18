@@ -1,72 +1,45 @@
 #!/usr/bin/env node
 /**
- * Backend independent review — usa nuestro LLM Gateway (no Copilot/Codex externos)
- * para revisar PRs abiertos y someter una PR review real, satisfaciendo el mismo
- * gate que scripts/ci/check-independent-review.mjs evalúa en CI
+ * Opsly Open Review Agent — usa nuestro LLM Gateway con una ruta Ollama local
+ * explícita para revisar PRs abiertos y someter una PR review real, satisfaciendo
+ * el mismo gate que scripts/ci/check-independent-review.mjs evalúa en CI
  * (.github/workflows/trusted-independent-review.yml).
+ *
+ * Este reviewer no usa Codex, Copilot, OpenAI, Anthropic ni otro fallback cloud.
+ * `provider_hint=ollama-code` llama directamente a `qwen_coder_local`
+ * (Qwen2.5-Coder por defecto); si Ollama o el modelo no están disponibles, la
+ * revisión falla cerrada.
  *
  * Dos formas de correr esto (misma lógica, distinta identidad de posteo):
  *
  *   A. GitHub Actions (.github/workflows/backend-independent-review.yml) —
- *      ubuntu-latest (no self-hosted: cloudsysops/opsly es público, ver
- *      github-agent-queue.yml), se une a Tailscale efímeramente para alcanzar
- *      el LLM Gateway interno, y postea con el GITHUB_TOKEN ambiental
- *      (github-actions[bot], whitelisteado en INDEPENDENT_REVIEW_BOTS dentro
- *      de trusted-independent-review.yml). No requiere ninguna cuenta nueva.
+ *      ubuntu-latest, se une a Tailscale efímeramente para alcanzar el LLM
+ *      Gateway interno y postea con el GITHUB_TOKEN ambiental.
  *
- *   B. Cron Mac/VPS (igual que scripts/ci/night-merge-and-verify.sh), con
- *      OPSLY_REVIEW_BOT_TOKEN — PAT de una cuenta colaboradora del repo
- *      distinta al autor de los PRs. Útil si se quiere desacoplar de Actions.
- *
- * check-independent-review.mjs acepta cualquier review de un colaborador real
- * (author_association COLLABORATOR/MEMBER/OWNER) o de un bot en
- * INDEPENDENT_REVIEW_BOTS — nunca del propio autor del PR.
+ *   B. Cron Mac/VPS, con OPSLY_REVIEW_BOT_TOKEN — PAT de una cuenta
+ *      colaboradora del repo distinta al autor de los PRs.
  *
  * Requiere:
- *   OPSLY_REVIEW_BOT_TOKEN | GITHUB_TOKEN  — identidad de posteo (ver A/B arriba).
- *                              Sin ninguno de los dos: no-op con instrucciones.
- *   LLM_GATEWAY_URL         — default http://llm-gateway:3010 (interno, Tailscale;
- *                              el workflow A lo fija a http://100.120.151.91:3010).
- *                              Mismo contrato que lib/content-studio/src/llm/client.ts
- *                              (GatewayClient): POST /v1/chat.
- *   OPSLY_GITHUB_REPO       — default cloudsysops/opsly
- *   OPSLY_REVIEW_TENANT     — tenant_slug para el gateway, default "opsly-ci-review"
- *                              (perfil hybrid propio en Doppler, no comparte
- *                              free-always con el resto de 'platform')
- *
- * Uso:
- *   node scripts/ci/backend-independent-review.mjs --dry-run           # no escribe nada, solo lee
- *   node scripts/ci/backend-independent-review.mjs --pr 1553 --dry-run # un solo PR
- *   node scripts/ci/backend-independent-review.mjs --limit 5           # revisa y postea (máx 5 PRs)
+ *   OPSLY_REVIEW_BOT_TOKEN | GITHUB_TOKEN — identidad de posteo.
+ *   LLM_GATEWAY_URL — default http://llm-gateway:3010.
+ *   OPSLY_GITHUB_REPO — default cloudsysops/opsly.
+ *   OPSLY_REVIEW_TENANT — default "opsly-ci-open-source-review"; este tenant
+ *      está fijado a perfil `free-always` en el Gateway.
  */
 'use strict';
 
 import { evaluateIndependentReview } from './check-independent-review.mjs';
+import { buildFileAwareReviewContext } from './backend-review-context.mjs';
 
 const REPO = process.env.OPSLY_GITHUB_REPO ?? 'cloudsysops/opsly';
-// Dos identidades posibles para postear la review (nunca el autor del PR):
-//   1. OPSLY_REVIEW_BOT_TOKEN — cuenta colaboradora dedicada (uso Mac/VPS cron).
-//   2. GITHUB_TOKEN ambiental de Actions (github-actions[bot]) — uso
-//      .github/workflows/backend-independent-review.yml; requiere que
-//      github-actions[bot] esté en INDEPENDENT_REVIEW_BOTS de
-//      trusted-independent-review.yml (ya lo está — ver ese archivo).
 const POST_TOKEN =
   (process.env.OPSLY_REVIEW_BOT_TOKEN ?? '').trim() || (process.env.GITHUB_TOKEN ?? '').trim();
 const READ_TOKEN = POST_TOKEN;
 const GATEWAY_URL = process.env.LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
-// Dedicado, no 'platform' — ese tenant_slug lo comparte todo el sistema de
-// agentes internos (orchestrator, ValidationWorker, CursorWorker, etc.) bajo
-// perfil free-always (solo Ollama, nunca cloud). Este tenant tiene su propio
-// override AI_PROFILE_OPSLY_CI_REVIEW=hybrid en Doppler (aprobado
-// explícitamente para este uso) para poder caer a un proveedor cloud cuando
-// Ollama esté pausado (p. ej. modo gaming en config/pc-gamer-schedule.json)
-// — sin abrirle gasto cloud a ningún otro flujo que use 'platform'.
-const TENANT_SLUG = process.env.OPSLY_REVIEW_TENANT ?? 'opsly-ci-review';
+const TENANT_SLUG = process.env.OPSLY_REVIEW_TENANT ?? 'opsly-ci-open-source-review';
 
-const CLEAN_PHRASE = "Codex Review: Didn't find any major issues.";
-// LLM Gateway /v1/text rejects prompts above 16k chars. Keep enough margin for
-// system instructions + PR/check metadata so large PRs are still reviewable.
-const MAX_REVIEW_DIFF_CHARS = 10_000;
+const CLEAN_PHRASE = "Open-Source Review: Didn't find any major issues.";
+const REVIEWER_NAME = 'Opsly Open Review Agent';
 
 function parseArgs(argv) {
   const out = { dryRun: false, pr: null, limit: 5 };
@@ -128,38 +101,19 @@ async function alreadyReviewed(pr, token) {
   });
 }
 
-async function fetchDiff(pr, token) {
-  const resp = await fetch(`https://api.github.com/repos/${REPO}/pulls/${pr.number}`, {
-    headers: {
-      Accept: 'application/vnd.github.v3.diff',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  if (!resp.ok) throw new Error(`diff fetch failed: ${resp.status}`);
-  const text = await resp.text();
-  // The gateway hard-fails above 16k chars. Bound only the diff portion and
-  // leave margin for review instructions / PR metadata. The reviewer remains
-  // fail-closed; truncation is explicit in the prompt instead of turning a
-  // large PR into an infrastructure failure.
-  return text.length > MAX_REVIEW_DIFF_CHARS
-    ? `${text.slice(0, MAX_REVIEW_DIFF_CHARS)}\n\n[...diff truncado por presupuesto de review...]`
-    : text;
+async function fetchReviewContext(pr, token) {
+  const files = await fetchAll(`repos/${REPO}/pulls/${pr.number}/files`, token);
+  return buildFileAwareReviewContext(files);
 }
 
-/**
- * Un solo call al LLM Gateway. Contrato real (no el de
- * lib/content-studio/src/llm/client.ts, que apunta a /v1/chat — esa ruta no
- * existe en el server; ver apps/llm-gateway/src/health-server.ts):
- * POST /v1/text { tenant_slug, prompt, system, task_type, request_id, feature }
- * → { content, llm: {...}, request_id }
- * (apps/llm-gateway/src/text-completion-route.ts). Nota: esta ruta fuerza
- * routing_bias=cost / model=cheap del lado del servidor — no hay forma de
- * pedir un modelo específico por este endpoint hoy.
- */
 async function reviewWithGateway({ pr, diff, failingChecks }) {
   const system = [
-    'Eres el revisor independiente de Opsly (monorepo cloudsysops/opsly).',
-    'Revisa el diff de un PR generado por un agente autónomo.',
+    `Eres ${REVIEWER_NAME}, el revisor independiente open-source de Opsly.`,
+    'Revisa el contexto de cambios de un PR generado por un agente autónomo.',
+    'El contexto está separado por archivo y puede contener marcadores de omisión del centro',
+    'de un patch para respetar el presupuesto del gateway. Esos marcadores describen el prompt,',
+    'NO son código del repositorio y NO deben reportarse como P0/P1/P2. Evalúa solo defectos',
+    'demostrables en el código visible; si falta evidencia para una conclusión, no inventes el defecto.',
     'Responde EXACTAMENTE en uno de estos dos formatos, sin nada más:',
     `1) Si no hay problemas bloqueantes: la línea literal "${CLEAN_PHRASE}"`,
     '2) Si hay problemas: una lista con severidad "P0 <hallazgo>", "P1 <hallazgo>" o',
@@ -175,7 +129,7 @@ async function reviewWithGateway({ pr, diff, failingChecks }) {
       ? `Checks de CI en rojo ahora mismo: ${failingChecks.join(', ')}`
       : 'Checks de CI: sin fallas registradas al momento de revisar.',
     '',
-    '--- DIFF ---',
+    '--- FILE-AWARE REVIEW CONTEXT ---',
     diff,
   ].join('\n');
 
@@ -187,29 +141,43 @@ async function reviewWithGateway({ pr, diff, failingChecks }) {
       prompt,
       system,
       task_type: 'review',
-      skip_repo_context: true,
-      feature: 'independent_review',
-      request_id: `backend-independent-review:${pr.number}:${pr.head.sha.slice(0, 8)}`,
+      provider_hint: 'ollama-code',
+      feature: 'independent_open_source_review',
+      request_id: `open-source-independent-review:${pr.number}:${pr.head.sha.slice(0, 8)}`,
     }),
   });
   if (!resp.ok) {
     const body = await resp.text().catch(() => '(sin body)');
-    throw new Error(`LLM Gateway ${resp.status}: ${body.slice(0, 300)}`);
+    throw new Error(`Open-source reviewer gateway ${resp.status}: ${body.slice(0, 300)}`);
   }
   const data = await resp.json();
-  if (!data.content) throw new Error('LLM Gateway no devolvió contenido');
-  return String(data.content).trim();
+  if (!data.content) throw new Error('Open-source reviewer no devolvió contenido');
+  const reportedCost = Number(data.llm?.cost_usd);
+  if (!Number.isFinite(reportedCost) || reportedCost !== 0) {
+    throw new Error(`Open-source reviewer reported unexpected provider cost: ${data.llm?.cost_usd}`);
+  }
+  return {
+    verdict: String(data.content).trim(),
+    modelUsed: String(data.llm?.model_used ?? 'unknown-local-model'),
+  };
 }
 
 function isClean(verdict) {
   return verdict.toLowerCase().includes(CLEAN_PHRASE.toLowerCase());
 }
 
-async function submitReview(pr, verdict, token) {
+async function submitReview(pr, verdict, modelUsed, token) {
   const clean = isClean(verdict);
+  const evidence = [
+    `Reviewed commit: \`${pr.head.sha}\``,
+    `Reviewer: ${REVIEWER_NAME}`,
+    `Runtime: Ollama local / \`${modelUsed}\``,
+    'Cloud fallback: disabled',
+    'Provider cost: $0',
+  ].join('\n');
   const body = clean
-    ? `${CLEAN_PHRASE}\n\nReviewed commit: \`${pr.head.sha}\``
-    : `${verdict}\n\nReviewed commit: \`${pr.head.sha}\``;
+    ? `${CLEAN_PHRASE}\n\n${evidence}`
+    : `${verdict}\n\n${evidence}`;
   await gh(`repos/${REPO}/pulls/${pr.number}/reviews`, {
     token,
     method: 'POST',
@@ -220,12 +188,6 @@ async function submitReview(pr, verdict, token) {
     },
   });
 
-  // GitHub does not fire pull_request_review (or any) events for actions
-  // taken with the default GITHUB_TOKEN — it's an anti-recursion guard, so
-  // trusted-independent-review.yml would never re-run to notice this review
-  // and flip the opsly-independent-review status. Set it ourselves instead
-  // of depending on that re-trigger (confirmed live: zero pull_request_review
-  // runs appeared for several minutes after a real APPROVE landed on the PR).
   await gh(`repos/${REPO}/statuses/${pr.head.sha}`, {
     token,
     method: 'POST',
@@ -233,8 +195,8 @@ async function submitReview(pr, verdict, token) {
       state: clean ? 'success' : 'failure',
       context: 'opsly-independent-review',
       description: clean
-        ? 'Independent review verified for final head SHA'
-        : 'Independent review missing, stale, or has blocking findings',
+        ? 'Open-source independent review verified for final head SHA'
+        : 'Open-source independent review has blocking findings',
     },
   });
 }
@@ -256,16 +218,11 @@ async function main() {
   if (!READ_TOKEN) {
     console.error(
       [
-        'backend-independent-review: no hay identidad para postear la review. No-op.',
+        'open-source-independent-review: no hay identidad para postear la review. No-op.',
         '',
-        'Dos formas de darle una (elige una, no hace falta ambas):',
-        '  A. Vía CI (recomendado, ya wireado): correr desde',
-        '     .github/workflows/backend-independent-review.yml — usa el GITHUB_TOKEN',
-        '     ambiental (github-actions[bot]), ya whitelisteado en',
-        '     trusted-independent-review.yml (INDEPENDENT_REVIEW_BOTS). No requiere',
-        '     crear ninguna cuenta nueva.',
-        '  B. Vía cron Mac/VPS: exportar OPSLY_REVIEW_BOT_TOKEN con el PAT de una',
-        '     cuenta colaboradora del repo, distinta al autor de los PRs.',
+        'Dos formas de darle una:',
+        '  A. GitHub Actions mediante .github/workflows/backend-independent-review.yml.',
+        '  B. Cron Mac/VPS con OPSLY_REVIEW_BOT_TOKEN de una cuenta colaboradora.',
         '',
       ].join('\n')
     );
@@ -292,27 +249,27 @@ async function main() {
       break;
     }
 
-    console.log(`#${pr.number} (${pr.title}) necesita review — reason=${decision.reason}`);
-    let verdict;
+    console.log(`#${pr.number} (${pr.title}) necesita open-source review — reason=${decision.reason}`);
+    let reviewResult;
     try {
       const [diff, failing] = await Promise.all([
-        fetchDiff(pr, READ_TOKEN),
+        fetchReviewContext(pr, READ_TOKEN),
         failingCheckNames(pr, READ_TOKEN),
       ]);
-      verdict = await reviewWithGateway({ pr, diff, failingChecks: failing });
+      reviewResult = await reviewWithGateway({ pr, diff, failingChecks: failing });
     } catch (error) {
-      console.error(`#${pr.number} error generando review: ${error.message}`);
-      // No dejar que CI reporte "success" cuando en realidad no se posteó nada.
+      console.error(`#${pr.number} error generando open-source review: ${error.message}`);
       process.exitCode = 1;
       continue;
     }
 
-    console.log(`#${pr.number} veredicto:\n${verdict}\n`);
+    const { verdict, modelUsed } = reviewResult;
+    console.log(`#${pr.number} veredicto (${modelUsed}):\n${verdict}\n`);
 
     if (args.dryRun) {
       console.log(`#${pr.number} [dry-run] no se postea nada.`);
     } else {
-      await submitReview(pr, verdict, POST_TOKEN);
+      await submitReview(pr, verdict, modelUsed, POST_TOKEN);
       console.log(`#${pr.number} review sometida (${isClean(verdict) ? 'APPROVE' : 'REQUEST_CHANGES'}).`);
     }
     acted += 1;
@@ -320,6 +277,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(`backend-independent-review: ${error instanceof Error ? error.message : String(error)}`);
+  console.error(`open-source-independent-review: ${error instanceof Error ? error.message : String(error)}`);
   process.exitCode = 1;
 });
