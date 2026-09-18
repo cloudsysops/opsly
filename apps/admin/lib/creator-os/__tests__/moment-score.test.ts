@@ -29,7 +29,7 @@ test('MomentScore is deterministic and explainable', () => {
   assert.equal(result.reasons.length, 5);
   assert.equal(
     result.reasons.reduce((sum, reason) => sum + reason.contribution, 0),
-    result.score,
+    result.score
   );
 });
 
@@ -63,7 +63,7 @@ test('invalid signals fail closed', () => {
       outcomeUnexpectedness: 0,
       playerPerformance: 0,
       narrativeCoherence: 0,
-    }),
+    })
   );
 });
 
