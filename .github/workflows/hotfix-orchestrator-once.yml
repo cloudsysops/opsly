@@ -108,9 +108,12 @@ jobs:
               state="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' opsly_orchestrator 2>/dev/null || true)"
               echo "health=$state attempt=$i"
               if [ "$state" = "healthy" ]; then
-                docker exec opsly_orchestrator node -e "fetch('http://127.0.0.1:3011/health').then(async r=>{console.log(await r.text());process.exit(r.ok?0:1)}).catch(e=>{console.error(e);process.exit(1)})"
+                health_json="$(docker exec opsly_orchestrator node -e "fetch('http://127.0.0.1:3011/health').then(async r=>{const t=await r.text(); console.log(t); process.exit(r.ok?0:1)}).catch(e=>{console.error(e);process.exit(1)})")"
+                echo "$health_json"
+                echo "$health_json" | grep -q '"role":"control"'
+                echo "$health_json" | grep -q '"mode":"queue-only"'
                 grep -q '"max_parallel_jobs": 2' /opt/opsly/config/runtime-governor.json
-                echo "HOTFIX_ORCHESTRATOR_OK sha=$HOTFIX_SHA"
+                echo "HOTFIX_ORCHESTRATOR_OK sha=$HOTFIX_SHA role=control mode=queue-only"
                 exit 0
               fi
               if [ "$state" = "unhealthy" ]; then
