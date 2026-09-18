@@ -38,10 +38,11 @@ test('reviewer fails closed unless terminal evidence identifies local Qwen and a
   assert.match(reviewer, /Provider cost: \$0/);
 });
 
-test('PR Doctor leaves independent-review failures to the reviewer lane', () => {
-  assert.match(prDoctor, /'open-source-review'/);
-  assert.match(prDoctor, /isIgnoredCheckName\(c\.name\)/);
-  assert.doesNotMatch(prDoctor, /!IGNORED_CHECKS\.has\(c\.name\)/);
+test('PR Doctor shares the canonical ignored-check policy with Mission Control', () => {
+  assert.match(prDoctor, /pr-triage-policy\.json/);
+  assert.match(prDoctor, /import \{ isIgnoredCheck \} from '\.\/pr-triage\.mjs'/);
+  assert.match(prDoctor, /isIgnoredCheck\(c\.name, ignoredPatterns\)/);
+  assert.doesNotMatch(prDoctor, /const IGNORED_CHECKS = new Set/);
 });
 
 test('workflow uses orchestrator auth instead of direct VPS LLM gateway access', () => {
