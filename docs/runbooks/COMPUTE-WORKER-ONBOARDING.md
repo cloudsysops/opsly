@@ -23,8 +23,8 @@ For each powered-off node (`desktop-smdqcia-1`, `pc-gamer`, `pc-gamer-openclaw-0
 1. On Windows: install/update the NVIDIA driver, then `wsl --install -d Ubuntu` (reboot). In WSL, `nvidia-smi` must list the physical GPU and VRAM.
 2. Docker reachable from WSL; NVIDIA Container Toolkit makes `docker run --gpus all nvidia/nccl-tests` (or any CUDA image) succeed.
 3. Join Tailscale on the node and confirm it appears `active` in `tailscale status` from the control host.
-4. `git clone` Opsly (or `git pull --ff-only origin main`), then `cp infra/pc-gamer.env.example .env.worker` and set the real `REDIS_URL` (existing secret flow) plus the unique `WORKER_ID` from the roster.
-5. Run the doctor, then bootstrap — both fail closed if GPU/Docker evidence or identity is missing:
+4. `git clone` Opsly (or `git pull --ff-only origin main`), then `cp infra/pc-gamer.env.example .env.worker` and replace `WORKER_ID=@WORKER_ID@` with the unique roster ID. Set the real `REDIS_URL` through the existing secret flow.
+5. Run the doctor, then bootstrap — both fail closed if GPU/Docker evidence or identity is missing. `OPSLY_WORKER_ID` is the bootstrap CLI input; the persistent runtime/heartbeat identity remains `WORKER_ID` in `.env.worker`. Use the same value for both:
 
    ```bash
    OPSLY_WORKER_ID=<node-worker-id> ./scripts/setup-compute-worker.sh --doctor
