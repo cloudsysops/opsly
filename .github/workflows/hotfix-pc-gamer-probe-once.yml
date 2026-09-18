@@ -18,18 +18,43 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Connect Tailscale
+      - name: Connect Tailscale through control plane
         uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
           ping_host: 100.120.151.91
 
-      - name: Probe PC gamer local AI surfaces
+      - name: Probe compute nodes
         shell: bash
         run: |
-          set -euo pipefail
-          tailscale ping -c 1 --timeout=5s pc-gamer
-          echo "=== Ollama tags ==="
-          curl -fsS --max-time 8 http://pc-gamer:11434/api/tags | jq '{models: [.models[]?.name]}'
-          echo "=== OpenCode bridge health ==="
-          curl -fsS --max-time 8 http://pc-gamer:5004/health | jq '{status,service,agent,dry_run,auth_required,auth_configured}'
+          set -uo pipefail
+          probe() {
+            local label="$1"
+            local host="$2"
+            echo "=== $label $host ==="
+            if tailscale ping -c 1 --timeout=5s "$host"; then
+              echo "tailscale=online"
+              if curl -fsS --max-time 5 "http://$host:11434/api/tags" >/tmp/tags.json; then
+                echo "ollama=online"
+                jq '{models: [.models[]?.name]}' /tmp/tags.json
+              else
+                echo "ollama=unreachable"
+              fi
+              if curl -fsS --max-time 5 "http://$host:5004/health" >/tmp/bridge.json; then
+                echo "opencode_bridge=online"
+                jq '{status,service,agent,dry_run,auth_required,auth_configured}' /tmp/bridge.json
+              else
+                echo "opencode_bridge=unreachable"
+              fi
+              if curl -fsS --max-time 5 "http://$host:3011/health" >/tmp/worker.json; then
+                echo "worker_health=online"
+                cat /tmp/worker.json
+              else
+                echo "worker_health=unreachable"
+              fi
+            else
+              echo "tailscale=offline"
+            fi
+          }
+          probe home-gpu-01 100.115.197.109
+          probe pc-gamer 100.74.88.103
