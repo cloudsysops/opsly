@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "mode": "inventory-first",
+  "lanes": [
+    "MERGE_READY",
+    "BEHIND",
+    "CONFLICTED",
+    "CHECK_FAILED",
+    "CHECK_PENDING",
+    "REVIEW_BLOCKED",
+    "SUPERSEDED",
+    "PROTECTED",
+    "UNKNOWN"
+  ],
+  "protected": {
+    "patterns": [
+      "peskids",
+      "production",
+      "n8n",
+      "doppler",
+      "dns",
+      "traefik",
+      "supabase/migrations/",
+      "/migrations/",
+      "apps/orchestrator/",
+      "packages/agent-task-core/",
+      "packages/git-branch-orchestrator/",
+      "scripts/ops/github-agent-queue-submit.mjs",
+      "infra/docker-compose",
+      ".github/workflows/night-merge",
+      ".github/workflows/production-change-window",
+      ".github/workflows/validate-doppler",
+      "lib/agent-task-core/",
+      "lib/git-branch-orchestrator/",
+      "config/pr-reconciliation-policy.json",
+      ".github/workflows/trusted-independent-review",
+      "scripts/ci/check-independent-review.mjs",
+      "lib/session-manager/",
+      "lib/external-agent-registry/",
+      "config/external-agent-registry.json",
+      "apps/admin/app/mission-control/",
+      "apps/admin/components/mission-control/",
+      "apps/admin/lib/mission-control",
+      "apps/api/app/api/admin/mission-control/",
+      "scripts/ops/machine-claim.mjs",
+      "scripts/ops/lib/machine-claim.mjs"
+    ],
+    "allowAutoReconcile": false,
+    "allowAutoMerge": false,
+    "allowAutoDeploy": false
+  },
+  "merge": {
+    "method": "squash",
+    "requireExpectedHeadSha": true,
+    "requireMergeable": true,
+    "requireChecksGreen": true,
+    "requireNoMaterialReviewBlockers": true,
+    "autoMerge": false
+  },
+  "cleanup": {
+    "deleteMergedBranches": "manual-or-supervised",
+    "deleteSupersededBranches": "manual-or-supervised",
+    "forceDelete": false
+  }
+}

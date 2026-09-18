@@ -74,6 +74,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.event.pull_request.base.ref }}" != "main" ]; then
+            echo "Production gate not applicable: base=${{ github.event.pull_request.base.ref }}"
+            exit 0
+          fi
           mapfile -t PATHS < <(printf '%s\n' "$CHANGED_PATHS" | grep -v '^[[:space:]]*$' || true)
           if [ "${#PATHS[@]}" -eq 0 ]; then
             echo "No file list (dispatch or empty diff) — clock notice only"

@@ -457,6 +457,21 @@
         "buildShlinkAttributionRequest",
         "shouldCreateDealOpportunity"
       ]
+    },
+    "revenue-core": {
+      "name": "@intcloudsysops/revenue-core",
+      "version": "0.1.0",
+      "path": "lib/revenue-core",
+      "owner": "platform",
+      "description": "Tenant-safe partner, attribution, referral and commission primitives. Records revenue facts; never moves money.",
+      "status": "experimental",
+      "dependencies": [],
+      "governance": "lib/revenue-core/GOVERNANCE.md",
+      "mainFile": "lib/revenue-core/src/index.ts",
+      "exports": [
+        "quoteCommission",
+        "summarizeCommissionEvents"
+      ]
     }
   },
   "consumers": {
@@ -507,11 +522,12 @@
     "apps/admin": {
       "depends": [
         "components",
-        "observability",
+"observability",
         "security",
         "api",
         "services",
-        "mission-control-kit"
+        "mission-control-kit",
+        "revenue-core"
       ]
     },
     "lib/content-studio": {

@@ -26,6 +26,12 @@ jobs:
       - name: Validate structure (strict CI mode)
         run: npm run validate:strict:ci
 
+      - name: Validate independent-review context and open-source routing contracts
+        run: |
+          node --test \
+            scripts/ci/__tests__/backend-review-context.test.mjs \
+            scripts/ci/__tests__/open-source-independent-review.test.mjs
+
       - name: Report results
         if: failure()
         run: |

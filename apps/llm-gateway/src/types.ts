@@ -25,8 +25,12 @@ export interface DetectedIntent {
   suggested_team: string;
 }
 
-/** Hint explícito para ordenar la cadena cloud en `llmCallDirect` (`cloud-chain.ts`). */
-export type LlmProviderHint = 'deepseek' | 'nvidia' | 'groq';
+/**
+ * Hint explícito de proveedor para `llmCallDirect`.
+ * `ollama-code` fuerza el proveedor local de código y nunca debe implicar fallback cloud.
+ * Los demás hints solo reordenan la cadena cloud cuando el perfil del tenant la permite.
+ */
+export type LlmProviderHint = 'ollama-code' | 'deepseek' | 'nvidia' | 'groq';
 
 export interface LLMMessage {
   role: 'user' | 'assistant';
@@ -45,9 +49,8 @@ export interface LLMRequest {
    */
   routing_bias?: RoutingBias;
   /**
-   * Prioriza un proveedor al frente de la cadena cloud en `llmCallDirect`.
-   * `deepseek` requiere `DEEPSEEK_API_KEY`; `nvidia` requiere `NVIDIA_API_KEY`;
-   * `groq` requiere `GROQ_API_KEY`.
+   * `ollama-code` selecciona el modelo local de código. `deepseek`, `nvidia` y `groq`
+   * priorizan sus proveedores en la cadena cloud cuando el perfil lo permite.
    */
   provider_hint?: LlmProviderHint;
   max_tokens?: number;

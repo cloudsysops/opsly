@@ -7,6 +7,27 @@ async function readJson(file, fallback={}) {
   try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch { return fallback; }
 }
 
+const TERMINAL_STATUSES = new Set(['done', 'completed']);
+const WEAK_STATUSES = new Set(['unknown', 'processing', 'queued', 'running']);
+
+/**
+ * Prefer definitive file/frontmatter done over stale .metadata.json "unknown".
+ * Normalize frontmatter `done` → `completed` for display counts.
+ */
+export function resolveEffectiveStatus(task) {
+  const candidates = [task.job_status, task.local_status, task.tracked_status]
+    .map((s) => (typeof s === 'string' ? s.trim() : s))
+    .filter(Boolean);
+
+  const terminal = candidates.find((s) => TERMINAL_STATUSES.has(s));
+  if (terminal) return terminal === 'done' ? 'completed' : terminal;
+
+  const strong = candidates.find((s) => !WEAK_STATUSES.has(s));
+  if (strong) return strong;
+
+  return candidates[0] ?? 'unknown';
+}
+
 export async function buildNightQueueStatus({ trackedDir, localQueueDir }) {
   const tracked = await loadNightQueueCandidates(trackedDir);
   const metadata = await readJson(path.join(localQueueDir, '.metadata.json'), {});
@@ -38,9 +59,11 @@ export async function buildNightQueueStatus({ trackedDir, localQueueDir }) {
     };
   });
 
-  const effective = (task) => task.job_status ?? task.local_status ?? task.tracked_status;
   const counts = {};
-  for (const task of tasks) counts[effective(task)] = (counts[effective(task)] ?? 0) + 1;
+  for (const task of tasks) {
+    const state = resolveEffectiveStatus(task);
+    counts[state] = (counts[state] ?? 0) + 1;
+  }
 
   return {
     generated_at: new Date().toISOString(),
@@ -64,7 +87,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`generated: ${result.generated_at}`);
     console.log('counts:', Object.entries(result.counts).map(([k,v]) => `${k}=${v}`).join(' '));
     for (const task of result.tasks) {
-      const state = task.job_status ?? task.local_status ?? task.tracked_status;
+      const state = resolveEffectiveStatus(task);
       console.log(`- ${task.id}: ${state}${task.agent ? ` [${task.agent}]` : ''}${task.job_id ? ` job=${task.job_id}` : ''}`);
     }
   }

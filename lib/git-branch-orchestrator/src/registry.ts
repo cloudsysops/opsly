@@ -169,6 +169,9 @@ export function createRegistryEntry(input: {
   status?: BranchRegistryEntry['status'];
   session_id?: string;
   request_id?: string;
+  dispatch_claim_id?: string;
+  dispatch_task_id?: string;
+  workstream?: string;
 }): BranchRegistryEntry {
   const now = new Date().toISOString();
   return BranchRegistryEntrySchema.parse({
@@ -189,6 +192,9 @@ export function createRegistryEntry(input: {
     risk_level: input.risk_level,
     session_id: input.session_id,
     request_id: input.request_id,
+    dispatch_claim_id: input.dispatch_claim_id,
+    dispatch_task_id: input.dispatch_task_id,
+    workstream: input.workstream,
     test_status: 'unknown',
     files_touched: [],
     created_at: now,

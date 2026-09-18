@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "verifier_coverage_target": 0.9,
+  "blocked_ratio_warn": 0.2,
+  "conflicted_pr_warn": 1,
+  "behind_pr_warn": 3,
+  "failed_check_warn": 1,
+  "merge_ready_backlog_warn": 5
+}

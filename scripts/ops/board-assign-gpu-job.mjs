@@ -26,26 +26,44 @@ function redisConnection(url) {
   };
 }
 
-async function enqueueAssignment(assignment, options) {
-  const { Queue } = await import('bullmq');
-  const queue = new Queue(assignment.queue, { connection: redisConnection(options.redisUrl) });
-  const requestId = randomUUID();
+function ollamaTaskType(jobType) {
+  if (jobType === 'content.review') return 'review';
+  if (jobType === 'ai.embedding') return 'analyze';
+  return 'summarize';
+}
+
+export function buildAssignmentPayload(assignment, options) {
+  const requestId = options.requestId || randomUUID();
   const tenantSlug = options.tenantSlug;
-  const jobId = `board:${assignment.jobType}:${requestId}`;
-  let payload;
-  if (assignment.jobType === 'ai.local.inference' || assignment.jobType === 'test.gpu') {
-    payload = {
-      type: 'ollama',
-      tenant_slug: tenantSlug,
-      request_id: requestId,
-      initiated_by: 'ai-board',
+  const source = options.source || 'ai-board';
+
+  // Route from the canonical queue/job contract, not from a hardcoded list of
+  // jobType names. This keeps new Ollama-backed capabilities from receiving a
+  // content-video payload by mistake.
+  if (assignment.queue === 'openclaw' && assignment.jobName === 'ollama') {
+    return {
+      requestId,
       payload: {
-        task_type: 'summarize',
-        prompt: options.prompt,
+        type: 'ollama',
+        tenant_slug: tenantSlug,
+        request_id: requestId,
+        initiated_by: source,
+        metadata: {
+          source,
+          capability_job_type: assignment.jobType,
+          planner_preferred_worker_id: assignment.workerId,
+        },
+        payload: {
+          task_type: ollamaTaskType(assignment.jobType),
+          prompt: options.prompt,
+        },
       },
     };
-  } else {
-    payload = {
+  }
+
+  return {
+    requestId,
+    payload: {
       tenant_slug: tenantSlug,
       request_id: requestId,
       draft_id: `board-${requestId.slice(0, 8)}`,
@@ -58,15 +76,23 @@ async function enqueueAssignment(assignment, options) {
         compliance_flags: ['not_peskids', 'no_customer_pii'],
       },
       preset: { slug: 'board-gpu-smoke', aspect_ratio: '9:16' },
-    };
-  }
-  const job = await queue.add(assignment.jobName, payload, {
+    },
+  };
+}
+
+export async function enqueueAssignment(assignment, options) {
+  const { Queue } = await import('bullmq');
+  const queue = new Queue(assignment.queue, { connection: redisConnection(options.redisUrl) });
+  const built = buildAssignmentPayload(assignment, options);
+  const jobId = `board:${assignment.jobType}:${built.requestId}`;
+
+  const job = await queue.add(assignment.jobName, built.payload, {
     jobId,
     removeOnComplete: 50,
     removeOnFail: 50,
   });
   await queue.close();
-  return { jobId: job.id, requestId };
+  return { jobId: job.id, requestId: built.requestId };
 }
 
 async function main(argv) {
@@ -77,12 +103,16 @@ async function main(argv) {
     readFlag(argv, '--prompt') ||
     'Reply with OK and the local model name. Do not include personal data or secrets.';
   const title = readFlag(argv, '--title') || 'Opsly GPU worker smoke';
+  const requestId = readFlag(argv, '--request-id');
+  const source = readFlag(argv, '--source') || 'ai-board';
   const registry = loadRegistry();
   const assignment = assignJob(registry, jobType);
   const result = {
     dryRun: !apply,
     assignment,
     tenantSlug,
+    requestId: requestId || null,
+    source,
   };
   if (!assignment.ok) {
     console.log(JSON.stringify(result, null, 2));
@@ -90,14 +120,28 @@ async function main(argv) {
     return;
   }
   if (!apply) {
-    console.log(JSON.stringify(result, null, 2));
+    const preview = buildAssignmentPayload(assignment, {
+      tenantSlug,
+      prompt,
+      title,
+      requestId: requestId || 'dry-run-request-id',
+      source,
+    });
+    console.log(JSON.stringify({ ...result, payloadPreview: preview.payload }, null, 2));
     return;
   }
   const redisUrl = process.env.REDIS_URL?.trim();
   if (!redisUrl) {
     throw new Error('REDIS_URL is required for --apply (VPS Redis over Tailscale).');
   }
-  const enqueued = await enqueueAssignment(assignment, { redisUrl, tenantSlug, prompt, title });
+  const enqueued = await enqueueAssignment(assignment, {
+    redisUrl,
+    tenantSlug,
+    prompt,
+    title,
+    requestId,
+    source,
+  });
   console.log(JSON.stringify({ ...result, enqueued }, null, 2));
 }
 
