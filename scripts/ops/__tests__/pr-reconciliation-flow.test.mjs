@@ -83,3 +83,13 @@ test('controller workflow executes bounded dispatch and reviewer supports explic
   assert.match(reviewer, /pr_number:/);
   assert.match(reviewer, /inputs\.pr_number/);
 });
+
+
+test('PR Doctor supports exact-head review repair without weakening reviewer policy', async () => {
+  const source = await fs.readFile(path.join(root, 'scripts/ci/pr-doctor.mjs'), 'utf8');
+  assert.match(source, /--review-blocked/);
+  assert.match(source, /review\.commit_id === pr\.head\.sha/);
+  assert.match(source, /PR Doctor: review fix dispatched for/);
+  assert.match(source, /No toques production-change-window ni debilites opsly-independent-review/);
+  assert.match(source, /conflict_key: `pr-reconcile\/pr-\$\{pr\.number\}`/);
+});
