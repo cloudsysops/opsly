@@ -7,6 +7,9 @@ owner: platform
 environment: local
 cost_class: free
 estimated_cost_usd: 0
+workstream: gamer-opencode-physical-acceptance
+conflict_key: gamer-opencode-physical
+semantic_scope: gamer-opencode-physical/acceptance-050
 requires_pr: false
 requires_approval: false
 paid_infra_required: false
