@@ -47,6 +47,12 @@ test('workpacks include protected PRs for review but never protected branch muta
         supersededBy: [], behindBy: 0, aheadBy: 1, changesRequested: true,
         independentReview: { state: 'failure', needsRun: false },
       },
+      {
+        number: 5, title: 'draft must wait', lane: 'CHECK_FAILED',
+        head: 'e', headSha: 'eee', base: 'main', protected: false, draft: true,
+        supersededBy: [], behindBy: 0, aheadBy: 1, changesRequested: false,
+        independentReview: { state: 'missing', needsRun: true },
+      },
     ],
   }));
 
@@ -71,6 +77,7 @@ test('workpacks include protected PRs for review but never protected branch muta
   assert.equal(byPr.get(3).writeAllowed, false);
   assert.equal(byPr.get(4).operation, 'REPAIR_REVIEW_BLOCKER');
   assert.equal(byPr.get(4).writeAllowed, true);
+  assert.equal(byPr.has(5), false);
 });
 
 test('controller workflow executes bounded dispatch and reviewer supports explicit PR redispatch', async () => {
