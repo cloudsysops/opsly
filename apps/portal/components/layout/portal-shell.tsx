@@ -8,6 +8,7 @@ import { SkipLink } from '@/components/ui/accessibility';
 import { Button } from '@/components/ui/button';
 import { PORTAL_DEMO_COOKIE, PORTAL_DEMO_MODE_COOKIE } from '@/lib/demo-tenant';
 import { createClient } from '@/lib/supabase';
+import { getPublicRuntimeConfig } from '@/lib/public-runtime-config';
 
 export function PortalShell({
   title,
@@ -21,6 +22,7 @@ export function PortalShell({
   tenantSlug?: string;
 }) {
   const router = useRouter();
+  const runtime = getPublicRuntimeConfig();
 
   async function signOut() {
     const hasDemoSession =
@@ -96,10 +98,7 @@ export function PortalShell({
         {children}
       </main>
       <footer className="border-t border-ops-border px-6 py-4 text-center font-mono text-[11px] text-ops-gray">
-        {(() => {
-          const d = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim();
-          return d && d.length > 0 ? `Opsly · ${d}` : 'Opsly';
-        })()}
+        {runtime.platformDomain?.trim() ? `Opsly · ${runtime.platformDomain.trim()}` : 'Opsly'}
       </footer>
     </div>
   );
