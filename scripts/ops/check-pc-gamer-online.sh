@@ -43,8 +43,9 @@ fi
 if [[ -z "$WORKER_ID" && -f .env.worker ]]; then
   WORKER_ID="$(grep -E '^WORKER_ID=' .env.worker | tail -1 | cut -d= -f2-)"
 fi
-if [[ -z "$WORKER_ID" ]]; then
-  echo "check-pc-gamer-online: WORKER_ID no definido (export WORKER_ID o .env.worker)" >&2
+if [[ -z "$WORKER_ID" || "$WORKER_ID" == "@WORKER_ID@" ]]; then
+  echo "check-pc-gamer-online: identidad de worker inválida; configura un WORKER_ID único en .env.worker o export WORKER_ID" >&2
+  echo "  Debe coincidir con config/compute-workers.json; no uses @WORKER_ID@ ni el ID de otra máquina." >&2
   exit 1
 fi
 
