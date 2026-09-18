@@ -127,9 +127,7 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
     vi.unstubAllEnvs();
 
     authMocks.requireAdminAccess.mockResolvedValue(null);
-    runtimeMocks.proxyRuntimeOrchestrator.mockResolvedValue(
-      json({ ok: true, sessions: [] }),
-    );
+    runtimeMocks.proxyRuntimeOrchestrator.mockResolvedValue(json({ ok: true, sessions: [] }));
 
     redisMocks.client.isOpen = true;
     redisMocks.client.connect.mockResolvedValue(undefined);
@@ -151,12 +149,12 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
 
   it('returns the auth denial before observing any factory source', async () => {
     authMocks.requireAdminAccess.mockResolvedValue(
-      Response.json({ error: 'forbidden' }, { status: 403 }),
+      Response.json({ error: 'forbidden' }, { status: 403 })
     );
     const GET = await loadGet();
 
     const response = await GET(
-      new Request('http://localhost/api/admin/mission-control/factory-workstreams'),
+      new Request('http://localhost/api/admin/mission-control/factory-workstreams')
     );
 
     expect(response.status).toBe(403);
@@ -166,12 +164,12 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
   it('degrades malformed runtime-session payloads without fabricating observation', async () => {
     vi.stubGlobal('fetch', githubFetch({ pulls: [] }));
     runtimeMocks.proxyRuntimeOrchestrator.mockResolvedValue(
-      json({ ok: true, sessions: 'not-an-array' }),
+      json({ ok: true, sessions: 'not-an-array' })
     );
     const GET = await loadGet();
 
     const response = await GET(
-      new Request('http://localhost/api/admin/mission-control/factory-workstreams'),
+      new Request('http://localhost/api/admin/mission-control/factory-workstreams')
     );
     const body = (await response.json()) as {
       runtime_sessions_observed: boolean;
@@ -188,12 +186,12 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
   it('blocks merge readiness when a changed file is on a protected surface', async () => {
     vi.stubGlobal(
       'fetch',
-      githubFetch({ filename: 'apps/orchestrator/src/index.ts', mergeableState: 'clean' }),
+      githubFetch({ filename: 'apps/orchestrator/src/index.ts', mergeableState: 'clean' })
     );
     const GET = await loadGet();
 
     const response = await GET(
-      new Request('http://localhost/api/admin/mission-control/factory-workstreams'),
+      new Request('http://localhost/api/admin/mission-control/factory-workstreams')
     );
     const body = (await response.json()) as {
       pull_requests: Array<{
@@ -215,7 +213,7 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
     const GET = await loadGet();
 
     const response = await GET(
-      new Request('http://localhost/api/admin/mission-control/factory-workstreams'),
+      new Request('http://localhost/api/admin/mission-control/factory-workstreams')
     );
     const body = (await response.json()) as {
       pull_requests: Array<{ merge_readiness: string; blocker: string | null }>;
@@ -230,7 +228,7 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
     const GET = await loadGet();
 
     const response = await GET(
-      new Request('http://localhost/api/admin/mission-control/factory-workstreams'),
+      new Request('http://localhost/api/admin/mission-control/factory-workstreams')
     );
     const body = (await response.json()) as {
       pull_requests: Array<{
@@ -251,7 +249,7 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
     const GET = await loadGet();
 
     const response = await GET(
-      new Request('http://localhost/api/admin/mission-control/factory-workstreams'),
+      new Request('http://localhost/api/admin/mission-control/factory-workstreams')
     );
     const body = (await response.json()) as {
       github_observed: boolean;

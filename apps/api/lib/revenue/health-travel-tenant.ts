@@ -5,8 +5,6 @@ export function resolveHealthTravelTenantSlug(
   env: NodeJS.ProcessEnv = process.env
 ): string {
   return (
-    explicit?.trim() ||
-    env.HEALTH_TRAVEL_TENANT_SLUG?.trim() ||
-    DEFAULT_HEALTH_TRAVEL_TENANT_SLUG
+    explicit?.trim() || env.HEALTH_TRAVEL_TENANT_SLUG?.trim() || DEFAULT_HEALTH_TRAVEL_TENANT_SLUG
   );
 }

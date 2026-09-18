@@ -575,9 +575,7 @@ export type CreateDefenseAuditPayload = {
   scope?: string[];
 };
 
-export async function createDefenseAudit(
-  body: CreateDefenseAuditPayload
-): Promise<{
+export async function createDefenseAudit(body: CreateDefenseAuditPayload): Promise<{
   success: boolean;
   audit: DefenseAuditRow;
   orchestrator?: { queued: boolean; detail?: string };
@@ -717,7 +715,6 @@ export async function executeAgentIdeMcpTool(
 }
 
 export type { OllamaDemoJobStatus } from './types';
-
 
 export async function getHealthTravelRuntimeSummary(
   days = 30

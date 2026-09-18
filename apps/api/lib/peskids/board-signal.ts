@@ -3,9 +3,7 @@ import type { PeskidsLeadRow } from './repository';
 
 function eventBusUrl(): string | null {
   const raw =
-    process.env.OPSLY_EVENT_BUS_URL?.trim() ||
-    process.env.OPSLY_ORCHESTRATOR_URL?.trim() ||
-    '';
+    process.env.OPSLY_EVENT_BUS_URL?.trim() || process.env.OPSLY_ORCHESTRATOR_URL?.trim() || '';
   if (!raw) {
     return null;
   }

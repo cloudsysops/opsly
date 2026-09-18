@@ -8,12 +8,7 @@ import { detectCanonicalDispatchAdmission } from '../../../../../lib/mission-con
 function resolveRepoRoot(): string {
   const cwd = process.cwd();
   const repoRoot = process.env.OPSLY_REPO_ROOT?.trim();
-  const candidates = [
-    ...(repoRoot ? [repoRoot] : []),
-    cwd,
-    join(cwd, '..'),
-    join(cwd, '..', '..'),
-  ];
+  const candidates = [...(repoRoot ? [repoRoot] : []), cwd, join(cwd, '..'), join(cwd, '..', '..')];
   for (const candidate of candidates) {
     if (existsSync(join(candidate, 'config', 'external-agent-registry.json'))) {
       return candidate;
@@ -21,7 +16,6 @@ function resolveRepoRoot(): string {
   }
   return cwd;
 }
-
 
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireAdminAccess(request);
@@ -45,8 +39,7 @@ export async function GET(request: Request): Promise<Response> {
       .map(([id, entry]) => ({
         id,
         enabled: entry.enabled === true,
-        opsly_job_type:
-          typeof entry.opsly_job_type === 'string' ? entry.opsly_job_type : null,
+        opsly_job_type: typeof entry.opsly_job_type === 'string' ? entry.opsly_job_type : null,
       }))
       .sort((a, b) => a.id.localeCompare(b.id));
 

@@ -370,7 +370,6 @@ export type DefensePricingResponse = {
   >;
 };
 
-
 export type HealthTravelRuntimeSummaryResponse = {
   tenant_slug: string;
   tenant_configured: boolean;

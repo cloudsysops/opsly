@@ -55,9 +55,7 @@ export type HealthTravelEventEnvelope = z.infer<typeof healthTravelEventEnvelope
 
 function extractSignatureHex(header: string): string {
   const trimmed = header.trim();
-  return trimmed.toLowerCase().startsWith('sha256=')
-    ? trimmed.slice('sha256='.length)
-    : trimmed;
+  return trimmed.toLowerCase().startsWith('sha256=') ? trimmed.slice('sha256='.length) : trimmed;
 }
 
 export function verifyHealthTravelEventSignature(params: {
@@ -72,9 +70,7 @@ export function verifyHealthTravelEventSignature(params: {
   const receivedHex = extractSignatureHex(header);
   if (!/^[0-9a-f]{64}$/i.test(receivedHex)) return false;
 
-  const expectedHex = createHmac('sha256', secret)
-    .update(params.rawBody, 'utf8')
-    .digest('hex');
+  const expectedHex = createHmac('sha256', secret).update(params.rawBody, 'utf8').digest('hex');
   const expected = Buffer.from(expectedHex, 'hex');
   const received = Buffer.from(receivedHex, 'hex');
   return expected.length === received.length && timingSafeEqual(expected, received);
@@ -152,10 +148,7 @@ export async function handleHealthTravelEventRequest(request: Request): Promise<
   }
 
   const declaredLength = Number(request.headers.get('content-length') ?? '0');
-  if (
-    Number.isFinite(declaredLength) &&
-    declaredLength > MAX_HEALTH_TRAVEL_EVENT_BODY_BYTES
-  ) {
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_HEALTH_TRAVEL_EVENT_BODY_BYTES) {
     return Response.json({ error: 'Health Travel event body too large' }, { status: 413 });
   }
 
@@ -165,8 +158,7 @@ export async function handleHealthTravelEventRequest(request: Request): Promise<
   }
 
   const signatureHeader =
-    request.headers.get('x-opsly-signature') ??
-    request.headers.get('X-Opsly-Signature');
+    request.headers.get('x-opsly-signature') ?? request.headers.get('X-Opsly-Signature');
 
   if (!verifyHealthTravelEventSignature({ rawBody, signatureHeader, secret })) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
@@ -188,9 +180,7 @@ export async function handleHealthTravelEventRequest(request: Request): Promise<
   }
 
   const event = parsed.data;
-  const expectedTenant = resolveHealthTravelTenantSlug(
-    process.env.HEALTH_TRAVEL_TENANT_ID
-  );
+  const expectedTenant = resolveHealthTravelTenantSlug(process.env.HEALTH_TRAVEL_TENANT_ID);
   if (event.tenant_id !== expectedTenant) {
     return Response.json({ error: 'Tenant mismatch' }, { status: 403 });
   }

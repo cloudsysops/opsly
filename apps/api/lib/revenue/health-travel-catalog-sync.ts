@@ -3,35 +3,48 @@ import { z } from 'zod';
 import { getServiceClient } from '../supabase/client';
 import { resolveHealthTravelTenantSlug } from './health-travel-tenant';
 
-const providerSchema = z.object({
-  id: z.string().min(1),
-  name: z.string().min(1),
-  provider_type: z.enum(['clinic', 'specialist', 'tour_operator', 'hotel', 'transport', 'wellness']),
-  city: z.string().min(1),
-  country: z.string().min(1),
-  approval_status: z.literal('approved'),
-  published: z.literal(true),
-}).strict();
+const providerSchema = z
+  .object({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    provider_type: z.enum([
+      'clinic',
+      'specialist',
+      'tour_operator',
+      'hotel',
+      'transport',
+      'wellness',
+    ]),
+    city: z.string().min(1),
+    country: z.string().min(1),
+    approval_status: z.literal('approved'),
+    published: z.literal(true),
+  })
+  .strict();
 
-const offerSchema = z.object({
-  id: z.string().min(1),
-  provider_id: z.string().min(1).nullable(),
-  name: z.string().min(1),
-  package_type: z.enum(['health', 'tour', 'combo']),
-  location: z.string().min(1),
-  recovery_city: z.string().nullable(),
-  currency: z.string().length(3),
-  price_from_usd: z.number().nonnegative().nullable(),
-  published: z.literal(true),
-}).strict();
+const offerSchema = z
+  .object({
+    id: z.string().min(1),
+    provider_id: z.string().min(1).nullable(),
+    name: z.string().min(1),
+    package_type: z.enum(['health', 'tour', 'combo']),
+    location: z.string().min(1),
+    recovery_city: z.string().nullable(),
+    currency: z.string().length(3),
+    price_from_usd: z.number().nonnegative().nullable(),
+    published: z.literal(true),
+  })
+  .strict();
 
-export const healthTravelCatalogSchema = z.object({
-  version: z.literal(1),
-  source_system: z.literal('smile-trip-care'),
-  generated_at: z.string().datetime(),
-  providers: z.array(providerSchema),
-  offers: z.array(offerSchema),
-}).strict();
+export const healthTravelCatalogSchema = z
+  .object({
+    version: z.literal(1),
+    source_system: z.literal('smile-trip-care'),
+    generated_at: z.string().datetime(),
+    providers: z.array(providerSchema),
+    offers: z.array(offerSchema),
+  })
+  .strict();
 
 export type HealthTravelCatalog = z.infer<typeof healthTravelCatalogSchema>;
 
@@ -65,8 +78,8 @@ function countryCode(country: string): string | null {
 export function isSmileTripCareOwnedMetadata(metadata: unknown): boolean {
   return Boolean(
     metadata &&
-      typeof metadata === 'object' &&
-      (metadata as Record<string, unknown>).source_system === 'smile-trip-care'
+    typeof metadata === 'object' &&
+    (metadata as Record<string, unknown>).source_system === 'smile-trip-care'
   );
 }
 
@@ -316,16 +329,14 @@ export async function syncHealthTravelCatalog(
       }
       offerUpdated += 1;
     } else {
-      const inserted = await platform
-        .from('revenue_offers')
-        .insert({
-          tenant_id: tenantId,
-          partner_id: partnerId,
-          external_ref: offer.id,
-          ...patch,
-          commission_model: 'manual',
-          commission_value: null,
-        });
+      const inserted = await platform.from('revenue_offers').insert({
+        tenant_id: tenantId,
+        partner_id: partnerId,
+        external_ref: offer.id,
+        ...patch,
+        commission_model: 'manual',
+        commission_value: null,
+      });
       if (inserted.error) {
         throw new Error(`Offer insert failed for ${offer.id}: ${inserted.error.message}`);
       }
@@ -355,7 +366,8 @@ export async function syncHealthTravelCatalog(
         status: partner.status,
         activeProviderRefs,
       })
-    ) continue;
+    )
+      continue;
 
     const paused = await platform
       .from('revenue_partners')
@@ -388,7 +400,8 @@ export async function syncHealthTravelCatalog(
         status: offer.status,
         activeOfferKeys,
       })
-    ) continue;
+    )
+      continue;
 
     const paused = await platform
       .from('revenue_offers')

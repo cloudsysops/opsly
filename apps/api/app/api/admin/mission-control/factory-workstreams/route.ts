@@ -74,15 +74,13 @@ type Marker = {
   transport?: unknown;
 };
 
-let githubCache:
-  | {
-      expires_at: number;
-      observed: boolean;
-      complete: boolean;
-      items: GitHubWorkItem[];
-      error?: string;
-    }
-  | null = null;
+let githubCache: {
+  expires_at: number;
+  observed: boolean;
+  complete: boolean;
+  items: GitHubWorkItem[];
+  error?: string;
+} | null = null;
 
 function asString(value: unknown): string | null {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
@@ -107,12 +105,7 @@ function githubRepository(): string {
 async function readProtectionPatterns(): Promise<string[] | null> {
   const cwd = process.cwd();
   const repoRoot = process.env.OPSLY_REPO_ROOT?.trim();
-  const candidates = [
-    ...(repoRoot ? [repoRoot] : []),
-    cwd,
-    join(cwd, '..'),
-    join(cwd, '..', '..'),
-  ];
+  const candidates = [...(repoRoot ? [repoRoot] : []), cwd, join(cwd, '..'), join(cwd, '..', '..')];
   for (const root of candidates) {
     const file = join(root, 'config', 'pr-reconciliation-policy.json');
     if (!existsSync(file)) continue;
@@ -135,7 +128,7 @@ async function readProtectionPatterns(): Promise<string[] | null> {
 function protectionState(
   files: Array<Record<string, unknown>>,
   patterns: string[] | null,
-  filesComplete: boolean,
+  filesComplete: boolean
 ): GitHubWorkItem['protection_state'] {
   if (!patterns || !filesComplete) return 'UNKNOWN';
   const filenames = files
@@ -143,9 +136,7 @@ function protectionState(
     .filter((value): value is string => Boolean(value))
     .map((value) => value.toLowerCase());
 
-  return patterns.some((pattern) =>
-    filenames.some((filename) => filename.includes(pattern)),
-  )
+  return patterns.some((pattern) => filenames.some((filename) => filename.includes(pattern)))
     ? 'PROTECTED'
     : 'CLEAR';
 }
@@ -164,7 +155,7 @@ async function githubJson(path: string): Promise<unknown> {
 
 async function githubPagedArray(
   path: string,
-  expectedCount: number | null = null,
+  expectedCount: number | null = null
 ): Promise<{ items: Array<Record<string, unknown>>; complete: boolean }> {
   const items: Array<Record<string, unknown>> = [];
   for (let page = 1; page <= 20; page += 1) {
@@ -174,7 +165,7 @@ async function githubPagedArray(
       throw new Error(`GitHub API returned non-array page for ${path}`);
     }
     const batch = raw.filter(
-      (item): item is Record<string, unknown> => typeof item === 'object' && item !== null,
+      (item): item is Record<string, unknown> => typeof item === 'object' && item !== null
     );
     if (batch.length !== raw.length) {
       throw new Error(`GitHub API returned malformed array item for ${path}`);
@@ -205,10 +196,7 @@ function parseEvidenceMarker(body: string): Marker | null {
 }
 
 function fallbackBodyField(body: string, label: string): string | null {
-  const pattern = new RegExp(
-    '(?:^|\\n)-?\\s*' + label + ':\\s*`?([^\\n`]+)`?',
-    'i',
-  );
+  const pattern = new RegExp('(?:^|\\n)-?\\s*' + label + ':\\s*`?([^\\n`]+)`?', 'i');
   return body.match(pattern)?.[1]?.trim() || null;
 }
 
@@ -222,7 +210,7 @@ function fallbackTransport(body: string): GitHubWorkItem['transport'] {
 }
 function checkState(
   statusPayload: Record<string, unknown> | null,
-  checksPayload: Record<string, unknown> | null,
+  checksPayload: Record<string, unknown> | null
 ): GitHubWorkItem['check_state'] {
   const statuses = Array.isArray(statusPayload?.statuses)
     ? (statusPayload?.statuses as Array<Record<string, unknown>>)
@@ -246,8 +234,8 @@ function checkState(
     statusStates.some((state) => state === 'failure' || state === 'error') ||
     relevantChecks.some((item) =>
       ['failure', 'timed_out', 'cancelled', 'action_required', 'startup_failure'].includes(
-        asString(item.conclusion)?.toLowerCase() || '',
-      ),
+        asString(item.conclusion)?.toLowerCase() || ''
+      )
     )
   ) {
     return 'FAIL';
@@ -266,7 +254,7 @@ function checkState(
 
 function verifierState(
   statusPayload: Record<string, unknown> | null,
-  checksPayload: Record<string, unknown> | null,
+  checksPayload: Record<string, unknown> | null
 ): VerificationState {
   const statuses = Array.isArray(statusPayload?.statuses)
     ? (statusPayload?.statuses as Array<Record<string, unknown>>)
@@ -276,7 +264,7 @@ function verifierState(
     : [];
 
   const status = statuses.find(
-    (item) => asString(item.context)?.toLowerCase() === 'opsly-independent-review',
+    (item) => asString(item.context)?.toLowerCase() === 'opsly-independent-review'
   );
   if (status) {
     const state = asString(status.state)?.toLowerCase();
@@ -286,7 +274,7 @@ function verifierState(
   }
 
   const check = checks.find(
-    (item) => asString(item.name)?.toLowerCase() === 'opsly-independent-review',
+    (item) => asString(item.name)?.toLowerCase() === 'opsly-independent-review'
   );
   if (check) {
     const conclusion = asString(check.conclusion)?.toLowerCase();
@@ -361,7 +349,7 @@ async function readGithubWork(): Promise<{
     const repository = githubRepository();
     const protectionPatterns = await readProtectionPatterns();
     const pullsRaw = await githubJson(
-      `/repos/${repository}/pulls?state=open&sort=updated&direction=desc&per_page=100`,
+      `/repos/${repository}/pulls?state=open&sort=updated&direction=desc&per_page=100`
     );
     const pulls = Array.isArray(pullsRaw) ? (pullsRaw as Array<Record<string, unknown>>) : [];
 
@@ -386,8 +374,8 @@ async function readGithubWork(): Promise<{
 
     const canEnrich = Boolean(
       process.env.GITHUB_TOKEN?.trim() ||
-        process.env.GITHUB_TOKEN_N8N?.trim() ||
-        process.env.GH_TOKEN?.trim(),
+      process.env.GITHUB_TOKEN_N8N?.trim() ||
+      process.env.GH_TOKEN?.trim()
     );
 
     const items = await Promise.all(
@@ -436,7 +424,7 @@ async function readGithubWork(): Promise<{
             try {
               const filesResult = await githubPagedArray(
                 `/repos/${repository}/pulls/${String(pull.number)}/files`,
-                changedFiles,
+                changedFiles
               );
               filesObserved = true;
               files = filesResult.items;
@@ -450,8 +438,7 @@ async function readGithubWork(): Promise<{
 
         const checks = checkState(statusPayload, checksPayload);
         const verifier = verifierState(statusPayload, checksPayload);
-        const mergeable =
-          typeof detail?.mergeable === 'boolean' ? detail.mergeable : null;
+        const mergeable = typeof detail?.mergeable === 'boolean' ? detail.mergeable : null;
         const mergeableState = asString(detail?.mergeable_state);
         const draft = pull.draft === true;
         const protection =
@@ -475,29 +462,27 @@ async function readGithubWork(): Promise<{
 
         return {
           item: {
-          work_id: workId,
-          agent_id: asString(marker?.agent_id) || fallbackBodyField(body, 'Worker'),
-          workstream: asString(marker?.workstream) || fallbackBodyField(body, 'Workstream'),
-          conflict_key: asString(marker?.conflict_key) || fallbackBodyField(body, 'Conflict-Key'),
-          transport,
-          pr_number: Number(pull.number),
-          pr_url: asString(pull.html_url) || '',
-          branch: branch || '',
-          head_sha: headSha,
-          title: asString(pull.title) || `PR #${String(pull.number)}`,
-          draft,
-          verifier,
-          merge_readiness: merge.readiness,
-          check_state: checks,
-          mergeable,
-          protection_state: protection,
-          blocker: merge.blocker,
+            work_id: workId,
+            agent_id: asString(marker?.agent_id) || fallbackBodyField(body, 'Worker'),
+            workstream: asString(marker?.workstream) || fallbackBodyField(body, 'Workstream'),
+            conflict_key: asString(marker?.conflict_key) || fallbackBodyField(body, 'Conflict-Key'),
+            transport,
+            pr_number: Number(pull.number),
+            pr_url: asString(pull.html_url) || '',
+            branch: branch || '',
+            head_sha: headSha,
+            title: asString(pull.title) || `PR #${String(pull.number)}`,
+            draft,
+            verifier,
+            merge_readiness: merge.readiness,
+            check_state: checks,
+            mergeable,
+            protection_state: protection,
+            blocker: merge.blocker,
           } satisfies GitHubWorkItem,
-          complete:
-            enrichmentComplete &&
-            (!protectionPatterns || (filesObserved && filesComplete)),
+          complete: enrichmentComplete && (!protectionPatterns || (filesObserved && filesComplete)),
         };
-      }),
+      })
     );
 
     const enrichedItems = items.map((result) => result.item);
@@ -538,9 +523,7 @@ async function readRuntimeSessions(): Promise<{
     });
     if (!response.ok) {
       const detail = await response.text();
-      throw new Error(
-        `runtime sessions ${response.status}: ${detail.slice(0, 200)}`,
-      );
+      throw new Error(`runtime sessions ${response.status}: ${detail.slice(0, 200)}`);
     }
     const payload = (await response.json()) as {
       ok?: unknown;
@@ -550,38 +533,35 @@ async function readRuntimeSessions(): Promise<{
       throw new Error('runtime sessions returned an invalid payload');
     }
 
-    const sessions = payload.sessions
-      .map((raw): RuntimeSessionSnapshot => {
-        if (typeof raw !== 'object' || raw === null) {
-          throw new Error('runtime sessions contained a malformed entry');
-        }
-        const item = raw as Record<string, unknown>;
-        const sessionId = asString(item.sessionId);
-        const agentId = asString(item.agentId);
-        if (!sessionId || !agentId) {
-          throw new Error('runtime sessions contained an entry without sessionId/agentId');
-        }
-        const rawStatus = asString(item.status) || 'unknown';
-        const known = new Set([
-          'created',
-          'running',
-          'checkpointed',
-          'waiting_approval',
-          'stopped',
-          'failed',
-          'resumable',
-        ]);
-        return {
-          session_id: sessionId,
-          work_id: asString(item.jobId),
-          agent_id: agentId,
-          status: known.has(rawStatus)
-            ? (rawStatus as RuntimeSessionSnapshot['status'])
-            : 'unknown',
-          branch: asString(item.branch),
-          last_seen_at: asString(item.lastSeenAt),
-        };
-      });
+    const sessions = payload.sessions.map((raw): RuntimeSessionSnapshot => {
+      if (typeof raw !== 'object' || raw === null) {
+        throw new Error('runtime sessions contained a malformed entry');
+      }
+      const item = raw as Record<string, unknown>;
+      const sessionId = asString(item.sessionId);
+      const agentId = asString(item.agentId);
+      if (!sessionId || !agentId) {
+        throw new Error('runtime sessions contained an entry without sessionId/agentId');
+      }
+      const rawStatus = asString(item.status) || 'unknown';
+      const known = new Set([
+        'created',
+        'running',
+        'checkpointed',
+        'waiting_approval',
+        'stopped',
+        'failed',
+        'resumable',
+      ]);
+      return {
+        session_id: sessionId,
+        work_id: asString(item.jobId),
+        agent_id: agentId,
+        status: known.has(rawStatus) ? (rawStatus as RuntimeSessionSnapshot['status']) : 'unknown',
+        branch: asString(item.branch),
+        last_seen_at: asString(item.lastSeenAt),
+      };
+    });
 
     return { observed: true, sessions };
   } catch (error) {
@@ -625,8 +605,7 @@ function parseClaimValue(value: string): {
       workstream: asString(payload.workstream),
       owner: asString(payload.owner),
       state: payload.state === 'completed' ? 'completed' : 'active',
-      descriptor:
-        dimension && descriptorValue ? { dimension, value: descriptorValue } : null,
+      descriptor: dimension && descriptorValue ? { dimension, value: descriptorValue } : null,
     };
   } catch {
     return null;
@@ -665,12 +644,11 @@ async function readDispatchClaims(): Promise<{
 
     if (cursor !== '0' || keys.length > 1000) {
       throw new Error(
-        'dispatch claim scan exceeded 1000 keys; refusing partial ownership evidence',
+        'dispatch claim scan exceeded 1000 keys; refusing partial ownership evidence'
       );
     }
 
-    const stringKeys = keys
-      .filter((key) => key !== `${CLAIM_PREFIX}:repository:path-index`);
+    const stringKeys = keys.filter((key) => key !== `${CLAIM_PREFIX}:repository:path-index`);
 
     if (stringKeys.length === 0) {
       return { observed: true, claims: [], completed_tombstones: 0 };
@@ -712,7 +690,7 @@ async function readDispatchClaims(): Promise<{
         !current.descriptors.some(
           (item) =>
             item.dimension === parsed.descriptor?.dimension &&
-            item.value === parsed.descriptor?.value,
+            item.value === parsed.descriptor?.value
         )
       ) {
         current.descriptors.push(parsed.descriptor);
@@ -721,7 +699,7 @@ async function readDispatchClaims(): Promise<{
     }
 
     const completedTombstones = [...grouped.values()].filter(
-      (claim) => claim.state === 'completed',
+      (claim) => claim.state === 'completed'
     ).length;
     const claims = [...grouped.entries()]
       .filter(([, claim]) => claim.state === 'active')
