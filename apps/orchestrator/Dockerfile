@@ -77,6 +77,7 @@ COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/config/git-branch-policy.json ./config/git-branch-policy.json
 COPY --from=builder /app/config/external-agent-registry.json ./config/external-agent-registry.json
 COPY --from=builder /app/config/runtime-governor.json ./config/runtime-governor.json
+COPY --from=builder /app/config/agent-services.yaml ./config/agent-services.yaml
 
 WORKDIR /app/apps/orchestrator
 EXPOSE 3011
