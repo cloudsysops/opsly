@@ -1,0 +1,103 @@
+name: Content engine gaming regression
+
+on:
+  pull_request:
+    paths:
+      - 'config/content-formats.json'
+      - 'lib/content-studio/src/content-engine/**'
+      - '.github/workflows/content-engine-gaming-regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  gaming-editorial-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install PR dependencies
+        run: npm ci
+
+      - name: Focused gaming editorial assertion
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd lib/content-studio
+          npx vitest run src/content-engine/__tests__/gameplay-channel.test.ts \
+            -t "uses gameplay editorial metadata for gaming and preserves the non-gaming explainer default"
+
+      - name: Compare known highlight-render test with current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEAD_SHA="$(git rev-parse HEAD)"
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          echo "head_sha=$HEAD_SHA"
+          echo "base_sha=$BASE_SHA"
+          echo "command=npx vitest run src/content-engine/__tests__/gameplay-channel.test.ts -t 'prepares a highlight as a rendered human-review draft'"
+
+          rm -rf ../opsly-base
+          git worktree add --detach ../opsly-base "$BASE_SHA"
+
+          set +e
+          (
+            cd ../opsly-base
+            npm ci >/tmp/gaming-base-npm-ci.log 2>&1 &&
+            cd lib/content-studio &&
+            npx vitest run src/content-engine/__tests__/gameplay-channel.test.ts \
+              -t "prepares a highlight as a rendered human-review draft"
+          ) > /tmp/gaming-base-test.log 2>&1
+          base_rc=$?
+
+          (
+            cd lib/content-studio
+            npx vitest run src/content-engine/__tests__/gameplay-channel.test.ts \
+              -t "prepares a highlight as a rendered human-review draft"
+          ) > /tmp/gaming-head-test.log 2>&1
+          head_rc=$?
+          set -e
+
+          echo "base_exit=$base_rc"
+          echo "head_exit=$head_rc"
+          echo "---- base tail ----"
+          tail -n 40 /tmp/gaming-base-test.log || true
+          echo "---- head tail ----"
+          tail -n 40 /tmp/gaming-head-test.log || true
+
+          if [ "$base_rc" -eq 0 ] && [ "$head_rc" -ne 0 ]; then
+            echo "Regression: current main passes but PR head fails the known render test." >&2
+            exit 1
+          fi
+
+          if [ "$base_rc" -ne 0 ] && [ "$head_rc" -ne 0 ]; then
+            grep -F "prepares a highlight as a rendered human-review draft" /tmp/gaming-base-test.log >/dev/null
+            grep -F "prepares a highlight as a rendered human-review draft" /tmp/gaming-head-test.log >/dev/null
+            echo "Known render-test failure reproduced on both current main and PR head; not introduced by this PR."
+          else
+            echo "Known render test passes on PR head (base_rc=$base_rc, head_rc=$head_rc)."
+          fi
+
+      - name: Upload comparison logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gaming-regression
+          path: |
+            /tmp/gaming-base-test.log
+            /tmp/gaming-head-test.log
+            /tmp/gaming-base-npm-ci.log
+          if-no-files-found: warn
+          retention-days: 7

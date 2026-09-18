@@ -1,6 +1,6 @@
 ---
 id: agent-loop-e2e-smoke-025
-status: pending
+status: done
 owner: opsly-agent-supervisor
 created: 2026-09-11
 requires_pr: true
@@ -111,3 +111,12 @@ BLOCKER:
 ```
 
 If the runtime cannot prove any field, write `UNKNOWN`; do not fabricate evidence.
+
+
+---
+
+## Respuesta agente (2026-09-12)
+
+- **Estado:** hecho
+- **Evidencia:** `docs/01-development/e2e/AGENT-LOOP-SMOKE-2026-09-11.md` merged via PR #1214
+- **Orch:** job-status + local-agents path previously verified on Mac

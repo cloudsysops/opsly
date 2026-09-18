@@ -1,0 +1,77 @@
+# Auto-label night-merge — evita que se vuelva a acumular un backlog de PRs
+# limpios sin etiquetar (encontrado 2026-09-14: 30 PRs listos para mergear,
+# 15 sin la label night-merge, algunos desde hace semanas — ver #1120..#1434).
+#
+# No decide por producción: solo etiqueta lint+build+secret-scan en verde.
+# production-change-window se ignora aquí a propósito — night-merge.yml
+# (01:00 America/Bogota) ya lo re-evalúa en su momento; el punto de esta
+# label es encolar, no saltarse la ventana.
+
+name: Auto-label night-merge
+
+on:
+  pull_request_target:
+    types: [synchronize, opened, ready_for_review]
+  schedule:
+    # Red de seguridad: agarra cualquier PR que quedó verde sin que este
+    # workflow lo viera pasar por un evento (p. ej. un check tardó en
+    # completar después del push).
+    - cron: "0 */6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: auto-label-night-merge-${{ github.repository }}-${{ github.event.pull_request.number || 'schedule' }}
+  cancel-in-progress: true
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label eligible PR(s)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SINGLE_PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          REQUIRED=(lint build secret-scan)
+
+          label_if_eligible() {
+            local pr="$1"
+            local is_draft
+            is_draft="$(gh api "repos/$REPO/pulls/$pr" --jq '.draft')"
+            [ "$is_draft" = "true" ] && { echo "#$pr draft — skip"; return; }
+
+            local has_label
+            has_label="$(gh api "repos/$REPO/issues/$pr/labels" --jq '[.[].name] | index("night-merge") != null')"
+            [ "$has_label" = "true" ] && { echo "#$pr ya tiene night-merge — skip"; return; }
+
+            local sha
+            sha="$(gh api "repos/$REPO/pulls/$pr" --jq '.head.sha')"
+            local runs
+            runs="$(gh api "repos/$REPO/commits/$sha/check-runs" --jq '[.check_runs[] | {name, conclusion}]')"
+
+            for check in "${REQUIRED[@]}"; do
+              local ok
+              ok="$(echo "$runs" | jq --arg c "$check" '[.[] | select(.name == $c and .conclusion == "success")] | length > 0')"
+              if [ "$ok" != "true" ]; then
+                echo "#$pr — $check no está en verde todavía — skip"
+                return
+              fi
+            done
+
+            echo "#$pr — lint/build/secret-scan en verde, sin label — agregando night-merge"
+            gh pr edit "$pr" --repo "$REPO" --add-label night-merge
+          }
+
+          if [ -n "${SINGLE_PR:-}" ]; then
+            label_if_eligible "$SINGLE_PR"
+          else
+            for pr in $(gh pr list --repo "$REPO" --search "is:open -is:draft -label:night-merge" --limit 100 --json number --jq '.[].number'); do
+              label_if_eligible "$pr"
+            done
+          fi
