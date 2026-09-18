@@ -1,11 +1,12 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { getRuntimeSupabasePublicConfig } from '@/lib/runtime-env';
 
 export async function createServerSupabase() {
   const cookieStore = await cookies();
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) {
+  const { supabaseUrl: url, supabaseAnonKey: anon, configured } =
+    getRuntimeSupabasePublicConfig();
+  if (!configured) {
     const fallbackUrl = 'https://placeholder.supabase.co';
     const fallbackAnon = 'placeholder';
     return createServerClient(fallbackUrl, fallbackAnon, {
