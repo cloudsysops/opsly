@@ -12,7 +12,7 @@ describe('compute-worker-snapshot', () => {
   it('parses legacy ISO and JSON heartbeats', () => {
     expect(parseComputeHeartbeat('2026-09-07T03:00:00Z')?.at).toBe('2026-09-07T03:00:00Z');
     expect(
-      parseComputeHeartbeat(JSON.stringify({ at: '2026-09-07T02:59:00Z', vramGb: 16 }))?.vramGb,
+      parseComputeHeartbeat(JSON.stringify({ at: '2026-09-07T02:59:00Z', vramGb: 16 }))?.vramGb
     ).toBe(16);
     expect(parseComputeHeartbeat(null)).toBeNull();
   });
@@ -23,14 +23,14 @@ describe('compute-worker-snapshot', () => {
       classifyComputeStatus({
         heartbeat: { at: '2026-09-07T02:59:40Z', activeJobs: 0 },
         now,
-      }),
+      })
     ).toBe('ONLINE');
     expect(
       classifyComputeStatus({
         heartbeat: { at: '2026-09-07T02:59:40Z', activeJobs: 1 },
         now,
         maxGpuJobs: 1,
-      }),
+      })
     ).toBe('BUSY');
   });
 
