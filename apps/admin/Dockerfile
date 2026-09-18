@@ -20,16 +20,8 @@ COPY apps/admin ./apps/admin
 COPY lib ./lib
 WORKDIR /repo/apps/admin
 ENV NEXT_TELEMETRY_DISABLED=1
-# Producción: false (login Supabase obligatorio). Solo local/staging: --build-arg NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true
-ARG NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false
-ENV NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=$NEXT_PUBLIC_ADMIN_PUBLIC_DEMO
-# NEXT_PUBLIC_* se inyectan en build (no en runtime)
-ARG NEXT_PUBLIC_SUPABASE_URL
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+# Public environment is rendered at container startup so QA and PROD can run
+# the exact same immutable image digest.
 RUN npm run build -w @intcloudsysops/universe
 RUN mkdir -p public && npm run build
 
@@ -43,9 +35,12 @@ ENV HOSTNAME=0.0.0.0
 COPY --from=builder /repo/apps/admin/.next/standalone ./
 COPY --from=builder /repo/apps/admin/.next/static ./apps/admin/.next/static
 COPY --from=builder /repo/apps/admin/public ./apps/admin/public
+COPY scripts/runtime/render-public-runtime-config.mjs /usr/local/lib/render-public-runtime-config.mjs
+COPY scripts/runtime/start-next-with-public-config.sh /usr/local/bin/start-next-with-public-config.sh
+RUN chmod +x /usr/local/bin/start-next-with-public-config.sh
 
 WORKDIR /app/apps/admin
 
 EXPOSE 3001
 
-CMD ["node", "server.js"]
+CMD ["/usr/local/bin/start-next-with-public-config.sh", "node", "server.js"]
