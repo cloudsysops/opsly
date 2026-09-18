@@ -15,7 +15,7 @@ const priority = {
 };
 
 const workpacks = inventory.pullRequests
-  .filter((pr) => actionable.has(pr.lane) && !pr.protected && pr.supersededBy.length === 0)
+  .filter((pr) => actionable.has(pr.lane) && pr.supersededBy.length === 0)
   .map((pr) => ({
     id: `pr-${pr.number}`,
     prNumber: pr.number,
@@ -26,6 +26,18 @@ const workpacks = inventory.pullRequests
     expectedHeadSha: pr.headSha,
     base: pr.base,
     lockKey: `pr-reconcile:${pr.number}:${pr.head}`,
+    protected: pr.protected === true,
+    operation:
+      pr.lane === 'CHECK_FAILED'
+        ? (pr.protected ? 'DIAGNOSE_ONLY' : 'REPAIR')
+        : pr.lane === 'REVIEW_BLOCKED'
+          ? 'REQUEST_INDEPENDENT_REVIEW'
+          : pr.protected
+            ? 'ESCALATE'
+            : pr.lane === 'BEHIND'
+              ? 'UPDATE_BRANCH_CANDIDATE'
+              : 'CONFLICT_RECONCILIATION',
+    writeAllowed: pr.lane === 'CHECK_FAILED' && pr.protected !== true,
     behindBy: pr.behindBy,
     aheadBy: pr.aheadBy,
     instructions: [
@@ -34,7 +46,9 @@ const workpacks = inventory.pullRequests
       'Abort and recompute if the head SHA changed.',
       'Do not use safe-daytime or hotfix-prod.',
       'Do not deploy production.',
-      'Do not mutate Peskids or protected runtime surfaces.',
+      pr.protected
+        ? 'Protected surface: diagnostics and independent review are allowed; autonomous branch mutation is forbidden.'
+        : 'For CHECK_FAILED only, use the canonical PR Doctor repair path; do not invent another writer.',
       'Fix only straightforward safe technical failures; otherwise report the blocker.',
       'Do not merge from this workpack. Merge is a separate gated action.',
     ],
