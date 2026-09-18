@@ -20,6 +20,9 @@ test('reviewer dispatches through governed local_opencode and polls terminal evi
   assert.match(reviewer, /\/api\/job-status\//);
   assert.match(reviewer, /agent: 'local_opencode'/);
   assert.match(reviewer, /agent_role: 'review'/);
+  assert.match(reviewer, /workstream: 'github-independent-review'/);
+  assert.match(reviewer, /conflict_key:/);
+  assert.match(reviewer, /semantic_scope:/);
   assert.match(reviewer, /requires_pr: false/);
   assert.match(reviewer, /production_deploy: false/);
   assert.match(reviewer, /paid_infra_required: false/);
