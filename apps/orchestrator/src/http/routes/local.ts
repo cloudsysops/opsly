@@ -1,5 +1,5 @@
 import type { RouteContext } from '../router.js';
-import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, randomUUID } from '../utils.js';
+import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, hasExplicitAutonomyApproval, randomUUID } from '../utils.js';
 import {
   enqueueLocalAgentJob,
   getLocalAgentJobById,
@@ -7,6 +7,7 @@ import {
   probeLocalAgentQueue,
 } from '../../queue.js';
 import type { OrchestratorJob } from '../../types.js';
+import { evaluateEnqueue } from '../../lib/runtime-governor.js';
 import {
   getLocalControlMode,
   listLocalControlModes,
@@ -430,6 +431,27 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     const policyCheck = enrichAutonomyMetadata(ctx.req, job);
     if (!policyCheck.ok) {
       jsonResponse(ctx.res, policyCheck.status, policyCheck.payload);
+      return;
+    }
+
+    const governorDecision = await evaluateEnqueue({
+      job_type: job.type,
+      agent_role: agentRole,
+      autonomy_approved: hasExplicitAutonomyApproval(ctx.req),
+      tenant_plan: typeof b.plan === 'string' ? b.plan : undefined,
+      metadata: job.metadata,
+    });
+    if (!governorDecision.allowed) {
+      console.warn(`[LocalPromptSubmit] Governor denied ${job.type} job ${requestId}: ${governorDecision.reason}`);
+      jsonResponse(ctx.res, 429, {
+        success: false,
+        ok: false,
+        error: 'GOVERNOR_LIMIT_REACHED',
+        reason: governorDecision.reason,
+        warnings: governorDecision.warnings,
+        governor_metrics: governorDecision.metrics,
+        request_id: requestId,
+      });
       return;
     }
 
