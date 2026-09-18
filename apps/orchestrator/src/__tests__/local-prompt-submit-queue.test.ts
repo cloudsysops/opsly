@@ -23,6 +23,10 @@ vi.mock('bullmq', () => {
 const queueMocks = vi.hoisted(() => ({
   enqueueJob: vi.fn((..._args: unknown[]) => Promise.resolve({ id: 'openclaw-job' })),
   enqueueLocalAgentJob: vi.fn((..._args: unknown[]) => Promise.resolve({ id: 'local-agents-job' })),
+  getLocalAgentJobById: vi.fn(async (..._args: unknown[]): Promise<any> => null),
+  localAgentJobIdFor: vi.fn((job: { type?: string; request_id?: string }) =>
+    `${job.type || 'local'}-${job.request_id || 'request'}`
+  ),
 }));
 
 vi.mock('../queue.js', async (importOriginal) => {
@@ -31,6 +35,23 @@ vi.mock('../queue.js', async (importOriginal) => {
     ...actual,
     enqueueJob: queueMocks.enqueueJob,
     enqueueLocalAgentJob: queueMocks.enqueueLocalAgentJob,
+    getLocalAgentJobById: queueMocks.getLocalAgentJobById,
+    localAgentJobIdFor: queueMocks.localAgentJobIdFor,
+  };
+});
+
+
+const claimMocks = vi.hoisted(() => ({
+  acquireTaskDispatchClaim: vi.fn(),
+  releaseTaskDispatchClaim: vi.fn(async () => 0),
+}));
+
+vi.mock('../task-claim-store.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../task-claim-store.js')>();
+  return {
+    ...actual,
+    acquireTaskDispatchClaim: claimMocks.acquireTaskDispatchClaim,
+    releaseTaskDispatchClaim: claimMocks.releaseTaskDispatchClaim,
   };
 });
 
@@ -84,6 +105,22 @@ describe('local prompt-submit → local-agents queue', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    claimMocks.acquireTaskDispatchClaim.mockResolvedValue({
+      acquired: true,
+      lease: {
+        version: 'dispatch-claim-v1',
+        claimId: 'ghq-owned-001',
+        tenantSlug: 'local',
+        taskId: 'workpack-001',
+        workstream: 'orchestrator',
+        descriptors: [
+          { dimension: 'task', value: 'workpack-001' },
+          { dimension: 'conflict', value: 'orchestrator/local-dispatch' },
+        ],
+        acquiredAt: '2026-09-13T18:00:00.000Z',
+        expiresAt: '2026-09-13T22:00:00.000Z',
+      },
+    });
     process.env.PLATFORM_ADMIN_TOKEN = 'test-platform-admin';
     process.env.ORCHESTRATOR_HEALTH_PORT = '0';
     server = startOrchestratorHealthServer();
@@ -150,6 +187,307 @@ describe('local prompt-submit → local-agents queue', () => {
     expect(jobArg.payload.agent_task?.tenant_slug).toBe('acme');
     expect(jobArg.payload.agent_task?.selected_agent).toBe('local_cursor');
     expect(jobArg.payload.agent_task?.execution_mode).toBe('enqueue');
+  });
+
+  it('agent:null routes executor work to the canonical live implementation runtime', async () => {
+    const previousOpenCodeUrl = process.env.OPSLY_OPENCODE_AGENT_URL;
+    process.env.OPSLY_OPENCODE_AGENT_URL = 'http://127.0.0.1:5004';
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => new Response('', { status: 200 }));
+
+    try {
+      const { status, raw } = await postJson(
+        port,
+        '/api/local/prompt-submit',
+        {
+          tenant_slug: 'local',
+          request_id: 'auto-route-live-001',
+          agent: null,
+          agent_role: 'executor',
+          goal: 'implementation',
+          prompt_body: 'Inspect a synthetic implementation task without modifying files',
+        },
+        { Authorization: 'Bearer test-platform-admin' }
+      );
+
+      expect(status).toBe(202);
+      expect(JSON.parse(raw).job_type).toBe('local_opencode');
+      const queued = enqueueLocalAgentJob.mock.calls[0]![0] as { type: string };
+      expect(queued.type).toBe('local_opencode');
+    } finally {
+      fetchSpy.mockRestore();
+      if (previousOpenCodeUrl === undefined) delete process.env.OPSLY_OPENCODE_AGENT_URL;
+      else process.env.OPSLY_OPENCODE_AGENT_URL = previousOpenCodeUrl;
+    }
+  });
+
+  it('agent:null falls back to the next live registered runtime when preferred is unhealthy', async () => {
+    const previousOpenCodeUrl = process.env.OPSLY_OPENCODE_AGENT_URL;
+    const previousAiderUrl = process.env.OPSLY_AIDER_AGENT_URL;
+    process.env.OPSLY_OPENCODE_AGENT_URL = 'http://127.0.0.1:5004';
+    process.env.OPSLY_AIDER_AGENT_URL = 'http://127.0.0.1:5009';
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+      return new Response('', { status: url.includes(':5004/') ? 503 : 200 });
+    });
+
+    try {
+      const { status, raw } = await postJson(
+        port,
+        '/api/local/prompt-submit',
+        {
+          tenant_slug: 'local',
+          request_id: 'auto-route-fallback-001',
+          agent: null,
+          agent_role: 'executor',
+          goal: 'implementation',
+          prompt_body: 'Inspect a synthetic fallback task without modifying files',
+        },
+        { Authorization: 'Bearer test-platform-admin' }
+      );
+
+      expect(status).toBe(202);
+      expect(JSON.parse(raw).job_type).toBe('local_aider');
+      const queued = enqueueLocalAgentJob.mock.calls[0]![0] as { type: string };
+      expect(queued.type).toBe('local_aider');
+    } finally {
+      fetchSpy.mockRestore();
+      if (previousOpenCodeUrl === undefined) delete process.env.OPSLY_OPENCODE_AGENT_URL;
+      else process.env.OPSLY_OPENCODE_AGENT_URL = previousOpenCodeUrl;
+      if (previousAiderUrl === undefined) delete process.env.OPSLY_AIDER_AGENT_URL;
+      else process.env.OPSLY_AIDER_AGENT_URL = previousAiderUrl;
+    }
+  });
+
+  it('rejects write-capable agent work before execution when no ownership claim can be derived', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'write-no-claim-001',
+        agent: 'local_opencode',
+        agent_role: 'implement',
+        prompt_body: 'Implement a code change',
+        context: {},
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(400);
+    expect(raw).toMatch(/DISPATCH_CLAIM_REQUIRED/);
+    expect(claimMocks.acquireTaskDispatchClaim).not.toHaveBeenCalled();
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('allows write-capable agent work only after ownership metadata can be claimed', async () => {
+    const { status } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'write-with-claim-001',
+        agent: 'local_opencode',
+        agent_role: 'implement',
+        prompt_body: 'Implement only the claimed module',
+        context: {
+          task_id: 'write-task-001',
+          workstream: 'orchestrator',
+          conflict_key: 'orchestrator/write-task-001',
+          semantic_scope: 'write task one',
+          affected_paths: ['apps/orchestrator/src'],
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(202);
+    expect(claimMocks.acquireTaskDispatchClaim).toHaveBeenCalledTimes(1);
+    expect(enqueueLocalAgentJob).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails closed when governed GitHub dispatch has no ownership conflict key', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'ghq-missing-claim-001',
+        agent: 'local_opencode',
+        agent_role: 'review',
+        prompt_body: 'Do not duplicate active work',
+        context: {
+          source: 'github-agent-queue',
+          workpack_id: 'workpack-missing-key',
+          workstream: 'orchestrator',
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(400);
+    expect(raw).toMatch(/conflict_key is required/i);
+    expect(claimMocks.acquireTaskDispatchClaim).not.toHaveBeenCalled();
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('blocks a second agent when the requested scope is already owned', async () => {
+    claimMocks.acquireTaskDispatchClaim.mockResolvedValueOnce({
+      acquired: false,
+      conflict: {
+        descriptor: { dimension: 'semantic', value: 'health travel revenue consumer' },
+        decision: 'CONFLICT_BLOCKED',
+        existingClaimId: 'ghq-owner-001',
+        existingTaskId: 'health-revenue-owner',
+        existingWorkstream: 'health-travel',
+      },
+    });
+
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'ghq-duplicate-002',
+        agent: 'local_opencode',
+        agent_role: 'review',
+        prompt_body: 'Build the same revenue consumer again',
+        context: {
+          source: 'github-agent-queue',
+          workpack_id: 'health-revenue-duplicate',
+          workstream: 'health-travel',
+          conflict_key: 'health-travel/revenue-consumer',
+          semantic_scope: 'health travel revenue consumer',
+          affected_paths: ['apps/api/lib/revenue'],
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(409);
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    expect(parsed.dispatch_decision).toBe('CONFLICT_BLOCKED');
+    expect(parsed.existing_task_id).toBe('health-revenue-owner');
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('attaches an acquired ownership lease to the queued task', async () => {
+    const { status } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'ghq-owned-001',
+        agent: 'local_opencode',
+        agent_role: 'review',
+        prompt_body: 'Implement only the claimed scope',
+        context: {
+          source: 'github-agent-queue',
+          workpack_id: 'workpack-001',
+          workstream: 'orchestrator',
+          conflict_key: 'orchestrator/local-dispatch',
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(202);
+    expect(claimMocks.acquireTaskDispatchClaim).toHaveBeenCalledTimes(1);
+    const queued = enqueueLocalAgentJob.mock.calls[0]![0] as {
+      taskId?: string;
+      idempotency_key?: string;
+      payload: { context?: Record<string, unknown>; prompt_content?: string };
+      metadata?: Record<string, unknown>;
+    };
+    expect(queued.taskId).toBe('workpack-001');
+    expect(queued.idempotency_key).toBe('ghq-owned-001');
+    expect(queued.payload.context?.dispatch_claim).toMatchObject({
+      version: 'dispatch-claim-v1',
+      claimId: 'ghq-owned-001',
+      taskId: 'workpack-001',
+    });
+    expect(queued.payload.prompt_content).toContain(
+      '[OPSLY DISPATCH OWNERSHIP — TRUSTED CONTROL METADATA]'
+    );
+    expect(queued.payload.prompt_content).toContain('claim_id=ghq-owned-001');
+    expect(queued.payload.prompt_content).toContain(
+      'conflict_key=orchestrator/local-dispatch'
+    );
+    expect(queued.metadata?.dispatch_claim_id).toBe('ghq-owned-001');
+  });
+
+  it('releases an acquired claim when BullMQ does not return a durable job id', async () => {
+    queueMocks.enqueueLocalAgentJob.mockResolvedValueOnce({ id: null } as never);
+
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'ghq-no-job-id-001',
+        agent: 'local_opencode',
+        agent_role: 'review',
+        prompt_body: 'claimed work',
+        context: {
+          source: 'github-agent-queue',
+          workpack_id: 'workpack-001',
+          workstream: 'orchestrator',
+          conflict_key: 'orchestrator/local-dispatch',
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(500);
+    expect(raw).toMatch(/BULLMQ_JOB_ID_REQUIRED/);
+    expect(claimMocks.releaseTaskDispatchClaim).toHaveBeenCalledTimes(1);
+  });
+
+  it('discards caller-supplied dispatch leases on unclaimed manual requests', async () => {
+    const { status } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'acme',
+        request_id: 'manual-forged-claim-001',
+        prompt_body: 'manual review',
+        context: {
+          dispatch_claim: {
+            version: 'dispatch-claim-v1',
+            claimId: 'victim-claim',
+            tenantSlug: 'acme',
+            taskId: 'victim-task',
+          },
+        },
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(202);
+    const queued = enqueueLocalAgentJob.mock.calls[0]![0] as {
+      payload: { context?: Record<string, unknown> };
+    };
+    expect(queued.payload.context?.dispatch_claim).toBeUndefined();
+    expect(claimMocks.acquireTaskDispatchClaim).not.toHaveBeenCalled();
   });
 
   it('review role produces a read-only AgentTaskEnvelopeV1 that does not require write approval', async () => {
@@ -302,6 +640,87 @@ describe('local prompt-submit → local-agents queue', () => {
 
     expect(status).toBe(400);
     expect(raw).toMatch(/mismatch/i);
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('rejects a read-only envelope when its task differs from the prompt actually executed', async () => {
+    const requestId = 'req-envelope-prompt-mismatch';
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'academy-demo',
+        request_id: requestId,
+        agent: 'local_opencode',
+        prompt_body: 'modify production code',
+        agent_task: {
+          schema_version: 'AgentTaskEnvelopeV1',
+          request_id: requestId,
+          correlation_id: requestId,
+          tenant_slug: 'academy-demo',
+          task_type: 'review',
+          task: 'inspect only',
+          selected_agent: 'local_opencode',
+          skills: [],
+          constraints: {
+            open_source_only: false,
+            local_only: true,
+            browser_allowed: false,
+            network_allowed: false,
+            write_allowed: false,
+            file_scope: [],
+            max_tokens: 1600,
+          },
+          execution_mode: 'enqueue',
+          source: 'opsly',
+          actor: 'system',
+          created_at: '2026-09-13T12:00:00.000Z',
+          timeout_ms: 120000,
+          max_attempts: 2,
+          budget: { max_tokens: 1600 },
+          metadata: {},
+          fallback_agents: [],
+        },
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(400);
+    expect(raw).toMatch(/task must exactly match/i);
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('returns JOIN_EXISTING before acquiring a new claim for a nonterminal duplicate BullMQ id', async () => {
+    queueMocks.getLocalAgentJobById.mockResolvedValueOnce({
+      getState: vi.fn(async () => 'waiting'),
+      remove: vi.fn(async () => undefined),
+    });
+
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'duplicate-001',
+        agent: 'local_opencode',
+        agent_role: 'implement',
+        prompt_body: 'Implement only the claimed module',
+        context: {
+          task_id: 'duplicate-task',
+          workstream: 'orchestrator',
+          conflict_key: 'orchestrator/duplicate',
+          affected_paths: ['apps/orchestrator/src'],
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(409);
+    expect(raw).toMatch(/JOIN_EXISTING/);
+    expect(claimMocks.acquireTaskDispatchClaim).not.toHaveBeenCalled();
     expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
   });
 

@@ -26,3 +26,14 @@ export {
   taskIdFromEnvelope,
 } from './store.js';
 export type { AgentLearningStoreOptions } from './store.js';
+
+export type {
+  ExecutionFailureCategory,
+  ExecutionTeardownState,
+  ExecutionCostClass,
+  ExecutionStatusV1,
+  BoundedExecutionResultV1,
+  ExecutionEvalResultV1,
+  ExecutionEvidenceV1,
+} from './execution-evidence-v1.js';
+export { normalizeExecutionEvidenceV1 } from './execution-evidence-v1.js';

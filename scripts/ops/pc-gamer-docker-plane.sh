@@ -185,20 +185,25 @@ dump_plan() {
 }
 
 # Stale containers (Created/Exited) with fixed names block `compose up` (Conflict).
-# Keep running ones; remove only non-running name collisions.
+# Keep running ones only if they already belong to THIS compose project — a
+# container started by a different entrypoint (e.g. ensure-ollama-local.sh's
+# own `opslyquantum` project) still collides on `docker compose up` by name
+# even while running, since compose ownership is a daemon-side label, not a
+# name match. Remove/adopt anything not labeled for $COMPOSE_PROJECT_NAME.
 reconcile_named_containers() {
   local names=(opsly-pc-gamer-worker-openclaw opslyquantum-ollama)
-  local name id status
+  local name id status project
   [[ "$DRY_RUN" == "true" ]] && return 0
   for name in "${names[@]}"; do
     id="$(docker ps -aq --filter "name=^/${name}$" 2>/dev/null || true)"
     [[ -n "$id" ]] || continue
     status="$(docker inspect -f '{{.State.Status}}' "$id" 2>/dev/null || echo missing)"
-    if [[ "$status" == "running" ]]; then
-      echo "[pc-gamer-docker] keep running $name"
+    project="$(docker inspect -f '{{ index .Config.Labels "com.docker.compose.project" }}' "$id" 2>/dev/null || echo "")"
+    if [[ "$status" == "running" && "$project" == "$COMPOSE_PROJECT_NAME" ]]; then
+      echo "[pc-gamer-docker] keep running $name (project=$project)"
       continue
     fi
-    echo "[pc-gamer-docker] removing stale $name (status=$status)"
+    echo "[pc-gamer-docker] removing $name (status=$status project=${project:-none}, not owned by project=$COMPOSE_PROJECT_NAME)"
     docker rm -f "$id" >/dev/null 2>&1 || true
   done
 }
@@ -270,9 +275,18 @@ install_autostart() {
   local unit="$unit_dir/opsly-pc-gamer-docker.service"
   local timer="$unit_dir/opsly-pc-gamer-heartbeat.timer"
   local hb_svc="$unit_dir/opsly-pc-gamer-heartbeat.service"
+  local autostart_args="--up"
+
+  # Persist the execution mode selected when autostart is installed.
+  # Without these flags a cold WSL start silently drops the content plane
+  # and/or switches away from host Ollama even though the interactive
+  # bootstrap was healthy.
+  [[ "$WITH_CONTENT" == "true" ]] && autostart_args+=" --with-content"
+  [[ "$USE_HOST_OLLAMA" == "true" ]] && autostart_args+=" --use-host-ollama"
 
   if [[ "$DRY_RUN" == "true" ]]; then
     echo "[dry-run] would write $unit $hb_svc $timer"
+    echo "[dry-run] autostart_exec=$ROOT/scripts/ops/pc-gamer-docker-plane.sh $autostart_args"
     echo "[dry-run] systemctl --user enable --now opsly-pc-gamer-docker.service opsly-pc-gamer-heartbeat.timer"
     return 0
   fi
@@ -289,7 +303,7 @@ Wants=network-online.target
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=${ROOT}
-ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up
+ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh ${autostart_args}
 TimeoutStartSec=600
 
 [Install]

@@ -10,7 +10,11 @@
 # Salidas:
 #   exit 0 = nada que hacer / done
 #   exit 1 = error de infra (no encola)
-#   exit 2 = no disponible (nodo offline o modo no permite) — semaforizado, no ruido
+#   exit 2 = no disponible (offline, modo no permite, o GPU ocupada) — semaforizado
+#
+# Gate GPU (scripts/ops/check-pc-gamer-gpu-load.sh): si Mauro está jugando o
+# la GPU supera umbral, NO encola aunque el modo nominal sea "heavy".
+# --force (horario) no salta esto; hace falta --ignore-gpu-gate.
 #
 # Usage:
 #   doppler run --project ops-intcloudsysops --config prd -- \
@@ -19,6 +23,7 @@
 #   ./scripts/ops/overnight-autodispatch.sh --list
 #   ./scripts/ops/overnight-autodispatch.sh --mode heavy --force-online  # testing
 #   ./scripts/ops/overnight-autodispatch.sh --reset-state
+#   ./scripts/ops/overnight-autodispatch.sh --force --ignore-gpu-gate  # override total, con cuidado
 #
 set -euo pipefail
 
@@ -28,6 +33,7 @@ RESET=false
 FORCE_MODE=""
 FORCE_ONLINE=false
 FORCE=false
+IGNORE_GPU_GATE=false
 TASK_FILTER=""
 
 for arg in "$@"; do
@@ -37,6 +43,7 @@ for arg in "$@"; do
     --reset-state) RESET=true ;;
     --force) FORCE=true ;;
     --force-online) FORCE_ONLINE=true ;;
+    --ignore-gpu-gate) IGNORE_GPU_GATE=true ;;
     --mode=*) FORCE_MODE="${arg#*=}" ;;
     --task=*) TASK_FILTER="${arg#*=}" ;;
     -h|--help)
@@ -172,6 +179,19 @@ if [[ "$FORCE" != "true" && "$ALLOWS_OPENCODE" != "true" ]]; then
   log "mode=${MODE} does not allow opencode → blocked"
   notify "pc-gamer autodispatch" "modo ${MODE} no permite opencode — sin encolado" "warning"
   exit 2
+fi
+
+# Gate GPU en tiempo real — un "heavy" a las 2am con Mauro jugando debe frenar.
+if [[ "$IGNORE_GPU_GATE" != "true" ]]; then
+  set +e
+  GPU_STATUS="$(./scripts/ops/check-pc-gamer-gpu-load.sh 2>&1)"
+  GPU_RC=$?
+  set -e
+  if [[ "$GPU_RC" -ne 0 ]]; then
+    echo "[autodispatch] GPU ocupada/unreachable (${GPU_STATUS}) — skip. exit=2"
+    log "gpu-busy rc=${GPU_RC} ${GPU_STATUS}"
+    exit 2
+  fi
 fi
 
 echo "[autodispatch] nodo online + modo '${MODE}' permite opencode — revisando backlog…"

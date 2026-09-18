@@ -8,6 +8,7 @@ const TENANT_DEFAULT_PROFILES: Record<string, AiProfile> = {
   smiletripcare: 'hybrid',
   peskids: 'hybrid',
   intcloudsysops: 'free-always',
+  'opsly-ci-open-source-review': 'free-always',
 };
 
 export interface DailyBudgetStatus {

@@ -19,11 +19,22 @@ jobs:
       - run: npm ci
       - name: Build orchestrator workspace deps
         run: |
+          set -euo pipefail
+          npm run build --workspace=@intcloudsysops/types
+          npm run build --workspace=@intcloudsysops/universe
+          npm run build --workspace=@intcloudsysops/content-studio
+          npm run build --workspace=@intcloudsysops/pattern-catalog
+          npm run build --workspace=@intcloudsysops/sigma-harness
+          npm run build --workspace=@intcloudsysops/prompt-guard
+          npm run build --workspace=@intcloudsysops/llm-gateway
+          npm run build --workspace=@intcloudsysops/ml
+          npm run build --workspace=@intcloudsysops/external-agent-registry
+          npm run build --workspace=@intcloudsysops/agent-task-core
           npm run build --workspace=@intcloudsysops/git-branch-orchestrator
           npm run build --workspace=@intcloudsysops/session-manager
+          npm run build --workspace=@intcloudsysops/ai-board
           npm run build --workspace=@intcloudsysops/runtime
+          npm run build --workspace=@intcloudsysops/voice-messaging
           npm run build --workspace=@intcloudsysops/notebooklm-agent
-          npm run build --workspace=@intcloudsysops/prompt-guard
-          npm run build --workspace=@intcloudsysops/ml
       - run: npm run type-check --workspace=@intcloudsysops/orchestrator
       - run: npm run test:hermes --workspace=@intcloudsysops/orchestrator
