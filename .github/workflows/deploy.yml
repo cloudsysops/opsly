@@ -696,14 +696,10 @@ jobs:
       - build-and-push
       - build-mcp
       - verify-runtime-images
-    # TEMPORARY CIRCUIT BREAKER: ordinary push/merge to main must never
-    # activate production. Legacy production remains manual-only until #1635
-    # replaces this path with governed exact-SHA promotion.
-    if: |
-      github.event_name == 'workflow_dispatch' &&
-      github.ref_name == 'main' &&
-      needs.build-and-push.result == 'success' &&
-      needs.build-mcp.result == 'success'
+    # Production activation is intentionally disabled here. `main` only builds
+    # and verifies immutable SHA-tagged release candidates. The only production
+    # activation path is `.github/workflows/promote-production-canary.yml`.
+    if: false
     runs-on: ubuntu-latest
     environment: production
     permissions:
