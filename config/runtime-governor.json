@@ -3,7 +3,7 @@
   "principle": "Prevent AI agent chaos — sequential by default, human approval for extra capacity.",
   "max_active_implementation_workers": 1,
   "max_active_planning_workers": 1,
-  "max_parallel_jobs": 1,
+  "max_parallel_jobs": 2,
   "max_background_tmux_sessions": 2,
   "max_docker_sandboxes": 2,
   "agent_idle_timeout_minutes": 20,
