@@ -181,7 +181,72 @@ jobs:
             echo "MAC_OPERATOR_AUTH_OK"
             REMOTE_MAC
 
-      - name: Repair existing Mac runner
+      - name: Probe Mac control checkout
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 3m
+          script: |
+            set -euo pipefail
+            ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
+            set -euo pipefail
+            repo=""
+            for candidate in "$HOME/opsly-control" "$HOME/src/opsly-control" "$HOME/Projects/opsly-control" "$HOME/Documents/opsly-control"; do
+              if [[ -d "$candidate/.git" ]]; then repo="$candidate"; break; fi
+            done
+            if [[ -z "$repo" ]]; then
+              repo="$(find "$HOME" -maxdepth 4 -type d -name opsly-control -exec test -d '{}/.git' ';' -print -quit 2>/dev/null || true)"
+            fi
+            test -n "$repo" && test -d "$repo/.git" || { echo "BLOCKER_OPSLY_CONTROL_CHECKOUT_NOT_FOUND"; exit 78; }
+            origin="$(git -C "$repo" remote get-url origin 2>/dev/null || true)"
+            case "$origin" in *cloudsysops/opsly-control*) ;; *) echo "BLOCKER_UNEXPECTED_CONTROL_REPO_ORIGIN"; exit 78;; esac
+            [[ -z "$(git -C "$repo" status --porcelain)" ]] || { echo "BLOCKER_OPSLY_CONTROL_DIRTY_WORKTREE"; exit 78; }
+            printf '%s\n' "$repo" > "$HOME/.opsly-control-recovery-path"
+            echo "MAC_CONTROL_CHECKOUT_OK"
+            REMOTE_MAC
+
+      - name: Probe Mac operator auth
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 3m
+          script: |
+            set -euo pipefail
+            ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
+            set -euo pipefail
+            command -v gh >/dev/null || { echo "BLOCKER_LOCAL_GH_MISSING"; exit 78; }
+            command -v doppler >/dev/null || { echo "BLOCKER_LOCAL_DOPPLER_MISSING"; exit 78; }
+            gh auth status >/dev/null 2>&1 || { echo "BLOCKER_LOCAL_GH_AUTH"; exit 78; }
+            doppler me >/dev/null 2>&1 || { echo "BLOCKER_LOCAL_DOPPLER_AUTH"; exit 78; }
+            echo "MAC_OPERATOR_AUTH_OK"
+            REMOTE_MAC
+
+      - name: Sync Mac control checkout
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 3m
+          script: |
+            set -euo pipefail
+            ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
+            set -euo pipefail
+            repo="$(cat "$HOME/.opsly-control-recovery-path")"
+            git -C "$repo" fetch origin main
+            git -C "$repo" checkout main
+            git -C "$repo" pull --ff-only origin main
+            echo "MAC_CONTROL_SYNC_OK"
+            REMOTE_MAC
+
+      - name: Repair existing Mac runner service and Actions auth
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.VPS_TARGET_HOST }}
@@ -191,29 +256,12 @@ jobs:
           command_timeout: 8m
           script: |
             set -euo pipefail
-
             ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
             set -euo pipefail
-
-            repo=""
-            for candidate in "$HOME/opsly-control" "$HOME/src/opsly-control" "$HOME/Projects/opsly-control" "$HOME/Documents/opsly-control"; do
-              if [[ -d "$candidate/.git" ]]; then
-                repo="$candidate"
-                break
-              fi
-            done
-            if [[ -z "$repo" ]]; then
-              repo="$(find "$HOME" -maxdepth 4 -type d -name opsly-control -exec test -d '{}/.git' ';' -print -quit 2>/dev/null || true)"
-            fi
-            [[ -n "$repo" && -d "$repo/.git" ]] || { echo "BLOCKER_OPSLY_CONTROL_CHECKOUT_NOT_FOUND"; exit 78; }
-
-            git -C "$repo" fetch origin main
-            git -C "$repo" checkout main
-            git -C "$repo" pull --ff-only origin main
-
+            repo="$(cat "$HOME/.opsly-control-recovery-path")"
             cd "$repo"
             bash scripts/configure-agent-queue-gh.sh --no-dispatch
             bash scripts/configure-agent-queue-gh.sh --check-only
-
+            rm -f "$HOME/.opsly-control-recovery-path"
             echo "OPSLY_MAC_RUNNER_RECOVERY_OK"
             REMOTE_MAC
