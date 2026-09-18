@@ -54,12 +54,14 @@ async function ignoredCheckPatterns() {
   ignoredPatternsCache = patterns;
   return patterns;
 }
-const MARKER_PREFIX = 'PR Doctor: fix dispatched for';
+const CHECK_MARKER_PREFIX = 'PR Doctor: fix dispatched for';
+const REVIEW_MARKER_PREFIX = 'PR Doctor: review fix dispatched for';
 
 function parseArgs(argv) {
-  const out = { dryRun: false, pr: null };
+  const out = { dryRun: false, reviewBlocked: false, pr: null };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--dry-run') out.dryRun = true;
+    else if (argv[i] === '--review-blocked') out.reviewBlocked = true;
     else if (argv[i] === '--pr') out.pr = Number(argv[++i]);
   }
   return out;
@@ -83,9 +85,34 @@ async function gh(pathname, { token, method = 'GET', body } = {}) {
   return resp.status === 204 ? null : resp.json();
 }
 
-async function alreadyDispatched(pr, shortSha, token) {
+async function alreadyDispatched(pr, shortSha, token, markerPrefix) {
   const comments = await gh(`repos/${REPO}/issues/${pr.number}/comments?per_page=100`, { token });
-  return comments.some((c) => (c.body ?? '').includes(`${MARKER_PREFIX} ${shortSha}`));
+  return comments.some((c) => (c.body ?? '').includes(`${markerPrefix} ${shortSha}`));
+}
+
+async function blockingReviews(pr, token) {
+  const reviews = await gh(`repos/${REPO}/pulls/${pr.number}/reviews?per_page=100`, { token });
+  const latestByUser = new Map();
+  for (const review of reviews ?? []) {
+    const login = review.user?.login;
+    if (!login) continue;
+    const previous = latestByUser.get(login);
+    if (!previous || Date.parse(review.submitted_at || 0) >= Date.parse(previous.submitted_at || 0)) {
+      latestByUser.set(login, review);
+    }
+  }
+  return [...latestByUser.values()]
+    .filter(
+      (review) =>
+        review.state === 'CHANGES_REQUESTED' &&
+        review.commit_id === pr.head.sha &&
+        ['github-actions[bot]', 'github-actions'].includes(review.user?.login)
+    )
+    .map((review) => ({
+      name: `review:${review.user?.login ?? 'unknown'}`,
+      details_url: review.html_url ?? pr.html_url,
+      summary: String(review.body ?? '').slice(0, 2000),
+    }));
 }
 
 async function failingChecks(pr, token) {
@@ -102,8 +129,9 @@ async function failingChecks(pr, token) {
     }));
 }
 
-async function dispatchFix(pr, failing, token) {
-  const requestId = `pr-doctor:${pr.number}:${pr.head.sha.slice(0, 8)}`;
+async function dispatchFix(pr, failing, token, { reviewBlocked = false } = {}) {
+  const mode = reviewBlocked ? 'review' : 'check';
+  const requestId = `pr-doctor:${mode}:${pr.number}:${pr.head.sha.slice(0, 8)}`;
   const checkList = failing.map((c) => `- ${c.name}: ${c.details_url}${c.summary ? `\n  ${c.summary}` : ''}`).join('\n');
   const changedFiles = await gh(
     `repos/${REPO}/pulls/${pr.number}/files?per_page=100`,
@@ -119,27 +147,30 @@ async function dispatchFix(pr, failing, token) {
     request_id: requestId,
     agent: null, // no fijar agente — que agent-task-core enrute al primero disponible
     agent_role: 'executor',
-    goal: `Arreglar falla de CI en PR #${pr.number} (${pr.title})`,
+    goal: reviewBlocked
+      ? `Resolver review blockers en PR #${pr.number} (${pr.title})`
+      : `Arreglar falla de CI en PR #${pr.number} (${pr.title})`,
     max_steps: 8,
     prompt_content: [
       `PR #${pr.number}: ${pr.title}`,
       `Rama: ${pr.head.ref} (NO crear rama nueva — trabajar sobre esta misma).`,
       `Commit actual: ${pr.head.sha}`,
       '',
-      'Checks fallando ahora mismo:',
+      reviewBlocked ? 'Review blockers exact-head:' : 'Checks fallando ahora mismo:',
       checkList,
       '',
-      'Instrucciones: haz checkout de la rama, corre el/los check(s) que fallan',
-      'localmente, identifica la causa real, corrígela, y haz commit + push',
-      'sobre la misma rama. No toques la lógica de production-change-window',
-      'ni opsly-independent-review — esos se manejan aparte.',
+      reviewBlocked
+        ? 'Instrucciones: trabaja únicamente los CHANGES_REQUESTED exact-head listados arriba.'
+        : 'Instrucciones: haz checkout de la rama y reproduce únicamente los checks técnicos listados arriba.',
+      'Identifica la causa real, corrígela, valida localmente y haz commit + push sobre la misma rama.',
+      'No toques production-change-window ni debilites opsly-independent-review.',
     ].join('\n'),
     context: {
       source: 'pr_doctor',
       workpack_id: requestId,
       workstream: `pr-doctor/${REPO}`,
-      conflict_key: `pr-doctor/pr-${pr.number}`,
-      semantic_scope: `pr-doctor/pr-${pr.number}/head-${pr.head.sha}`,
+      conflict_key: `pr-reconcile/pr-${pr.number}`,
+      semantic_scope: `pr-reconcile/pr-${pr.number}/head-${pr.head.sha}`,
       requires_pr: true,
       pr_number: pr.number,
       pr_branch: pr.head.ref,
@@ -170,7 +201,7 @@ async function dispatchFix(pr, failing, token) {
     method: 'POST',
     body: {
       body: [
-        `${MARKER_PREFIX} ${pr.head.sha.slice(0, 8)}`,
+        `${reviewBlocked ? REVIEW_MARKER_PREFIX : CHECK_MARKER_PREFIX} ${pr.head.sha.slice(0, 8)}`,
         '',
         `Checks: ${failing.map((c) => c.name).join(', ')}`,
         `request_id: \`${requestId}\``,
@@ -192,19 +223,28 @@ async function main() {
     return;
   }
 
-  const failing = await failingChecks(pr, READ_TOKEN);
+  const failing = args.reviewBlocked
+    ? await blockingReviews(pr, READ_TOKEN)
+    : await failingChecks(pr, READ_TOKEN);
   if (failing.length === 0) {
-    console.log(`#${pr.number} sin fallas reales (fuera de production-change-window/independent-review) — nada que hacer.`);
+    console.log(
+      args.reviewBlocked
+        ? `#${pr.number} sin CHANGES_REQUESTED exact-head — nada que reparar.`
+        : `#${pr.number} sin fallas técnicas reales — nada que hacer.`
+    );
     return;
   }
 
   const shortSha = pr.head.sha.slice(0, 8);
-  if (await alreadyDispatched(pr, shortSha, READ_TOKEN)) {
-    console.log(`#${pr.number} ya tiene un fix despachado para ${shortSha} — se omite (evita redespacho).`);
+  const markerPrefix = args.reviewBlocked ? REVIEW_MARKER_PREFIX : CHECK_MARKER_PREFIX;
+  if (await alreadyDispatched(pr, shortSha, READ_TOKEN, markerPrefix)) {
+    console.log(`#${pr.number} ya tiene reparación despachada para ${shortSha} — se omite.`);
     return;
   }
 
-  console.log(`#${pr.number} falla real en: ${failing.map((c) => c.name).join(', ')}`);
+  console.log(
+    `#${pr.number} ${args.reviewBlocked ? 'review blocker' : 'falla real'}: ${failing.map((c) => c.name).join(', ')}`
+  );
 
   if (args.dryRun) {
     console.log('[dry-run] no se despacha nada.');
@@ -215,7 +255,7 @@ async function main() {
     return;
   }
 
-  const result = await dispatchFix(pr, failing, READ_TOKEN);
+  const result = await dispatchFix(pr, failing, READ_TOKEN, { reviewBlocked: args.reviewBlocked });
   console.log(`#${pr.number} fix despachado:`, JSON.stringify(result).slice(0, 300));
 }
 

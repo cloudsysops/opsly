@@ -6,21 +6,22 @@ Opsly may have many concurrent agent branches and pull requests. The reconciliat
 
 ## Safety model
 
-The first phase is deliberately read-only.
+The controller is evidence-first but actionable. It may automatically:
+- re-dispatch the canonical read-only Open Review Agent when exact-head independent review is missing/stale;
+- route real technical CI failures on non-protected PRs to the existing PR Doctor repair path;
+- keep exact-head/idempotency guards around every dispatch.
 
 It MUST NOT:
-
-- merge a pull request;
-- update or rebase a branch;
+- merge a pull request itself;
 - deploy production;
 - apply `safe-daytime` or `hotfix-prod`;
 - rotate secrets;
 - mutate production data;
 - change n8n side effects;
 - change DNS or routing;
-- automatically reconcile Peskids or production-sensitive work.
+- branch-mutate protected surfaces.
 
-Peskids and production/runtime-sensitive changes are classified `PROTECTED` and require explicit supervised handling.
+Peskids and production/runtime-sensitive changes remain `protected: true`: they can be reviewed/diagnosed automatically, but reconciliation never sends autonomous branch mutations for them.
 
 ## Lanes
 
@@ -67,7 +68,7 @@ Priority order for capacity:
 4. `CHECK_FAILED`
 5. `REVIEW_BLOCKED`
 
-`SUPERSEDED` consumes no reconciliation capacity. `PROTECTED` never enters automatic reconciliation.
+`SUPERSEDED` consumes no reconciliation capacity. `PROTECTED` may enter read-only review/diagnostic reconciliation but never autonomous branch mutation or merge.
 
 ## Supervised agent handoff
 
@@ -82,9 +83,7 @@ Each envelope carries:
 - `productionDeploy: false`;
 - zero paid-infrastructure budget.
 
-These envelopes are **prepared only**. `dispatchAllowed` remains false because branch reconciliation is GitHub write-capable work. They MUST NOT be sent through the autonomous `github-agent-queue` path while the write-approval gate remains closed.
-
-This preserves the canonical boundary: task sources converge on the orchestrator, but write-capable GitHub execution remains supervised.
+The generic AgentTaskEnvelope artifact remains supervised-only. The controller does not create a second writer: safe technical repairs reuse the existing PR Doctor → Orchestrator → DispatchClaim path, while independent review reuse the existing read-only Open Review Agent. Generic write-capable GitHub Agent Queue envelopes remain held behind the typed approval contract.
 
 ## Cleanup
 
@@ -105,6 +104,6 @@ The hourly workflow publishes:
 - `pr-reconciliation-workpacks.json`;
 - `pr-reconciliation-agent-envelopes.json`.
 
-## Next phase
+## Remaining boundary
 
-Implement the typed approval chain for GitHub write-capable reconciliation. Only after that gate exists may approved `BEHIND`/`CONFLICTED` envelopes be dispatched to governed local runtimes. Merge remains independently gated and protected by `expected_head_sha`.
+Typed approval is still required before generic `BEHIND`/`CONFLICTED` write envelopes can execute autonomously. Until then, the controller automates only the already-canonical PR Doctor repair path and read-only reviewer re-dispatch. Merge remains independently gated and protected by exact-head checks.
