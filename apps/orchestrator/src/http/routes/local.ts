@@ -62,6 +62,10 @@ function recordRecentLocalJob(job: LocalRecentJob): void {
   }
 }
 
+export function canQueueForDeferredRuntime(blocker: string | null | undefined): boolean {
+  return blocker === 'runtime_unknown' || blocker === 'runtime_unreachable';
+}
+
 export async function resolveLocalPromptAgentKind(
   b: Record<string, unknown>,
   promptForFrontmatter: string
@@ -105,6 +109,13 @@ export async function resolveLocalPromptAgentKind(
     return routed.opslyJobType;
   }
 
+  let deferredKind: string | null =
+    canQueueForDeferredRuntime(preferred?.dispatch_blocker)
+      ? routed.opslyJobType
+      : null;
+  let deferredWorkerId: string | null =
+    deferredKind ? routed.worker.workerId : null;
+
   for (const fallbackWorkerId of routed.worker.entry.fallback_agents ?? []) {
     const fallbackEntry = registry.workers[fallbackWorkerId];
     if (!fallbackEntry?.enabled) continue;
@@ -112,6 +123,17 @@ export async function resolveLocalPromptAgentKind(
     if (row?.dispatch_eligible) {
       return normalizeLocalAgentKind(fallbackEntry.opsly_job_type);
     }
+    if (!deferredKind && canQueueForDeferredRuntime(row?.dispatch_blocker)) {
+      deferredKind = fallbackEntry.opsly_job_type;
+      deferredWorkerId = fallbackWorkerId;
+    }
+  }
+
+  if (deferredKind) {
+    console.warn(
+      `[LocalPromptSubmit] No live bridge observed for ${deferredWorkerId}; queueing ${deferredKind} for eventual worker claim`
+    );
+    return normalizeLocalAgentKind(deferredKind);
   }
 
   const blocker = preferred?.dispatch_blocker ?? 'preferred_runtime_unknown';
