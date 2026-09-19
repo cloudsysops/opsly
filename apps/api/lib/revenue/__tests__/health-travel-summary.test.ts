@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  summarizeHealthTravelReceipts,
-} from '../health-travel-summary';
+import { summarizeHealthTravelReceipts } from '../health-travel-summary';
 import { resolveHealthTravelTenantSlug } from '../health-travel-tenant';
 
 describe('summarizeHealthTravelReceipts', () => {
@@ -13,9 +11,7 @@ describe('summarizeHealthTravelReceipts', () => {
 
     process.env.HEALTH_TRAVEL_TENANT_SLUG = 'env-health-demo';
     expect(resolveHealthTravelTenantSlug()).toBe('env-health-demo');
-    expect(resolveHealthTravelTenantSlug('explicit-health-demo')).toBe(
-      'explicit-health-demo'
-    );
+    expect(resolveHealthTravelTenantSlug('explicit-health-demo')).toBe('explicit-health-demo');
 
     if (previous === undefined) {
       delete process.env.HEALTH_TRAVEL_TENANT_SLUG;

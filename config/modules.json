@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-09-12T10:35:00Z",
+  "lastUpdated": "2026-09-12T10:36:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -441,6 +441,23 @@
         "createMemoryStorage"
       ]
     },
+    "commerce-deals": {
+      "name": "@intcloudsysops/commerce-deals",
+      "version": "0.1.0",
+      "path": "lib/commerce-deals",
+      "owner": "platform",
+      "description": "Pure normalization adapters for Medusa offers, changedetection deal events and Shlink attribution requests.",
+      "status": "experimental",
+      "dependencies": [],
+      "governance": "lib/commerce-deals/GOVERNANCE.md",
+      "mainFile": "lib/commerce-deals/src/index.ts",
+      "exports": [
+        "normalizeMedusaProduct",
+        "normalizeChangeDetectionEvent",
+        "buildShlinkAttributionRequest",
+        "shouldCreateDealOpportunity"
+      ]
+    },
     "revenue-core": {
       "name": "@intcloudsysops/revenue-core",
       "version": "0.1.0",
@@ -505,7 +522,7 @@
     "apps/admin": {
       "depends": [
         "components",
-        "observability",
+"observability",
         "security",
         "api",
         "services",

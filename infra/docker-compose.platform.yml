@@ -491,8 +491,8 @@ services:
       # Si usas el servicio `hermes` (contenedor dedicado), pon `HERMES_ENABLED=false` en .env/Doppler para no duplicar el worker.
       HERMES_ENABLED: ${HERMES_ENABLED:-true}
       # Vacío = full (compat). `control` = solo TeamManager/eventos en VPS; workers en otro nodo con `worker`.
-      OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-}
-      OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-}
+      OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-control}
+      OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-queue-only}
       ORCHESTRATOR_HEALTH_PORT: '3011'
       ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway:3010
       OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}

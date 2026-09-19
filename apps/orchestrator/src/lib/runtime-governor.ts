@@ -19,6 +19,7 @@ import {
   type AgentLifecycleState,
 } from './runtime-governor-lifecycle.js';
 import { resourcePressureWarnings, sampleHostResources } from './resource-monitor.js';
+import { countLocalAgentQueueLoad } from '../queue.js';
 
 export interface RuntimeGovernorConfig {
   version: number;
@@ -156,7 +157,8 @@ export function effectiveLimits(
   cfg: RuntimeGovernorConfig,
   tenantPlan?: string,
 ): GovernorStatusSnapshot['effective_limits'] {
-  const tier = cfg.tier_limits?.[resolveTierKey(tenantPlan)] ?? {};
+  const normalizedPlan = tenantPlan?.trim();
+  const tier = normalizedPlan ? (cfg.tier_limits?.[resolveTierKey(normalizedPlan)] ?? {}) : {};
   return {
     max_parallel_jobs: tier.max_parallel_jobs ?? cfg.max_parallel_jobs,
     max_active_implementation_workers:
@@ -187,8 +189,12 @@ async function collectMetrics(cfg: RuntimeGovernorConfig): Promise<GovernorMetri
     /* ignore */
   }
 
+  const queueLoad = await countLocalAgentQueueLoad();
+  const queueBackedActiveJobs = queueLoad.active + queueLoad.waiting + queueLoad.delayed;
+  const activeLocalJobsTotal = Math.max(activeLocalJobs.size, queueBackedActiveJobs);
+
   return {
-    active_local_jobs: activeLocalJobs.size,
+    active_local_jobs: activeLocalJobsTotal,
     active_implementation: implementation,
     active_planning: planning,
     active_sandboxes: activeSandboxJobs,

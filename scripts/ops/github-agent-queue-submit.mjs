@@ -196,6 +196,9 @@ const payload = {
   }
 };
 
+const requireCompletion = process.env.OPSLY_GITHUB_AGENT_REQUIRE_COMPLETION === 'true';
+const expectedMarker = (process.env.OPSLY_GITHUB_AGENT_EXPECT_MARKER || '').trim();
+
 console.log(`Submitting ${meta.id} -> ${orchestratorUrl}/api/local/prompt-submit`);
 const submit = await request(`${orchestratorUrl}/api/local/prompt-submit`, {
   method: 'POST',
@@ -207,6 +210,7 @@ const submit = await request(`${orchestratorUrl}/api/local/prompt-submit`, {
   body: JSON.stringify(payload)
 });
 
+let existingCompletedJobId = '';
 if (!submit.response.ok) {
   console.error(JSON.stringify(submit.body, null, 2));
   if (submit.response.status === 409 && submit.body?.dispatch_decision) {
@@ -214,7 +218,18 @@ if (!submit.response.ok) {
       console.log(
         `ALREADY_DONE task=${submit.body.existing_task_id || 'unknown'} claim=${submit.body.existing_claim_id || 'unknown'}`
       );
-      process.exit(0);
+      if (!requireCompletion || !expectedMarker) {
+        process.exit(0);
+      }
+      if (!submit.body.existing_job_id) {
+        throw new Error(
+          'ALREADY_DONE_WITHOUT_JOB_EVIDENCE: exact marker cannot be revalidated'
+        );
+      }
+      existingCompletedJobId = String(submit.body.existing_job_id);
+      console.log(
+        `ALREADY_DONE_REVALIDATE job_id=${existingCompletedJobId} expected_marker=${expectedMarker}`
+      );
     }
     if (submit.body.dispatch_decision === 'JOIN_EXISTING') {
       console.error(
@@ -224,7 +239,9 @@ if (!submit.response.ok) {
         'JOIN_EXISTING_NONTERMINAL: canonical work is still active; this submitter must not report success'
       );
     }
-    if (submit.body.error === 'DISPATCH_SCOPE_ALREADY_OWNED') {
+    if (submit.body.dispatch_decision === 'ALREADY_DONE' && existingCompletedJobId) {
+      // Continue below and re-read the durable terminal result.
+    } else if (submit.body.error === 'DISPATCH_SCOPE_ALREADY_OWNED') {
       throw new Error(
         `DISPATCH_SCOPE_ALREADY_OWNED: dispatch_decision=${submit.body.dispatch_decision} ` +
           `${submit.body.conflict_dimension || 'scope'}="${submit.body.conflict_scope || 'unknown'}" ` +
@@ -232,30 +249,35 @@ if (!submit.response.ok) {
           `workstream=${submit.body.existing_workstream || 'unknown'} ` +
           `claim=${submit.body.existing_claim_id || 'unknown'}`
       );
+    } else {
+      throw new Error(
+        `${submit.body.dispatch_decision}: ${submit.body.conflict_dimension || 'scope'} is already owned`
+      );
     }
-    throw new Error(
-      `${submit.body.dispatch_decision}: ${submit.body.conflict_dimension || 'scope'} is already owned`
-    );
   }
-  throw new Error(`submit failed HTTP ${submit.response.status}`);
+  if (!existingCompletedJobId) {
+    throw new Error(`submit failed HTTP ${submit.response.status}`);
+  }
 }
 
-if (submit.body.prepared_only === true || submit.body.job_id === null || submit.body.job_id === undefined) {
+if (!existingCompletedJobId && (submit.body.prepared_only === true || submit.body.job_id === null || submit.body.job_id === undefined)) {
   console.error(JSON.stringify(submit.body, null, 2));
   throw new Error('PREPARED_ONLY: orchestrator did not enqueue the task');
 }
 
-const jobId = String(submit.body.job_id);
-console.log(`DISPATCHED job_id=${jobId}`);
+const jobId = existingCompletedJobId || String(submit.body.job_id);
+if (existingCompletedJobId) {
+  console.log(`REVALIDATING_COMPLETED job_id=${jobId}`);
+} else {
+  console.log(`DISPATCHED job_id=${jobId}`);
+}
 
-const requireCompletion = process.env.OPSLY_GITHUB_AGENT_REQUIRE_COMPLETION === 'true';
 if (!requireCompletion) {
   console.log(`DISPATCHED_PENDING job_id=${jobId} (queued for governed parallel execution)`);
   process.exit(0);
 }
 
 const pollSeconds = Number(process.env.OPSLY_GITHUB_AGENT_POLL_SECONDS || 300);
-const expectedMarker = (process.env.OPSLY_GITHUB_AGENT_EXPECT_MARKER || '').trim();
 const deadline = Date.now() + pollSeconds * 1000;
 while (Date.now() < deadline) {
   await new Promise((r) => setTimeout(r, 5000));

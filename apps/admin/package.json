@@ -10,6 +10,7 @@
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
     "test:moon": "tsx --test lib/moon/__tests__/moon-unit.test.ts",
+    "test:creator-os": "tsx --test lib/creator-os/__tests__/*.test.ts",
     "test:mission-control": "tsx --test lib/__tests__/mission-control-read-model-v1.test.ts lib/__tests__/mission-control-execution-activity-v1.test.ts"
   },
   "dependencies": {

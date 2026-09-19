@@ -53,7 +53,12 @@ This directory contains operational and deployment scripts organized by category
 ./scripts/ops/night-merge-wave1.sh --dry-run
 ./scripts/ops/dispatch-prompt-queue.sh --dry-run
 ./scripts/ops/install-night-agent-launchd.sh --dry-run
+./scripts/ops/ensure-tailscale-key-hygiene.sh --dry-run
+# Apply: doppler run --project ops-intcloudsysops --config prd -- \
+#   ./scripts/ops/ensure-tailscale-key-hygiene.sh --apply --notify
 ```
+
+Runbook: `docs/runbooks/KEY-HYGIENE.md`. Daily workflow: `.github/workflows/key-hygiene.yml`.
 
 ### Utilities
 

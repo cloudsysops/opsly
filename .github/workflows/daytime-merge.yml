@@ -1,0 +1,73 @@
+name: Daytime merge
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "List eligible PRs without merging"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  statuses: read
+
+concurrency:
+  group: governed-merge-main
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Admission contract tests
+        run: node --test scripts/ci/__tests__/governed-merge-candidates.test.mjs
+
+      - name: Merge bounded daytime batch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          DRY_RUN: ${{ inputs.dry_run == true && '1' || '0' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t PRS < <(node scripts/ci/governed-merge-candidates.mjs --route daytime --limit 3)
+          if [ "${#PRS[@]}" -eq 0 ]; then
+            echo "No exact-head daytime candidates"
+            exit 0
+          fi
+
+          for pr in "${PRS[@]}"; do
+            sha="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" --jq '.head.sha')"
+            echo "daytime candidate #$pr @$sha"
+            if [ "$DRY_RUN" = "1" ]; then
+              continue
+            fi
+            # GITHUB_TOKEN merge intentionally does not trigger push-based Deploy.
+            # Release/activation is a separate governed action.
+            gh pr merge "$pr" \
+              --repo "$GITHUB_REPOSITORY" \
+              --squash \
+              --delete-branch \
+              --admin \
+              --match-head-commit "$sha"
+          done

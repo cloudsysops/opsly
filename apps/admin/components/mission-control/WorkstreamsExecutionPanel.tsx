@@ -117,39 +117,34 @@ function evidenceTone(value: string): string {
 export function WorkstreamsExecutionPanel() {
   const baseUrl = useMemo(() => getBaseUrl(), []);
 
-  const {
-    data: sourcesData,
-    error: sourcesError,
-  } = useSWR<ExecutionSourcesPayload>(
+  const { data: sourcesData, error: sourcesError } = useSWR<ExecutionSourcesPayload>(
     `${baseUrl}/api/admin/mission-control/execution-sources`,
     fetchJson,
-    { refreshInterval: 15000 },
+    { refreshInterval: 15000 }
   );
 
-  const {
-    data: factoryData,
-    error: factoryError,
-  } = useSWR<FactoryWorkstreamsPayload>(
+  const { data: factoryData, error: factoryError } = useSWR<FactoryWorkstreamsPayload>(
     `${baseUrl}/api/admin/mission-control/factory-workstreams`,
     fetchJson,
-    { refreshInterval: 15000 },
+    { refreshInterval: 15000 }
   );
 
   const projection = useMemo(
     () =>
       buildMissionControlExecutionProjectionV1({
-        execution_sources: sourcesData && !sourcesData.error
-          ? {
-              registry_driven_admission: sourcesData.registry_driven_admission,
-              handoff_available: sourcesData.handoff_available,
-              registered_workers: sourcesData.registered_workers,
-            }
-          : undefined,
+        execution_sources:
+          sourcesData && !sourcesData.error
+            ? {
+                registry_driven_admission: sourcesData.registry_driven_admission,
+                handoff_available: sourcesData.handoff_available,
+                registered_workers: sourcesData.registered_workers,
+              }
+            : undefined,
         active_claims: factoryData?.active_claims,
         runtime_sessions: factoryData?.runtime_sessions,
         pull_requests: factoryData?.pull_requests,
       }),
-    [factoryData, sourcesData],
+    [factoryData, sourcesData]
   );
 
   return (
@@ -172,9 +167,7 @@ export function WorkstreamsExecutionPanel() {
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="font-mono text-sm font-semibold">
-                  {source.transport === 'autonomous'
-                    ? 'Autonomous Harness'
-                    : 'Human Relay Harness'}
+                  {source.transport === 'autonomous' ? 'Autonomous Harness' : 'Human Relay Harness'}
                 </div>
                 <span className="text-[10px] uppercase tracking-[0.16em]">
                   {source.confidence === 'UNKNOWN'
@@ -216,7 +209,8 @@ export function WorkstreamsExecutionPanel() {
               Factory evidence
             </h2>
             <p className="text-xs text-slate-500">
-              Dispatch claims, runtime telemetry and GitHub evidence are joined by canonical work identity.
+              Dispatch claims, runtime telemetry and GitHub evidence are joined by canonical work
+              identity.
             </p>
           </div>
           {factoryData ? (
@@ -238,10 +232,12 @@ export function WorkstreamsExecutionPanel() {
               </span>
               <span className="rounded border border-slate-800 px-2 py-1">
                 Live sessions{' '}
-                {factoryData.runtime_sessions.filter(
-                  (session) =>
-                    session.status === 'running' || session.status === 'waiting_approval',
-                ).length}
+                {
+                  factoryData.runtime_sessions.filter(
+                    (session) =>
+                      session.status === 'running' || session.status === 'waiting_approval'
+                  ).length
+                }
               </span>
               <span className="rounded border border-slate-800 px-2 py-1">
                 GitHub{' '}

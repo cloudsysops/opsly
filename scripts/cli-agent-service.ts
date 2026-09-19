@@ -120,7 +120,12 @@ function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
           ...(process.env.OPSLY_COPILOT_ALLOW_ALL === '1' ? ['--allow-all'] : []),
         ],
       };
-    case 'opencode':
+    case 'opencode': {
+      const requestedRole = body.agent_role?.trim().toLowerCase() || '';
+      const openCodeAgent =
+        requestedRole.includes('review') || requestedRole.includes('plan')
+          ? 'plan'
+          : process.env.OPENCODE_AGENT || 'build';
       return {
         command: 'opencode',
         args: [
@@ -128,14 +133,15 @@ function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
           '--dir',
           cwd,
           '--agent',
-          process.env.OPENCODE_AGENT || 'build',
-          ...(process.env.OPSLY_OPENCODE_SKIP_PERMISSIONS === '1'
+          openCodeAgent,
+          ...(openCodeAgent === 'build' && process.env.OPSLY_OPENCODE_SKIP_PERMISSIONS === '1'
             ? ['--dangerously-skip-permissions']
             : []),
           ...modelArgs,
           prompt,
         ],
       };
+    }
     case 'hermes':
       return {
         command: 'hermes',

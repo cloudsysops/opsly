@@ -143,9 +143,7 @@ describe('Health Travel catalog sync contract', () => {
   });
 
   it('treats package identity as provider + package so provider moves pause the old mapping', () => {
-    const active = new Set([
-      healthTravelOfferIdentity('provider-new', 'package-1'),
-    ]);
+    const active = new Set([healthTravelOfferIdentity('provider-new', 'package-1')]);
 
     expect(
       shouldPauseSyncedOffer({

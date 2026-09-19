@@ -113,8 +113,7 @@ export function quoteHealthTravelCommission(params: {
   return {
     amount: quote.amount,
     currency: params.offer.currency,
-    reconciliationReason:
-      quote.amount === null ? 'flat_commission_cannot_be_calculated' : null,
+    reconciliationReason: quote.amount === null ? 'flat_commission_cannot_be_calculated' : null,
   };
 }
 
@@ -135,7 +134,13 @@ async function getOrCreateReceipt(
   tenantId: string,
   event: HealthTravelRevenueEvent,
   plan: ReturnType<typeof planHealthTravelRevenueEvent>
-): Promise<{ id: string; processing_status: string; attribution_id: string | null; referral_id: string | null; commission_event_id: string | null }> {
+): Promise<{
+  id: string;
+  processing_status: string;
+  attribution_id: string | null;
+  referral_id: string | null;
+  commission_event_id: string | null;
+}> {
   const existing = await platform
     .from('revenue_event_receipts')
     .select('id, processing_status, attribution_id, referral_id, commission_event_id')
@@ -213,9 +218,7 @@ async function getOrCreateReceipt(
     if (racedByDedupe.data) return racedByDedupe.data;
   }
 
-  throw new Error(
-    `Revenue receipt insert failed: ${inserted.error?.message ?? 'unknown'}`
-  );
+  throw new Error(`Revenue receipt insert failed: ${inserted.error?.message ?? 'unknown'}`);
 }
 
 async function upsertAttribution(
@@ -349,7 +352,7 @@ async function upsertReferral(params: {
         status,
         converted_at:
           row.converted_at ??
-          (status === 'converted' ? referralPlan.convertedAt ?? params.event.occurredAt : null),
+          (status === 'converted' ? (referralPlan.convertedAt ?? params.event.occurredAt) : null),
         currency: params.event.data.currency?.toUpperCase() || undefined,
       })
       .eq('id', row.id)
@@ -499,9 +502,7 @@ export async function consumeHealthTravelRevenueEvent(
       status: 'applied',
       attributionId: receipt.attribution_id ? String(receipt.attribution_id) : null,
       referralId: receipt.referral_id ? String(receipt.referral_id) : null,
-      commissionEventId: receipt.commission_event_id
-        ? String(receipt.commission_event_id)
-        : null,
+      commissionEventId: receipt.commission_event_id ? String(receipt.commission_event_id) : null,
       reconciliationRequired: [],
     };
   }
@@ -519,12 +520,7 @@ export async function consumeHealthTravelRevenueEvent(
     } else {
       let offer: RevenueOfferRow | null = null;
       if (plan.referral.offerExternalRef) {
-        offer = await resolveOffer(
-          platform,
-          tenantId,
-          partnerId,
-          plan.referral.offerExternalRef
-        );
+        offer = await resolveOffer(platform, tenantId, partnerId, plan.referral.offerExternalRef);
         if (!offer) reconciliation.push('offer_ref_unresolved');
       }
 
@@ -551,8 +547,7 @@ export async function consumeHealthTravelRevenueEvent(
     }
   }
 
-  const status =
-    reconciliation.length > 0 ? 'reconciliation_required' : 'applied';
+  const status = reconciliation.length > 0 ? 'reconciliation_required' : 'applied';
 
   const update = await platform
     .from('revenue_event_receipts')

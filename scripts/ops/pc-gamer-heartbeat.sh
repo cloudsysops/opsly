@@ -11,7 +11,7 @@ set -euo pipefail
 
 DRY_RUN=false
 WORKER_ID_FROM_ENV="${WORKER_ID:-}"
-WORKER_ID="${WORKER_ID:-pc-gamer-openclaw-01}"
+WORKER_ID="${WORKER_ID:-}"
 TTL="${OPSLY_WORKER_HEARTBEAT_TTL_SEC:-180}"
 
 for arg in "$@"; do
@@ -42,6 +42,12 @@ cd "$ROOT"
 if [[ -z "$WORKER_ID_FROM_ENV" && -f .env.worker ]]; then
   ENV_FILE_WORKER_ID="$(grep -E '^WORKER_ID=' .env.worker | tail -1 | cut -d= -f2-)"
   [[ -n "$ENV_FILE_WORKER_ID" ]] && WORKER_ID="$ENV_FILE_WORKER_ID"
+fi
+
+# Fail closed: un ID vacío escribiría opsly:worker:heartbeat: y pisaría a todos.
+if [[ -z "$WORKER_ID" || "$WORKER_ID" == "@WORKER_ID@" ]]; then
+  echo "[pc-gamer-heartbeat] ERROR: WORKER_ID no definido (export WORKER_ID o .env.worker)" >&2
+  exit 1
 fi
 
 KEY="opsly:worker:heartbeat:${WORKER_ID}"

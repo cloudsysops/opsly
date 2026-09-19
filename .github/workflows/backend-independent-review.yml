@@ -1,22 +1,27 @@
-# Opsly Open Review Agent — genera la review con nuestro LLM Gateway y una
-# ruta Ollama local explícita; no usa Copilot/Codex ni fallback cloud.
+# Opsly Open Review Agent — genera la review mediante el orchestrator gobernado
+# y local_opencode -> Ollama/Qwen en compute local; no usa Copilot/Codex ni fallback cloud.
 #
 # SEGURIDAD: mismo patrón que trusted-independent-review.yml — el paso que corre
 # scripts/ci/backend-independent-review.mjs hace checkout de la BASE SHA
 # confiable, nunca ejecuta código del PR head. Solo lee el PR (diff, checks,
 # reviews existentes) vía API de GitHub.
 #
-# ubuntu-latest se une a Tailscale efímeramente para alcanzar el LLM Gateway
-# interno. El script solicita provider_hint=ollama-code y el Gateway despacha
-# directamente a qwen_coder_local (Qwen2.5-Coder por defecto). Si Ollama o el
-# modelo no están disponibles, el job falla cerrado; no existe fallback a
-# OpenAI/Anthropic/otros proveedores cloud.
+# ubuntu-latest se une a Tailscale efímeramente para alcanzar el orchestrator
+# interno. El script encola una tarea read-only local_opencode y espera evidencia
+# terminal de un modelo ollama/qwen*. Si no hay worker/Qwen local, falla cerrado;
+# no existe fallback a OpenAI/Anthropic/otros proveedores cloud.
 
 name: Open-source independent review
 
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to review'
+        required: true
+        type: number
 
 permissions:
   contents: read
@@ -24,14 +29,28 @@ permissions:
   statuses: write
 
 concurrency:
-  group: open-source-independent-review-${{ github.repository }}-${{ github.event.pull_request.number }}
+  group: open-source-independent-review-${{ github.repository }}-${{ github.event.pull_request.number || inputs.pr_number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   open-source-review:
-    if: github.event.pull_request.draft == false
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve pull request
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PR_NUMBER" || { echo "::error::PR number required"; exit 1; }
+          pr_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/$PR_NUMBER")"
+          test "$(jq -r '.state' <<<"$pr_json")" = "open" || { echo "::error::PR #$PR_NUMBER is not open"; exit 1; }
+          test "$(jq -r '.draft' <<<"$pr_json")" = "false" || { echo "::notice::PR #$PR_NUMBER is draft"; exit 0; }
+          echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+
       - name: Resolve current main tip
         id: base
         env:
@@ -62,8 +81,9 @@ jobs:
       - name: Run Opsly Open Review Agent
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          LLM_GATEWAY_URL: http://100.120.151.91:3010
+          OPSLY_ORCHESTRATOR_URL: http://100.120.151.91:3011
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
           OPSLY_GITHUB_REPO: ${{ github.repository }}
-          OPSLY_REVIEW_TENANT: opsly-ci-open-source-review
+          OPSLY_REVIEW_POLL_SECONDS: '420'
         run: |
-          node scripts/ci/backend-independent-review.mjs --pr "${{ github.event.pull_request.number }}"
+          node scripts/ci/backend-independent-review.mjs --pr "${{ steps.pr.outputs.number }}"

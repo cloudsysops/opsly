@@ -1,0 +1,104 @@
+name: Change impact classification
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+  schedule:
+    # Reconcile the existing backlog too, not only newly-opened PRs.
+    - cron: "7 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "Single PR number to classify (leave 0 to reconcile all open PRs)"
+        required: false
+        type: number
+        default: 0
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: change-impact-${{ github.repository }}-${{ github.event.pull_request.number || inputs.pr || 'backlog' }}
+  cancel-in-progress: true
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Contract tests
+        run: node --test scripts/ci/__tests__/change-impact.test.mjs
+
+      - name: Apply impact labels
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EVENT_PR: ${{ github.event.pull_request.number }}
+          INPUT_PR: ${{ inputs.pr }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -n "${EVENT_PR:-}" ]; then
+            node scripts/ci/change-impact.mjs --pr "$EVENT_PR"
+            exit 0
+          fi
+
+          if [ -n "${INPUT_PR:-}" ] && [ "$INPUT_PR" != "0" ]; then
+            node scripts/ci/change-impact.mjs --pr "$INPUT_PR"
+            exit 0
+          fi
+
+          # One process reconciles the complete open backlog. It ensures the
+          # managed labels once, then classifies each PR from its actual paths.
+          node scripts/ci/change-impact.mjs --all-open --json
+
+      - name: Publish routing snapshot
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.pr == 0)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          snapshot="$(gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --limit 100 \
+            --json number,title,baseRefName,isDraft,labels)"
+
+          {
+            echo '## Open PR routing snapshot'
+            echo
+            echo '| PR | Base | Impact | Merge | Release | State |'
+            echo '| --- | --- | --- | --- | --- | --- |'
+            echo "$snapshot" | jq -r '
+              sort_by(.number) | reverse[] |
+              (.labels | map(.name)) as $labels |
+              ($labels | map(select(startswith("impact:"))) | join(", ")) as $impact |
+              ($labels | map(select(startswith("merge:"))) | join(", ")) as $merge |
+              ($labels | map(select(startswith("release:"))) | join(", ")) as $release |
+              ($labels | map(select(startswith("state:") or startswith("stack:") or startswith("agent:"))) | join(", ")) as $state |
+              "| #\(.number) \(.title | gsub("\\|"; "/")) | `\(.baseRefName)` | \($impact) | \($merge) | \($release) | \(if .isDraft then "draft" else $state end) |"'
+            echo
+            echo '### Queue counts'
+            echo "$snapshot" | jq -r '
+              [.[].labels | map(.name)] as $all |
+              "- daytime: \([$all[] | select(index("merge:daytime"))] | length)",
+              "- governed: \([$all[] | select(index("merge:governed"))] | length)",
+              "- release required: \([$all[] | select(index("release:required"))] | length)",
+              "- stack blocked: \([$all[] | select(index("stack:blocked"))] | length)"'
+          } >> "$GITHUB_STEP_SUMMARY"

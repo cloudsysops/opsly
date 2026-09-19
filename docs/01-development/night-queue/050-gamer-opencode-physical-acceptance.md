@@ -7,6 +7,9 @@ owner: platform
 environment: local
 cost_class: free
 estimated_cost_usd: 0
+workstream: gamer-opencode-physical-acceptance
+conflict_key: gamer-opencode-physical
+semantic_scope: gamer-opencode-physical/acceptance-050
 requires_pr: false
 requires_approval: false
 paid_infra_required: false
@@ -31,7 +34,7 @@ If any precondition is missing, return `BLOCKED` with the exact missing item and
 - Gamer worker is online;
 - `local_opencode` is claimed by the Gamer, not Mac;
 - OpenCode bridge is healthy;
-- Ollama is healthy and has an already-installed compatible model;
+- Ollama is healthy and has an already-installed Qwen coding model (`qwen3-coder*` or `qwen2.5-coder*`);
 - governed task contains `AgentTaskEnvelopeV1`;
 - no paid provider fallback is enabled.
 
@@ -47,9 +50,10 @@ Then verify:
 
 1. job terminal state is success;
 2. evidence identifies the Gamer node/runtime;
-3. no paid API was used;
-4. ephemeral task session is gone;
-5. healthy idle returns to zero `opsly-task-*` sessions.
+3. evidence identifies the selected model as `ollama/qwen*`;
+4. no paid API was used;
+5. ephemeral task session is gone;
+6. healthy idle returns to zero `opsly-task-*` sessions.
 
 ## Hard boundaries
 

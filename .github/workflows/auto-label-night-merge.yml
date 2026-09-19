@@ -1,77 +1,130 @@
-# Auto-label night-merge — evita que se vuelva a acumular un backlog de PRs
-# limpios sin etiquetar (encontrado 2026-09-14: 30 PRs listos para mergear,
-# 15 sin la label night-merge, algunos desde hace semanas — ver #1120..#1434).
+# Route only governed, reviewed work into the night integration queue.
 #
-# No decide por producción: solo etiqueta lint+build+secret-scan en verde.
-# production-change-window se ignora aquí a propósito — night-merge.yml
-# (01:00 America/Bogota) ya lo re-evalúa en su momento; el punto de esta
-# label es encolar, no saltarse la ventana.
+# This workflow does NOT decide production activation and does not deploy.
+# It also deliberately refuses control-plane changes: those require an explicit
+# human/governed enqueue decision instead of silently joining an unattended lane.
 
-name: Auto-label night-merge
+name: Auto-label governed night merge
 
 on:
   pull_request_target:
-    types: [synchronize, opened, ready_for_review]
+    types: [synchronize, opened, ready_for_review, labeled, unlabeled]
+  # Reconcile promptly when the independent-review commit status changes.
+  # A status event is scoped back to the open PR(s) whose current head is that SHA.
+  status: {}
   schedule:
-    # Red de seguridad: agarra cualquier PR que quedó verde sin que este
-    # workflow lo viera pasar por un evento (p. ej. un check tardó en
-    # completar después del push).
     - cron: "0 */6 * * *"
   workflow_dispatch: {}
 
 permissions:
   contents: read
   pull-requests: write
+  statuses: read
 
 concurrency:
-  group: auto-label-night-merge-${{ github.repository }}-${{ github.event.pull_request.number || 'schedule' }}
+  # A status event may legitimately map one SHA to multiple PRs. One job owns
+  # that SHA and processes all matching open PRs, so cancellation is safe.
+  group: auto-label-night-merge-${{ github.repository }}-${{ github.event.pull_request.number || github.event.sha || 'schedule' }}
   cancel-in-progress: true
 
 jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-      - name: Label eligible PR(s)
+      - name: Enqueue eligible governed PR(s)
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           SINGLE_PR: ${{ github.event.pull_request.number }}
+          STATUS_SHA: ${{ github.event.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
         run: |
           set -euo pipefail
-          REQUIRED=(lint build secret-scan)
 
           label_if_eligible() {
             local pr="$1"
-            local is_draft
-            is_draft="$(gh api "repos/$REPO/pulls/$pr" --jq '.draft')"
+            local snapshot
+            snapshot="$(gh api "repos/$REPO/pulls/$pr")"
+
+            local is_draft state sha
+            is_draft="$(echo "$snapshot" | jq -r '.draft')"
+            state="$(echo "$snapshot" | jq -r '.state')"
+            sha="$(echo "$snapshot" | jq -r '.head.sha')"
+            [ "$state" = "open" ] || { echo "#$pr not open — skip"; return; }
             [ "$is_draft" = "true" ] && { echo "#$pr draft — skip"; return; }
 
-            local has_label
-            has_label="$(gh api "repos/$REPO/issues/$pr/labels" --jq '[.[].name] | index("night-merge") != null')"
-            [ "$has_label" = "true" ] && { echo "#$pr ya tiene night-merge — skip"; return; }
+            # On a status event, never act on a PR whose current head moved away
+            # from the commit that emitted the status.
+            if [ "$EVENT_NAME" = "status" ] && [ "$sha" != "$STATUS_SHA" ]; then
+              echo "#$pr head moved ($sha != $STATUS_SHA) — skip"
+              return
+            fi
 
-            local sha
-            sha="$(gh api "repos/$REPO/pulls/$pr" --jq '.head.sha')"
-            local runs
-            runs="$(gh api "repos/$REPO/commits/$sha/check-runs" --jq '[.check_runs[] | {name, conclusion}]')"
+            local labels
+            labels="$(gh api "repos/$REPO/issues/$pr/labels" --jq '[.[].name]')"
 
-            for check in "${REQUIRED[@]}"; do
-              local ok
-              ok="$(echo "$runs" | jq --arg c "$check" '[.[] | select(.name == $c and .conclusion == "success")] | length > 0')"
-              if [ "$ok" != "true" ]; then
-                echo "#$pr — $check no está en verde todavía — skip"
+            has_label() {
+              echo "$labels" | jq -e --arg name "$1" 'index($name) != null' >/dev/null
+            }
+
+            # Only the trusted impact classifier may route work here.
+            has_label "merge:governed" || { echo "#$pr not merge:governed — skip"; return; }
+            has_label "state:ready" || { echo "#$pr not state:ready — skip"; return; }
+
+            # Control-plane writes never self-enqueue into unattended merge.
+            has_label "impact:control-plane" && { echo "#$pr control-plane — explicit enqueue required"; return; }
+
+            for blocker in state:needs-fix state:waiting-human state:superseded stack:blocked agent:working; do
+              if has_label "$blocker"; then
+                echo "#$pr blocked by $blocker — skip"
                 return
               fi
             done
 
-            echo "#$pr — lint/build/secret-scan en verde, sin label — agregando night-merge"
+            has_label "night-merge" && { echo "#$pr already night-merge — skip"; return; }
+
+            local status_json review_state
+            status_json="$(gh api "repos/$REPO/commits/$sha/status")"
+            review_state="$(echo "$status_json" | jq -r '
+              if (.statuses | type) != "array" then
+                "malformed"
+              else
+                ([.statuses[] | select(.context == "opsly-independent-review")][0].state // "missing")
+              end
+            ')"
+            if [ "$review_state" != "success" ]; then
+              echo "#$pr independent review=$review_state — skip"
+              return
+            fi
+
+            echo "#$pr governed + ready + independently reviewed — adding night-merge"
             gh pr edit "$pr" --repo "$REPO" --add-label night-merge
           }
 
           if [ -n "${SINGLE_PR:-}" ]; then
             label_if_eligible "$SINGLE_PR"
+          elif [ "$EVENT_NAME" = "status" ] && [ -n "${STATUS_SHA:-}" ]; then
+            # GitHub's commit→PR association is authoritative for status events.
+            # Process every matching open PR, while label_if_eligible rechecks the
+            # exact current head before mutation.
+            mapfile -t prs < <(
+              gh api \
+                -H "Accept: application/vnd.github+json" \
+                "repos/$REPO/commits/$STATUS_SHA/pulls" \
+                --jq '.[] | select(.state == "open") | .number'
+            )
+            for pr in "${prs[@]}"; do
+              [ -n "$pr" ] && label_if_eligible "$pr"
+            done
           else
-            for pr in $(gh pr list --repo "$REPO" --search "is:open -is:draft -label:night-merge" --limit 100 --json number --jq '.[].number'); do
-              label_if_eligible "$pr"
+            gh pr list \
+              --repo "$REPO" \
+              --search "is:open -is:draft label:merge:governed -label:night-merge" \
+              --limit 100 \
+              --json number \
+              --jq '.[].number' |
+            while read -r pr; do
+              [ -n "$pr" ] && label_if_eligible "$pr"
             done
           fi

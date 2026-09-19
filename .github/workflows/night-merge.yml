@@ -1,10 +1,6 @@
-# Squash-merge PRs labeled `night-merge` during America/Bogota night window,
-# wait for Deploy, smoke-test public health, rollback main if verify fails.
-# VPS n8n upgrade is separate: docs/runbooks/NIGHTLY-OPS-UPGRADE.md
-#
-# Enqueue: add label `night-merge` to a green PR.
-# Three idempotent reconciliation passes run at 23:00, 01:00 and 03:00 Bogota.
-# Docs: docs/runbooks/NIGHT-MERGE.md
+# Governed night integration queue.
+# IMPORTANT: merge != release. This workflow never dispatches Deploy and never
+# applies migrations/n8n/production changes. Release workflows own activation.
 name: Night merge
 
 on:
@@ -14,12 +10,12 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: "Skip night-window gate (emergency / test)"
+        description: "Skip night-window clock gate (emergency/test only)"
         type: boolean
         required: false
         default: false
       dry_run:
-        description: "List/validate only; do not merge"
+        description: "List eligible PRs without merging"
         type: boolean
         required: false
         default: false
@@ -28,47 +24,62 @@ permissions:
   contents: write
   pull-requests: write
   checks: read
-  actions: write
+  statuses: read
 
 concurrency:
-  group: night-merge-main
+  group: governed-merge-main
   cancel-in-progress: false
 
 jobs:
-  night-merge:
+  merge:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 15
     steps:
-      - name: Checkout
+      - name: Checkout trusted main
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: 20
 
-      - name: Night merge + verify (+ rollback on failure)
+      - name: Enforce night window
+        if: inputs.force != true
+        run: node scripts/ci/check-production-change-window.mjs --check-now
+
+      - name: Admission contract tests
+        run: node --test scripts/ci/__tests__/governed-merge-candidates.test.mjs
+
+      - name: Merge bounded night batch
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          NIGHT_MERGE_FORCE: ${{ inputs.force == true && '1' || '0' }}
           DRY_RUN: ${{ inputs.dry_run == true && '1' || '0' }}
-          # Existing governed merge behavior is preserved; do not weaken validation.
-          NIGHT_MERGE_ADMIN: "1"
-          # Do not auto-merge revert PRs (false-positive #1153). Discord + open PR only.
-          NIGHT_MERGE_AUTO_ROLLBACK_MERGE: "0"
-          DEPLOY_WAIT_SECONDS: "1500"
-          DEPLOY_DISPATCH_AFTER_SECONDS: "120"
+        shell: bash
         run: |
           set -euo pipefail
-          chmod +x scripts/ci/night-merge-and-verify.sh
-          # schedule always forces window check; workflow_dispatch may set force
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            export NIGHT_MERGE_FORCE=0
+          mapfile -t PRS < <(node scripts/ci/governed-merge-candidates.mjs --route night --limit 3)
+          if [ "${#PRS[@]}" -eq 0 ]; then
+            echo "No exact-head night candidates"
+            exit 0
           fi
-          ./scripts/ci/night-merge-and-verify.sh
+
+          for pr in "${PRS[@]}"; do
+            sha="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" --jq '.head.sha')"
+            echo "night candidate #$pr @$sha"
+            if [ "$DRY_RUN" = "1" ]; then
+              continue
+            fi
+            # Merge only. GITHUB_TOKEN prevents push-triggered Deploy recursion.
+            gh pr merge "$pr" \
+              --repo "$GITHUB_REPOSITORY" \
+              --squash \
+              --delete-branch \
+              --admin \
+              --match-head-commit "$sha"
+          done

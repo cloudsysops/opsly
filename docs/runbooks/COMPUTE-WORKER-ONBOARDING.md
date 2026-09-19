@@ -12,6 +12,27 @@ Canonical onboarding for a physical NVIDIA worker. The VPS remains the control p
 6. Tailscale/private connectivity and `.env.worker` use the existing approved secret flow. Never commit worker credentials.
 7. Clone Opsly and sync `main`.
 
+## Node roster and identity (do this first)
+
+Choose the `WORKER_ID` from the canonical table in [`PC-GAMER-WORKER.md`](../04-infrastructure/PC-GAMER-WORKER.md#nodos-gamer-e-identidad-de-worker) and confirm it matches the `workerId` in [`config/compute-workers.json`](../../config/compute-workers.json). The heartbeat key is `opsly:worker:heartbeat:${WORKER_ID}`, so **reusing another node's ID makes two machines overwrite each other's presence sign** — the scheduler then routes by the wrong hardware. `check-pc-gamer-online.sh` and `pc-gamer-heartbeat.sh` fail closed when `WORKER_ID` is unset; they no longer default to a shared ID.
+
+## Offline node bootstrap (Windows + WSL2)
+
+For each powered-off node (`desktop-smdqcia-1`, `pc-gamer`, `pc-gamer-openclaw-01-wsl`):
+
+1. On Windows: install/update the NVIDIA driver, then `wsl --install -d Ubuntu` (reboot). In WSL, `nvidia-smi` must list the physical GPU and VRAM.
+2. Docker reachable from WSL; NVIDIA Container Toolkit makes `docker run --gpus all nvidia/nccl-tests` (or any CUDA image) succeed.
+3. Join Tailscale on the node and confirm it appears `active` in `tailscale status` from the control host.
+4. `git clone` Opsly (or `git pull --ff-only origin main`), then `cp infra/pc-gamer.env.example .env.worker` and replace `WORKER_ID=@WORKER_ID@` with the unique roster ID. Set the real `REDIS_URL` through the existing secret flow.
+5. Run the doctor, then bootstrap — both fail closed if GPU/Docker evidence or identity is missing. `OPSLY_WORKER_ID` is the bootstrap CLI input; the persistent runtime/heartbeat identity remains `WORKER_ID` in `.env.worker`. Use the same value for both:
+
+   ```bash
+   OPSLY_WORKER_ID=<node-worker-id> ./scripts/setup-compute-worker.sh --doctor
+   OPSLY_WORKER_ID=<node-worker-id> ./scripts/setup-compute-worker.sh --ensure
+   ```
+
+6. Verify from the control host: `node scripts/ops/compute-worker-router.mjs --status` shows the node `ONLINE` with its own hostname/GPU, and every other node's `lastHeartbeat` stays `null`.
+
 ## One doctor
 
 ```bash

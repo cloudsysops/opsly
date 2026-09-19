@@ -1,0 +1,8 @@
+# `deploy.yml` intentionally retains the legacy production job as dead code
+# while ReleaseCandidateV1 graduates. The job is guarded by `if: false` and
+# `scripts/ci/check-release-boundary.mjs` fails CI if that guard is removed.
+# Scope the actionlint exception to this file and this exact diagnostic only.
+paths:
+  .github/workflows/deploy.yml:
+    ignore:
+      - 'constant expression "false" in condition\. remove the if: section'

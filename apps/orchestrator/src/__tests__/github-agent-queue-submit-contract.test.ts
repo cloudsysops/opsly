@@ -7,6 +7,14 @@ const source = readFileSync(
   path.join(repoRoot, 'scripts/ops/github-agent-queue-submit.mjs'),
   'utf8'
 );
+const gamerAcceptanceWorkflow = readFileSync(
+  path.join(repoRoot, '.github/workflows/gamer-opencode-physical-acceptance.yml'),
+  'utf8'
+);
+const gamerAcceptanceWorkpack = readFileSync(
+  path.join(repoRoot, 'docs/01-development/night-queue/050-gamer-opencode-physical-acceptance.md'),
+  'utf8'
+);
 
 describe('GitHub Agent Queue submitter contract', () => {
   it('dispatches only through the canonical governed local endpoint', () => {
@@ -83,6 +91,32 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('completed job did not return the expected acceptance marker');
     expect(source).toContain('GITHUB_AGENT_QUEUE_MARKER_OK=');
     expect(source).toContain("for (const key of ['result', 'response', 'output', 'text'])");
+  });
+
+  it('revalidates exact marker evidence for ALREADY_DONE acceptance reruns', () => {
+    expect(source).toContain('ALREADY_DONE_REVALIDATE');
+    expect(source).toContain('ALREADY_DONE_WITHOUT_JOB_EVIDENCE');
+    expect(source).toContain('existingCompletedJobId || String(submit.body.job_id)');
+  });
+
+  it('Gamer physical acceptance is fixed to trusted main and the #050 read-only workpack', () => {
+    expect(gamerAcceptanceWorkflow).toContain('workflow_dispatch:');
+    expect(gamerAcceptanceWorkflow).toContain('runs-on: ubuntu-latest');
+    expect(gamerAcceptanceWorkflow).not.toContain('self-hosted');
+    expect(gamerAcceptanceWorkflow).toContain('ref: main');
+    expect(gamerAcceptanceWorkflow).toContain(
+      'docs/01-development/night-queue/050-gamer-opencode-physical-acceptance.md'
+    );
+    expect(gamerAcceptanceWorkflow).toContain(
+      'OPSLY_GITHUB_AGENT_EXPECT_MARKER: GAMER_OPENCODE_OK'
+    );
+    expect(gamerAcceptanceWorkflow).not.toContain('${{ inputs.');
+    expect(gamerAcceptanceWorkpack).toContain('agent: local_opencode');
+    expect(gamerAcceptanceWorkpack).toContain('workstream: gamer-opencode-physical-acceptance');
+    expect(gamerAcceptanceWorkpack).toContain('conflict_key: gamer-opencode-physical');
+    expect(gamerAcceptanceWorkpack).toContain('requires_pr: false');
+    expect(gamerAcceptanceWorkpack).toContain('production_deploy: false');
+    expect(gamerAcceptanceWorkpack).toContain('paid_infra_required: false');
   });
 
   it('requires orchestrator URL and platform admin token instead of embedding credentials', () => {

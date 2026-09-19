@@ -41,7 +41,9 @@
   "ignored_check_patterns": [
     "production change window",
     "opsly-independent-review",
-    "independent-review"
+    "independent-review",
+    "open-source-review",
+    "open-source independent review"
   ],
   "managed_state_labels": [
     "state:ready",

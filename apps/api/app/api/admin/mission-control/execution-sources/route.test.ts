@@ -7,9 +7,9 @@ describe('Mission Control execution-source admission probe', () => {
     const source = [
       "dispatch_contract_version: 'dispatch-claim-v1'",
       "'x-autonomy-approved': 'true'",
-      "conflict_key: String(meta.conflict_key)",
-      "workstream: String(meta.workstream)",
-      "/api/local/prompt-submit",
+      'conflict_key: String(meta.conflict_key)',
+      'workstream: String(meta.workstream)',
+      '/api/local/prompt-submit',
     ].join('\n');
 
     expect(detectCanonicalDispatchAdmission(source)).toBe(true);
@@ -20,11 +20,11 @@ describe('Mission Control execution-source admission probe', () => {
       detectCanonicalDispatchAdmission(
         [
           "dispatch_contract_version: 'dispatch-claim-v1'",
-          "/api/local/prompt-submit",
-          "conflict_key: String(meta.conflict_key)",
-          "workstream: String(meta.workstream)",
-        ].join('\n'),
-      ),
+          '/api/local/prompt-submit',
+          'conflict_key: String(meta.conflict_key)',
+          'workstream: String(meta.workstream)',
+        ].join('\n')
+      )
     ).toBe(false);
   });
 
@@ -32,9 +32,9 @@ describe('Mission Control execution-source admission probe', () => {
     const source = [
       "dispatch_contract_version: 'dispatch-claim-v1'",
       "'x-autonomy-approved': 'true'",
-      "conflict_key: String(meta.conflict_key)",
-      "workstream: String(meta.workstream)",
-      "/api/local/prompt-submit",
+      'conflict_key: String(meta.conflict_key)',
+      'workstream: String(meta.workstream)',
+      '/api/local/prompt-submit',
     ].join('\n');
 
     expect(source).not.toContain('resolveGovernedAgent');

@@ -1,0 +1,108 @@
+name: Gamer OpenCode physical acceptance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gamer-opencode-physical-acceptance
+  cancel-in-progress: false
+
+jobs:
+  physical-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Join tailnet
+        uses: tailscale/github-action@v3
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          version: latest
+
+      - name: Detect PC Gamer availability
+        id: gamer
+        shell: bash
+        run: |
+          set -euo pipefail
+          status_json="$(tailscale status --json)"
+          if printf '%s' "$status_json" | jq -e '
+            [.Peer[]? | select(any(.TailscaleIPs[]?; . == "100.74.88.103")) | .Online] | any
+          ' >/dev/null; then
+            echo "online=true" >> "$GITHUB_OUTPUT"
+            echo "PC_GAMER_ONLINE"
+          else
+            echo "online=false" >> "$GITHUB_OUTPUT"
+            echo "PC_GAMER_OFFLINE_DEFERRED"
+          fi
+
+      - name: Verify PC Gamer runtime surfaces
+        if: steps.gamer.outputs.online == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 8 http://100.74.88.103:3011/health | tee /tmp/gamer-health.json
+          curl -fsS --max-time 8 http://100.74.88.103:5004/health | tee /tmp/opencode-health.json
+          curl -fsS --max-time 8 http://100.74.88.103:11434/api/tags >/tmp/ollama-tags.json
+          jq -e '.status == "ok"' /tmp/gamer-health.json >/dev/null
+          echo "GAMER_RUNTIME_SURFACES_OK"
+
+      - name: Setup Node
+        if: steps.gamer.outputs.online == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify governed dispatch credentials
+        if: steps.gamer.outputs.online == 'true'
+        env:
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${PLATFORM_ADMIN_TOKEN:-}" || {
+            echo "::error::PLATFORM_ADMIN_TOKEN is not configured"
+            exit 1
+          }
+
+      - name: Run exact Gamer OpenCode acceptance
+        if: steps.gamer.outputs.online == 'true'
+        env:
+          OPSLY_ORCHESTRATOR_URL: http://100.120.151.91:3011
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
+          OPSLY_GITHUB_AGENT_REQUIRE_COMPLETION: 'true'
+          OPSLY_GITHUB_AGENT_EXPECT_MARKER: GAMER_OPENCODE_OK
+          OPSLY_GITHUB_AGENT_POLL_SECONDS: '420'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p runtime/evidence
+          node scripts/ops/github-agent-queue-submit.mjs \
+            docs/01-development/night-queue/050-gamer-opencode-physical-acceptance.md \
+            | tee "runtime/evidence/gamer-opencode-physical-acceptance-${GITHUB_RUN_ID}.log"
+
+      - name: Record deferred offline state
+        if: steps.gamer.outputs.online != 'true'
+        run: |
+          mkdir -p runtime/evidence
+          printf '%s\n' 'PC_GAMER_OFFLINE_DEFERRED' \
+            | tee "runtime/evidence/gamer-opencode-physical-acceptance-${GITHUB_RUN_ID}.log"
+
+      - name: Publish acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamer-opencode-physical-acceptance-${{ github.run_id }}
+          path: runtime/evidence/gamer-opencode-physical-acceptance-*.log
+          if-no-files-found: warn
+          retention-days: 14
