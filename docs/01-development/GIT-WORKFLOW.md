@@ -34,6 +34,26 @@ Objetivo: **una línea base (`main`) estable**, cambios integrados por **PR**, y
 
 Si varios agentes tocan el mismo tema, **una rama coordinada** o PRs encadenados (merge del primero y rebase del segundo sobre `main`), no muchas ramas divergentes sin merge.
 
+## Contrato obligatorio de ownership y cleanup
+
+Cada tarea de agente posee exactamente un `branch + worktree + PR + session_id`. El dueño se registra en el Branch Registry (`cleanup_owner`) y no puede limpiar recursos de otro agente.
+
+Estados canónicos de cleanup:
+
+`ACTIVE → PR_OPEN → MERGED_PENDING_CLEANUP → CLEANED`
+
+Alternativas fail-closed: `SUPERSEDED_PENDING_CLEANUP`, `PRESERVE_UNMERGED`, `CLEANUP_BLOCKED`.
+
+Reglas:
+- PR abierto, sesión activa o worktree sucio => **no borrar**.
+- Commits únicos vs `origin/main` => `PRESERVE_UNMERGED`.
+- Solo `MERGED_PENDING_CLEANUP` o `SUPERSEDED_PENDING_CLEANUP` con 0 commits únicos permiten cleanup destructivo.
+- El agente dueño usa `npm run opsly:agent-cleanup -- --session-id <id>` (dry-run) y agrega `--apply` solo tras verificar evidencia.
+- El reconciliador central usa `npm run opsly:agent-cleanup:janitor`; por defecto también es dry-run. `--apply` sigue fail-closed.
+- Nunca usar `git branch -D`, `git worktree remove --force` o borrar una rama por antigüedad solamente.
+
+Una tarea no se considera operacionalmente cerrada hasta que la sesión esté detenida y el cleanup quede en `CLEANED`, o bien exista un estado explícito de preservación/bloqueo con evidencia.
+
 ## Regla de sesión
 
 ### Preservación de trabajo entre máquinas
