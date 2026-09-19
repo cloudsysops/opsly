@@ -107,6 +107,24 @@ def _action_get_scene_list(client: Any, _: Payload) -> dict[str, Any]:
     return _as_dict(client.get_scene_list())
 
 
+def _action_add_display_capture(client: Any, p: Payload) -> dict[str, Any]:
+    scene_name = p.get("scene_name") or "Scene"
+    input_name = p.get("input_name") or "Display Capture"
+    if not isinstance(scene_name, str) or not scene_name.strip():
+        raise ValueError("add_display_capture requires non-empty string scene_name")
+    if not isinstance(input_name, str) or not input_name.strip():
+        raise ValueError("add_display_capture requires non-empty string input_name")
+    client.create_input(
+        scene_name.strip(), input_name.strip(), "monitor_capture", {}, True
+    )
+    return {
+        "ok": True,
+        "action": "add_display_capture",
+        "scene_name": scene_name.strip(),
+        "input_name": input_name.strip(),
+    }
+
+
 ALLOWED: dict[str, Callable[[Any, Payload], dict[str, Any]]] = {
     "get_version": _action_get_version,
     "get_stream_status": _action_get_stream_status,
@@ -120,6 +138,7 @@ ALLOWED: dict[str, Callable[[Any, Payload], dict[str, Any]]] = {
     "set_current_program_scene": _action_set_current_program_scene,
     "get_current_program_scene": _action_get_current_program_scene,
     "get_scene_list": _action_get_scene_list,
+    "add_display_capture": _action_add_display_capture,
 }
 
 BLOCKED_ACTIONS = {"start_stream", "stop_stream", "set_stream_service_settings"}
