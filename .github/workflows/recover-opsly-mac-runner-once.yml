@@ -224,7 +224,17 @@ jobs:
             if ! command -v doppler >/dev/null 2>&1; then
               echo "MAC_DOPPLER_NOT_INSTALLED"
               mkdir -p "$HOME/bin"
-              (curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh || true) | sh -s -- --install-path "$HOME/bin"
+              case "$(uname -m)" in
+                arm64) asset="doppler_darwin_arm64.tar.gz" ;;
+                x86_64|amd64) asset="doppler_darwin_amd64.tar.gz" ;;
+                *) echo "BLOCKER_UNSUPPORTED_MAC_ARCH $(uname -m)"; exit 78 ;;
+              esac
+              curl -Ls --proto "=https" --tlsv1.2 --retry 3 \
+                -o "$HOME/bin/doppler.tgz" \
+                "https://github.com/DopplerHQ/cli/releases/latest/download/${asset}"
+              tar -xzf "$HOME/bin/doppler.tgz" -C "$HOME/bin" doppler 2>/dev/null || tar -xzf "$HOME/bin/doppler.tgz" -C "$HOME/bin"
+              rm -f "$HOME/bin/doppler.tgz"
+              chmod +x "$HOME/bin/doppler"
             fi
             export PATH="$HOME/bin:$PATH"
             command -v doppler >/dev/null 2>&1 || { echo "BLOCKER_DOPPLER_INSTALL_FAILED"; exit 78; }
