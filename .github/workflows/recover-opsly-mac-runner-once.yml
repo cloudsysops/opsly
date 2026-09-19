@@ -244,7 +244,7 @@ jobs:
             export PATH="$HOME/bin:$PATH"
             command -v doppler >/dev/null 2>&1 || { echo "BLOCKER_DOPPLER_INSTALL_FAILED"; exit 78; }
             echo "MAC_DOPPLER_INSTALLED"
-            printf '%s\n' "{{ secrets.DOPPLER_TOKEN_PRD }}" | doppler configure set token --scope / --silent
+            printf '%s\n' "${{ secrets.DOPPLER_TOKEN_PRD }}" | doppler configure set token --scope / --silent
             echo "MAC_DOPPLER_TOKEN_SET"
             REMOTE_MAC
 
