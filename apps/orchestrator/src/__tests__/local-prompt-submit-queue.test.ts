@@ -59,8 +59,17 @@ vi.mock('../openclaw/runtime-events.js', () => ({
   recordOpenClawIntentQueued: vi.fn(),
 }));
 
+vi.mock('../http/local-prompt-admission.js', () => ({
+  checkLocalPromptAdmission: vi.fn(async () => ({ ok: true })),
+  releaseLocalPromptAdmissionReservation: vi.fn(async () => undefined),
+}));
+
 const { enqueueJob, enqueueLocalAgentJob } = queueMocks;
 
+import {
+  checkLocalPromptAdmission,
+  releaseLocalPromptAdmissionReservation,
+} from '../http/local-prompt-admission.js';
 import { startOrchestratorHealthServer } from '../health-server.js';
 
 function postJson(
@@ -144,6 +153,43 @@ describe('local prompt-submit → local-agents queue', () => {
         });
       })
   );
+
+  it('rejects prompt-submit bodies larger than 64 KiB without enqueueing', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'acme',
+        prompt_body: 'x'.repeat(70_000),
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(413);
+    expect(raw).toMatch(/request body too large/i);
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('releases an admission queue reservation after a successful enqueue', async () => {
+    vi.mocked(checkLocalPromptAdmission).mockResolvedValueOnce({
+      ok: true,
+      queueReservation: true,
+    });
+
+    const { status } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'acme',
+        prompt_body: 'Release the reservation after enqueue',
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(202);
+    expect(enqueueLocalAgentJob).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(releaseLocalPromptAdmissionReservation)).toHaveBeenCalledTimes(1);
+  });
 
   it('POST /api/local/prompt-submit calls enqueueLocalAgentJob with OrchestratorJob (not enqueueJob)', async () => {
     const { status, raw } = await postJson(
