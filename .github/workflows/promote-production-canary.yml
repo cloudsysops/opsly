@@ -227,14 +227,14 @@ jobs:
           set -euo pipefail
           test -n "${STAGING_API_URL:-}" || { echo "staging_api_url is required" >&2; exit 1; }
           test -n "${PROD_API_URL:-}" || { echo "production_api_url is required" >&2; exit 1; }
-          guidance_flag=()
+          guidance_arg=""
           if [ "$ROLLBACK_GUIDANCE_ON_FAIL" = "true" ]; then
-            guidance_flag=(--rollback-guidance-on-fail)
+            guidance_arg="--rollback-guidance-on-fail"
           fi
           bash scripts/deploy/promote-canary.sh \
             --staging-api-url "$STAGING_API_URL" \
             --prod-api-url "$PROD_API_URL" \
-            "${guidance_flag[@]}"
+            ${guidance_arg}
 
       - name: Record promoted candidate
         if: success()
