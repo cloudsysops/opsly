@@ -2,6 +2,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {
+  buildReadOnlyQueueEnvelope,
+  loadGovernedAgentRegistry,
+  resolveGovernedAgent,
+} from './lib/github-agent-queue-admission.mjs';
+import { buildAgentTaskEnvelope } from '@intcloudsysops/agent-task-core';
 
 function parseScalar(raw = '') {
   const value = raw.trim();
@@ -81,12 +87,6 @@ function assertSafe(meta) {
     requireBooleanField(meta, key);
   }
 
-  const allowedAgents = new Set(['local_opencode', 'local_hermes', 'local_openclaw']);
-  if (!allowedAgents.has(String(meta.agent))) {
-    throw new Error(
-      'GitHub Agent Queue permits only governed local_opencode, local_hermes, or local_openclaw'
-    );
-  }
   if (!['pending','ready'].includes(String(meta.status))) {
     throw new Error('status must be pending or ready');
   }
@@ -158,26 +158,60 @@ if (!token) throw new Error('PLATFORM_ADMIN_TOKEN is required');
 const content = await fs.readFile(absolute, 'utf8');
 const { meta, body } = parseFrontmatter(content);
 assertSafe(meta);
+const registry = await loadGovernedAgentRegistry(root);
+const governedAgent = resolveGovernedAgent(meta, registry);
 if (!body) throw new Error('workpack body must not be empty');
 
 const sha = process.env.GITHUB_SHA || crypto.createHash('sha256').update(content).digest('hex').slice(0, 12);
 const requestId = `ghq-${safeIdSegment(meta.id)}-${sha.slice(0, 12)}`;
 
+// Build the real AgentTaskEnvelopeV1 instead of only carrying task_type as
+// loose context metadata. Without this, /api/local/prompt-submit never sees
+// b.agent_task, evaluateAgentTaskPolicy() never runs, and a sensitive
+// task_type (browser/infra) gets zero approval-gate enforcement server-side
+// — the frontmatter's own requires_approval field is the only thing
+// standing between a workpack and dispatch, and nothing cross-checks it
+// against what the task_type actually demands. Sending a real envelope lets
+// the canonical policy engine (lib/agent-task-core/src/policy.ts) make that
+// call instead of trusting the workpack author's word for it.
+const agentTaskEnvelope = buildAgentTaskEnvelope({
+  task: String(meta.title || meta.id),
+  tenantSlug: 'local',
+  taskType: governedAgent.taskType,
+  selectedAgent: governedAgent.opslyJobType,
+  requestId,
+  executionMode: 'enqueue',
+  localOnly: true,
+  writeAllowed: false,
+  networkAllowed: false,
+  source: 'github-agent-queue',
+  actor: 'system',
+  metadata: { workpack_id: meta.id, registry_worker_id: governedAgent.workerId },
+});
+
 const payload = {
   tenant_slug: 'local',
   request_id: requestId,
   idempotency_key: requestId,
-  agent: String(meta.agent),
-  agent_role: 'review',
+  agent: governedAgent.opslyJobType,
+  agent_role:
+    governedAgent.taskType === 'research' || governedAgent.taskType === 'planning'
+      ? 'researcher'
+      : 'executor',
   max_steps: Number(meta.max_steps || 6),
   goal: String(meta.title || meta.id),
   prompt_body: body,
+  agent_task: agentTaskEnvelope,
   context: {
     source: 'github-agent-queue',
     github_sha: sha,
     github_repository: process.env.GITHUB_REPOSITORY || null,
     github_run_id: process.env.GITHUB_RUN_ID || null,
     workpack_id: meta.id,
+    registry_worker_id: governedAgent.workerId,
+    registry_provider: governedAgent.provider,
+    registry_cost_class: governedAgent.costClass,
+    task_type: governedAgent.taskType,
     workpack_file: file,
     dispatch_contract_version: 'dispatch-claim-v1',
     workstream: String(meta.workstream),
