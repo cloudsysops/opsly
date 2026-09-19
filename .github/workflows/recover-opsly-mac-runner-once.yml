@@ -163,6 +163,31 @@ jobs:
             esac
             REMOTE_MAC
 
+      - name: Stash Mac control checkout dirty state (reversible)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 3m
+          script: |
+            set -euo pipefail
+            ssh -o BatchMode=yes -o ConnectTimeout=12 opsly-admin-from-vps 'bash -s' <<'REMOTE_MAC'
+            set -euo pipefail
+            repo="$(cat "$HOME/.opsly-control-recovery-path")"
+            if [[ -z "$(git -C "$repo" status --porcelain)" ]]; then
+              echo "MAC_CONTROL_ALREADY_CLEAN"
+              REMOTE_MAC
+              exit 0
+            fi
+            # Reversible: never drop or destroy agent evidence. Stash keeps it recoverable.
+            stash_name="opsly-recovery-cleanup $(date -u +%Y%m%dT%H%M%SZ)"
+            git -C "$repo" stash push -u -m "${stash_name}"
+            echo "MAC_CONTROL_STASHED"
+            git -C "$repo" stash list | head -5
+            REMOTE_MAC
+
       - name: Verify Mac control checkout clean
         uses: appleboy/ssh-action@v1.0.3
         with:
