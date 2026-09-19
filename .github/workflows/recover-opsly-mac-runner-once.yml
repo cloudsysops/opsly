@@ -264,7 +264,15 @@ jobs:
             command -v gh >/dev/null || { echo "BLOCKER_LOCAL_GH_MISSING"; exit 78; }
             command -v doppler >/dev/null || { echo "BLOCKER_LOCAL_DOPPLER_MISSING"; exit 78; }
             gh auth status >/dev/null 2>&1 || { echo "BLOCKER_LOCAL_GH_AUTH"; exit 78; }
-            doppler me >/dev/null 2>&1 || { echo "BLOCKER_LOCAL_DOPPLER_AUTH"; exit 78; }
+            echo "DOPPLER_CONFIG_DUMP"
+            doppler --print-config 2>&1 | head -10 || true
+            set +e
+            me_out="$(doppler me 2>&1)"
+            me_rc=$?
+            set -e
+            echo "DOPPLER_ME_RC=${me_rc}"
+            echo "DOPPLER_ME_OUT=${me_out}"
+            [[ "${me_rc}" -eq 0 ]] || { echo "BLOCKER_LOCAL_DOPPLER_AUTH"; exit 78; }
             echo "MAC_OPERATOR_AUTH_OK"
             REMOTE_MAC
 
