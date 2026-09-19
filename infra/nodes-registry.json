@@ -1,6 +1,7 @@
 {
-  "version": 1,
-  "updated_at": "2026-04-13T00:00:00Z",
+  "version": 3,
+  "updated_at": "2026-09-17T00:00:00Z",
+  "description": "Inventario OPS de nodos (acceso SSH/Tailscale). NO es registry del scheduler — el ruteo por capacidad vive en config/compute-workers.json. No duplicar workerId/class aqui.",
   "nodes": [
     {
       "name": "opsly-admin",
@@ -25,6 +26,38 @@
       "role": "control",
       "status": "active",
       "notes": "VPS control plane"
+    },
+    {
+      "name": "desktop-smdqcia",
+      "host": "100.115.197.109",
+      "user": "devops",
+      "role": "worker",
+      "status": "active",
+      "notes": "WSL2 RTX 3060 12GB — workerId home-gpu-01"
+    },
+    {
+      "name": "desktop-smdqcia-1",
+      "host": "100.117.5.102",
+      "user": "devops",
+      "role": "worker",
+      "status": "pending",
+      "notes": "Windows; requiere WSL2 + plano worker"
+    },
+    {
+      "name": "pc-gamer",
+      "host": "100.74.88.103",
+      "user": "devops",
+      "role": "worker",
+      "status": "offline",
+      "notes": "Windows RTX 5070 Ti 16.3GB — workerId pc-gamer-openclaw-01"
+    },
+    {
+      "name": "pc-gamer-openclaw-01-wsl",
+      "host": "100.71.164.56",
+      "user": "devops",
+      "role": "worker",
+      "status": "offline",
+      "notes": "Linux; requiere bootstrap"
     }
   ]
 }

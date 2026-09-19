@@ -142,6 +142,19 @@ ensure_env() {
     echo "[pc-gamer-docker] ERROR: set real REDIS_URL in .env.worker" >&2
     exit 1
   fi
+  # Identidad del nodo: un ID compartido/placeholder = pulsos que se pisan entre
+  # máquinas y jobs enrutados al hardware equivocado (ver incidente 2026-09-17).
+  local worker_id_line
+  worker_id_line="$(grep -E '^WORKER_ID=' "$ENV_WORKER" | tail -1 | cut -d= -f2- || true)"
+  if [[ -z "$worker_id_line" || "$worker_id_line" == "@WORKER_ID@" || "$worker_id_line" == *"CHANGE_ME"* ]]; then
+    echo "[pc-gamer-docker] ERROR: set a unique WORKER_ID in .env.worker" >&2
+    echo "  IDs por nodo: config/compute-workers.json (fuente canónica del scheduler)" >&2
+    exit 1
+  fi
+  if [[ "$worker_id_line" == "pc-gamer-openclaw-01" && "$(hostname 2>/dev/null || true)" == "DESKTOP-SMDQCIA" ]]; then
+    echo "[pc-gamer-docker] WARNING: WORKER_ID=pc-gamer-openclaw-01 pertenece a la RTX 5070 Ti (pc-gamer)," >&2
+    echo "  no a este host (DESKTOP-SMDQCIA -> home-gpu-01). Corregí .env.worker o el scheduler enrutará mal." >&2
+  fi
   ./scripts/ops/assert-ephemeral-worker-env.sh --env-file "$ENV_WORKER"
   # ephemeral defaults if missing
   if ! grep -q '^OPSLY_EPHEMERAL_WORKER=' "$ENV_WORKER"; then
