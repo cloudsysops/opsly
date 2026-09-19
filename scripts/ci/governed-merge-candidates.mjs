@@ -49,9 +49,6 @@ export function evaluateCandidate({ pr, labels, checkRuns, statuses, route }) {
 
   if (route === 'daytime') {
     if (!labelSet.has('merge:daytime')) reasons.push('missing-merge:daytime');
-    // Defense in depth: a stale/manually-added merge:daytime label must never
-    // override protected release surfaces or Peskids. The trusted classifier
-    // already routes these to merge:governed; admission independently enforces it.
     if (labelSet.has('release:required')) reasons.push('release-required');
     if (labelSet.has('impact:peskids')) reasons.push('peskids-protected');
     if (labelSet.has('impact:control-plane')) reasons.push('control-plane');
@@ -91,8 +88,14 @@ async function gh(pathname) {
   return response.json();
 }
 
+async function getLabelsForPr(prNumber) {
+  const pr = await gh(`repos/${REPO}/pulls/${prNumber}`);
+  return (pr.labels ?? []).map((label) => label.name);
+}
+
 async function inspectPr(pr, route) {
-  const labels = (pr.labels ?? []).map((label) => label.name);
+  // Fetch labels individually since list endpoint doesn't include them
+  const labels = await getLabelsForPr(pr.number);
   const sha = pr.head.sha;
   const [checks, status] = await Promise.all([
     gh(`repos/${REPO}/commits/${sha}/check-runs?per_page=100`),
@@ -114,14 +117,25 @@ async function inspectPr(pr, route) {
   };
 }
 
-async function listOpenPrs() {
+async function listOpenPrsWithLabel(routeLabel) {
+  // Use search API to find PRs with the label (includes labels in results)
   const all = [];
-  for (let page = 1; page <= 2; page += 1) {
-    const chunk = await gh(`repos/${REPO}/pulls?state=open&base=main&per_page=100&page=${page}`);
-    all.push(...chunk);
-    if (chunk.length < 100) break;
+  for (let page = 1; page <= 3; page += 1) {
+    const query = `repo:${REPO} is:open is:pr base:main label:"${routeLabel}"`;
+    const response = await gh(`search/issues?q=${encodeURIComponent(query)}&per_page=100&page=${page}`);
+    all.push(...(response.items ?? []));
+    if ((response.items ?? []).length < 100) break;
   }
-  return all;
+  // Convert search results to PR-like objects
+  return all.map((item) => ({
+    number: item.number,
+    title: item.title,
+    base: { ref: 'main' },
+    draft: item.draft ?? false,
+    mergeable: item.state === 'open' && !item.draft, // approximate
+    labels: item.labels?.map((l) => l.name) ?? [],
+    head: { sha: item.head?.sha ?? '' },
+  }));
 }
 
 function parseArgs(argv) {
@@ -137,11 +151,17 @@ function parseArgs(argv) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const prs = args.pr ? [await gh(`repos/${REPO}/pulls/${args.pr}`)] : await listOpenPrs();
   const routeLabel = args.route === 'daytime' ? 'merge:daytime' : 'night-merge';
-  const routed = prs.filter((pr) => (pr.labels ?? []).some((label) => label.name === routeLabel));
+  
+  let prs;
+  if (args.pr) {
+    prs = [await gh(`repos/${REPO}/pulls/${args.pr}`)];
+  } else {
+    prs = await listOpenPrsWithLabel(routeLabel);
+  }
+  
   const inspected = [];
-  for (const pr of routed) inspected.push(await inspectPr(pr, args.route));
+  for (const pr of prs) inspected.push(await inspectPr(pr, args.route));
   const eligible = inspected.filter((item) => item.eligible).sort((a, b) => a.number - b.number).slice(0, args.limit);
 
   if (args.json) {
