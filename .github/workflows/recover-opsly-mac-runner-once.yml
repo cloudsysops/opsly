@@ -224,14 +224,19 @@ jobs:
             if ! command -v doppler >/dev/null 2>&1; then
               echo "MAC_DOPPLER_NOT_INSTALLED"
               mkdir -p "$HOME/bin"
-              case "$(uname -m)" in
-                arm64) asset="doppler_darwin_arm64.tar.gz" ;;
-                x86_64|amd64) asset="doppler_darwin_amd64.tar.gz" ;;
-                *) echo "BLOCKER_UNSUPPORTED_MAC_ARCH $(uname -m)"; exit 78 ;;
+              # Resolve latest release version, then download matching macOS asset directly.
+              rel=$(curl -sL --proto "=https" --tlsv1.2 --retry 3 \
+                "https://api.github.com/repos/DopplerHQ/cli/releases/latest" \
+                | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+              arch="$(uname -m)"
+              case "$arch" in
+                arm64) asset="doppler_${rel}_macOS_arm64.tar.gz" ;;
+                x86_64|amd64) asset="doppler_${rel}_macOS_amd64.tar.gz" ;;
+                *) echo "BLOCKER_UNSUPPORTED_MAC_ARCH $arch"; exit 78 ;;
               esac
               curl -Ls --proto "=https" --tlsv1.2 --retry 3 \
                 -o "$HOME/bin/doppler.tgz" \
-                "https://github.com/DopplerHQ/cli/releases/latest/download/${asset}"
+                "https://github.com/DopplerHQ/cli/releases/download/${rel}/${asset}"
               tar -xzf "$HOME/bin/doppler.tgz" -C "$HOME/bin" doppler 2>/dev/null || tar -xzf "$HOME/bin/doppler.tgz" -C "$HOME/bin"
               rm -f "$HOME/bin/doppler.tgz"
               chmod +x "$HOME/bin/doppler"
