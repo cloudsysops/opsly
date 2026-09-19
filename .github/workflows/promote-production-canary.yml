@@ -1,47 +1,249 @@
 # Opsly — workflow catalog: docs/ops/workflows-index.md
-name: Promote Production Canary
+name: Promote Production Release Candidate
 
 on:
   workflow_dispatch:
     inputs:
+      release_sha:
+        description: "Full 40-character commit SHA already built from main"
+        required: true
+        type: string
       staging_api_url:
-        description: "Staging API URL"
+        description: "QA/staging API URL used as the pre-promotion health gate"
         required: false
         type: string
+        default: "https://api-qa.op-sly.com"
       production_api_url:
-        description: "Production API URL"
+        description: "Production API URL used for post-promotion smoke"
         required: false
         type: string
-      rollback_on_fail:
-        description: "Activar rollback si falla canary"
+        default: "https://api.op-sly.com"
+      rollback_guidance_on_fail:
+        description: "Fail closed and emit rollback-required guidance after a failed smoke; this does not auto-rollback"
         required: false
         type: boolean
         default: true
 
+permissions:
+  contents: read
+  packages: read
+
+env:
+  # Single source of truth: <docker-compose service>=<GHCR image suffix>.
+  # `app` intentionally runs the `intcloudsysops-api` image.
+  RELEASE_SERVICE_IMAGES: >-
+    app=api admin=admin portal=portal icso=icso mcp=mcp
+    llm-gateway=llm-gateway orchestrator=orchestrator hermes=hermes
+    context-builder=context-builder
+
+concurrency:
+  # GitHub serializes all promotions in this group. `cancel-in-progress: false`
+  # queues a second dispatch rather than interrupting an in-flight production change.
+  group: production-release-promotion
+  cancel-in-progress: false
+
 jobs:
-  promote-canary:
+  validate-candidate:
+    name: Validate immutable release candidate
     runs-on: ubuntu-latest
+    outputs:
+      release_sha: ${{ steps.candidate.outputs.release_sha }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Run production canary promotion gate
+      - name: Validate release SHA is an exact main commit
+        id: candidate
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "release_sha must be a full 40-character lowercase commit SHA" >&2
+            exit 1
+          fi
+
+          git fetch origin main --no-tags
+          git cat-file -e "${RELEASE_SHA}^{commit}"
+          if ! git merge-base --is-ancestor "$RELEASE_SHA" origin/main; then
+            echo "Refusing promotion: $RELEASE_SHA is not contained in origin/main" >&2
+            exit 1
+          fi
+
+          echo "release_sha=$RELEASE_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Verify every immutable release image exists
+        env:
+          RELEASE_SHA: ${{ steps.candidate.outputs.release_sha }}
+        run: |
+          set -euo pipefail
+          read -r -a release_pairs <<< "$RELEASE_SERVICE_IMAGES"
+          for pair in "${release_pairs[@]}"; do
+            compose_service="${pair%%=*}"
+            image_service="${pair#*=}"
+            if [ -z "$compose_service" ] || [ -z "$image_service" ] || [ "$compose_service" = "$pair" ]; then
+              echo "Invalid RELEASE_SERVICE_IMAGES entry: $pair" >&2
+              exit 1
+            fi
+            image="ghcr.io/cloudsysops/intcloudsysops-${image_service}:${RELEASE_SHA}"
+            echo "Verifying compose service ${compose_service} -> ${image}"
+            docker pull "$image" >/dev/null
+          done
+
+      - name: Require healthy QA/staging before production approval
+        env:
+          STAGING_API_URL: ${{ inputs.staging_api_url }}
+        run: |
+          set -euo pipefail
+          test -n "${STAGING_API_URL:-}" || { echo "staging_api_url is required" >&2; exit 1; }
+          curl --fail --silent --show-error --max-time 15 \
+            "${STAGING_API_URL%/}/api/health" >/dev/null
+
+  promote-production:
+    name: Promote exact SHA to production
+    needs: validate-candidate
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    env:
+      RELEASE_SHA: ${{ needs.validate-candidate.outputs.release_sha }}
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      # One canonical host is used by validation, Tailscale probing and SSH.
+      # VPS_SSH_HOST is preferred for tailnet-only SSH; VPS_HOST is the fallback.
+      VPS_TARGET_HOST: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+
+      - name: Validate required production access
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+        run: |
+          set -euo pipefail
+          test -n "${VPS_USER:-}" || { echo "Missing VPS_USER" >&2; exit 1; }
+          test -n "${VPS_SSH_KEY:-}" || { echo "Missing VPS_SSH_KEY" >&2; exit 1; }
+          test -n "${VPS_TARGET_HOST:-}" || { echo "Missing VPS_SSH_HOST or VPS_HOST" >&2; exit 1; }
+          test -n "${PLATFORM_DOMAIN:-}" || { echo "Missing PLATFORM_DOMAIN" >&2; exit 1; }
+
+      - name: Detect Tailscale access
+        id: tailscale
+        run: |
+          if [ -n "${TAILSCALE_AUTHKEY:-}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Connect Tailscale for production SSH and verify target reachability
+        if: steps.tailscale.outputs.enabled == 'true'
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          # The composite action uses Tailscale's `ping` input and fails the
+          # step if this target cannot be reached before SSH begins.
+          ping_host: ${{ env.VPS_TARGET_HOST }}
+
+      - name: Promote immutable images on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          RELEASE_SHA: ${{ env.RELEASE_SHA }}
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          RELEASE_SERVICE_IMAGES: ${{ env.RELEASE_SERVICE_IMAGES }}
+        with:
+          host: ${{ env.VPS_TARGET_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 30m
+          envs: RELEASE_SHA,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,RELEASE_SERVICE_IMAGES
+          script: |
+            # Force bash for array parsing (VPS uses zsh by default)
+            bash -c '
+              set -euo pipefail
+              cd /opt/opsly
+
+              # The release source and the runtime image tag are pinned to the same
+              # immutable main commit. No rebuild occurs in this promotion job.
+              git fetch origin main
+              git cat-file -e "${RELEASE_SHA}^{commit}"
+              git reset --hard "$RELEASE_SHA"
+
+              if [ -z "${GITHUB_DEPLOY_TOKEN:-}" ] || [ -z "${GITHUB_DEPLOY_ACTOR:-}" ]; then
+                echo "Missing workflow GHCR credentials" >&2
+                exit 1
+              fi
+              echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
+
+              export APP_IMAGE_TAG="$RELEASE_SHA"
+              export ADMIN_IMAGE_TAG="$RELEASE_SHA"
+              export PORTAL_IMAGE_TAG="$RELEASE_SHA"
+              export MCP_IMAGE_TAG="$RELEASE_SHA"
+              export LLM_GATEWAY_IMAGE_TAG="$RELEASE_SHA"
+              export ORCHESTRATOR_IMAGE_TAG="$RELEASE_SHA"
+              export HERMES_IMAGE_TAG="$RELEASE_SHA"
+              export CONTEXT_BUILDER_IMAGE_TAG="$RELEASE_SHA"
+              export ICSO_APP_IMAGE="ghcr.io/cloudsysops/intcloudsysops-icso:${RELEASE_SHA}"
+
+              read -r -a release_pairs <<< "$RELEASE_SERVICE_IMAGES"
+              services=()
+              for pair in "${release_pairs[@]}"; do
+                compose_service="${pair%%=*}"
+                image_service="${pair#*=}"
+                if [ -z "$compose_service" ] || [ -z "$image_service" ] || [ "$compose_service" = "$pair" ]; then
+                  echo "Invalid RELEASE_SERVICE_IMAGES entry: $pair" >&2
+                  exit 1
+                fi
+                services+=("$compose_service")
+              done
+
+              cd /opt/opsly/infra
+              docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull "${services[@]}"
+              docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml \
+                up -d --no-deps --force-recreate "${services[@]}"
+
+              echo "Promoted immutable release ${RELEASE_SHA}"
+            '
+
+      - name: Production smoke (fail closed; rollback is not automated)
         env:
           STAGING_API_URL: ${{ inputs.staging_api_url }}
           PROD_API_URL: ${{ inputs.production_api_url }}
-          ROLLBACK_ON_FAIL: ${{ inputs.rollback_on_fail }}
+          ROLLBACK_GUIDANCE_ON_FAIL: ${{ inputs.rollback_guidance_on_fail }}
         run: |
           set -euo pipefail
-          if [ -z "${STAGING_API_URL:-}" ]; then
-            STAGING_API_URL="https://api.op-sly.com"
-          fi
-          if [ -z "${PROD_API_URL:-}" ]; then
-            PROD_API_URL="https://api.op-sly.com"
-          fi
-          ROLLBACK_FLAG=()
-          if [ "${ROLLBACK_ON_FAIL}" = "true" ]; then
-            ROLLBACK_FLAG=(--rollback-on-fail)
+          test -n "${STAGING_API_URL:-}" || { echo "staging_api_url is required" >&2; exit 1; }
+          test -n "${PROD_API_URL:-}" || { echo "production_api_url is required" >&2; exit 1; }
+          guidance_flag=()
+          if [ "$ROLLBACK_GUIDANCE_ON_FAIL" = "true" ]; then
+            guidance_flag=(--rollback-guidance-on-fail)
           fi
           bash scripts/deploy/promote-canary.sh \
-            --staging-api-url "${STAGING_API_URL}" \
-            --prod-api-url "${PROD_API_URL}" \
-            "${ROLLBACK_FLAG[@]}"
+            --staging-api-url "$STAGING_API_URL" \
+            --prod-api-url "$PROD_API_URL" \
+            "${guidance_flag[@]}"
+
+      - name: Record promoted candidate
+        if: success()
+        run: |
+          {
+            echo "## Production release candidate promoted"
+            echo "- SHA: \`${RELEASE_SHA}\`"
+            echo "- Immutable image tag: \`${RELEASE_SHA}\`"
+            echo "- QA/staging health gate: passed"
+            echo "- Production smoke: passed"
+            echo "- Automatic rollback: not implemented; failures remain fail-closed"
+          } >> "$GITHUB_STEP_SUMMARY"
