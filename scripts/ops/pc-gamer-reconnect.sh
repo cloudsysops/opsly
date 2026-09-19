@@ -23,6 +23,11 @@ WITH_OPENCODE=false
 SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
 REMOTE_ROOT="${PC_GAMER_OPSLY_ROOT:-/home/devops/opsly}"
 BRANCH="${PC_GAMER_BRANCH:-main}"
+MACHINE_CLAIM_NAME="${PC_GAMER_MACHINE_CLAIM_NAME:-pc-gamer}"
+MACHINE_CLAIM_HOLDER="${MACHINE_CLAIM_HOLDER:-${USER:-unknown}@$(hostname -s 2>/dev/null || echo local)-$}"
+MACHINE_CLAIM_TTL="${MACHINE_CLAIM_TTL:-900}"
+MACHINE_CLAIM_HELD=false
+MACHINE_CLAIM_HEARTBEAT_PID=""
 
 for arg in "$@"; do
   case "$arg" in
@@ -62,6 +67,52 @@ run() {
     return 0
   fi
   "$@"
+}
+
+acquire_machine_claim() {
+  if [[ -z "${REDIS_URL:-}" ]]; then
+    echo "[reconnect] ERROR: REDIS_URL is required to claim exclusive access to $MACHINE_CLAIM_NAME" >&2
+    echo "[reconnect]   run this via: doppler run --project ops-intcloudsysops --config prd -- $0 ..." >&2
+    return 1
+  fi
+  local result
+  if ! result="$(node "$SCRIPT_DIR/machine-claim.mjs" acquire --machine "$MACHINE_CLAIM_NAME" --holder "$MACHINE_CLAIM_HOLDER" --ttl "$MACHINE_CLAIM_TTL")"; then
+    echo "[reconnect] ERROR: $MACHINE_CLAIM_NAME is already claimed — refusing to touch it concurrently: $result" >&2
+    echo "[reconnect]   wait for that holder to finish, or if stale it expires within ${MACHINE_CLAIM_TTL}s" >&2
+    return 1
+  fi
+  echo "[reconnect] machine claim acquired: $result"
+  MACHINE_CLAIM_HELD=true
+  start_machine_claim_heartbeat
+  trap 'release_machine_claim' EXIT
+  trap 'release_machine_claim; exit 130' INT TERM
+}
+
+start_machine_claim_heartbeat() {
+  local interval=$(( MACHINE_CLAIM_TTL / 3 ))
+  (( interval < 30 )) && interval=30
+  (
+    while true; do
+      sleep "$interval"
+      if ! node "$SCRIPT_DIR/machine-claim.mjs" acquire --machine "$MACHINE_CLAIM_NAME" --holder "$MACHINE_CLAIM_HOLDER" --ttl "$MACHINE_CLAIM_TTL" >/dev/null; then
+        echo "[reconnect] ERROR: lost machine claim for $MACHINE_CLAIM_NAME; refusing further work" >&2
+        kill -TERM "$$" 2>/dev/null || true
+        exit 1
+      fi
+    done
+  ) &
+  MACHINE_CLAIM_HEARTBEAT_PID=$!
+}
+
+release_machine_claim() {
+  if [[ -n "$MACHINE_CLAIM_HEARTBEAT_PID" ]]; then
+    kill "$MACHINE_CLAIM_HEARTBEAT_PID" >/dev/null 2>&1 || true
+    wait "$MACHINE_CLAIM_HEARTBEAT_PID" 2>/dev/null || true
+    MACHINE_CLAIM_HEARTBEAT_PID=""
+  fi
+  [[ "$MACHINE_CLAIM_HELD" == "true" ]] || return 0
+  node "$SCRIPT_DIR/machine-claim.mjs" release --machine "$MACHINE_CLAIM_NAME" --holder "$MACHINE_CLAIM_HOLDER" >/dev/null 2>&1 || true
+  MACHINE_CLAIM_HELD=false
 }
 
 wait_ssh() {
@@ -117,6 +168,7 @@ if [[ "$DRY_RUN" == "true" ]]; then
 fi
 
 wait_ssh
+acquire_machine_claim || exit 1
 
 remote_bash "$(cat <<EOF
 set -euo pipefail
