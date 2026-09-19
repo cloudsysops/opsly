@@ -178,7 +178,6 @@ jobs:
             repo="$(cat "$HOME/.opsly-control-recovery-path")"
             if [[ -z "$(git -C "$repo" status --porcelain)" ]]; then
               echo "MAC_CONTROL_ALREADY_CLEAN"
-              REMOTE_MAC
               exit 0
             fi
             # Reversible: never drop or destroy agent evidence. Stash keeps it recoverable.
