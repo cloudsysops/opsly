@@ -42,7 +42,8 @@ export function evaluateCandidate({ pr, labels, checkRuns, statuses, route }) {
 
   if (pr?.base?.ref !== 'main') reasons.push('base-not-main');
   if (pr?.draft) reasons.push('draft');
-  if (pr?.mergeable !== true) reasons.push('not-mergeable');
+  // Treat UNKNOWN mergeable as not blocking (GitHub may not have computed it yet)
+  if (pr?.mergeable === false) reasons.push('not-mergeable');
   if (!labelSet.has('state:ready')) reasons.push('not-state-ready');
   for (const label of HARD_BLOCK_LABELS) {
     if (labelSet.has(label)) reasons.push(`blocked:${label}`);
@@ -89,17 +90,30 @@ async function gh(pathname) {
     },
   });
   if (!response.ok) throw new Error(`GET ${pathname} -> ${response.status}: ${(await response.text()).slice(0, 500)}`);
+  return response.json;
+}
+
+async function ghJson(pathname) {
+  if (!TOKEN) throw new Error('GITHUB_TOKEN/GH_TOKEN is required');
+  const response = await fetch(`https://api.github.com/${pathname}`, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${TOKEN}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+  if (!response.ok) throw new Error(`GET ${pathname} -> ${response.status}: ${(await response.text()).slice(0, 500)}`);
   return response.json();
 }
 
 async function inspectPr(prNumber, route) {
   // Fetch full PR details including head.sha and labels
-  const pr = await gh(`repos/${REPO}/pulls/${prNumber}`);
+  const pr = await ghJson(`repos/${REPO}/pulls/${prNumber}`);
   const labels = (pr.labels ?? []).map((label) => label.name);
   const sha = pr.head.sha;
   const [checks, status] = await Promise.all([
-    gh(`repos/${REPO}/commits/${sha}/check-runs?per_page=100`),
-    gh(`repos/${REPO}/commits/${sha}/status`),
+    ghJson(`repos/${REPO}/commits/${sha}/check-runs?per_page=100`),
+    ghJson(`repos/${REPO}/commits/${sha}/status`),
   ]);
   const evaluation = evaluateCandidate({
     pr,
@@ -118,16 +132,15 @@ async function inspectPr(prNumber, route) {
 }
 
 async function listOpenPrsWithLabel(routeLabel) {
-  // Use issues endpoint with labels filter - this DOES include labels in results
+  // Use search API to find PRs with the label
   const all = [];
   for (let page = 1; page <= 3; page += 1) {
-    const response = await gh(`repos/${REPO}/issues?labels=${encodeURIComponent(routeLabel)}&state=open&per_page=100&page=${page}`);
-    for (const item of response) {
-      if (item.pull_request) {
-        all.push(item.number);
-      }
+    const query = `repo:${REPO} is:pr is:open label:"${routeLabel}"`;
+    const response = await ghJson(`search/issues?q=${encodeURIComponent(query)}&per_page=100&page=${page}`);
+    for (const item of response.items ?? []) {
+      all.push(item.number);
     }
-    if (response.length < 100) break;
+    if ((response.items ?? []).length < 100) break;
   }
   return all;
 }
