@@ -9,7 +9,7 @@ echo.
 echo  ██████╗ ███████╗██████╗ ██╗   ██╗███████╗██████╗ 
 echo  ██╔══██╗██╔════╝██╔══██╗██║   ██║██╔════╝██╔══██╗
 echo  ██████╔╝█████╗  ██████╔╝██║   ██║█████╗  ██████╔╝
-echo  ██╔══██╗██╔═══╝  ██╔══██╗╚██╗ ██╔╝██╔══╝  ██╔══██╗
+echo  ██╔══██╗██╔═══╝  ██══██╗╚██╗ ██╔╝██╔══╝  ██╔══██╗
 echo  ██║  ██║███████╗██║  ██║ ╚████╔╝ ███████╗██║  ██║
 echo  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝  ╚═══╝ ╚══════╝╚═╝  ╚═╝
 echo.
@@ -19,6 +19,7 @@ echo  ============================================================
 echo.
 echo  Este script configura el PC Gamer para:
 echo   * Auto-conectar a Tailscale al arrancar Windows
+echo   * PULEAR ultima config del repo GitHub (scripts/ops/)
 echo   * Verificar conectividad con VPS (100.120.151.91)
 echo   * Re-conectar cada 15 minutos si se cae la red
 echo   * Logs en C:\Opsly\logs\pc-gamer-auto-join.log

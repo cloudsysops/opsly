@@ -9,6 +9,7 @@
     3. Tarea Programada "Opsly PC-Gamer Auto-Join" (SYSTEM, AtStartup, cada 15min):
        - Fuerza tailscale up si está down
        - Verifica conectividad VPS (100.120.151.91)
+       - PULEA actualizaciones del repo GitHub (scripts/ops/)
        - Log local en C:\Opsly\logs\pc-gamer-auto-join.log
        - Opcional: POST health a VPS /api/health
 #>
@@ -26,12 +27,14 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 # 2. Rutas y configs
 $LogDir = "C:\Opsly\logs"
 $LogFile = "$LogDir\pc-gamer-auto-join.log"
+$RepoDir = "C:\Opsly\repo"
 $ScriptBlock = @"
-# Auto-join script for PC Gamer
+# Auto-join script for PC Gamer - runs on startup and every 15min
 Set-StrictMode -Version Latest
 `$ErrorActionPreference = "Stop"
 
 `$LogFile = "$LogFile"
+`$RepoDir = "$RepoDir"
 `$VPS_IP = "100.120.151.91"
 `$TAILSCALE_EXE = "C:\Program Files\Tailscale\tailscale.exe"
 if (-not (Test-Path `$TAILSCALE_EXE)) { `$TAILSCALE_EXE = "C:\Program Files (x86)\Tailscale\tailscale.exe" }
@@ -43,6 +46,21 @@ function Write-Log {
 }
 
 Write-Log "=== PC Gamer Auto-Join START ==="
+
+# 0. PULEAR ULTIMA CONFIG DEL REPO
+try {
+    if (Test-Path "`$RepoDir\.git") {
+        Write-Log "Repo existe, haciendo git pull..."
+        cd `$RepoDir
+        `$pull = git pull origin main 2>&1
+        Write-Log "Git pull: `$(`$pull -join '; ')"
+    } else {
+        Write-Log "Clonando repo opsly..."
+        git clone https://github.com/cloudsysops/opsly.git `$RepoDir 2>&1 | ForEach-Object { Write-Log "  clone: `$_" }
+    }
+} catch {
+    Write-Log "⚠️ Error actualizando repo: `$_"
+}
 
 # 1. Asegurar Tailscale UP
 try {
@@ -97,8 +115,9 @@ if (`$final) {
 Write-Log "=== PC Gamer Auto-Join END ==="
 "@
 
-# 3. Crear directorio logs
+# 3. Crear directorios
 if (-not (Test-Path $LogDir)) { New-Item -ItemType Directory -Path $LogDir -Force | Out-Null }
+if (-not (Test-Path $RepoDir)) { New-Item -ItemType Directory -Path $RepoDir -Force | Out-Null }
 
 # 4. Configurar Tailscale servicio + prefs
 Write-Host "[1/4] Configurando servicio Tailscale..."
@@ -126,7 +145,7 @@ $Principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccou
 $Existing = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
 if ($Existing) { Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false; Write-Host "  Tarea existente removida" }
 
-Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $TriggerStartup, $TriggerRepeat -Settings $Settings -Principal $Principal -Description "Auto-conecta PC Gamer a Tailscale y verifica conectividad VPS/Opsly al arrancar y cada 15min" -Force
+Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $TriggerStartup, $TriggerRepeat -Settings $Settings -Principal $Principal -Description "Auto-conecta PC Gamer a Tailscale, pulea repo GitHub y verifica conectividad VPS/Opsly al arrancar y cada 15min" -Force
 Write-Host "  ✅ Tarea '$TaskName' creada"
 
 # 6. Ejecutar una vez ahora para validar
@@ -138,9 +157,10 @@ Write-Host ""
 Write-Host "=== LISTO ===" -ForegroundColor Green
 Write-Host "A partir de ahora, cada vez que este PC inicie:"
 Write-Host "  1. Tailscale se conecta automáticamente"
-Write-Host "  2. Verifica conectividad con VPS (100.120.151.91)"
-Write-Host "  3. Log en: $LogFile"
-Write-Host "  4. Se repite cada 15 min mientras haya red"
+Write-Host "  2. Pulea última config del repo GitHub (scripts/ops/)"
+Write-Host "  3. Verifica conectividad con VPS (100.120.151.91)"
+Write-Host "  4. Log en: $LogFile"
+Write-Host "  5. Se repite cada 15 min mientras haya red"
 Write-Host ""
 Write-Host "Para ver logs en tiempo real:"
 Write-Host "  Get-Content $LogFile -Wait -Tail 20"
