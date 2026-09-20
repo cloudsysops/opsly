@@ -2846,6 +2846,34 @@ Pendiente sin resolver: el usuario preguntó por qué una ventana nueva de Ghost
 
 ---
 
+## 🔄 Estado Actual (2026-09-19/20 — feat/pr-1185-agent-lab-reconcile stale, rescate parcial vía #1668, colisión de worktree compartido)
+
+**Agente:** Claude
+**Rama:** sesión heredó `feat/pr-1185-agent-lab-reconcile` ya checked-out en el directorio principal (no en worktree aislado) → se creó `chore/gitignore-openclaw-local-state` desde `main` actual para el trabajo real.
+
+### Hallazgo: `feat/pr-1185-agent-lab-reconcile` ya no aportaba nada nuevo
+
+Su PR (#1190) fue cerrado el 2026-09-12, **superseded by #1227** (ya mergeado a `main`). Verificado archivo por archivo: `lib/agent-learning/`, `config/agent-capability-owners.json`, `docs/design/PR-1185-ARCHITECTURE-RECONCILIATION.md` ya estaban en `main` idénticos o más avanzados (`main` ya tiene además `execution-evidence-v1.ts`, `policies.ts`, `work-handoff-v1.ts` que esta rama no tenía). El resto de la rama (`agent_hint` routing, reescritura de `AGENT-PROMPT-QUEUE.md`, cambios en `dispatch-prompt-queue.sh`) quedó obsoleto porque `main` migró esa arquitectura al modelo gobernado (`AgentTaskEnvelopeV1` / `DispatchClaimV1`, ver línea ~47 de este archivo). Único valor real rescatado: `.gitignore` (ignorar `DREAMS.md` y `/memory/`, estado local de OpenClaw no trackeado) + link a `WORKTREE-CONVENTION.md` desde `GIT-WORKFLOW.md`. PR: **#1668**.
+
+### Incidente: dos sesiones de Claude compartiendo el mismo working tree principal
+
+Un primer `git checkout -b ... origin/main` se interrumpió a mitad de camino por una restricción de permisos del sandbox de esta sesión, dejando el directorio principal (`~/cboteros/proyectos/intcloudsysops`, **no** un worktree) con ~81 archivos modificados/sin trackear mezclados a medias con `main`. Otra sesión de Claude, trabajando en paralelo sobre esa misma rama en ese mismo directorio, lo detectó y avisó por mensaje cruzado antes de que causara daño real. Se recuperó con `git stash push -u` (reversible, nada se perdió) y ambas sesiones se movieron a worktrees aislados bajo `.worktrees/claude/...`.
+
+**Causa raíz:** ninguna de las dos sesiones arrancó en worktree aislado desde el inicio, pese a que `WORKTREE-CONVENTION.md` y el gate `DispatchClaimV1` existen exactamente para evitar esto. Mismo patrón que la duplicación Mauro/#1155 del 2026-09-11: la convención existe pero no se aplica por defecto al arrancar sesión.
+
+### Duplicación detectada en caliente: PR #1668 vs #1670
+
+Mientras se armaba #1668, la otra sesión (ya en su worktree aislado) abrió **#1670** desde la misma `feat/pr-1185-agent-lab-reconcile`, con un rebase más completo que — sin coordinación previa — incluye los mismos dos cambios de `.gitignore` / `GIT-WORKFLOW.md` que #1668. Coordinado por mensaje directo entre sesiones. **Pendiente para quien retome:** confirmar cuál de los dos mergeó primero y que el otro no reintroduzca conflicto/duplicado al rebasar.
+
+### Próximos pasos
+
+1. Verificar merge de #1668 y #1670 — resolver el solape de `.gitignore`/`GIT-WORKFLOW.md` antes de que ambos terminen mergeados.
+2. Decidir el destino final de la rama/worktree `feat/pr-1185-agent-lab-reconcile` una vez #1670 se resuelva — no cerrarla mientras tenga un PR abierto con trabajo real encima.
+3. Evaluar si el arranque de sesión (`CLAUDE.md` "SESSION STARTUP") debería **forzar** worktree aislado antes de cualquier `git checkout -b`, no solo documentarlo — la convención existe pero no se aplicó por defecto en esta sesión.
+4. Nota de entorno: dentro del sandbox de Bash de esta sesión, `gh`/GraphQL fallan por verificación TLS (`x509: certificate`); hubo que correr esos comandos con sandbox deshabilitado para diagnosticar y actuar.
+
+---
+
 ## Enlaces relacionados
 
 - [[.github/index|.github]]
