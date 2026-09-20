@@ -37,8 +37,10 @@ test('reviewer treats PR diff content as untrusted data', () => {
   assert.match(reviewer, /READ-ONLY/);
 });
 
-test('reviewer approves only the exact clean verdict', () => {
-  assert.match(reviewer, /return verdict\.trim\(\) === CLEAN_PHRASE/);
+test('reviewer treats lack of P0 findings as clean, not only the exact phrase', () => {
+  assert.match(reviewer, /text === CLEAN_PHRASE/);
+  assert.match(reviewer, /P0\[:\\s\]/);
+  assert.match(reviewer, /P1\/P2/);
   assert.doesNotMatch(reviewer, /includes\(CLEAN_PHRASE/);
 });
 

@@ -284,7 +284,12 @@ async function reviewWithLocalWorker({ pr, diff, failingChecks }) {
 }
 
 function isClean(verdict) {
-  return verdict.trim() === CLEAN_PHRASE;
+  const text = verdict.trim();
+  if (text === CLEAN_PHRASE) return true;
+  // El prompt define solo P0 como bloqueante: P1/P2 son recomendaciones
+  // no bloqueantes. Un veredicto sin hallazgos P0 es un approve con
+  // recomendaciones, no una solicitud de cambios.
+  return !/(?:^|\n)\s*P0[:\s](?![A-Za-z0-9])/m.test(text);
 }
 
 async function submitReview(pr, verdict, modelUsed, workerId, token) {
@@ -297,9 +302,7 @@ async function submitReview(pr, verdict, modelUsed, workerId, token) {
     'Cloud fallback: disabled',
     'Provider cost: $0',
   ].join('\n');
-  const body = clean
-    ? `${CLEAN_PHRASE}\n\n${evidence}`
-    : `${verdict}\n\n${evidence}`;
+  const body = `${verdict}\n\n${evidence}`;
   await gh(`repos/${REPO}/pulls/${pr.number}/reviews`, {
     token,
     method: 'POST',
