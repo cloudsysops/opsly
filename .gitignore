@@ -195,3 +195,7 @@ runtime/content-studio/
 runtime/tmp/
 .playwright-mcp/
 .superpowers/
+
+# OpenClaw agent "sleep/dreaming" local state (per-machine, never commit)
+DREAMS.md
+/memory/
