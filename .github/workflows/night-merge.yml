@@ -25,6 +25,7 @@ permissions:
   pull-requests: write
   checks: read
   statuses: read
+  issues: read
 
 concurrency:
   group: governed-merge-main
