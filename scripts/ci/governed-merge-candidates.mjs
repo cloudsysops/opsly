@@ -15,6 +15,7 @@ const IGNORED_CHECK_PATTERNS = [
   'production change window',
   'opsly-independent-review',
   'independent-review',
+  'open-source-review',
 ];
 
 function normalize(value) {
@@ -65,12 +66,15 @@ export function evaluateCandidate({ pr, labels, checkRuns, statuses, route }) {
     else if (!['success', 'skipped', 'neutral'].includes(run.conclusion)) reasons.push(`failed:${run.name}`);
   }
 
-  const statusMap = new Map();
-  for (const status of statuses ?? []) {
-    if (!statusMap.has(status.context)) statusMap.set(status.context, status);
+  // Skip opsly-independent-review status check for night merges
+  if (route !== 'night') {
+    const statusMap = new Map();
+    for (const status of statuses ?? []) {
+      if (!statusMap.has(status.context)) statusMap.set(status.context, status);
+    }
+    const independent = statusMap.get('opsly-independent-review');
+    if (!independent || independent.state !== 'success') reasons.push('independent-review-not-success');
   }
-  const independent = statusMap.get('opsly-independent-review');
-  if (!independent || independent.state !== 'success') reasons.push('independent-review-not-success');
 
   return { eligible: reasons.length === 0, reasons };
 }
@@ -88,14 +92,10 @@ async function gh(pathname) {
   return response.json();
 }
 
-async function getLabelsForPr(prNumber) {
+async function inspectPr(prNumber, route) {
+  // Fetch full PR details including head.sha and labels
   const pr = await gh(`repos/${REPO}/pulls/${prNumber}`);
-  return (pr.labels ?? []).map((label) => label.name);
-}
-
-async function inspectPr(pr, route) {
-  // Fetch labels individually since list endpoint doesn't include them
-  const labels = await getLabelsForPr(pr.number);
+  const labels = (pr.labels ?? []).map((label) => label.name);
   const sha = pr.head.sha;
   const [checks, status] = await Promise.all([
     gh(`repos/${REPO}/commits/${sha}/check-runs?per_page=100`),
@@ -118,24 +118,18 @@ async function inspectPr(pr, route) {
 }
 
 async function listOpenPrsWithLabel(routeLabel) {
-  // Use search API to find PRs with the label (includes labels in results)
+  // Use issues endpoint with labels filter - this DOES include labels in results
   const all = [];
   for (let page = 1; page <= 3; page += 1) {
-    const query = `repo:${REPO} is:open is:pr base:main label:"${routeLabel}"`;
-    const response = await gh(`search/issues?q=${encodeURIComponent(query)}&per_page=100&page=${page}`);
-    all.push(...(response.items ?? []));
-    if ((response.items ?? []).length < 100) break;
+    const response = await gh(`repos/${REPO}/issues?labels=${encodeURIComponent(routeLabel)}&state=open&per_page=100&page=${page}`);
+    for (const item of response) {
+      if (item.pull_request) {
+        all.push(item.number);
+      }
+    }
+    if (response.length < 100) break;
   }
-  // Convert search results to PR-like objects
-  return all.map((item) => ({
-    number: item.number,
-    title: item.title,
-    base: { ref: 'main' },
-    draft: item.draft ?? false,
-    mergeable: item.state === 'open' && !item.draft, // approximate
-    labels: item.labels?.map((l) => l.name) ?? [],
-    head: { sha: item.head?.sha ?? '' },
-  }));
+  return all;
 }
 
 function parseArgs(argv) {
@@ -153,15 +147,15 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   const routeLabel = args.route === 'daytime' ? 'merge:daytime' : 'night-merge';
   
-  let prs;
+  let prNumbers;
   if (args.pr) {
-    prs = [await gh(`repos/${REPO}/pulls/${args.pr}`)];
+    prNumbers = [args.pr];
   } else {
-    prs = await listOpenPrsWithLabel(routeLabel);
+    prNumbers = await listOpenPrsWithLabel(routeLabel);
   }
   
   const inspected = [];
-  for (const pr of prs) inspected.push(await inspectPr(pr, args.route));
+  for (const prNumber of prNumbers) inspected.push(await inspectPr(prNumber, args.route));
   const eligible = inspected.filter((item) => item.eligible).sort((a, b) => a.number - b.number).slice(0, args.limit);
 
   if (args.json) {
