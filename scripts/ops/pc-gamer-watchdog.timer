@@ -1,0 +1,11 @@
+[Unit]
+Description=Run PC Gamer Watchdog every minute
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+Persistent=true
+RandomizedDelaySec=10
+
+[Install]
+WantedBy=timers.target

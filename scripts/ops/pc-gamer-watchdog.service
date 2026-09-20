@@ -1,0 +1,17 @@
+[Unit]
+Description=Opsly PC Gamer Watchdog - Detecta conexión y ejecuta tareas
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=opsly
+WorkingDirectory=/home/opsly/opsly
+Environment=DOPPLER_PROJECT=ops-intcloudsysops
+Environment=DOPPLER_CONFIG=prd
+ExecStart=/home/opsly/opsly/scripts/ops/pc-gamer-watchdog.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
