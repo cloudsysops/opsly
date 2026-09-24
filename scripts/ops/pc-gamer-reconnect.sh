@@ -20,8 +20,11 @@ WAIT_SEC=0
 USE_HOST_OLLAMA=false
 PULL_MODEL=false
 WITH_OPENCODE=false
-SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
-REMOTE_ROOT="${PC_GAMER_OPSLY_ROOT:-/home/devops/opsly}"
+# Nodo consolidado 2026-09: smdqcia-pc (Windows DESKTOP-SMDQCIA + WSL, user opsly,
+# WORKER_ID home-gpu-01, RTX 3060, root /home/opsly/opsly). El alias 'pc-gamer'
+# apunta a 100.74.88.103 (offline). Override con PC_GAMER_SSH_HOST / PC_GAMER_OPSLY_ROOT.
+SSH_HOST="${PC_GAMER_SSH_HOST:-opsly@smdqcia-pc}"
+REMOTE_ROOT="${PC_GAMER_OPSLY_ROOT:-/home/opsly/opsly}"
 BRANCH="${PC_GAMER_BRANCH:-main}"
 
 for arg in "$@"; do
@@ -83,12 +86,13 @@ wait_ssh() {
 remote_bash() {
   local script="$1"
   if [[ "$DRY_RUN" == "true" ]]; then
-    echo "[dry-run] ssh $SSH_HOST wsl … <<script"
+    echo "[dry-run] ssh $SSH_HOST bash -s <<script"
     echo "$script" | sed 's/^/  /' | head -40
     return 0
   fi
+  # sshd vive dentro del WSL (user opsly), no en Windows: lanzar bash directo.
   ssh -o BatchMode=yes -o ConnectTimeout=25 "$SSH_HOST" \
-    wsl -d Ubuntu -u root -e bash -s <<<"$script"
+    bash -s <<<"$script"
 }
 
 if [[ "$DO_DUMP_PLAN" == "true" ]]; then
@@ -125,7 +129,7 @@ if ! docker info >/dev/null 2>&1; then
   systemctl start docker 2>/dev/null || service docker start 2>/dev/null || true
   sleep 3
 fi
-sudo -u devops bash -lc '
+bash -lc '
 set -euo pipefail
 cd ${REMOTE_ROOT}
 git fetch origin ${BRANCH}
@@ -137,7 +141,6 @@ chmod +x scripts/ops/pc-gamer-docker-plane.sh scripts/ops/pc-gamer-heartbeat.sh 
 ./scripts/ops/pc-gamer-heartbeat.sh || true
 ./scripts/ops/pc-gamer-docker-plane.sh --status
 '
-loginctl enable-linger devops 2>/dev/null || true
 EOF
 )"
 

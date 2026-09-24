@@ -75,8 +75,8 @@ node scripts/ops/compute-worker-router.mjs --status
 ## Reglas no negociables
 
 1. **No** SSH a Internet; **no** abrir puerto 22 en el router.
-2. Preferir **Tailscale** (`Host pc-gamer` → Windows OpenSSH → `wsl -d Ubuntu`).
-   User Linux: `devops`. Root WSL (bootstrap): `wsl -d Ubuntu -u root`.
+2. Preferir **Tailscale** (`Host smdqcia-pc` → sshd en WSL, user `opsly`) — acceso directo por tailnet, puerto 22.
+   En el nodo consolidado `smdqcia-pc` (Windows DESKTOP-SMDQCIA + WSL2) el SSH vive **dentro del WSL** (`opsly@smdqcia-pc` → `hostname` = `DESKTOP-SMDQCIA`); no hay puente Windows `wsl -d Ubuntu`. Detalle: `TAILSCALE-SSH-SMDQCIA-PC.md`. El alias `pc-gamer` (→ 100.74.88.103, user `devops`) queda **obsoleto/offline** y solo aplica al nodo RTX 5070 Ti.
 3. **No** almacenar en el PC: Doppler master/service tokens, AWS/GCP admin, `SUPABASE_SERVICE_ROLE_KEY` de prod, secretos de clientes, claves SSH productivas, GitHub PAT amplios, `PLATFORM_ADMIN_TOKEN`, Stripe live.
 4. Credenciales de **mínimo privilegio**: solo `REDIS_URL` (password de cola) + URLs Tailscale del gateway.
 5. El nodo **puede desaparecer** sin romper Opsly (fail-open prod).
