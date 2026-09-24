@@ -47,7 +47,6 @@ for arg in "$@"; do
   esac
 done
 
-# parse --wait N as next argv if present
 args=("$@")
 for i in "${!args[@]}"; do
   if [[ "${args[$i]}" == "--wait" && -n "${args[$((i + 1))]:-}" ]]; then
@@ -148,7 +147,7 @@ if [[ "$WITH_OPENCODE" == "true" ]]; then
   echo "[reconnect] starting OpenCode overnight plane…"
   remote_bash "$(cat <<EOF
 set -euo pipefail
-sudo -u devops bash -lc '
+bash -lc '
 set -euo pipefail
 cd ${REMOTE_ROOT}
 ./scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart
