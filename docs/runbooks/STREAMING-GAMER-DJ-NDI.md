@@ -112,6 +112,41 @@ Configurar en **Settings → Stream**: servicio (Twitch/YouTube), stream key y s
 El audio se envía a OBS por red NDI (~baja latencia en tailnet/LAN); para más estabilidad
 usar **latencia baja en la fuente NDI** y subir a Twitch con el bitrate/juego normal.
 
+## Controlador AI-DJ (agente local)
+
+El DJ también puede operarse por un **agente HTTP local** (`apps/ai-dj/`) que se ejecuta en el
+Mac corriendo junto a OBS, y que el orquestador invoca a través de su cola de agentes locales.
+
+| Aspecto | Valor |
+|---------|-------|
+| Servicio | `python3 apps/ai-dj/src/ai_dj_service.py` (HTTP `:5013`) |
+| Config | env `OPSLY_AI_DJ_CONFIG` o `config.json` en cwd/src; auth Bearer opcional `OPSLY_CLI_AGENT_TOKEN` |
+| Endpoints | `GET /health`, `GET /actions`, `POST /execute` (`{prompt_content, agent_role, max_steps, job_id}`) |
+| Arranque autónomo | `service.sh` o `com.opsly.ai-dj.plist` (launchd del usuario `dragon`) |
+| Registro orquestador | `config/external-agent-registry.json` worker `ai-dj-cli` (`opsly_job_type: local_ai_dj`, `bridge_port: 5013`, `endpoint_env: OPSLY_AI_DJ_AGENT_URL`) |
+| Mapa local | `local-worker-utils.ts` (`local_ai_dj → ai-dj`), `worker-concurrency.ts` (`local-ai-dj`), `types.ts` (`JobType local_ai_dj`) |
+| Concurrencia Mac | el worker del Mac consume con `OPSLY_LOCAL_AGENT_KINDS=local_ai_dj` en tu tmux/launchd |
+| Raw contract | `POST /execute` → `{success: bool, result: string}`; sin `success:false` → el worker marca `success=false` como fallo |
+
+El agente usa un **vocabulario determinista** (sin llamadas a LLM): `stream.*`, `scene.*`, `deck.*`,
+`mixer.crossfader`, `setlist.*`, `library.stats`, `mapping.*`, `status.all`. No reconoce prompt libre:
+una sintaxis desconocida responde `success:false` listando `/actions`.
+
+Dependencias opcionales con fallback controlado: `serato_tools` (DB Serato), `python-rtmidi`
+(MIDI virtual), `websocket-client` (OBS websocket). Si `websocket-client` falta, las acciones de
+OBS devuelven `ObsError` en lugar de romper el servicio.
+
+Verificación:
+
+```bash
+# en el Mac
+curl -s http://127.0.0.1:5013/health          # {"ok":true,"service":"ai-dj",...}
+curl -s http://127.0.0.1:5013/actions
+curl -s -X POST http://127.0.0.1:5013/execute \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt_content":"stream status","agent_role":"executor","max_steps":1,"job_id":"smoke-1"}'
+```
+
 ## Verificación (smoke)
 
 ```bash
@@ -130,6 +165,14 @@ powershell.exe -NoProfile -Command "Test-Path 'C:\Program Files\obs-studio\obs-p
 | Instalar obs-ndi Windows | carpeta obs-plugins en el PC | UAC `opsly` |
 | Configurar audio Serato → virtual | Setup → Audio en Serato | master a Serato Virtual Audio/BlackHole |
 | Fuente NDI en OBS PC + stream key | OBS del PC | mezcla + salida |
+| ✔ Deploy agente AI-DJ en el Mac | `~/opsly-ai-dj/apps/ai-dj` vía launchd `com.opsly.ai-dj` | venv `~/opsly-ai-dj/venv` (`python-rtmidi`, `websocket-client`; `serato_tools` descartado: depende de `llvmlite` que no compila en este Mac); `:5013/health` OK; librería 84 pistas |
+| ✔ Registro orquestador `local_ai_dj` | repo, PR #1674 (`feat/ai-dj-local-agent`) | `external-agent-registry.json` + `agent-services.yaml` + maps TS; tsc + 280 tests OK |
+| ✔ Mapping MIDI instalado (headless) | `~/Music/_Serato_/MIDI/Xml/opsly-ai-dj.xml` | 29 `<control>` con binding (decks A/B + hotcues 94-97 + crossfader CC84 abs); puerto virtual "OPSLY AI DJ" visible en CoreMIDI |
+| Validación MIDI en vivo | Setup → MIDI en Serato | carga el mapping y probar `deck.*`/`mixer.crossfader` con música; `status all` debe dar `midi:ok` |
+| ✔ Control OBS del PC: prep listo | PC OBS websocket `:4455` ya `server_enabled` + password; regla firewall tailnet TCP 4455 `remoteip=100.64.0.0/10`; tarea `opsly-obs` (lanzador interactivo); agente del Mac apuntado a `ws://100.117.5.102:4455` | queda: **abrir OBS en el escritorio del PC** (SSH/headless no inicializa: session 0 o sin log; fue OK el 16/09) y luego `status all` → `stream:off` |
+| E2E orquestador → `local_ai_dj` | contrato validado (POST `/execute` en `:5013` con el envelope del worker) | full queue-path (BullMQ+Redis + `OPSLY_LOCAL_AGENT_KINDS=local_ai_dj` + approval) en ventana sin tocar la granja en ejecución |
+| Instalar NDI ambos lados | Mac: NDI Runtime+.pkg y obs-ndi; PC: NDI runtime + `obs-ndi.dll` | confirmado: **no instalado en ninguno**; instaladores con GUI/admin en el escritorio |
+| Fijar `ndi_name` real de la fuente NDI | `basic/scenes/Untitled.json` (PC) | hoy queda `{{NDI_NAME}}` hasta existir el sender Mac |
 
 ## Relacionado
 
