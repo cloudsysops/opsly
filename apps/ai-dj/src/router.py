@@ -10,6 +10,8 @@ import re
 
 import setlist as setlist_mod
 from mapping_xml import FUNCTION_MAP
+from mapping_xml import generate as mapping_generate
+from mapping_xml import install as mapping_install
 
 
 class ActionError(RuntimeError):
@@ -206,7 +208,15 @@ class Router:
             base = s.library_stats
             return f"librería: {base['total']} pistas (bpm {base['con_bpm']}), keys camelot {st['tracks_con_key_camelot']}"
         if action == "mapping.install":
-            path = s.mapping_path or "?"
+            serato = s.config.get("serato", {})
+            xml_dir = serato.get("midi_xml_dir", "")
+            xml_text = mapping_generate(
+                tuple(s.config.get("midi", {}).get("deck_channels", ["A", "B"])),
+                notes,
+                cc,
+            )
+            path = mapping_install(xml_dir, xml_text)
+            s.mapping_path = path
             return f"mapping instalado en {path} (reiniciar/recargar Serato)"
         if action == "mapping.path":
             return s.mapping_path or "no instalado (mapping install)"

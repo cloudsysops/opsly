@@ -165,8 +165,10 @@ powershell.exe -NoProfile -Command "Test-Path 'C:\Program Files\obs-studio\obs-p
 | Instalar obs-ndi Windows | carpeta obs-plugins en el PC | UAC `opsly` |
 | Configurar audio Serato → virtual | Setup → Audio en Serato | master a Serato Virtual Audio/BlackHole |
 | Fuente NDI en OBS PC + stream key | OBS del PC | mezcla + salida |
-| Deploy agente AI-DJ en el Mac | `ssh macbook` + venv `~/opsly-ai-dj/venv` | `pip install serato-tools python-rtmidi websocket-client`; arrancar `service.sh`/launchd; validar `:5013/health` |
-| Registro orquestador `local_ai_dj` | repo (commit pendiente) | `external-agent-registry.json` + `agent-services.yaml` + maps TS; tsc + 280 tests OK |
+| ✔ Deploy agente AI-DJ en el Mac | `~/opsly-ai-dj/apps/ai-dj` vía launchd `com.opsly.ai-dj` | venv `~/opsly-ai-dj/venv` (`python-rtmidi`, `websocket-client`; `serato_tools` descartado: depende de `llvmlite` que no compila en este Mac); `:5013/health` OK; librería 84 pistas |
+| ✔ Registro orquestador `local_ai_dj` | repo, PR #1674 (`feat/ai-dj-local-agent`) | `external-agent-registry.json` + `agent-services.yaml` + maps TS; tsc + 280 tests OK |
+| ✔ Mapping MIDI instalado (headless) | `~/Music/_Serato_/MIDI/Xml/opsly-ai-dj.xml` | 29 `<control>` con binding (decks A/B + hotcues 94-97 + crossfader CC84 abs); puerto virtual "OPSLY AI DJ" visible en CoreMIDI |
+| Validación MIDI en vivo | Setup → MIDI en Serato | carga el mapping y probar `deck.*`/`mixer.crossfader` con música; `status all` debe dar `midi:ok` |
 | Fijar `ndi_name` real de la fuente NDI | `basic/scenes/Untitled.json` (PC) | hoy queda `{{NDI_NAME}}` hasta existir el sender Mac |
 
 ## Relacionado
