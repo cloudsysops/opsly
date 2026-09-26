@@ -21,7 +21,9 @@ STATE_FILE="$LOG_DIR/pc-gamer-watch.state"
 LOCK_DIR="$LOG_DIR/pc-gamer-watch.lock"
 MAX_CONSECUTIVE_FAILS="${OPSLY_PC_GAMER_WATCH_MAX_FAILS:-5}"
 STALE_LOCK_SEC="${OPSLY_PC_GAMER_WATCH_STALE_LOCK_SEC:-1800}"
-TS_HOST="${PC_GAMER_TAILSCALE_HOST:-pc-gamer}"
+# Nodo consolidado 2026-09: smdqcia-pc (Windows DESKTOP-SMDQCIA + WSL, user opsly,
+# WORKER_ID home-gpu-01, RTX 3060). El alias 'pc-gamer' apunta a 100.74.88.103 (offline).
+TS_HOST="${PC_GAMER_TAILSCALE_HOST:-smdqcia-pc}"
 FORCE=false
 
 for arg in "$@"; do

@@ -18,13 +18,14 @@
 #   GPU_BUSY_VRAM_MIB    (default 4000) — MiB usados por encima del cual se considera ocupada
 #   Cualquiera de los dos por encima de umbral => ocupada (más conservador).
 #
-# Detección de juego: nvidia-smi desde WSL NO ve procesos nativos de Windows
-# (Steam/juegos corren fuera de WSL). Se consulta aparte, directo por SSH al
-# host Windows (`ssh pc-gamer nvidia-smi --query-compute-apps=...`), y se
-# marca "gaming" si el nombre de proceso matchea GAME_PROCESS_PATTERN.
+# Detección de juego: en el nodo consolidado (smdqcia-pc) el sshd vive DENTRO
+# del WSL (user opsly), así que nvidia-smi se consulta directo — sin bridge
+# Windows `wsl -d Ubuntu --`. Los procesos nativos de Windows (Steam/juegos)
+# no son visibles desde el WSL; se marca "gaming" si el compute-apps visible
+# matchea GAME_PROCESS_PATTERN y por umbral util/VRAM (más conservador).
 set -euo pipefail
 
-SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
+SSH_HOST="${PC_GAMER_SSH_HOST:-opsly@smdqcia-pc}"
 JSON=false
 UTIL_THRESHOLD="${GPU_BUSY_UTIL_PCT:-30}"
 VRAM_THRESHOLD="${GPU_BUSY_VRAM_MIB:-4000}"
@@ -44,7 +45,7 @@ for arg in "$@"; do
 done
 
 RAW="$(ssh -o BatchMode=yes -o ConnectTimeout=10 "$SSH_HOST" \
-  'wsl -d Ubuntu -- nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader,nounits' \
+  'nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader,nounits' \
   2>/dev/null || true)"
 
 if [[ -z "$RAW" ]]; then
@@ -59,8 +60,7 @@ fi
 UTIL="$(echo "$RAW" | cut -d',' -f1 | tr -d ' ')"
 VRAM="$(echo "$RAW" | cut -d',' -f2 | tr -d ' ')"
 
-# Procesos nativos de Windows (juegos) — nvidia-smi vía WSL no los ve;
-# consultar directo al host Windows (ssh sin "wsl -d Ubuntu --").
+# Procesos visibles desde el WSL (sshd dentro de él); nativa de Windows no entra.
 GAME_NAME=""
 PROCS="$(ssh -o BatchMode=yes -o ConnectTimeout=10 "$SSH_HOST" \
   'nvidia-smi --query-compute-apps=process_name --format=csv,noheader' \

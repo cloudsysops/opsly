@@ -35,9 +35,9 @@
     <key>PC_GAMER_BRANCH</key>
     <string>main</string>
     <key>PC_GAMER_SSH_HOST</key>
-    <string>pc-gamer</string>
+    <string>opsly@smdqcia-pc</string>
     <key>PC_GAMER_TAILSCALE_HOST</key>
-    <string>pc-gamer</string>
+    <string>smdqcia-pc</string>
   </dict>
   <key>StandardOutPath</key>
   <string>/Users/dragon/Library/Logs/opsly/pc-gamer-watch.launchd.log</string>

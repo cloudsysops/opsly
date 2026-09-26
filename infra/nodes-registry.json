@@ -28,20 +28,21 @@
       "notes": "VPS control plane (Redis broker + orchestrator)"
     },
     {
-      "name": "desktop-smdqcia",
-      "host": "100.115.197.109",
-      "user": "cboteros",
+      "name": "smdqcia-pc",
+      "host": "smdqcia-pc.taile4fe40.ts.net",
+      "user": "opsly",
       "role": "worker",
       "status": "active",
-      "notes": "Host actual (WSL2) + RTX 3060 12GB + Ollama; worker plane Docker"
+      "ssh_in_wsl": true,
+      "notes": "Nodo consolidado de la flota gamer (antes pc-gamer/devops): WSL2 + RTX 3060 12GB + Ollama; sshd vive DENTRO del WSL como opsly; worker plane Docker (home-gpu-01). MagicDNS por hostname (no IP estable): resuelve a 100.117.5.102 (WSL mirrored). NO usar 100.115.197.109 (IP fantasma/legacy no fiable)"
     },
     {
       "name": "desktop-smdqcia-1",
-      "host": "100.117.5.102",
+      "host": "desktop-smdqcia-1",
       "user": "cboteros",
       "role": "worker",
       "status": "pending",
-      "notes": "PC Windows via Tailscale; requiere WSL2 + setup-compute-worker.sh"
+      "notes": "PC Windows via Tailscale (MagicDNS por hostname); requiere WSL2 + setup-compute-worker.sh"
     },
     {
       "name": "pc-gamer",
@@ -49,7 +50,7 @@
       "user": "cboteros",
       "role": "worker",
       "status": "offline",
-      "notes": "PC gamer Windows (offline); requiere WSL2 + setup-compute-worker.sh"
+      "notes": "LEGACY (consolidado en smdqcia-pc): PC gamer Windows via Tailscale; requiere WSL2 + setup-compute-worker.sh"
     },
     {
       "name": "pc-gamer-openclaw-01-wsl",
@@ -57,7 +58,7 @@
       "user": "cboteros",
       "role": "worker",
       "status": "offline",
-      "notes": "PC gamer WSL2 (offline)"
+      "notes": "LEGACY (consolidado en smdqcia-pc): PC gamer WSL2 via Tailscale"
     }
   ]
 }

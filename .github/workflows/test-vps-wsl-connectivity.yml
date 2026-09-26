@@ -8,8 +8,8 @@ permissions:
 
 env:
   TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
-  # This machine's Tailscale IP
-  WSL_TAILSCALE_IP: "100.115.197.109"
+  # Consolidated gamer node (smdqcia-pc / WSL mirrored). Use live tailnet IP, NOT the stale 100.115.197.109
+  WSL_TAILSCALE_IP: "100.117.5.102"
 
 jobs:
   test-vps-to-wsl:

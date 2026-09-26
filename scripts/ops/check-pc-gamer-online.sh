@@ -12,10 +12,12 @@ set -euo pipefail
 JSON=false
 WORKER_ID="${WORKER_ID:-}"
 # Legacy heartbeat key also accepted
-WORKER_ID_LEGACY="${WORKER_ID_LEGACY:-pc-gamer}"
-TS_HOST="${PC_GAMER_TAILSCALE_HOST:-pc-gamer}"
+WORKER_ID_LEGACY="${WORKER_ID_LEGACY:-}"
+# Nodo consolidado 2026-09: smdqcia-pc (Windows DESKTOP-SMDQCIA + WSL, user opsly,
+# WORKER_ID home-gpu-01, RTX 3060). El alias 'pc-gamer' apunta a 100.74.88.103 (offline).
+TS_HOST="${PC_GAMER_TAILSCALE_HOST:-smdqcia-pc}"
 HEALTH_URL="${PC_GAMER_HEALTH_URL:-http://${TS_HOST}:3011/health}"
-SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
+SSH_HOST="${PC_GAMER_SSH_HOST:-opsly@smdqcia-pc}"
 
 for arg in "$@"; do
   case "$arg" in
