@@ -125,8 +125,20 @@ remote_bash "$(cat <<EOF
 set -euo pipefail
 export LANG=C LC_ALL=C
 if ! docker info >/dev/null 2>&1; then
-  systemctl start docker 2>/dev/null || service docker start 2>/dev/null || true
+  if sudo -n systemctl start docker 2>/dev/null || systemctl start docker 2>/dev/null; then
+    :
+  elif service docker start >/dev/null 2>&1; then
+    :
+  else
+    echo "[reconnect] ERROR: docker daemon no arranca y no hay sudo no interactivo (NOPASSWD) en el nodo consolidado." >&2
+    echo "[reconnect] Aplicar scripts/ops/setup-pc-gamer-sudoers.sh o socket docker accesible, y reintentar." >&2
+    exit 1
+  fi
   sleep 3
+  if ! docker info >/dev/null 2>&1; then
+    echo "[reconnect] ERROR: docker sigue caído tras recovery." >&2
+    exit 1
+  fi
 fi
 bash -lc '
 set -euo pipefail

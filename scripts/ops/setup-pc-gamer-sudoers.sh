@@ -1,30 +1,40 @@
 #!/usr/bin/env bash
-# Idempotent NOPASSWD for user devops on pc-gamer WSL Ubuntu only.
-# Uses Windows OpenSSH → `wsl -d Ubuntu -u root` (no Linux password needed).
+# Idempotent NOPASSWD for the gamer WSL worker user.
+# Nodo consolidado (default): opsly@smdqcia-pc — sshd vive DENTRO del WSL,
+# sin puente Windows `wsl -d Ubuntu -u root`. Elevación a root vía `sudo`
+# (la primera vez pide password; después queda NOPASSWD vía sudoers.d).
+# Nodo legacy (override): pc-gamer / devops — Windows OpenSSH → `wsl -u root`.
 # Never apply to the VPS control plane.
 #
 # Usage:
-#   ./scripts/ops/setup-pc-gamer-sudoers.sh --dry-run
-#   ./scripts/ops/setup-pc-gamer-sudoers.sh
+#   PC_GAMER_SSH_HOST=opsly@smdqcia-pc ./scripts/ops/setup-pc-gamer-sudoers.sh --dry-run
+#   PC_GAMER_SSH_HOST=opsly@smdqcia-pc ./scripts/ops/setup-pc-gamer-sudoers.sh --with-password
 #   ./scripts/ops/setup-pc-gamer-sudoers.sh --status
 #
 set -euo pipefail
 
 DRY_RUN=false
 DO_STATUS=false
-SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
+WITH_PASSWORD=false
+SSH_HOST="${PC_GAMER_SSH_HOST:-opsly@smdqcia-pc}"
 WSL_DISTRO="${PC_GAMER_WSL_DISTRO:-Ubuntu}"
-SUDOERS_FILE="/etc/sudoers.d/devops"
+SUDO_USER="${PC_GAMER_SUDO_USER:-opsly}"
+SUDOERS_FILE="/etc/sudoers.d/${SUDO_USER}"
 FORBIDDEN_HOST="${PC_GAMER_FORBID_SSH_HOST:-100.120.151.91}"
 
-SUDOERS_BODY='# Managed by scripts/ops/setup-pc-gamer-sudoers.sh
-# Scope: pc-gamer WSL Ubuntu ONLY. Never copy to the VPS.
-# Lets unattended agents install/configure worker tools without a TTY password.
-devops ALL=(ALL) NOPASSWD: ALL
-'
+SUDOERS_BODY="# Managed by scripts/ops/setup-pc-gamer-sudoers.sh
+# Scope: gamer WSL (${SSH_HOST}) ONLY. Never copy to the VPS.
+# Lets unattended agents restart docker/services without a TTY password.
+${SUDO_USER} ALL=(ALL) NOPASSWD: ALL
+"
 
 usage() {
-  sed -n '2,16p' "$0"
+  sed -n '2,20p' "$0"
+}
+
+# Legacy: Windows OpenSSH → `wsl -d Ubuntu -u root` (nodo pc-gamer/devops).
+is_legacy_host() {
+  [[ "$SSH_HOST" == *"pc-gamer"* || -n "${PC_GAMER_LEGACY_BRIDGE:-}" ]]
 }
 
 wsl_root() {
@@ -32,9 +42,17 @@ wsl_root() {
     wsl -d "$WSL_DISTRO" -u root -- "$@"
 }
 
-wsl_devops() {
+wsl_user() {
   ssh -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" \
     wsl -d "$WSL_DISTRO" -- "$@"
+}
+
+consolidated_root() {
+  local cmd="$1"; shift
+  local sudo_flags=(-n)
+  [[ "$WITH_PASSWORD" == "true" ]] && sudo_flags=(-p '')
+  ssh -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" \
+    sudo "${sudo_flags[@]}" bash -lc "$cmd"
 }
 
 assert_not_vps() {
@@ -44,35 +62,65 @@ assert_not_vps() {
   fi
 }
 
-status() {
-  echo "[pc-gamer-sudoers] host=$SSH_HOST distro=$WSL_DISTRO"
-  # Windows OpenSSH lands in cmd.exe — do not use bash -lc with spaces
-  # (quotes are stripped and `sudo -n true` splits). Pass argv after wsl --.
-  echo -n "user="; wsl_devops whoami
-  echo -n "host="; wsl_devops hostname
-  wsl_devops id
-  if wsl_devops sudo -n true; then
-    echo "[pc-gamer-sudoers] sudo -n: OK (NOPASSWD)"
+root_cat() {
+  local file="$1"
+  if is_legacy_host; then
+    wsl_root cat "$file" 2>/dev/null || true
   else
-    echo "[pc-gamer-sudoers] sudo -n: MISSING (password required)"
-    return 1
+    consolidated_root "cat '$file' 2>/dev/null || true"
   fi
-  wsl_root cat "$SUDOERS_FILE" || true
+}
+
+run_as_root() {
+  local script="$1"
+  if is_legacy_host; then
+    printf '%s' "$script" | wsl_root bash
+  else
+    consolidated_root "$script"
+  fi
+}
+
+status() {
+  echo "[pc-gamer-sudoers] host=$SSH_HOST sudo_user=$SUDO_USER legacy=$(is_legacy_host && echo yes || echo no)"
+  if is_legacy_host; then
+    echo -n "user="; wsl_user whoami
+    echo -n "host="; wsl_user hostname
+    wsl_user id
+    if wsl_user sudo -n true; then
+      echo "[pc-gamer-sudoers] sudo -n: OK (NOPASSWD)"
+    else
+      echo "[pc-gamer-sudoers] sudo -n: MISSING (password required)"
+      return 1
+    fi
+  else
+    ssh -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" \
+      'echo -n "user="; whoami; echo -n "host="; hostname; id'
+    if ssh -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" \
+        'sudo -n true' >/dev/null 2>&1; then
+      echo "[pc-gamer-sudoers] sudo -n: OK (NOPASSWD)"
+    else
+      echo "[pc-gamer-sudoers] sudo -n: MISSING (password required) — usa --with-password la primera vez" >&2
+      return 1
+    fi
+  fi
+  echo "[pc-gamer-sudoers] $SUDOERS_FILE:"
+  root_cat "$SUDOERS_FILE"
 }
 
 apply() {
   assert_not_vps
   if [[ "$DRY_RUN" == "true" ]]; then
-    echo "[dry-run] would write $SUDOERS_FILE on $SSH_HOST WSL $WSL_DISTRO as root"
+    echo "[dry-run] would write $SUDOERS_FILE on $SSH_HOST (legacy=$(is_legacy_host && echo yes || echo no)) as root"
     printf '%s' "$SUDOERS_BODY"
     return 0
   fi
 
-  printf '%s' "$SUDOERS_BODY" | wsl_root tee /tmp/devops-sudoers >/dev/null
-  wsl_root visudo -cf /tmp/devops-sudoers
-  wsl_root install -o root -g root -m 0440 /tmp/devops-sudoers "$SUDOERS_FILE"
-  wsl_root rm -f /tmp/devops-sudoers
-  wsl_root visudo -cf "$SUDOERS_FILE"
+  local tmp="/tmp/${SUDO_USER}-sudoers"
+  run_as_root "tee '$tmp' >/dev/null" <<<"$SUDOERS_BODY"
+  run_as_root "visudo -cf '$tmp'
+install -o root -g root -m 0440 '$tmp' '$SUDOERS_FILE'
+rm -f '$tmp'
+visudo -cf '$SUDOERS_FILE'"
   status
 }
 
@@ -80,6 +128,7 @@ for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=true ;;
     --status) DO_STATUS=true ;;
+    --with-password) WITH_PASSWORD=true ;;
     -h|--help)
       usage
       exit 0
