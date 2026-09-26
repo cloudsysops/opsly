@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "aurora-sky-islands",
+  "title": "Aurora Sky Islands",
+  "status": "PLAYABLE",
+  "hypothesis": "A simple pseudo-3D flight/platform loop gives a stronger wow response than a flat score game while remaining mobile-friendly.",
+  "sourceStudy": {
+    "repo": "godotengine/godot-demo-projects",
+    "commit": "a3b5c113112f77291d5f3d1360f33a882fdc52f7",
+    "path": "3d/platformer",
+    "codeLicense": "MIT"
+  },
+  "mechanics": ["3d-movement-study", "strafe", "vertical-boost", "collect", "avoid", "combo"],
+  "originalExpression": true,
+  "assetPolicy": "opsly-original-canvas-only",
+  "target": ["mobile-web", "desktop-web"],
+  "playtest": {
+    "primaryQuestion": "Does flying Aurora through floating islands create an immediate wow moment?",
+    "successSignal": "player asks to play another run or requests a new island/power"
+  }
+}

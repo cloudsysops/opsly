@@ -9,6 +9,17 @@
     Cache-Control "public, max-age=300"
   }
 
+  # The canonical public route is /games/astral-arena/. Traefik strips
+  # /games before forwarding and sets X-Forwarded-Prefix=/games, so Caddy
+  # sees /astral-arena/ for both the canonical route and the legacy alias.
+  # Redirect only when the prefix header is absent; this keeps the canonical
+  # route playable while giving /astral-arena/ a deterministic 308 Location.
+  @legacy_astral {
+    path /astral-arena /astral-arena/*
+    not header X-Forwarded-Prefix /games
+  }
+  redir @legacy_astral /games{uri} permanent
+
   @gamefiles path *.wasm *.pck *.js
   header @gamefiles Cache-Control "public, max-age=60, must-revalidate"
 

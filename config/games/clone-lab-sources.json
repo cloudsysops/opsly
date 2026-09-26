@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "lab": "astral-games-lab-clone-lab",
+  "upstreamAllowlist": ["godotengine/godot-demo-projects"],
+  "copyPolicy": "study-mechanics-and-open-source-code-only-replace-expression-before-graduation",
+  "sources": [
+    {
+      "id": "meteor-dodge-godot",
+      "repo": "godotengine/godot-demo-projects",
+      "commit": "a3b5c113112f77291d5f3d1360f33a882fdc52f7",
+      "path": "2d/dodge_the_creeps",
+      "codeLicense": "MIT",
+      "assetGate": "replace-or-preserve-attribution-per-file",
+      "graduationPolicy": "original-expression-required"
+    },
+    {
+      "id": "michelle-butterfly-quest",
+      "repo": "godotengine/godot-demo-projects",
+      "commit": "a3b5c113112f77291d5f3d1360f33a882fdc52f7",
+      "path": "2d/platformer",
+      "codeLicense": "MIT",
+      "assetGate": "review-demo-music-and-art-before-redistribution",
+      "graduationPolicy": "original-expression-required"
+    },
+    {
+      "id": "aurora-sky-islands",
+      "repo": "godotengine/godot-demo-projects",
+      "commit": "a3b5c113112f77291d5f3d1360f33a882fdc52f7",
+      "path": "3d/platformer",
+      "codeLicense": "MIT",
+      "assetGate": "review-virtual-joystick-addon-and-assets",
+      "graduationPolicy": "original-expression-required"
+    },
+    {
+      "id": "sisters-crystal-arena",
+      "repo": "godotengine/godot-demo-projects",
+      "commit": "a3b5c113112f77291d5f3d1360f33a882fdc52f7",
+      "path": "networking/multiplayer_bomber",
+      "codeLicense": "MIT",
+      "assetGate": "replace-expression-before-graduation",
+      "graduationPolicy": "original-expression-required"
+    }
+  ]
+}

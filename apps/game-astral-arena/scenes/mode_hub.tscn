@@ -36,14 +36,14 @@ theme_override_constants/separation = 12
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.84, 0.35, 1)
 theme_override_font_sizes/font_size = 36
-text = "ASTRAL ARENA · HYBRID GAME LAB"
+text = "ASTRAL ARENA"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Center/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.85, 1, 1)
 theme_override_font_sizes/font_size = 18
-text = "Un solo canon y estado · múltiples presentaciones"
+text = "Un juego dentro de Opsly Games · historia, exploración y batalla híbrida"
 horizontal_alignment = 1
 
 [node name="QuickPlay" type="Button" parent="Center/VBox"]
@@ -69,7 +69,7 @@ text = "Battle Lab Híbrido · cambia 2D ↔ 3D en vivo"
 [node name="GamesLab" type="Button" parent="Center/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(620, 64)
-text = "🎮 Games Lab · Retro Originals + Emulator Lab"
+text = "← VOLVER A GAMES"
 
 [node name="Hint" type="Label" parent="Center/VBox"]
 layout_mode = 2

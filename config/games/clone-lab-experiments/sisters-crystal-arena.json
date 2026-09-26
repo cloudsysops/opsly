@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "sisters-crystal-arena",
+  "title": "Sisters Crystal Arena",
+  "status": "PLAYABLE",
+  "hypothesis": "Shared scoring and cooperative crystal collection creates more family excitement than head-to-head competition.",
+  "sourceStudy": {
+    "repo": "godotengine/godot-demo-projects",
+    "commit": "a3b5c113112f77291d5f3d1360f33a882fdc52f7",
+    "path": "networking/multiplayer_bomber",
+    "codeLicense": "MIT"
+  },
+  "mechanics": ["local-coop", "arena", "collect", "avoid", "pulse", "shared-score"],
+  "originalExpression": true,
+  "assetPolicy": "opsly-original-canvas-only",
+  "target": ["desktop-web", "mobile-web-with-ai-assist"],
+  "controls": {
+    "player1": "shared Games Lab controls",
+    "player2": "J/L movement + I pulse; AI assist when idle"
+  },
+  "playtest": {
+    "primaryQuestion": "Do the players naturally cooperate to collect crystals and protect each other?",
+    "successSignal": "players communicate or coordinate without being prompted"
+  }
+}

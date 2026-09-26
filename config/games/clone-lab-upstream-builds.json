@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "repository": "godotengine/godot-demo-projects",
+  "commit": "a3b5c113112f77291d5f3d1360f33a882fdc52f7",
+  "repositoryLicense": "MIT",
+  "games": [
+    {
+      "id": "godot-rpg-original",
+      "title": "Godot RPG Original",
+      "path": "2d/role_playing_game",
+      "renderer": "Compatibility",
+      "assetGate": "root-license-no-extra-readme-restrictions",
+      "mobileTier": "keyboard-or-gamepad"
+    },
+    {
+      "id": "godot-isometric-original",
+      "title": "Isometric Dungeon Original",
+      "path": "2d/isometric",
+      "renderer": "Compatibility",
+      "assetGate": "root-license-no-extra-readme-restrictions",
+      "mobileTier": "keyboard-or-gamepad"
+    },
+    {
+      "id": "godot-pong-original",
+      "title": "Godot Pong Original",
+      "path": "2d/pong",
+      "renderer": "Compatibility",
+      "assetGate": "root-license-no-extra-readme-restrictions",
+      "mobileTier": "desktop-first"
+    },
+    {
+      "id": "godot-dodge-original",
+      "title": "Dodge the Creeps Original",
+      "path": "2d/dodge_the_creeps",
+      "renderer": "Compatibility",
+      "assetGate": "README-attribution-required-CC-BY-CC0-OFL",
+      "mobileTier": "keyboard-or-gamepad"
+    }
+  ]
+}

@@ -24,11 +24,9 @@ func _open_games_lab() -> void:
     if OS.has_feature("web"):
         JavaScriptBridge.eval("""
             (() => {
-              const path = window.location.pathname.endsWith('/')
-                ? window.location.pathname
-                : window.location.pathname.replace(/[^/]*$/, '');
-              window.location.href = path + 'games/';
+              const gamesHome = new URL('../', window.location.href);
+              window.top.location.href = gamesHome.href;
             })();
         """)
     else:
-        OS.shell_open("https://astral-arena.op-sly.com/games/")
+        OS.shell_open("https://astral-arena.op-sly.com/")
