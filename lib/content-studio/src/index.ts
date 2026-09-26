@@ -100,3 +100,7 @@ export {
   YouTubePublisher,
   loadYouTubeCredentialsFromEnv,
 } from './publishers/youtube.js';
+export {
+  TikTokPublisher,
+  loadTikTokCredentialsFromEnv,
+} from './publishers/tiktok.js';
