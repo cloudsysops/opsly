@@ -56,7 +56,7 @@ jobs:
               echo "tailscale=offline"
             fi
           }
-          probe home-gpu-01 100.115.197.109
+          probe home-gpu-01 smdqcia-pc.taile4fe40.ts.net
           probe pc-gamer 100.74.88.103
 
       - name: Read exact adapter failure evidence

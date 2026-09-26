@@ -29,20 +29,20 @@
     },
     {
       "name": "smdqcia-pc",
-      "host": "100.115.197.109",
+      "host": "smdqcia-pc.taile4fe40.ts.net",
       "user": "opsly",
       "role": "worker",
       "status": "active",
       "ssh_in_wsl": true,
-      "notes": "Nodo consolidado de la flota gamer (antes pc-gamer/devops): WSL2 + RTX 3060 12GB + Ollama; sshd vive DENTRO del WSL como opsly; worker plane Docker (home-gpu-01)"
+      "notes": "Nodo consolidado de la flota gamer (antes pc-gamer/devops): WSL2 + RTX 3060 12GB + Ollama; sshd vive DENTRO del WSL como opsly; worker plane Docker (home-gpu-01). MagicDNS por hostname (no IP estable): resuelve a 100.117.5.102 (WSL mirrored). NO usar 100.115.197.109 (IP fantasma/legacy no fiable)"
     },
     {
       "name": "desktop-smdqcia-1",
-      "host": "100.117.5.102",
+      "host": "desktop-smdqcia-1",
       "user": "cboteros",
       "role": "worker",
       "status": "pending",
-      "notes": "PC Windows via Tailscale; requiere WSL2 + setup-compute-worker.sh"
+      "notes": "PC Windows via Tailscale (MagicDNS por hostname); requiere WSL2 + setup-compute-worker.sh"
     },
     {
       "name": "pc-gamer",
