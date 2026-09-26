@@ -194,7 +194,7 @@ class Router:
                 count=params.get("count", 3), energy=params.get("energy") or "up",
                 seed=s.config.get("setlist", {}).get("seed"),
                 bpm_tolerance_pct=float(s.config.get("setlist", {}).get("bpm_tolerance_pct", 8)),
-                max_bpm_delta_pct=float(s.config.get("setlist", {}).get("max_bpm_delta_pct", 15)),
+                max_bpm_delta_pct=floaoat(s.config.get("setlist", {}).get("max_bpm_delta_pct", 15)),
             )
             self.last_setlist = picks
             if not picks:
