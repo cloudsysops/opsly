@@ -195,6 +195,9 @@ export function createRegistryEntry(input: {
     dispatch_claim_id: input.dispatch_claim_id,
     dispatch_task_id: input.dispatch_task_id,
     workstream: input.workstream,
+    cleanup_owner: input.worker_id,
+    cleanup_state: input.status === 'pr_open' ? 'PR_OPEN' : 'ACTIVE',
+    cleanup_updated_at: now,
     test_status: 'unknown',
     files_touched: [],
     created_at: now,
@@ -212,9 +215,25 @@ export async function updateBranchEntry(
   if (!existing) {
     return null;
   }
+  const nextCleanupState =
+    patch.cleanup_state ??
+    (patch.status === 'pr_open'
+      ? 'PR_OPEN'
+      : patch.status === 'merged_main'
+        ? 'MERGED_PENDING_CLEANUP'
+        : patch.status === 'active'
+          ? 'ACTIVE'
+          : existing.cleanup_state);
+
   const updated = BranchRegistryEntrySchema.parse({
     ...existing,
     ...patch,
+    cleanup_state: nextCleanupState,
+    cleanup_owner: patch.cleanup_owner ?? existing.cleanup_owner ?? existing.worker_id,
+    cleanup_updated_at:
+      patch.cleanup_state !== undefined || patch.status !== undefined
+        ? new Date().toISOString()
+        : existing.cleanup_updated_at,
     id: existing.id,
     tenant_slug: existing.tenant_slug,
     updated_at: new Date().toISOString(),
