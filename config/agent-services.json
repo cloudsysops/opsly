@@ -156,6 +156,16 @@
       "timeoutMs": 300000,
       "retries": 1,
       "description": "OpenClaw headless agent exec local CLI bridge service"
+    },
+    "local_ai_dj": {
+      "enabled": true,
+      "external_cli": "ai-dj",
+      "url": "http://localhost:5013",
+      "envUrl": "OPSLY_AI_DJ_AGENT_URL",
+      "type": "http",
+      "timeoutMs": 300000,
+      "retries": 1,
+      "description": "DJ agente IA (Mac): controla Serato DJ Pro via MIDI y OBS via websocket"
     }
   }
 }

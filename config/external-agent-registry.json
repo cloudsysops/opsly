@@ -374,6 +374,35 @@
         "goose-cli"
       ],
       "enabled": false
+    },
+    "ai-dj-cli": {
+      "kind": "external-binary",
+      "adapter": "agent-binary-http-bridge",
+      "command": "ai-dj",
+      "opsly_job_type": "local_ai_dj",
+      "bridge_port": 5013,
+      "endpoint_env": "OPSLY_AI_DJ_AGENT_URL",
+      "default_model": "none",
+      "write_access": false,
+      "risk_ceiling": "low",
+      "capabilities": [
+        "serato-dj-control",
+        "obs-stream-control"
+      ],
+      "provider": "opsly-ai-dj",
+      "runtime": "http",
+      "supported_task_types": [
+        "dj",
+        "stream"
+      ],
+      "skills": [
+        "opsly-context"
+      ],
+      "local": true,
+      "open_source": false,
+      "priority": 60,
+      "fallback_agents": [],
+      "enabled": true
     }
   }
 }

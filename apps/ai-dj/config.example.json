@@ -1,0 +1,39 @@
+{
+  "host": "127.0.0.1",
+  "port": 5013,
+  "serato": {
+    "db_path": "/Users/dragon/Music/_Serato_/database V2",
+    "midi_xml_dir": "/Users/dragon/Music/_Serato_/MIDI/Xml",
+    "virtual_port_name": "OPSLY AI DJ",
+    "library_json": ""
+  },
+  "midi": {
+    "deck_channels": ["A", "B"],
+    "notes": {
+      "play": 88,
+      "cue": 89,
+      "sync": 90,
+      "back": 91,
+      "fwd": 92,
+      "load": 93,
+      "hotcue": 94,
+      "loop": 95,
+      "fx_on_off": 96,
+      "tempo_up": 97,
+      "tempo_down": 98
+    },
+    "crossfader_cc": 84
+  },
+  "obs": {
+    "endpoint": "ws://127.0.0.1:4455",
+    "password_file": "/Users/dragon/.config/opsly/obs-websocket.env",
+    "password_env": "OBS_WEBSOCKET_PASSWORD",
+    "connect_timeout_s": 10
+  },
+  "setlist": {
+    "bpm_tolerance_pct": 8,
+    "max_bpm_delta_pct": 15,
+    "default_energy": "up",
+    "seed": 20260924
+  }
+}

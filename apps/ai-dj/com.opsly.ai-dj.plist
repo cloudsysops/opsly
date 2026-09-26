@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.opsly.ai-dj</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/dragon/opsly-ai-dj/apps/ai-dj/service.sh</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/dragon/Library/Logs/ai-dj.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/dragon/Library/Logs/ai-dj.err.log</string>
+  <key>WorkingDirectory</key>
+  <string>/Users/dragon/opsly-ai-dj</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>OPSLY_AI_DJ_AGENT_URL</key>
+    <string>http://localhost:5013</string>
+  </dict>
+</dict>
+</plist>

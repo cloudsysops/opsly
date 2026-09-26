@@ -21,6 +21,7 @@ export type JobType =
   | 'local_aider'
   | 'local_goose'
   | 'local_playwright'
+  | 'local_ai_dj'
   | 'defense_audit'
   | 'sigma_decision'
   | 'hive_objective'
