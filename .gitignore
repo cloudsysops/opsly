@@ -195,3 +195,12 @@ runtime/content-studio/
 runtime/tmp/
 .playwright-mcp/
 .superpowers/
+
+# Python bytecode caches
+__pycache__/
+*.pyc
+
+# Agent runtime state (sessions, local state)
+runtime/sessions/
+runtime/agent-sessions/
+runtime/state/
