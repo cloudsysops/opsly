@@ -460,6 +460,7 @@ node scripts/load-skills.js show opsly-api
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
 | Panini Lab (incubator demo)                   | `apps/panini-lab` — colección conversacional de stickers; prod `https://panini.op-sly.com`; runbook `docs/runbooks/PANINI-LAB-GOLIVE.md`         |
+| AI-DJ agente local (Mac)                      | `apps/ai-dj` — servicio HTTP `:5013` (Serato/MIDI/OBS websocket), job `local_ai_dj`; runbook `docs/runbooks/STREAMING-GAMER-DJ-NDI.md` |
 
 ## 🚀 Peskids (Tenant Project, Phase 2 Implementation Ready)
 
