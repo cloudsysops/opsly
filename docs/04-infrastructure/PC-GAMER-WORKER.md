@@ -64,13 +64,15 @@ El `WORKER_ID` de `.env.worker` **debe** coincidir con el `workerId` de `config/
 
 Plantilla: [`infra/pc-gamer.env.example`](../../infra/pc-gamer.env.example). Onboarding paso a paso: [`COMPUTE-WORKER-ONBOARDING.md`](../runbooks/COMPUTE-WORKER-ONBOARDING.md).
 
-**Incidente de identidad resuelto (2026-09-17):** `desktop-smdqcia` publicaba heartbeat bajo `pc-gamer-openclaw-01` (ID reservado a la RTX 5070 Ti). El scheduler mostraba `pc-gamer-openclaw-01` ONLINE con telemetría de la RTX 3060 de este host y `home-gpu-01` OFFLINE, pese a ser el nodo real. Efecto: un job `ai.local.inference` (minVram 8) se enrutaba a una máquina de 16 GB que no era. Corrección: `.env.worker` de este host → `WORKER_ID=home-gpu-01`, scripts sin default compartido (fallan cerrado si falta `WORKER_ID`), y guard en `pc-gamer-docker-plane.sh`. Verificar con:
+**Incidente de identidad resuelto (2026-09-17):** `desktop-smdqcia` publicaba heartbeat bajo `pc-gamer-openclaw-01` (ID reservado a la RTX 5070 Ti). El scheduler mostraba `pc-gamer-openclaw-01` ONLINE con telemetría de la RTX 3060 de este host y `home-gpu-01` OFFLINE, pese a ser el nodo real. Efecto: un job `ai.local.inference` (minVram 8) se enrutaba a una máquina de 16 GB que no era. Corrección: `.env.worker` de este host → `WORKER_ID=home-gpu-01`, scripts sin default compartido (fallan cerrado si falta `WORKER_ID`), y guard en `pc-gamer-docker-plane.sh`. La presencia la lee en vivo el scheduler desde Redis; verificar con:
 
 ```bash
-node scripts/ops/compute-worker-router.mjs --status
-# home-gpu-01 -> ONLINE (desktop-smdqcia, RTX 3060)
-# pc-gamer-openclaw-01 -> OFFLINE (pc-gamer, RTX 5070 Ti)
+WORKER_ID=home-gpu-01 bash scripts/ops/check-pc-gamer-online.sh
+# pc-gamer online=true … heartbeat=true   → key Redis fresca (TTL 180 s)
+# pc-gamer online=false … heartbeat=false → nodo sin publicar (o ID equivocado)
 ```
+
+Nota: `node scripts/ops/compute-worker-router.mjs --status` es un snapshot **estático del registry** (`config/compute-workers.json`), sin conexión a Redis — su campo `lastHeartbeat` vale `null` siempre por diseño, no indica presencia real.
 
 ## Reglas no negociables
 

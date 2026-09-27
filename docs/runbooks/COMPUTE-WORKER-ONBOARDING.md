@@ -31,7 +31,14 @@ For each powered-off node (`desktop-smdqcia-1`, `pc-gamer`, `pc-gamer-openclaw-0
    OPSLY_WORKER_ID=<node-worker-id> ./scripts/setup-compute-worker.sh --ensure
    ```
 
-6. Verify from the control host: `node scripts/ops/compute-worker-router.mjs --status` shows the node `ONLINE` with its own hostname/GPU, and every other node's `lastHeartbeat` stays `null`.
+6. From the control host, verify the node is actually publishing presence (not a registry snapshot):
+
+   ```bash
+   WORKER_ID=<node-worker-id> bash scripts/ops/check-pc-gamer-online.sh --json
+   # {"worker_id":"…","online":true,…,"heartbeat":true}  → Redis key fresh (TTL 180 s)
+   ```
+
+   `lastHeartbeat` is null in `node scripts/ops/compute-worker-router.mjs --status` by design — that CLI reads only `config/compute-workers.json`, never Redis.
 
 ## One doctor
 
