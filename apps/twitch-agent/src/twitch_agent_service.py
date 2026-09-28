@@ -93,6 +93,9 @@ class Handler(BaseHTTPRequestHandler):
         return False
 
     def _read_prompt(self):
+        """Return the full parsed JSON body (dict) when it's an object, or the
+        raw string otherwise. Callers extract prompt_content/job_id from the
+        dict themselves — returning only one field here would drop job_id."""
         length = int(self.headers.get("Content-Length") or 0)
         raw = self.rfile.read(length).decode("utf-8", "replace")
         if not raw:
@@ -101,12 +104,7 @@ class Handler(BaseHTTPRequestHandler):
             obj = json.loads(raw)
         except json.JSONDecodeError:
             return raw
-        if isinstance(obj, dict):
-            for key in ("prompt_content", "prompt", "input"):
-                if key in obj:
-                    return obj[key]
-            return obj
-        return raw
+        return obj if isinstance(obj, dict) else raw
 
     def do_GET(self):
         path = urlparse(self.path).path
