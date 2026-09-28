@@ -180,6 +180,7 @@ logs/
 # Agent bootstrap state (generated per-agent, local to session)
 .agent-bootstrap-state/
 runtime/peskids.env
+runtime/twitch.env
 
 # Peskids local secrets (Doppler only)
 apps/peskids/.secrets/
@@ -195,3 +196,12 @@ runtime/content-studio/
 runtime/tmp/
 .playwright-mcp/
 .superpowers/
+
+# Python bytecode caches
+__pycache__/
+*.pyc
+
+# Agent runtime state (sessions, local state)
+runtime/sessions/
+runtime/agent-sessions/
+runtime/state/
