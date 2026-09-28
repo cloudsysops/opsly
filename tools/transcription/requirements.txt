@@ -1,0 +1,3 @@
+# Install: pip install -r tools/transcription/requirements.txt
+# (Use a venv; not wired into root npm ci.)
+openai-whisper>=20231117
