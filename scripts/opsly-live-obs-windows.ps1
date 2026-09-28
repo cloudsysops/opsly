@@ -26,6 +26,13 @@ if ($action -eq 'set_current_program_scene') {
   if ([string]::IsNullOrWhiteSpace($name)) { throw 'scene_name is required' }
   $map[$action] = @{ type = 'SetCurrentProgramScene'; data = @{ sceneName = $name.Trim() } }
 }
+if ($action -eq 'add_display_capture') {
+  $sceneName = [string]$request.params.scene_name
+  if ([string]::IsNullOrWhiteSpace($sceneName)) { $sceneName = 'Scene' }
+  $inputName = [string]$request.params.input_name
+  if ([string]::IsNullOrWhiteSpace($inputName)) { $inputName = 'Display Capture' }
+  $map[$action] = @{ type = 'CreateInput'; data = @{ sceneName = $sceneName.Trim(); inputName = $inputName.Trim(); inputKind = 'monitor_capture'; sceneItemEnabled = $true } }
+}
 if (-not $map.ContainsKey($action)) { throw "unknown action '$action'" }
 
 function Hash-Base64([string]$value) {
