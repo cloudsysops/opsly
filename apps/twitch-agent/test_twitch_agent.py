@@ -21,11 +21,14 @@ class FakeClient:
         self.category_id = None
         self.refreshed = False
         self._live = False
+        self.search_results = None  # override per-test; default set below
 
     def set_title(self, title):
         self.title = title
 
     def search_category(self, name):
+        if self.search_results is not None:
+            return self.search_results
         return [{"id": "12345", "name": name}]
 
     def set_category(self, game_id):
@@ -62,6 +65,27 @@ class RouterTests(unittest.TestCase):
         result = self.router.resolve("channel.category Battlefield 6")
         self.assertEqual(self.client.category_id, "12345")
         self.assertIn("Battlefield 6", result)
+
+    def test_channel_category_prefers_exact_match_over_top_result(self):
+        # Regression: Twitch's search ranks by relevance, not text match —
+        # "Battlefield 6" came back at position 16, behind "Battlefield 1942".
+        self.client.search_results = [
+            {"id": "11684", "name": "Battlefield 1942"},
+            {"id": "15467", "name": "Battlefield 2"},
+            {"id": "168648543", "name": "Battlefield 6"},
+        ]
+        result = self.router.resolve("channel.category Battlefield 6")
+        self.assertEqual(self.client.category_id, "168648543")
+        self.assertIn("Battlefield 6", result)
+        self.assertNotIn("no exact match", result)
+
+    def test_channel_category_falls_back_to_top_result_without_exact_match(self):
+        self.client.search_results = [
+            {"id": "999", "name": "Some Other Game"},
+        ]
+        result = self.router.resolve("channel.category Nonexistent Game")
+        self.assertEqual(self.client.category_id, "999")
+        self.assertIn("no exact match", result)
 
     def test_stream_status_offline(self):
         result = self.router.resolve("stream.status")

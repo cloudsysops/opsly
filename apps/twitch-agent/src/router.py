@@ -55,9 +55,16 @@ class Router:
             matches = self.client.search_category(name)
             if not matches:
                 raise ActionError(f"no Twitch category found matching '{name}'")
-            best = matches[0]
+            # Twitch's search ranks by relevance/popularity, not text match —
+            # "Battlefield 6" can come back well past position 0 (observed:
+            # position 16, behind "Battlefield 1942" and other older titles).
+            # Prefer an exact case-insensitive name match; only fall back to
+            # the top-ranked result if nothing matches exactly.
+            exact = [m for m in matches if m["name"].strip().lower() == name.strip().lower()]
+            best = exact[0] if exact else matches[0]
             self.client.set_category(best["id"])
-            return f"channel category set: {best['name']} (id {best['id']})"
+            note = "" if exact else f" (no exact match for '{name}'; picked top search result)"
+            return f"channel category set: {best['name']} (id {best['id']}){note}"
 
         if cmd == "stream.status":
             data = self.client.get_stream_status()
