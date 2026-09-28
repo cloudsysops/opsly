@@ -63,6 +63,12 @@ export async function handleRuntimeCreateSession(ctx: RouteContext): Promise<voi
     typeof b.workspace === 'string' ? b.workspace : process.env.OPSLY_ROOT ?? '/opt/opsly';
   const jobId = typeof b.jobId === 'string' ? b.jobId : undefined;
   const branch = typeof b.branch === 'string' ? b.branch : undefined;
+  const tenantSlug =
+    typeof b.tenantSlug === 'string'
+      ? b.tenantSlug
+      : typeof b.tenant_slug === 'string'
+        ? b.tenant_slug
+        : undefined;
   const initialCommand = typeof b.initialCommand === 'string' ? b.initialCommand : undefined;
   try {
     const session = await createSession({
@@ -71,6 +77,7 @@ export async function handleRuntimeCreateSession(ctx: RouteContext): Promise<voi
       jobId,
       workspace,
       branch,
+      tenantSlug,
       initialCommand,
     });
     jsonResponse(ctx.res, 201, { ok: true, session });

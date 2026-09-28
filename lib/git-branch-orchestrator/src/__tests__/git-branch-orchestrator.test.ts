@@ -74,6 +74,8 @@ describe('git-branch-orchestrator', () => {
 
     expect(result.entry.worker_id).toBe('opencode');
     expect(result.entry.branch_name).toMatch(/^agent\/opencode\/job-\d+\/ai-gateway-retry$/);
+    expect(result.entry.cleanup_owner).toBe('opencode');
+    expect(result.entry.cleanup_state).toBe('ACTIVE');
     expect(result.entry.target_branch).toBe('integration/chatops-mvp');
     expect(result.opsly_job_type_hint).toBe('local_opencode');
     expect(result.merge_advisor?.recommended_action).toBe('merge_to_integration');

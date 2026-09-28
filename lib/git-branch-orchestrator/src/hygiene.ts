@@ -3,7 +3,15 @@ import { listBranchEntries } from './registry.js';
 import { loadGitBranchPolicy } from './policy.js';
 
 export interface BranchHygieneIssue {
-  code: 'duplicate_task' | 'stale_branch' | 'pr_to_main' | 'orphan_planned' | 'conflict_risk';
+  code:
+    | 'duplicate_task'
+    | 'stale_branch'
+    | 'pr_to_main'
+    | 'orphan_planned'
+    | 'conflict_risk'
+    | 'cleanup_pending'
+    | 'cleanup_blocked'
+    | 'preserve_unmerged';
   severity: 'info' | 'warning' | 'error';
   branch_name: string;
   entry_id: string;
@@ -106,11 +114,55 @@ export async function buildBranchHygieneReport(input: {
         message: 'Still planned — assign worker or materialize git',
       });
     }
+
+    if (
+      entry.cleanup_state === 'MERGED_PENDING_CLEANUP' ||
+      entry.cleanup_state === 'SUPERSEDED_PENDING_CLEANUP'
+    ) {
+      issues.push({
+        code: 'cleanup_pending',
+        severity: 'warning',
+        branch_name: entry.branch_name,
+        entry_id: entry.id,
+        message: `Branch lifecycle finished but workspace cleanup is pending (owner=${entry.cleanup_owner ?? entry.worker_id})`,
+      });
+    }
+
+    if (entry.cleanup_state === 'CLEANUP_BLOCKED') {
+      issues.push({
+        code: 'cleanup_blocked',
+        severity: 'warning',
+        branch_name: entry.branch_name,
+        entry_id: entry.id,
+        message: `Cleanup blocked: ${entry.cleanup_blocker ?? 'unknown evidence gap'}`,
+      });
+    }
+
+    if (entry.cleanup_state === 'PRESERVE_UNMERGED') {
+      issues.push({
+        code: 'preserve_unmerged',
+        severity: 'error',
+        branch_name: entry.branch_name,
+        entry_id: entry.id,
+        message: 'Branch has work not proven to be in main; preserve it and escalate before cleanup',
+      });
+    }
   }
 
   if (issues.some((i) => i.code === 'pr_to_main')) {
     recommendations.push(
       'Never open agent PRs directly to main; target integration/{initiative} per policy.',
+    );
+  }
+
+  if (issues.some((i) => i.code === 'cleanup_pending')) {
+    recommendations.push(
+      'Run owner cleanup after merge, then let the central janitor reconcile any abandoned worktrees.',
+    );
+  }
+  if (issues.some((i) => i.code === 'preserve_unmerged')) {
+    recommendations.push(
+      'Do not delete preserved branches; resolve unique commits or explicitly supersede them first.',
     );
   }
 
