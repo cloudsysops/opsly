@@ -189,11 +189,27 @@ del entorno, no la fuente de verdad. Nada de esto se versiona.
 
 ### Cargar la clave (una vez, o al rotar)
 
-Pégala por **stdin** para que no quede en el historial del shell ni en argv:
+Pégala por **stdin** para que no quede en el historial del shell ni en argv.
+
+`prd` es producción y la escritura **pisa la clave vigente**, así que hay que
+confirmarlo explícitamente con `--allow-prod`:
 
 ```bash
 # Twitch → Settings → Stream → Primary Stream Key
-pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --with-channel
+pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --with-channel --allow-prod
+```
+
+Sin `--allow-prod` el script **aborta** antes de escribir. Para inspeccionar sin
+riesgo, usa siempre `--dry-run` (nunca se bloquea y nunca escribe):
+
+```bash
+pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --with-channel --dry-run
+```
+
+Para un entorno que no sea `prd`, redirige el destino:
+
+```bash
+pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --config stg
 ```
 
 ### Verificar qué falta
@@ -219,7 +235,7 @@ loguea la clave**. Es idempotente: re-ejecutar actualiza sin duplicar entradas.
 ### Rotar
 
 1. Genera una key nueva en Twitch.
-2. `pbpaste | ./scripts/doppler-import-twitch-stream-key.sh`
+2. `pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --allow-prod`
 3. Re-proyecta con `ops-write-obs-service-config.sh` en cada máquina.
 4. **No** guardes la clave en un `.env`, en un `.md` ni en un ticket.
 

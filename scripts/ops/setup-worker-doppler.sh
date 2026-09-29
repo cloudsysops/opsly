@@ -92,15 +92,18 @@ fi
 echo "[doppler] auth: ok"
 echo "[doppler] project=${PROJECT} config=${DCFG}"
 
-names="$(doppler secrets --project "$PROJECT" --config "$DCFG" --only-names 2>/dev/null || true)"
-if [[ -z "$names" ]]; then
+# `doppler secrets --only-names` imprime una tabla con bordes de caja
+# ("│ NOMBRE   │"), asi que un grep de linea completa nunca matchea y todas
+# las vars salen como FALTA aunque existan. --json + jq no depende del formato.
+names_json="$(doppler secrets --project "$PROJECT" --config "$DCFG" --only-names --json 2>/dev/null || true)"
+if ! jq -e 'type == "object"' >/dev/null 2>&1 <<<"$names_json"; then
   echo "[doppler] vars: no se pudieron listar (revisa permisos del token)."
   exit 0
 fi
 
 missing=0
 for v in "${STREAM_VARS[@]}"; do
-  if grep -qxF "$v" <<<"$names"; then
+  if jq -e --arg v "$v" 'has($v)' >/dev/null 2>&1 <<<"$names_json"; then
     echo "[doppler] var ${v}: presente"
   else
     echo "[doppler] var ${v}: FALTA"
