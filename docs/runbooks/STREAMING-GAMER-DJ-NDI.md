@@ -185,3 +185,34 @@ powershell.exe -NoProfile -Command "Test-Path 'C:\Program Files\obs-studio\obs-p
 
 Twitch credentials must live in Doppler (`ops-intcloudsysops` / `twitch`), not in `runtime/twitch.env`.
 See [`CONTENT-STUDIO-TWITCH-SECRETS.md`](./CONTENT-STUDIO-TWITCH-SECRETS.md).
+
+## Mac OBS bootstrap (opsly-quantum)
+
+Already applied on `dragon@mac2011`:
+
+- WebSocket server enabled on `:4455` (password in `~/.config/opsly/obs-websocket.password`, never commit)
+- Scene collection `OpslyLive` (Display + DJ Audio / Serato Virtual Audio)
+- Stream service preset: **Twitch** (stream key must be pasted in OBS UI from Doppler/dashboard ? not stored in git)
+- DistroAV plugin present ? enable **Tools ? DistroAV Output Settings ? Main Output** once in the GUI
+- Helpers: `~/bin/opsly-obs-start.sh`, `~/bin/opsly-obs-status.sh`
+
+```bash
+ssh opsly-quantum '~/bin/opsly-obs-status.sh'
+ssh opsly-quantum '~/bin/opsly-obs-start.sh'
+```
+
+From Windows/WSL (remote control, no stream start from PC gamer policy on Windows bridge):
+
+```bash
+set -a; source /mnt/c/Users/opsly/.config/opsly/obs-websocket-mac.env; set +a
+# then use tools/live-automation/dispatch.py get_version / get_stream_status
+```
+
+### Go-live checklist (human)
+
+1. Open OBS on Mac (or `opsly-obs-start.sh`)
+2. Grant Screen Recording / Microphone if macOS prompts
+3. Settings ? Stream ? Twitch ? paste stream key (from Doppler `twitch` config / Twitch dashboard)
+4. Tools ? DistroAV ? enable Main Output (for PC NDI ingest)
+5. Serato ? master to Serato Virtual Audio if DJ audio needed
+6. Start Streaming in OBS (or Start on PC after NDI ingest, per architecture)
