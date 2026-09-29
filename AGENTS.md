@@ -2847,6 +2847,33 @@ Pendiente sin resolver: el usuario preguntó por qué una ventana nueva de Ghost
 
 ---
 
+## 🔄 Estado Actual (2026-09-29 — Diagnóstico bloqueo PR #1679 + hallazgo Redis edge)
+
+**Agente:** Claude
+**Rama:** `feat/streaming-secrets-doppler` (PR #1679, mergeable pero con checks en rojo — ver abajo). Ningún commit nuevo esta sesión; todo el trabajo fue diagnóstico/infra local en la Mac + VPS.
+
+### PR #1679 — causa raíz del bloqueo (confirmada, no resuelta)
+
+`independent-review` y `open-source-review` fallan porque el job `local_opencode` que despacha el orquestador (cola BullMQ `local-agents`) nunca se ejecuta (`ADAPTER_EXECUTION_FAILED`). Rastreado hasta el final: **`local_opencode` está reservado por diseño para el `pc-gamer`** (ver comentario en `scripts/ops/start-mac-local-agents-worker.sh`: *"Keep local_opencode reserved for the PC Gamer"*, excluido de `OPSLY_LOCAL_AGENT_KINDS` del worker de esta Mac). `tailscale status` muestra `pc-gamer offline, last seen 10h ago`. **Es el mismo bloqueante recurrente ya documentado en sesiones previas** (ver "Bloqueante activo (viejo, sigue sin resolver)" más arriba) — sigue sin solución remota posible, no hay Wake-on-LAN configurado en ningún script (`pc-gamer-reconnect.sh`, `check-pc-gamer-online.sh`). Requiere encender la máquina físicamente.
+
+`npm audit (moderate+)` también falla en la PR, pero **no lo causa esta rama**: diff de `package.json`/`package-lock.json` contra `origin/main` vacío — son las mismas 10 vulnerabilidades moderate/high preexistentes (`@prisma/config`, `prisma`, `jsdom`, `undici`, `vitest`, etc.), todas sin fix upstream. Bloquea cualquier PR del repo ahora mismo; necesita decisión de exención del dueño del registry (`config/modules.json`), no es un fix de código.
+
+### Hallazgos/fixes de infraestructura local (Mac) durante el diagnóstico
+
+1. **`package-lock.json` sucio en `opsly-mac-runner`** (drift de un `npm install` local, solo bump de versiones dev de vitest, sin cambios de código) bloqueaba a `com.opsly.prompt-queue-opencode` (watcher de `.cursor/prompts/queue/`, corre cada 10 min, se salta el sync si el working tree está dirty). Revertido con `git checkout -- package-lock.json`. Watcher operativo de nuevo.
+2. **`com.opsly.local-agents-worker` (el consumidor real de `cursor/claude/copilot/codex/...` en esta Mac) estaba desregistrado de `launchd` desde el 14 de sept** (`disabled` a nivel de dominio; historial de logs muestra crash-loop viejo por `EADDRINUSE :3011`, puerto que ahora está libre). Se habilitó (`launchctl enable` + `bootstrap`) — pero falla con exit 78 (`EX_CONFIG`): requiere `/tmp/opsly-mac-redis.env` con `REDIS_URL` apuntando a `localhost`/`127.0.0.1` (rechaza Redis remoto directo por diseño).
+3. **Nuevo servicio `launchd` creado:** `~/Library/LaunchAgents/com.opsly.mac-redis-tunnel.plist` (`com.opsly.mac-redis-tunnel`) — abre túnel SSH persistente `127.0.0.1:6379 → 100.120.151.91:6379` (Redis real de la VPS, contenedor `infra-redis-1`) y regenera `/tmp/opsly-mac-redis.env` en cada arranque leyendo `REDIS_URL` desde Doppler `prd` (el propio job de `doppler run` corre dentro de `launchd`/sesión GUI, que sí tiene acceso al Keychain — desde un shell suelto de esta sesión Doppler daba `Unable to retrieve value from system keyring`). Túnel confirmado funcionando (conecta al Redis real).
+4. **Bloqueante nuevo sin resolver:** el password de `REDIS_URL` (`prd`) — verificado byte a byte contra el que usa `opsly_orchestrator` internamente vía comparación de hash SHA-256, sin exponer el valor en ningún momento — es **rechazado (`WRONGPASS`) al autenticar contra el puerto publicado `100.120.151.91:6379`**, tanto desde esta Mac como desde la propia VPS. Se descartó la teoría de proxy `docker-proxy` huérfano: se reinició `infra-redis-1` (autorizado explícitamente por el usuario), proxy y contenedor nuevos, mismo resultado. Sin daño colateral — `opsly_orchestrator` reconectó normal y encoló un job (`1890`) sin problema. Hipótesis no confirmada: la red `infra_redis_edge` (separada de `infra_internal`, ver `docs/04-infrastructure/VPS-ARCHITECTURE.md`) podría requerir una credencial distinta para acceso externo/Tailscale, no encontrada aún en Doppler ni documentada en el repo.
+
+### Próximos pasos
+
+1. **PC-gamer:** encender físicamente; si el watchdog (`com.opsly.pcgamerwatch`, cada 120s) no reconecta solo, correr `PC_GAMER_BRANCH=main ./scripts/ops/pc-gamer-reconnect.sh --wait 120 --use-host-ollama --with-opencode --pull-model`. Esto desbloquea la PR #1679.
+2. **npm audit:** decidir con el dueño del registry si se documenta una exención temporal para las 10 vulnerabilidades sin fix, o se espera upstream.
+3. **Redis edge:** confirmar si existe un secreto Doppler distinto para acceso externo a `infra_redis_edge` (no es el mismo `REDIS_URL` que usa el orquestador internamente). Una vez resuelto, `com.opsly.local-agents-worker` debería levantar limpio (ya habilitado y con `KeepAlive`, solo le falta un `/tmp/opsly-mac-redis.env` válido).
+4. Nota para quien retome: `com.opsly.mac-redis-tunnel` es un servicio nuevo, no estaba documentado en ningún runbook — agregar referencia en `docs/04-infrastructure/VPS-ARCHITECTURE.md` o similar si se confirma que es el patrón correcto a futuro.
+
+---
+
 ## Enlaces relacionados
 
 - [[.github/index|.github]]
