@@ -2,7 +2,7 @@
 # Canonical project follows Opsly ops plane.
 project: ops-intcloudsysops
 configs:
-  twitch:
+  dev_twitch:
     description: Twitch API + stream agent credentials
     secrets:
       - TWITCH_CLIENT_ID
@@ -12,7 +12,7 @@ configs:
       - TWITCH_CHANNEL_ID
       - TWITCH_CHANNEL_LOGIN
       - TWITCH_SCOPES
-  content-studio:
+  dev_content_studio:
     description: Content Studio publish helpers (YouTube/OBS local worker)
     secrets:
       - OBS_WEBSOCKET_PASSWORD

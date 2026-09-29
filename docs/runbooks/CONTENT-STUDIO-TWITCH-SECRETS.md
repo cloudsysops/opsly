@@ -14,8 +14,8 @@ owner: operations
 | Item | Value |
 |------|-------|
 | Doppler project | `ops-intcloudsysops` |
-| Twitch config | `twitch` |
-| Content Studio config | `content-studio` |
+| Twitch config | `dev_twitch` |
+| Content Studio config | `dev_content_studio` |
 | Map file | `config/config/doppler/doppler.setup.yaml` |
 | Never commit | `runtime/twitch.env`, `.env.worker`, any `*.pub` private material |
 

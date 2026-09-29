@@ -5,6 +5,6 @@
 Twitch + OBS credentials live in Doppler:
 
 - project `ops-intcloudsysops`
-- configs `twitch` and `content-studio`
+- configs `dev_twitch` and `dev_content_studio`
 
 See `docs/runbooks/CONTENT-STUDIO-TWITCH-SECRETS.md`.
