@@ -1,80 +1,31 @@
----
-status: live
-owner: operations
-last_review: 2026-09-15
-tags:
-  - opsly/brain
-  - sessions
-  - moc
----
+# Agent Sessions Index
 
-# Agent Sessions Brain Index
+> Histórico de todas las sesiones de agentes (Claude, Cursor, Codex, Workers)
+> Actualizado: 2026-09-29T21:19:27.435Z
 
-`docs/brain/sessions/` is the canonical human-readable ledger for agent work handoffs that deserve durable session context. It complements machine evidence keyed by `work_id` / `request_id`; it does not replace Git history, PR discussion, canonical module documentation, or Agent Lab evidence.
+## Por Agente
 
-## Write policy
+- [[./by-agent/claude|Claude Sessions]]
+- [[./by-agent/cursor|Cursor Sessions]]
+- [[./by-agent/codex|Codex Sessions]]
+- [[./by-agent/workers|Workers Sessions]]
 
-Every autonomous work attempt must emit machine-readable evidence/handoff. Create or update a Brain session note when the attempt changes operational understanding, discovers a non-obvious constraint, hands work to another agent, fails in a way useful for retry, or produces a decision that the next worker must know.
+## Recientes
 
-A session record must contain: `work_id`/`request_id`, agent/runtime, attempt number, objective, issue/PR/branch/head, touched surface, decisions, validation/evidence, blockers/risks, terminal state, next step, and links to any canonical docs/Brain notes promoted by the work.
+- **unknown** (pending): point content-studio secret scripts at Doppler configs
+- **unknown** (pending): mac OBS websocket and OpslyLive streaming bootstrap notes
+- **unknown** (pending): move content-studio twitch secrets to doppler workflow
+- **unknown** (pending): accept uppercase deck letter on load DSL (case mismatch)
+- **unknown** (pending): estado control PC OBS, E2E y NDI tras continuacion en paralelo
+- **unknown** (pending): make mapping install actually write the Serato XML
+- **unknown** (pending): wire local_ai_dj agent into orchestrator and deploy on Mac
+- **unknown** (pending): streaming gamer + DJ con NDI entre Mac y PC
+- **unknown** (pending): tailscale SSH al PC smdqcia - acceso directo, causares, iPhone
+- **unknown** (pending): add PC Gamer watchdog - detects connection and runs onboarding tasks
 
-Do not create one disconnected memory file per trivial action. Repeated attempts for the same canonical work identity should append/link through the same work history. Never store secrets, tokens, environment dumps, customer PII, or credentials.
+## Stats
 
-## Machine enforcement
+- Total notes en vault: 100
+- Tags: 0
+- Últimas 50 sesiones indexadas
 
-The canonical machine contract lives in `@intcloudsysops/agent-learning` as `WorkHandoffV1` plus `checkWorkClosureV1` / `assertWorkClosureV1`.
-
-For material autonomous work:
-
-- every terminal attempt requires at least one execution `evidence_id`;
-- `ready_to_merge`, `merged` and `cleaned` require validation evidence;
-- when `durable_knowledge_changed=true`, successful closure requires a canonical `documentation_ref`;
-- `retryable` requires a blocker explaining why work returns to the queue;
-- missing evidence/writeback fails closed instead of silently reporting DONE.
-
-The reconciler/factory should call this guard before accepting terminal closure. Human-readable session notes remain selective; machine handoff/evidence is mandatory for every attempt.
-
-## Promotion rule
-
-Session knowledge is temporary operational memory. If a discovery remains true after the work is complete, promote it in the same PR to the owning canonical location: `docs/brain/modules/`, `architecture/`, `workflows/`, `agents/`, `tenants/`, ADR/runbook, or other owner documentation. The session then links to that canonical knowledge instead of becoming a competing source of truth.
-
-## Completion rule
-
-An agent cannot report `DONE` for a material change until its handoff/evidence exists and required durable documentation/Brain promotion is either committed in the same PR or explicitly recorded as a blocked follow-up. When Markdown under the vault changes, `npm run index-knowledge` and `npm run obsidian:file-index` are part of documentary closure when the runtime can execute them.
-
-## Template
-
-```yaml
-work_id: <canonical id>
-request_id: <request id>
-agent: <runtime>
-attempt: <n>
-objective: <short goal>
-issue: <number/url>
-pr: <number/url or null>
-branch: <branch or null>
-head_sha: <sha or null>
-terminal_state: <retryable|ready_to_merge|merged|cleaned|needs_human>
-evidence_ids:
-  - <execution evidence id>
-durable_knowledge_changed: <true|false>
-documentation_refs:
-  - <canonical doc/brain path when required>
-```
-
-```text
-Changed surface:
-Decisions / discoveries:
-Validation and evidence:
-Risks / blockers:
-Next step:
-Brain promotions:
-Canonical documentation updates:
-```
-
-## Related
-
-- [[03-agents/AGENT-BRAIN-CONTRACT|Agent Brain Contract]]
-- [[brain/agents/README|Agents MOC]]
-- [[01-development/DOCUMENTATION-LIFECYCLE|Documentation Lifecycle]]
-- `lib/agent-learning/src/work-handoff-v1.ts`

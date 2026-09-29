@@ -4,14 +4,14 @@ version: 1.0.0
 category: operations
 priority: high
 triggers:
-  - Peskids
   - peskids
-  - familias
-  - teacher
-  - support
-  - admin
-  - landing
-  - dashboard
+  - Peskids
+  - clases de natación
+  - after-school
+  - sierrasantiago
+  - pools
+  - piscina
+  - enrollments
 cross_refs:
   - opsly-tenant
   - opsly-frontend
@@ -19,7 +19,9 @@ cross_refs:
   - opsly-supabase
   - opsly-infra
   - opsly-qa
-session_context: trabajo en peskids — landing, auth, familias, teacher, admin, deploy
+session_context: >-
+  trabajo en peskids — landing, auth, familias, teacher, admin, deploy, clases,
+  inscripciones
 subagents:
   - opsly-frontend
   - opsly-api
@@ -38,7 +40,7 @@ tags:
 > Peskids tenant-specific product and operations work. Use when changing landing, admin, teacher, support, families, auth, routes, docs, or deployment for the Peskids tenant.
 
 ## Cuándo cargar
-trabajo en peskids — landing, auth, familias, teacher, admin, deploy
+trabajo en peskids — landing, auth, familias, teacher, admin, deploy, clases, inscripciones
 
 ## Subagentes recomendados
 - [[opsly-frontend]]

@@ -24,9 +24,7 @@ node scripts/sync-skills-to-brain.js
 | billing / Stripe | [[opsly-billing]], [[opsly-stripe-marketplace]] |
 | diagnóstico monorepo | [[opsly-quantum]], [[opsly-context]] |
 | crear/editar skill | [[opsly-skill-creator]] |
-| LLM Gateway | [[opsly-llm]], [[fable5-manual]] |
-| Fable 5 / AI top-tier | [[fable5-manual]], [[opsly-llm]] |
-| Instrucciones para agentes / automatizaciones | [[fable5-agent-instructions]], [[opsly-orchestrator]] |
+| LLM Gateway | [[opsly-llm]] |
 | orchestrator / BullMQ | [[opsly-orchestrator]] |
 | arquitectura / ADR | [[opsly-architect-senior]] |
 | seguridad | [[opsly-shield]] |
@@ -36,8 +34,6 @@ node scripts/sync-skills-to-brain.js
 ## Skills por categoría
 
 ### ai
-- [[fable5-manual]] — Manual completo Fable 5: tips, secretos, patrones de prompting, uso en Opsly
-- [[fable5-agent-instructions]] — Instrucciones destiladas de Fable 5 para Sonnet/Haiku/n8n/agentes
 - [[opsly-ai-sdk-vercel]] — Vercel AI SDK en portal/admin/web con regla OpenClaw: UI y streaming s
 - [[opsly-feedback-ml]] — Feedback loop, decisiones ML, auto-implement, aprobación humana. Flujo
 - [[opsly-llm]] — LLM Gateway: llmCall, proveedores, caché, routing. Cualquier llamada a
@@ -60,6 +56,9 @@ node scripts/sync-skills-to-brain.js
 ### bootstrap
 - [[opsly-bootstrap]] — [DEPRECATED] Usar opsly-context en su lugar. Bootstrap de sesión legac
 - [[opsly-context]] — Bootstrap de sesión: AGENTS, VISION, VPS, tokens. SIEMPRE al inicio de
+
+### content
+- [[opsly-universe]] — Canon de personajes, mundos y Visual DNA de OPSLY Universe. Consultar 
 
 ### database
 - [[opsly-supabase]] — Migraciones SQL, schema platform, RLS, políticas. Crear migraciones SQ
@@ -88,6 +87,7 @@ node scripts/sync-skills-to-brain.js
 - [[idea-refine]] — Refine vague ideas through structured divergent and convergent thinkin
 - [[incremental-implementation]] — Build in thin vertical slices. Use for any multi-file feature implemen
 - [[interview-me]] — Surface what the user actually wants before any plan or code. Structur
+- [[observability-and-instrumentation]] — Instruments code so production behavior is visible and diagnosable. Lo
 - [[performance-optimization]] — Measure first, optimize only what matters. Profiling, caching, query o
 - [[planning-and-task-breakdown]] — Decompose work into verifiable tasks with dependency graphs. Use when 
 - [[security-and-hardening]] — OWASP prevention, input validation, least privilege, secrets managemen
@@ -103,6 +103,7 @@ node scripts/sync-skills-to-brain.js
 - [[opsly-self-healing]] — Self-healing agent: detección y reparación automática de domain mismat
 
 ### integration
+- [[opsly-claude-codex-review]] — Claude Code builder + Codex MCP independent reviewer (AI Board BUILD→R
 - [[opsly-google-cloud]] — Google Cloud: Drive, BigQuery, Vertex AI, service account. Integrar se
 - [[opsly-mcp]] — MCP OpenClaw: tools, OAuth/PKCE, scopes. Agregar o modificar tools del
 
@@ -113,7 +114,9 @@ node scripts/sync-skills-to-brain.js
 - [[opsly-discord]] — Notificaciones Discord: notify-discord.sh, tipos, reglas. Notificar ev
 
 ### operations
+- [[opsly-content-studio]] — Content OS v2 + anti-duplication. Read config/content-capabilities.jso
 - [[opsly-peskids]] — Peskids tenant-specific product and operations work. Use when changing
+- [[opsly-revenue-agent]] — Governed Revenue Agent for opportunity qualification, matching, attrib
 - [[opsly-tenant]] — Onboarding, suspensión, resume, diagnóstico de stacks por tenant. Onbo
 
 ### optimization
@@ -128,6 +131,9 @@ node scripts/sync-skills-to-brain.js
 ### qa
 - [[opsly-agent-verification]] — Evidencia antes de merge: type-check, tests workspace, validate-openap
 - [[opsly-qa]] — Testing, smoke, audit, regression. Testing y validación de calidad.
+
+### reference
+- [[opsly-gaming-clip-tools]] — Third-party gameplay-clip/auto-highlight software (Medal.tv, Overwolf/
 
 ### research
 - [[opsly-brain-researcher]] — Agente de investigación autónomo que investiga el Obsidian Brain, sint
