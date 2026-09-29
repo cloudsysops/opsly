@@ -114,7 +114,7 @@ done
 if (( missing > 0 )); then
   echo "[doppler] Faltan ${missing} var(s) de streaming."
   echo "  Importa el stream key (pegar por stdin, nunca en argv):"
-  echo "    pbpaste | ${SCRIPT_DIR}/scripts/doppler-import-twitch-stream-key.sh --with-channel"
+  echo "    pbpaste | ${SCRIPT_DIR}/scripts/doppler-import-twitch-stream-key.sh --with-channel --allow-prod"
   exit 1
 fi
 

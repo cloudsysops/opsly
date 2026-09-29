@@ -3,15 +3,17 @@
 # Nunca pasa por argv (queda en historial del shell) ni se escribe a disco.
 #
 # Uso (macOS):
-#   pbpaste | ./scripts/doppler-import-twitch-stream-key.sh
-#   ./scripts/doppler-import-twitch-stream-key.sh < ~/Downloads/twitch-key.txt
+#   pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --allow-prod
+#   ./scripts/doppler-import-twitch-stream-key.sh --allow-prod < ~/Downloads/twitch-key.txt
 #
 # Linux (WSL / workers):
-#   xclip -o -selection clipboard | ./scripts/doppler-import-twitch-stream-key.sh
+#   xclip -o -selection clipboard | ./scripts/doppler-import-twitch-stream-key.sh --allow-prod
 #
 # Flags:
-#   --dry-run     solo valida formato; no llama a Doppler.
+#   --allow-prod  confirma la escritura en prd (obligatorio ahi: pisa la clave vigente).
+#   --dry-run     solo valida formato; no llama a Doppler. Nunca se bloquea.
 #   --with-channel  ademas fija TWITCH_CHANNEL (no secreto, se puede pasar en claro).
+#   --project P / --config C  redirigen el destino (por defecto el de config/opsly.config.json).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -36,7 +38,7 @@ while (( $# )); do
     --allow-prod) ALLOW_PROD="true"; shift ;;
     --project) OVERRIDE_PROJECT="${2:-}"; shift 2 ;;
     --config) OVERRIDE_CONFIG="${2:-}"; shift 2 ;;
-    -h|--help) sed -n '2,17p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    -h|--help) awk 'NR>1 && /^#/ { sub(/^# ?/, ""); print; next } NR>1 { exit }' "${BASH_SOURCE[0]}"; exit 0 ;;
     *) die "Uso: … | $0 [--dry-run] [--with-channel] [--allow-prod] [--project P] [--config C]" 1 ;;
   esac
 done

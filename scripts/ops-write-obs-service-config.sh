@@ -46,7 +46,7 @@ fi
 
 # --- Validacion de entorno (nunca imprimimos el valor) -----------------------
 if [[ -z "${TWITCH_STREAM_KEY:-}" ]]; then
-  die "TWITCH_STREAM_KEY no esta en el entorno. Usa 'doppler run … -- $0' o importala con scripts/doppler-import-twitch-stream-key.sh" 1
+  die "TWITCH_STREAM_KEY no esta en el entorno. Usa 'doppler run … -- $0' o importala con scripts/doppler-import-twitch-stream-key.sh --allow-prod" 1
 fi
 MIN_LEN=20
 if (( ${#TWITCH_STREAM_KEY} < MIN_LEN )); then
