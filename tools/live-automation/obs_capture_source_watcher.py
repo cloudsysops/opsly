@@ -39,6 +39,12 @@ IDLE_POLL_SECONDS = int(os.environ.get("OBS_WATCHER_IDLE_POLL_SECONDS", "300"))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("obs-capture-source-watcher")
 
+# obsws_python logs the WebSocket password verbatim at INFO level
+# ("Connecting with parameters: ... password='...'"). Keep it out of the journal.
+logging.getLogger("obsws_python").setLevel(logging.WARNING)
+for _noisy in ("websocket", "websockets.client", "websockets.protocol"):
+    logging.getLogger(_noisy).setLevel(logging.WARNING)
+
 
 def connect() -> Optional[obs.ReqClient]:
     try:

@@ -32,7 +32,7 @@
     "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/types": "^1.0.0",
     "@supabase/supabase-js": "^2.106.0",
-    "redis": "^5.0.0"
+    "redis": "^5.12.1"
   },
   "devDependencies": {
     "@types/node": "^20.19.41",
