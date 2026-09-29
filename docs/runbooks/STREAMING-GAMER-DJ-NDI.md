@@ -164,7 +164,7 @@ powershell.exe -NoProfile -Command "Test-Path 'C:\Program Files\obs-studio\obs-p
 | Instalar NDI Runtime + obs-ndi Mac | `ssh macbook` + admin `dragon` | con clics GUI |
 | Instalar obs-ndi Windows | carpeta obs-plugins en el PC | UAC `opsly` |
 | Configurar audio Serato → virtual | Setup → Audio en Serato | master a Serato Virtual Audio/BlackHole |
-| Fuente NDI en OBS PC + stream key | OBS del PC | mezcla + salida |
+| Fuente NDI en OBS PC + stream key | OBS del PC | mezcla + salida; el stream key se inyecta desde Doppler (ver *Secretos de streaming*), no a mano |
 | ✔ Deploy agente AI-DJ en el Mac | `~/opsly-ai-dj/apps/ai-dj` vía launchd `com.opsly.ai-dj` | venv `~/opsly-ai-dj/venv` (`python-rtmidi`, `websocket-client`; `serato_tools` descartado: depende de `llvmlite` que no compila en este Mac); `:5013/health` OK; librería 84 pistas |
 | ✔ Registro orquestador `local_ai_dj` | repo, PR #1674 (`feat/ai-dj-local-agent`) | `external-agent-registry.json` + `agent-services.yaml` + maps TS; tsc + 280 tests OK |
 | ✔ Mapping MIDI instalado (headless) | `~/Music/_Serato_/MIDI/Xml/opsly-ai-dj.xml` | 29 `<control>` con binding (decks A/B + hotcues 94-97 + crossfader CC84 abs); puerto virtual "OPSLY AI DJ" visible en CoreMIDI |
@@ -173,6 +173,78 @@ powershell.exe -NoProfile -Command "Test-Path 'C:\Program Files\obs-studio\obs-p
 | E2E orquestador → `local_ai_dj` | contrato validado (POST `/execute` en `:5013` con el envelope del worker) | full queue-path (BullMQ+Redis + `OPSLY_LOCAL_AGENT_KINDS=local_ai_dj` + approval) en ventana sin tocar la granja en ejecución |
 | Instalar NDI ambos lados | Mac: NDI Runtime+.pkg y obs-ndi; PC: NDI runtime + `obs-ndi.dll` | confirmado: **no instalado en ninguno**; instaladores con GUI/admin en el escritorio |
 | Fijar `ndi_name` real de la fuente NDI | `basic/scenes/Untitled.json` (PC) | hoy queda `{{NDI_NAME}}` hasta existir el sender Mac |
+
+## Secretos de streaming (Doppler, nunca en disco ni en el repo)
+
+El stream key **vive solo en Doppler `prd`**. OBS lo exige en disco
+(`%APPDATA%\obs-studio\basic\service.json`), pero ese archivo es un *proyección*
+del entorno, no la fuente de verdad. Nada de esto se versiona.
+
+| Var Doppler `prd` | Secreto | Para qué |
+|-------------------|---------|----------|
+| `TWITCH_STREAM_KEY` | sí | clave de emisión RTMP |
+| `TWITCH_CHANNEL` | no | canal (por defecto `OpsAfterDark`) |
+| `OBS_WEBSOCKET_PASSWORD` | sí | automatización de OBS (`:4455`) |
+| `TWITCH_STREAM_SERVER` | no | opcional; por defecto `rtmp://live.twitch.tv/app` |
+
+### Cargar la clave (una vez, o al rotar)
+
+Pégala por **stdin** para que no quede en el historial del shell ni en argv.
+
+`prd` es producción y la escritura **pisa la clave vigente**, así que hay que
+confirmarlo explícitamente con `--allow-prod`:
+
+```bash
+# Twitch → Settings → Stream → Primary Stream Key
+pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --with-channel --allow-prod
+```
+
+Sin `--allow-prod` el script **aborta** antes de escribir. Para inspeccionar sin
+riesgo, usa siempre `--dry-run` (nunca se bloquea y nunca escribe):
+
+```bash
+pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --with-channel --dry-run
+```
+
+Para un entorno que no sea `prd`, redirige el destino:
+
+```bash
+pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --config stg
+```
+
+### Verificar qué falta
+
+```bash
+./scripts/ops/setup-worker-doppler.sh --check   # solo nombres, nunca valores
+```
+
+### Proyectar en una máquina (OBS cerrado)
+
+```bash
+doppler run --project ops-intcloudsysops --config prd -- \
+  ./scripts/ops-write-obs-service-config.sh
+```
+
+Escribe `service.json` con permisos `600`, preserva otros stream services y **no
+loguea la clave**. Es idempotente: re-ejecutar actualiza sin duplicar entradas.
+
+> Cierra OBS antes de correrlo. Si OBS está abierto, lo sobreescribe al salir.
+> En WSL el destino es `~/.config/obs-studio/basic/service.json`; en Windows,
+> `%APPDATA%\obs-studio\basic\service.json`.
+
+### Rotar
+
+1. Genera una key nueva en Twitch.
+2. `pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --allow-prod`
+3. Re-proyecta con `ops-write-obs-service-config.sh` en cada máquina.
+4. **No** guardes la clave en un `.env`, en un `.md` ni en un ticket.
+
+### Blindeo automático
+
+`scripts/ops/assert-ephemeral-worker-env.sh` **prohíbe** `TWITCH_STREAM_KEY` y
+`OBS_WEBSOCKET_PASSWORD` en `.env.worker`: los workers corren con env efímero y
+proyectan secretos bajo demanda. Un worker arranca fallando si alguien intenta
+dejar la clave en ese archivo.
 
 ## Relacionado
 

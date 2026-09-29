@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+# Importa el stream key de Twitch a Doppler prd leyendo el valor por stdin.
+# Nunca pasa por argv (queda en historial del shell) ni se escribe a disco.
+#
+# Uso (macOS):
+#   pbpaste | ./scripts/doppler-import-twitch-stream-key.sh --allow-prod
+#   ./scripts/doppler-import-twitch-stream-key.sh --allow-prod < ~/Downloads/twitch-key.txt
+#
+# Linux (WSL / workers):
+#   xclip -o -selection clipboard | ./scripts/doppler-import-twitch-stream-key.sh --allow-prod
+#
+# Flags:
+#   --allow-prod  confirma la escritura en prd (obligatorio ahi: pisa la clave vigente).
+#   --dry-run     solo valida formato; no llama a Doppler. Nunca se bloquea.
+#   --with-channel  ademas fija TWITCH_CHANNEL (no secreto, se puede pasar en claro).
+#   --project P / --config C  redirigen el destino (por defecto el de config/opsly.config.json).
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+# shellcheck source=scripts/lib/common.sh
+source "${SCRIPT_DIR}/lib/common.sh"
+
+CONFIG="${REPO_ROOT}/config/opsly.config.json"
+require_cmd jq doppler
+
+[[ -f "${CONFIG}" ]] || die "No existe ${CONFIG}" 1
+
+DRY_RUN="false"
+SET_CHANNEL="false"
+OVERRIDE_PROJECT=""
+OVERRIDE_CONFIG=""
+ALLOW_PROD="false"
+while (( $# )); do
+  case "$1" in
+    --dry-run) DRY_RUN="true"; shift ;;
+    --with-channel) SET_CHANNEL="true"; shift ;;
+    --allow-prod) ALLOW_PROD="true"; shift ;;
+    --project) OVERRIDE_PROJECT="${2:-}"; shift 2 ;;
+    --config) OVERRIDE_CONFIG="${2:-}"; shift 2 ;;
+    -h|--help) awk 'NR>1 && /^#/ { sub(/^# ?/, ""); print; next } NR>1 { exit }' "${BASH_SOURCE[0]}"; exit 0 ;;
+    *) die "Uso: … | $0 [--dry-run] [--with-channel] [--allow-prod] [--project P] [--config C]" 1 ;;
+  esac
+done
+
+DOPPLER_PROJECT="$(jq -r '.project.doppler_project // empty' "${CONFIG}")"
+DOPPLER_CFG="$(jq -r '.project.doppler_config // empty' "${CONFIG}")"
+[[ -n "${DOPPLER_PROJECT}" && "${DOPPLER_PROJECT}" != "null" ]] || die "config: project.doppler_project" 1
+[[ -n "${DOPPLER_CFG}" && "${DOPPLER_CFG}" != "null" ]] || die "config: project.doppler_config" 1
+
+# Overrides explicitos. Sin esto el script solo puede escribir en prd, lo que
+# hace que cualquier prueba acabe tocando el secret store real por accidente.
+[[ -n "${OVERRIDE_PROJECT}" ]] && DOPPLER_PROJECT="${OVERRIDE_PROJECT}"
+[[ -n "${OVERRIDE_CONFIG}" ]] && DOPPLER_CFG="${OVERRIDE_CONFIG}"
+
+# Guarda de seguridad: si el destino no se pidio explicitamente y no es un
+# entorno de pruebas, aborta. Evita escribir en prd sin querer.
+TARGET_IS_PROD="false"
+if [[ "${DOPPLER_CFG}" == "prd" && -z "${OVERRIDE_CONFIG}" ]]; then
+  TARGET_IS_PROD="true"
+fi
+
+doppler me >/dev/null 2>&1 || die "Doppler CLI no autenticado (doppler login)" 1
+
+IFS= read -r key || true
+key="${key//$'\r'/}"
+key="${key#"${key%%[![:space:]]*}"}"
+key="${key%"${key##*[![:space:]]}"}"
+
+# El stream key de Twitch es opaco y largo. Solo validamos forma basica:
+# sin espacios internos y con longitud suficiente. No imprimimos el valor.
+MIN_LEN=20
+if (( ${#key} < MIN_LEN )); then
+  die "stream key demasiado corto (${#key} < ${MIN_LEN}). Pega la clave completa desde Twitch > Settings > Stream." 1
+fi
+if [[ "${key}" == *" "* ]]; then
+  die "el stream key contiene espacios; ensure de copiarlo en una sola linea." 1
+fi
+
+# Escribir en prd es destructivo: pisa la clave vigente. La guarda va ANTES de
+# cualquier escritura (incluida la de TWITCH_CHANNEL) para que un test sin
+# querer no tumbe nada de produccion. Un dry-run nunca escribe, asi que nunca
+# se bloquea: es justamente la via segura para inspeccionar.
+if [[ "${DRY_RUN}" != "true" && "${TARGET_IS_PROD}" == "true" && "${ALLOW_PROD}" != "true" ]]; then
+  die "Destino ${DOPPLER_PROJECT}/${DOPPLER_CFG} (produccion). Reconfirma con --allow-prod para sobreescribir la clave vigente, o usa --config <otro> para un entorno de pruebas." 1
+fi
+
+if [[ "${SET_CHANNEL}" == "true" ]]; then
+  CHANNEL="${TWITCH_CHANNEL:-OpsAfterDark}"
+  if [[ "${DRY_RUN}" == "true" ]]; then
+    log_info "[dry-run] TWITCH_CHANNEL=${CHANNEL} — no escrito."
+  else
+    printf '%s' "${CHANNEL}" | doppler secrets set TWITCH_CHANNEL \
+      --project "${DOPPLER_PROJECT}" \
+      --config "${DOPPLER_CFG}" \
+      --no-interactive >/dev/null
+    log_info "TWITCH_CHANNEL=${CHANNEL}"
+  fi
+fi
+
+if [[ "${DRY_RUN}" == "true" ]]; then
+  log_info "[dry-run] OK longitud ${#key} — no se escribio en Doppler."
+  exit 0
+fi
+
+printf '%s' "${key}" | doppler secrets set TWITCH_STREAM_KEY \
+  --project "${DOPPLER_PROJECT}" \
+  --config "${DOPPLER_CFG}" \
+  --no-interactive >/dev/null
+
+log_info "TWITCH_STREAM_KEY guardada en ${DOPPLER_PROJECT}/${DOPPLER_CFG} (salida suprimida)."
+log_info "Siguiente: ./scripts/ops-write-obs-service-config.sh  (escribe service.json en la maquina)."
+log_info "No guardes la clave en el repo. Si la expusiste, rotala en Twitch."
