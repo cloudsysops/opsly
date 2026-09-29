@@ -214,3 +214,8 @@ service.json
 **/obs-studio/basic/scenes/
 **/.obs/
 obs-studio/
+
+# OpenClaw local state (dreaming) — se regenera en la raiz del repo.
+# El validador de estructura no consulta .gitignore, por eso vive en runtime/tmp/.
+/DREAMS.md
+/memory/
