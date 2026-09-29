@@ -180,3 +180,52 @@ powershell.exe -NoProfile -Command "Test-Path 'C:\Program Files\obs-studio\obs-p
 - `GAMER-REVENUE-PATH.md` — contexto de monitoreo local del PC gamer.
 - Ajustes de latencia OBS: usar **`settings --advanced` → network` (reducción de frame/audio) y
   considerar `ndi` buffer bajo si hay jitter en NDI.
+
+## Agente Twitch (control de canal vía API)
+
+Servicio HTTP local (`apps/twitch-agent/`) que controla el canal de Twitch
+**OpsAfterDark** (`broadcaster_id 886760156`, cuenta antes conocida como
+`425grow`) vía Twitch Helix API. Mismo patrón que el agente AI-DJ: sin LLM,
+vocabulario determinista, contrato `/health` `/actions` `/execute`.
+
+| Aspecto | Valor |
+|---------|-------|
+| Servicio | `python3 apps/twitch-agent/src/twitch_agent_service.py` (HTTP `:5014`) |
+| Credenciales | `runtime/twitch.env` (gitignored) — Client ID/Secret, access/refresh token |
+| Config | env `OPSLY_TWITCH_AGENT_CONFIG` o `config.json` en cwd/src; auth Bearer opcional `OPSLY_CLI_AGENT_TOKEN` |
+| Endpoints | `GET /health`, `GET /actions`, `POST /execute` (`{prompt_content, agent_role, max_steps, job_id}`) |
+| Arranque | `apps/twitch-agent/service.sh` |
+| Registro orquestador | `config/external-agent-registry.json` worker `twitch-agent-cli` (`opsly_job_type: local_twitch_agent`, `bridge_port: 5014`, `endpoint_env: OPSLY_TWITCH_AGENT_URL`) |
+| Content OS | `config/content-capabilities.json` capability `stream.manage`, canonical owner `apps/twitch-agent/src/twitch_agent_service.py` |
+| Raw contract | `POST /execute` → `{success: bool, result: string}`; sin `success:false` → el worker marca `success=false` como fallo |
+
+Vocabulario determinista: `channel.title <texto>`, `channel.category <juego>`,
+`stream.status`, `stream.key` (nunca ecoa la clave real), `clip.create`,
+`token.refresh`, `status.all`. Sintaxis desconocida responde `success:false`
+listando `/actions`.
+
+**Refresh automático del OAuth token.** El access_token de Twitch dura ~4h.
+`TwitchClient.ensure_fresh_token()` lo refresca solo (proactivo con margen de
+5 min, y reactivo si un call da 401), rotando el `refresh_token` en el mismo
+`runtime/twitch.env` — Twitch invalida el refresh_token anterior en cada uso,
+así que el archivo se reescribe en el sitio, nunca se imprime en logs.
+
+**Sin auto-publish.** Cada acción requiere una llamada explícita a
+`/execute`; nada se dispara solo por horario o por cambio de estado del
+stream — mismo principio que `opsly-gaming-clip-tools` para el resto del
+pipeline de contenido.
+
+Verificación:
+
+```bash
+# en el PC gamer / WSL
+curl -s http://127.0.0.1:5014/health
+curl -s http://127.0.0.1:5014/actions
+curl -s -X POST http://127.0.0.1:5014/execute \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt_content":"status.all","agent_role":"executor","max_steps":1,"job_id":"smoke-1"}'
+```
+
+Tests: `apps/twitch-agent/test_twitch_agent.py` (router con cliente fake,
+sin red; round-trip del archivo de credenciales).
+
