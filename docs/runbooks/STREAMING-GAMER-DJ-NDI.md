@@ -180,3 +180,8 @@ powershell.exe -NoProfile -Command "Test-Path 'C:\Program Files\obs-studio\obs-p
 - `GAMER-REVENUE-PATH.md` — contexto de monitoreo local del PC gamer.
 - Ajustes de latencia OBS: usar **`settings --advanced` → network` (reducción de frame/audio) y
   considerar `ndi` buffer bajo si hay jitter en NDI.
+
+## Secrets (Doppler)
+
+Twitch credentials must live in Doppler (`ops-intcloudsysops` / `twitch`), not in `runtime/twitch.env`.
+See [`CONTENT-STUDIO-TWITCH-SECRETS.md`](./CONTENT-STUDIO-TWITCH-SECRETS.md).

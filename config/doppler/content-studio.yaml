@@ -1,0 +1,22 @@
+# Doppler map for Content Studio + Twitch (no secret values here).
+# Canonical project follows Opsly ops plane.
+project: ops-intcloudsysops
+configs:
+  twitch:
+    description: Twitch API + stream agent credentials
+    secrets:
+      - TWITCH_CLIENT_ID
+      - TWITCH_CLIENT_SECRET
+      - TWITCH_ACCESS_TOKEN
+      - TWITCH_REFRESH_TOKEN
+      - TWITCH_CHANNEL_ID
+      - TWITCH_CHANNEL_LOGIN
+      - TWITCH_SCOPES
+  content-studio:
+    description: Content Studio publish helpers (YouTube/OBS local worker)
+    secrets:
+      - OBS_WEBSOCKET_PASSWORD
+      - OPSLY_CONTENT_AUTO_PUBLISH
+      - YOUTUBE_CLIENT_ID
+      - YOUTUBE_CLIENT_SECRET
+      - YOUTUBE_REFRESH_TOKEN
