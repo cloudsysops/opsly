@@ -22,9 +22,21 @@ except Exception:  # pragma: no cover - sin websocket-client
 
 
 def authentication(password: str, salt: str, challenge: str) -> str:
-    """Calcula el campo `authentication` del mensaje Identify."""
-    secret = hashlib.sha256(password.encode("utf-8") + salt.encode("utf-8")).digest()
-    return base64.b64encode(secret + challenge.encode("utf-8")).decode("ascii")
+    """Calcula el campo `authentication` del mensaje Identify.
+
+    Spec real de obs-websocket v5 (antes rota: faltaba el paso 2 completo —
+    el primer hash debe pasar por base64 ANTES de concatenar con el
+    challenge, y el resultado de esa concatenacion se vuelve a hashear;
+    la version anterior concatenaba bytes crudos y hacia un solo hash,
+    lo que el servidor siempre rechazaba con "Authentication failed").
+    1. secret = sha256(password + salt)
+    2. base64_secret = base64(secret)
+    3. auth = base64(sha256(base64_secret + challenge))
+    """
+    secret = hashlib.sha256((password + salt).encode("utf-8")).digest()
+    base64_secret = base64.b64encode(secret).decode("ascii")
+    auth_hash = hashlib.sha256((base64_secret + challenge).encode("utf-8")).digest()
+    return base64.b64encode(auth_hash).decode("ascii")
 
 
 class ObsError(RuntimeError):
