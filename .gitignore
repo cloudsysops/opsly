@@ -205,3 +205,12 @@ __pycache__/
 runtime/sessions/
 runtime/agent-sessions/
 runtime/state/
+
+# OBS / streaming configs — NUNCA versionar (contienen stream keys y contrasenas)
+service.json
+**/obs-studio/basic/service.json
+**/obs-studio/basic/global.ini
+**/obs-studio/basic/profiles/
+**/obs-studio/basic/scenes/
+**/.obs/
+obs-studio/
