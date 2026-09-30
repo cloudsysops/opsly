@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import { getBaseUrl } from '@/lib/api-client';
 import { getSessionAuthToken } from '@/lib/session-auth';
 import { buildMissionControlExecutionProjectionV1 } from '@/lib/mission-control-execution-activity-v1';
+import { buildStreamSafeMissionControlProjection } from '@/lib/mission-control-stream-safe-v1';
 
 type ExecutionSourcesPayload = {
   schema_version: 'MissionControlExecutionSourcesV1';
@@ -111,7 +112,8 @@ export function MissionControlLiveBoard() {
 
   const projection = useMemo(
     () =>
-      buildMissionControlExecutionProjectionV1({
+      buildStreamSafeMissionControlProjection(
+        buildMissionControlExecutionProjectionV1({
         execution_sources:
           sources && !sources.error
             ? {
@@ -123,7 +125,8 @@ export function MissionControlLiveBoard() {
         active_claims: factory?.active_claims,
         runtime_sessions: factory?.runtime_sessions,
         pull_requests: factory?.pull_requests,
-      }),
+        })
+      ),
     [factory, sources]
   );
 
@@ -148,6 +151,7 @@ export function MissionControlLiveBoard() {
             <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 text-amber-200">Review {review}</span>
             <span className="rounded-full border border-rose-400/30 bg-rose-400/10 px-3 py-1.5 text-rose-200">Blocked {blocked}</span>
             <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1.5 text-cyan-100">Ready {ready}</span>
+            <span className="rounded-full border border-violet-400/30 bg-violet-400/10 px-3 py-1.5 text-violet-100">Stream Safe ON</span>
           </div>
         </header>
 
