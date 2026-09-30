@@ -1,5 +1,5 @@
 // Agrega la fuente "Alertas" (mismo navegador, una sola instancia) arriba de cada escena de juego.
-import { withObs } from '@intcloudsysops/stream-ops-kit/obs';
+import { withObs } from '../../../../packages/stream-ops-kit/src/obs.mjs';
 
 const source = 'Alertas';
 const targets = ['Streaming', 'Gaming', 'Coding', 'Battlefield 6 — Día 2'];

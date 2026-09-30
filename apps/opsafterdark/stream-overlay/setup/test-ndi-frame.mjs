@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { withObs } from '@intcloudsysops/stream-ops-kit/obs';
+import { withObs } from '../../../../packages/stream-ops-kit/src/obs.mjs';
 
 const scene = '__ndi-frame-test__';
 const sizes = [[1920, 1080], [1280, 720], [2560, 1440], [1920, 1200], [3840, 2160]];
