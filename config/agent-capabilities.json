@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "updated_at": "2026-05-13",
+  "updated_at": "2026-09-30",
   "routing_policy": {
-    "default_agent": "codex",
+    "default_agent": "opencode",
     "prefer_localhost": true,
     "remote_requires_tailscale": true,
     "remote_requires_execute_token": true,
-    "notes": "Use this registry to route orchestration jobs by role, risk, write permissions, and runtime cost."
+    "notes": "Autonomous agent routing defaults to local OpenCode. Codex/OpenAI are non-critical optional paths and must never be required for factory progress."
   },
   "agents": {
     "cursor": {
@@ -16,8 +16,15 @@
       "endpoint_default": "http://127.0.0.1:5001",
       "write_access": true,
       "risk_ceiling": "medium",
-      "best_for": ["IDE-assisted edits", "small frontend fixes", "prompt queue execution"],
-      "avoid_for": ["unattended production changes", "long-running test suites"]
+      "best_for": [
+        "IDE-assisted edits",
+        "small frontend fixes",
+        "prompt queue execution"
+      ],
+      "avoid_for": [
+        "unattended production changes",
+        "long-running test suites"
+      ]
     },
     "claude": {
       "role": "architect",
@@ -26,8 +33,15 @@
       "endpoint_default": "http://127.0.0.1:5002",
       "write_access": false,
       "risk_ceiling": "medium",
-      "best_for": ["architecture review", "large-codebase analysis", "documentation planning"],
-      "avoid_for": ["blind code execution", "deployment"]
+      "best_for": [
+        "architecture review",
+        "large-codebase analysis",
+        "documentation planning"
+      ],
+      "avoid_for": [
+        "blind code execution",
+        "deployment"
+      ]
     },
     "copilot": {
       "role": "assistant",
@@ -36,8 +50,14 @@
       "endpoint_default": "http://127.0.0.1:5003",
       "write_access": false,
       "risk_ceiling": "low",
-      "best_for": ["command suggestions", "quick explanations", "small code suggestions"],
-      "avoid_for": ["autonomous multi-step implementation"]
+      "best_for": [
+        "command suggestions",
+        "quick explanations",
+        "small code suggestions"
+      ],
+      "avoid_for": [
+        "autonomous multi-step implementation"
+      ]
     },
     "opencode": {
       "role": "executor",
@@ -46,8 +66,14 @@
       "endpoint_default": "http://127.0.0.1:5004",
       "write_access": true,
       "risk_ceiling": "medium",
-      "best_for": ["focused edits", "multi-file implementation", "prototype fixes"],
-      "avoid_for": ["security signoff"]
+      "best_for": [
+        "focused edits",
+        "multi-file implementation",
+        "prototype fixes"
+      ],
+      "avoid_for": [
+        "security signoff"
+      ]
     },
     "codex": {
       "role": "executor",
@@ -56,8 +82,16 @@
       "endpoint_default": "http://127.0.0.1:5005",
       "write_access": true,
       "risk_ceiling": "high",
-      "best_for": ["repo-aware implementation", "tests", "refactors", "integration work"],
-      "avoid_for": ["unapproved provider-cost changes"]
+      "best_for": [
+        "repo-aware implementation",
+        "tests",
+        "refactors",
+        "integration work"
+      ],
+      "avoid_for": [
+        "autonomous critical-path work",
+        "unapproved provider-cost changes"
+      ]
     },
     "openai": {
       "role": "executor",
@@ -66,8 +100,15 @@
       "endpoint_default": "http://127.0.0.1:5006",
       "write_access": true,
       "risk_ceiling": "medium",
-      "best_for": ["OpenAI-compatible coding fallback", "analysis", "small implementation tasks"],
-      "avoid_for": ["security approval"]
+      "best_for": [
+        "OpenAI-compatible coding fallback",
+        "analysis",
+        "small implementation tasks"
+      ],
+      "avoid_for": [
+        "autonomous critical-path work",
+        "security approval"
+      ]
     },
     "hermes": {
       "role": "planner",
@@ -76,8 +117,15 @@
       "endpoint_default": "http://127.0.0.1:5007",
       "write_access": false,
       "risk_ceiling": "medium",
-      "best_for": ["routing", "planning", "cost-aware model selection", "task decomposition"],
-      "avoid_for": ["direct repository mutation"]
+      "best_for": [
+        "routing",
+        "planning",
+        "cost-aware model selection",
+        "task decomposition"
+      ],
+      "avoid_for": [
+        "direct repository mutation"
+      ]
     },
     "decepticon": {
       "role": "security_reviewer",
@@ -86,8 +134,15 @@
       "endpoint_default": "http://127.0.0.1:5008",
       "write_access": false,
       "risk_ceiling": "high",
-      "best_for": ["adversarial review", "security audit", "failure-mode analysis"],
-      "avoid_for": ["code generation", "deployment"]
+      "best_for": [
+        "adversarial review",
+        "security audit",
+        "failure-mode analysis"
+      ],
+      "avoid_for": [
+        "code generation",
+        "deployment"
+      ]
     },
     "aider": {
       "role": "executor",
@@ -96,8 +151,14 @@
       "endpoint_default": "http://127.0.0.1:5009",
       "write_access": true,
       "risk_ceiling": "medium",
-      "best_for": ["git-aware code editing", "targeted refactors", "small feature patches"],
-      "avoid_for": ["large autonomous changes without reviewer"]
+      "best_for": [
+        "git-aware code editing",
+        "targeted refactors",
+        "small feature patches"
+      ],
+      "avoid_for": [
+        "large autonomous changes without reviewer"
+      ]
     },
     "goose": {
       "role": "tool_operator",
@@ -106,8 +167,14 @@
       "endpoint_default": "http://127.0.0.1:5010",
       "write_access": true,
       "risk_ceiling": "medium",
-      "best_for": ["multi-step local automation", "tool-use workflows", "research-to-action tasks"],
-      "avoid_for": ["tenant production changes without guardrails"]
+      "best_for": [
+        "multi-step local automation",
+        "tool-use workflows",
+        "research-to-action tasks"
+      ],
+      "avoid_for": [
+        "tenant production changes without guardrails"
+      ]
     },
     "playwright": {
       "role": "frontend_qa",
@@ -116,13 +183,43 @@
       "endpoint_default": "http://127.0.0.1:5011",
       "write_access": false,
       "risk_ceiling": "low",
-      "best_for": ["browser smoke tests", "portal E2E", "UI regression checks"],
-      "avoid_for": ["code edits"]
+      "best_for": [
+        "browser smoke tests",
+        "portal E2E",
+        "UI regression checks"
+      ],
+      "avoid_for": [
+        "code edits"
+      ]
     }
   },
   "recommended_distribution": {
-    "vps-dragon": ["orchestrator", "api", "llm_gateway", "mcp", "tenant_stacks", "deployer_guarded"],
-    "opsly-admin": ["cursor", "claude", "codex", "opencode", "copilot", "hermes", "aider", "goose", "playwright"],
-    "opsly-worker": ["decepticon", "playwright", "aider", "test_runner", "ollama", "build_runner"]
+    "vps-dragon": [
+      "orchestrator",
+      "api",
+      "llm_gateway",
+      "mcp",
+      "tenant_stacks",
+      "deployer_guarded"
+    ],
+    "opsly-admin": [
+      "cursor",
+      "claude",
+      "codex",
+      "opencode",
+      "copilot",
+      "hermes",
+      "aider",
+      "goose",
+      "playwright"
+    ],
+    "opsly-worker": [
+      "decepticon",
+      "playwright",
+      "aider",
+      "test_runner",
+      "ollama",
+      "build_runner"
+    ]
   }
 }
