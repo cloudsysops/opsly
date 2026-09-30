@@ -261,8 +261,6 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
     expect(body.github_evidence_complete).toBe(false);
     expect(body.pull_requests).toHaveLength(20);
   });
-});
-
 
   it('projects parallel lane and shared gate only from explicit evidence', async () => {
     vi.stubGlobal(
@@ -292,3 +290,5 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
       shared_gate: 'independent-review-runtime',
     });
   });
+
+});
