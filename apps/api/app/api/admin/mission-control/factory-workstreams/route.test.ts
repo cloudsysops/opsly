@@ -262,3 +262,33 @@ describe('GET /api/admin/mission-control/factory-workstreams', () => {
     expect(body.pull_requests).toHaveLength(20);
   });
 });
+
+
+  it('projects parallel lane and shared gate only from explicit evidence', async () => {
+    vi.stubGlobal(
+      'fetch',
+      githubFetch({
+        pulls: [
+          pull(77, {
+            body: [
+              'Task-Id: work-77',
+              'Dispatch-Claim: claim-77',
+              'Parallel-Lane: reviewer',
+              'Shared-Gate: independent-review-runtime',
+            ].join('\n'),
+          }),
+        ],
+      })
+    );
+    const GET = await loadGet();
+    const response = await GET(
+      new Request('http://localhost/api/admin/mission-control/factory-workstreams')
+    );
+    const body = (await response.json()) as {
+      pull_requests: Array<{ parallel_lane: string | null; shared_gate: string | null }>;
+    };
+    expect(body.pull_requests[0]).toMatchObject({
+      parallel_lane: 'reviewer',
+      shared_gate: 'independent-review-runtime',
+    });
+  });
