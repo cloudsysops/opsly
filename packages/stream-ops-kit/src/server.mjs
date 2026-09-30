@@ -3,12 +3,15 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { execFile } from 'node:child_process';
 import { schedule, setTest } from './schedule.mjs';
 import { musicTest } from './music-test.mjs';
 import { analyzePage } from './analyze-page.mjs';
 import { tenantPath } from './tenant-paths.mjs';
 import { tenantConfig } from './tenant-config.mjs';
+// GPU vía el telemetry compartido del worker pc-gamer (mismo host, mismo nvidia-smi;
+// evita una segunda lectura/parseo de GPU — ver docs/04-infrastructure/PC-GAMER-WORKER.md).
+// Ruta relativa dentro del monorepo: packages/stream-ops-kit/src -> scripts/ops.
+import { collectNvidiaTelemetry } from '../../../scripts/ops/creator-system-telemetry.mjs';
 
 // El branding (starting/brb/ending/hud/summary/stream/alerts/overlay/coding/vibe) vive
 // en scenes.mjs dentro de la carpeta de datos del tenant, no en este motor genérico.
@@ -28,16 +31,13 @@ const alertsCfg = config.alerts ?? {};
 const GPU_HIGH_PERCENT = alertsCfg.gpuHighPercent ?? 95;
 const GPU_HIGH_SUSTAINED_MIN = alertsCfg.gpuHighSustainedMinutes ?? 5;
 
-function refreshGpu() {
-  execFile('nvidia-smi', ['--query-gpu=utilization.gpu,temperature.gpu', '--format=csv,noheader,nounits'], { windowsHide: true }, (error, stdout) => {
-    if (error) return;
-    const [usage, temperature] = stdout.trim().split(',').map((value) => Number.parseInt(value.trim(), 10));
-    if (Number.isFinite(usage) && Number.isFinite(temperature)) {
-      gpu = { usage, temperature };
-      if (usage >= GPU_HIGH_PERCENT) gpuHighSince ??= Date.now();
-      else gpuHighSince = null;
-    }
-  });
+async function refreshGpu() {
+  const t = await collectNvidiaTelemetry({ timeoutMs: 1200 });
+  const device = t.devices?.[0];
+  if (!device) return; // no disponible ahora mismo; se conserva la última lectura buena
+  gpu = { usage: device.utilizationGpuPercent, temperature: device.temperatureC };
+  if (gpu.usage >= GPU_HIGH_PERCENT) gpuHighSince ??= Date.now();
+  else gpuHighSince = null;
 }
 
 refreshGpu();

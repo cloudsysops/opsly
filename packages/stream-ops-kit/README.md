@@ -33,3 +33,24 @@ Ver `apps/opsafterdark/stream-overlay/` como referencia completa de un tenant.
    carpeta y llama a los scripts de este paquete (`src/*.mjs`).
 5. Los scripts de `setup/*.mjs` de cada tenant (instalación de fuentes en OBS
    con nombres exactos) siguen siendo específicos de cada uno — no están aquí.
+
+## Relación con el worker `pc-gamer` (mismo host, dos roles distintos)
+
+El primer tenant de este vertical (`opsafterdark`) transmite desde el mismo
+equipo que ya está registrado en producción como el worker de cómputo GPU
+`home-gpu-01` (alias `pc-gamer`, `desktop-smdqcia` / `smdqcia-pc`) —
+ver [`docs/04-infrastructure/PC-GAMER-WORKER.md`](../../docs/04-infrastructure/PC-GAMER-WORKER.md)
+y `config/compute-workers.json`. Son **dos conceptos distintos que conviven en
+el mismo hardware**, no un registro duplicado:
+
+| | `pc-gamer` (existente) | `opsafterdark` / `stream-ops-kit` (este vertical) |
+|---|---|---|
+| Qué es | Worker de cómputo GPU de la plataforma (rutea jobs `gpu.nvidia`/`video.render`/`ffmpeg` vía BullMQ) | Tenant de creador de contenido (streaming, CRM de patrocinios, clips) |
+| Dueño del concepto | Infraestructura de plataforma | Vertical `gaming-streamer` |
+| Disponibilidad | `scripts/ops/check-pc-gamer-gpu-load.sh` — ¿está libre AHORA para recibir un job? | `stream.config.json` → `alerts.gpuHighPercent/gpuHighSustainedMinutes` — ¿la GPU lleva mucho tiempo saturada DURANTE mi stream? (señal de mantenimiento, no de disponibilidad para jobs) |
+| Lectura de GPU | `scripts/ops/creator-system-telemetry.mjs` (`collectNvidiaTelemetry`) | El mismo módulo, importado directo — **no hay una segunda lectura/parseo de `nvidia-smi`** |
+
+Regla dura de `AGENTS.md`: nunca crear un segundo worker registry/orquestador.
+`stream-ops-kit` no lo es — es código de aplicación de un tenant que corre en
+la máquina, no una cola ni un registro de workers — pero reutiliza el módulo
+de telemetría existente en vez de duplicar la lectura de GPU/CPU.
