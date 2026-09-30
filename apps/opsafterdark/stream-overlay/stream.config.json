@@ -35,5 +35,6 @@
   "postStream": {
     "candidateCount": 15,
     "minGapSeconds": 90
-  }
+  },
+  "clipsDir": "clips"
 }

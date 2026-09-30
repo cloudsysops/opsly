@@ -14,6 +14,24 @@ cd C:\Users\opsly\OneDrive\Documents\ChatGPT\intcloudsysops\stream-overlay
 powershell -ExecutionPolicy Bypass -File .\run.ps1 <comando>
 ```
 
+## Ruta canónica de clips (Windows y WSL apuntan al mismo lugar físico)
+
+Los clips producidos (post-stream, ver `post-stream-analyze.mjs`) se guardan en
+`clips/<AAAA-MM-DD>/` dentro de esta misma carpeta — **no** en una carpeta con
+fecha en el nombre del padre (`clips-2026-09-30/`), para que la ruta base sea
+siempre la misma y cualquier agente/script la encuentre sin adivinar:
+
+| Entorno | Ruta |
+|---|---|
+| Windows | `C:\Users\opsly\OneDrive\Documents\ChatGPT\intcloudsysops\stream-overlay\clips\<fecha>\` |
+| WSL / Linux | `/mnt/c/Users/opsly/OneDrive/Documents/ChatGPT/intcloudsysops/stream-overlay/clips/<fecha>/` |
+
+Es la misma carpeta física (WSL monta `C:\` en `/mnt/c/`) — no hace falta
+sincronizar nada entre las dos, solo usar la forma de ruta que corresponda al
+entorno donde corre el script. **Esto NO resuelve visibilidad entre máquinas
+distintas** (Mac, sesiones cloud) — para eso hace falta compartir explícitamente
+(Tailscale, `runtime/content-os`, etc.), ver nota en el PR #1681.
+
 (`run.ps1` busca `node` solo y levanta el servidor de overlays en `127.0.0.1:8765` si no está corriendo.)
 
 ## Flujo del stream
