@@ -227,11 +227,15 @@ async function reviewWithLocalWorker({ pr, diff, failingChecks }) {
     const decision = String(submit.body?.dispatch_decision ?? '');
     if (
       submit.response.status === 409 &&
-      (decision === 'ALREADY_DONE' || decision === 'JOIN_EXISTING') &&
-      submit.body?.existing_job_id
+      (decision === 'ALREADY_DONE' || decision === 'JOIN_EXISTING')
     ) {
-      jobId = String(submit.body.existing_job_id);
-    } else {
+      if (submit.body?.existing_job_id) {
+        jobId = String(submit.body.existing_job_id);
+      } else if (submit.body?.existing_task_id) {
+        jobId = `local_opencode-${String(submit.body.existing_task_id)}`;
+      }
+    }
+    if (!jobId) {
       throw new Error(
         `Open-source reviewer submit ${submit.response.status}: ${JSON.stringify(submit.body).slice(0, 300)}`
       );
