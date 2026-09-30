@@ -1,6 +1,7 @@
 # Opsly — workflow catalog: docs/ops/workflows-index.md
 # CVE & secret scanning — runs on every PR and weekly cron.
-# MVP policy: moderate+ npm audit gate (aligned with .npmrc audit-level=moderate).
+# PR policy: block only MODERATE+ advisories introduced by the PR vs its base SHA.
+# Baseline policy: scheduled/manual runs keep the full MODERATE+ audit gate.
 # Docker Scout CVE scan runs on images already pushed to GHCR (post-deploy).
 # TruffleHog secret scan runs in ci.yml (see: secret-scan job).
 
@@ -25,6 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-node@v4
         with:
@@ -35,23 +38,96 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: npm audit — fail on moderate+
+      - name: npm audit — fail on new moderate+ advisories
         id: audit
+        shell: bash
         run: |
           set +e
-          # MVP policy: exclude dev dependencies from blocking audit (see docs/security/NPM-AUDIT-EXEMPTIONS.md)
-          npm audit --audit-level=moderate --omit=dev --json > audit-report.json 2>&1
-          EXIT_CODE=$?
-          # Print summary for visibility (including dev deps) but only return EXIT_CODE from non-dev audit
+          npm audit --audit-level=moderate --omit=dev --json > audit-head.json 2>&1
+          HEAD_EXIT=$?
+          set -e
+
+          # Scheduled/manual runs remain the strict full-baseline gate.
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            cp audit-head.json audit-report.json
+            exit "$HEAD_EXIT"
+          fi
+
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          BASE_AUDIT="$RUNNER_TEMP/audit-base.json"
+          TMPDIR="$(mktemp -d)"
+          trap 'rm -rf "$TMPDIR"' EXIT
+
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          git show "$BASE_SHA:package.json" > "$TMPDIR/package.json"
+          git show "$BASE_SHA:package-lock.json" > "$TMPDIR/package-lock.json"
+
+          (
+            cd "$TMPDIR"
+            set +e
+            npm audit --package-lock-only --audit-level=moderate --omit=dev --json > "$BASE_AUDIT" 2>&1
+            exit 0
+          )
+
+          BASE_SHA="$BASE_SHA" BASE_AUDIT="$BASE_AUDIT" node <<'NODE'
+          const fs = require('fs');
+
+          const rank = { info: 0, low: 1, moderate: 2, high: 3, critical: 4 };
+
+          function load(path) {
+            try {
+              return JSON.parse(fs.readFileSync(path, 'utf8'));
+            } catch (error) {
+              console.error(`Unable to parse npm audit JSON at ${path}: ${error.message}`);
+              process.exit(2);
+            }
+          }
+
+          function advisorySet(report) {
+            const out = new Set();
+            for (const [pkg, vuln] of Object.entries(report.vulnerabilities || {})) {
+              if ((rank[vuln.severity] ?? -1) < rank.moderate) continue;
+              for (const via of vuln.via || []) {
+                if (!via || typeof via !== 'object') continue;
+                const id = via.source ?? via.url ?? via.title;
+                if (id) out.add(`${pkg}::${id}`);
+              }
+            }
+            return out;
+          }
+
+          const head = load('audit-head.json');
+          const base = load(process.env.BASE_AUDIT);
+          const headSet = advisorySet(head);
+          const baseSet = advisorySet(base);
+          const introduced = [...headSet].filter(item => !baseSet.has(item)).sort();
+          const inherited = [...headSet].filter(item => baseSet.has(item)).sort();
+
+          const report = {
+            policy: 'pr-advisory-delta',
+            base_sha: process.env.BASE_SHA,
+            head_sha: process.env.GITHUB_SHA,
+            inherited_count: inherited.length,
+            introduced_count: introduced.length,
+            introduced,
+          };
+
+          fs.writeFileSync('audit-report.json', JSON.stringify(report, null, 2) + '\n');
+          console.log(JSON.stringify(report, null, 2));
+          if (introduced.length) process.exit(1);
+          NODE
+
+          # Keep full audit visibility without making inherited findings block unrelated PRs.
           npm audit --audit-level=moderate 2>&1 || true
-          exit $EXIT_CODE
 
       - name: Upload audit report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: npm-audit-report
-          path: audit-report.json
+          path: |
+            audit-report.json
+            audit-head.json
           if-no-files-found: ignore
 
       - name: Comment PR with audit summary (on failure)
