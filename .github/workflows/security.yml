@@ -55,15 +55,14 @@ jobs:
 
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           BASE_AUDIT="$RUNNER_TEMP/audit-base.json"
-          TMPDIR="$(mktemp -d)"
-          trap 'rm -rf "$TMPDIR"' EXIT
+          BASE_TREE="$RUNNER_TEMP/audit-base-tree"
+          trap 'git worktree remove --force "$BASE_TREE" >/dev/null 2>&1 || true' EXIT
 
           git fetch --no-tags --depth=1 origin "$BASE_SHA"
-          git show "$BASE_SHA:package.json" > "$TMPDIR/package.json"
-          git show "$BASE_SHA:package-lock.json" > "$TMPDIR/package-lock.json"
+          git worktree add --detach "$BASE_TREE" "$BASE_SHA"
 
           (
-            cd "$TMPDIR"
+            cd "$BASE_TREE"
             set +e
             npm audit --package-lock-only --audit-level=moderate --omit=dev --json > "$BASE_AUDIT" 2>&1
             exit 0
