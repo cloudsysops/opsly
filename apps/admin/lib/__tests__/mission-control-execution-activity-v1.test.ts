@@ -200,6 +200,8 @@ test('GitHub evidence enriches an autonomous claim with PR, verifier and merge r
         agent_id: null,
         workstream: null,
         conflict_key: null,
+        parallel_lane: null,
+        shared_gate: null,
         transport: 'unknown',
         pr_number: 99,
         pr_url: 'https://github.com/cloudsysops/opsly/pull/99',
@@ -232,6 +234,8 @@ test('explicit human-relay GitHub evidence creates a real REVIEW activity', () =
         agent_id: 'chatgpt',
         workstream: 'health-travel',
         conflict_key: 'health-travel/ui',
+        parallel_lane: null,
+        shared_gate: null,
         transport: 'human_relay',
         pr_number: 100,
         pr_url: 'https://github.com/cloudsysops/opsly/pull/100',
@@ -264,6 +268,8 @@ test('a generic unmarked PR cannot fabricate an execution activity', () => {
         agent_id: null,
         workstream: null,
         conflict_key: null,
+        parallel_lane: null,
+        shared_gate: null,
         transport: 'unknown',
         pr_number: 101,
         pr_url: 'https://github.com/cloudsysops/opsly/pull/101',
@@ -281,4 +287,34 @@ test('a generic unmarked PR cannot fabricate an execution activity', () => {
   });
 
   assert.equal(projection.activities.length, 0);
+});
+
+
+test('carries explicit parallel lane and shared gate into Mission Control activity', () => {
+  const projection = buildMissionControlExecutionProjectionV1({
+    pull_requests: [
+      {
+        work_id: 'review-work-1',
+        agent_id: 'opencode',
+        workstream: 'github-independent-review',
+        conflict_key: 'review:cloudsysops/opsly:1685:sha',
+        parallel_lane: 'reviewer',
+        shared_gate: 'independent-review-runtime',
+        transport: 'autonomous',
+        pr_number: 1685,
+        pr_url: 'https://github.com/cloudsysops/opsly/pull/1685',
+        branch: 'fix/npm-audit-baseline-1683',
+        head_sha: 'abc',
+        title: 'review',
+        draft: false,
+        verifier: 'BLOCKED',
+        merge_readiness: 'BLOCKED',
+        check_state: 'PASS',
+        mergeable: true,
+        blocker: 'independent verifier is not passing',
+      },
+    ],
+  });
+  assert.equal(projection.activities[0]?.parallel_lane, 'reviewer');
+  assert.equal(projection.activities[0]?.shared_gate, 'independent-review-runtime');
 });
