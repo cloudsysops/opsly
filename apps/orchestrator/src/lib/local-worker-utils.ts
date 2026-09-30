@@ -486,3 +486,12 @@ export function isConfigurableLocalBridgeKey(name: string): boolean {
   }
   return EXTERNAL_CLI_TO_OPSLY_LOCAL_AGENT[k] !== undefined;
 }
+
+
+/** True when this physical worker must not execute the supplied local-agent job type. */
+export function shouldDeferLocalAgentJobForHost(
+  jobType: string,
+  allowed: readonly LocalAgentKind[]
+): boolean {
+  return !allowed.includes(normalizeLocalAgentKind(jobType));
+}
