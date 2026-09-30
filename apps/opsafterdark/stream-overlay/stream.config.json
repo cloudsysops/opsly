@@ -33,5 +33,9 @@
     "blockedWords": [],
     "maxDurationSec": { "tiktok": 60, "shorts": 60, "reels": 90, "twitch": 60 },
     "aspectRatio": "9:16"
+  },
+  "postStream": {
+    "candidateCount": 15,
+    "minGapSeconds": 90
   }
 }

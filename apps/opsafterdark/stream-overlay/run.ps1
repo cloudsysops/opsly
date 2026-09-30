@@ -18,7 +18,15 @@ switch ($Cmd) {
   'preflight'  { Ensure-Server; Engine 'preflight.mjs' }
   'start'      { Ensure-Server; Start-Process $node -ArgumentList (Join-Path $engine 'auto-start.mjs') -WorkingDirectory $dir -WindowStyle Hidden; Engine 'stream-ctl.mjs' @('live') }   # EN VIVO
   'scene'      { Engine 'stream-ctl.mjs' @($Arg) }
-  'stop'       { Engine 'stream-ctl.mjs' @('stop') }                                                                                                  # termina el stream
+  'stop'       {
+    Engine 'stream-ctl.mjs' @('stop')                                                                                                                 # termina el stream
+    $go = Read-Host "`n¿Corro el análisis post-stream ahora? El VOD de Twitch tarda unos minutos en procesarse — si acabás de cortar, puede que aún no esté listo (s/N)"
+    if ($go -eq 's' -or $go -eq 'S') {
+      $vodUrl = Read-Host 'Pega la URL del VOD (twitch.tv/videos/...)'
+      if ($vodUrl) { Engine 'post-stream-analyze.mjs' @($vodUrl) } else { 'Sin URL — corré luego: run.ps1 post-stream <url>' }
+    } else { 'Ok — cuando el VOD esté listo: run.ps1 post-stream <url>' }
+  }
+  'post-stream'{ Engine 'post-stream-analyze.mjs' @($Arg) }                                                                                            # baja audio + detecta picos, no corta ni publica
   'test-countdown' { Ensure-Server; Engine 'auto-start.mjs' @('--test', $(if ($Arg) { $Arg } else { '15' })) }
   'alert'      { Ensure-Server; Engine 'test-alert.mjs' @($(if ($Arg) { $Arg } else { 'all' })) }
   'music'      { Ensure-Server; Engine 'music.mjs' (@($Arg) + $Rest) }
@@ -33,5 +41,5 @@ switch ($Cmd) {
   'vod-check'  { Engine 'vod-policy.mjs' @('check') }                                           # avisa VODs por vencer, no borra nada
   'twitch-events' { Start-Process $node -ArgumentList (Join-Path $engine 'twitch-eventsub.mjs') -WorkingDirectory $dir -WindowStyle Hidden }  # alertas reales follow/sub/raid
   'hardware-trend' { Engine 'hardware-trend.mjs' @($(if ($Arg) { $Arg })) }                     # tendencia de GPU/temp entre sesiones
-  default      { 'Comandos: preflight | start | scene <inicio|coding|juego|dj|brb|fin> | stop | test-countdown [seg] | alert [follow|sub|raid|all] | music <techno|house|buildup|drop|off|"texto"> | music-check | vod-audio-fix | test-vod-audio | music-setup | test-ndi | hotkeys-on | hotkeys-off | vod-archive | vod-check | twitch-events | hardware-trend [--all]' }
+  default      { 'Comandos: preflight | start | scene <inicio|coding|juego|dj|brb|fin> | stop | post-stream <url> | test-countdown [seg] | alert [follow|sub|raid|all] | music <techno|house|buildup|drop|off|"texto"> | music-check | vod-audio-fix | test-vod-audio | music-setup | test-ndi | hotkeys-on | hotkeys-off | vod-archive | vod-check | twitch-events | hardware-trend [--all]' }
 }
