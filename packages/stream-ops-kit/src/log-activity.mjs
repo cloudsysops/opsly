@@ -1,6 +1,8 @@
 // Uso: node log-activity.mjs <claude|codex> "texto" | node log-activity.mjs --goal "texto" | node log-activity.mjs --clear
 import fs from 'node:fs';
-const file = new URL('./activity.json', import.meta.url);
+import { tenantPath } from './tenant-paths.mjs';
+
+const file = tenantPath('activity.json');
 const data = JSON.parse(fs.readFileSync(file, 'utf8'));
 const [first, ...rest] = process.argv.slice(2);
 if (first === '--clear') data.items = [];

@@ -1,6 +1,7 @@
 import fs from 'node:fs';
+import { tenantPath } from './tenant-paths.mjs';
 
-const file = new URL('./schedule.json', import.meta.url);
+const file = tenantPath('schedule.json');
 let testEnd = null; // epoch ms; solo en memoria, nunca toca schedule.json
 
 // "2026-10-03T20:00" interpretado como hora de pared en `timeZone` -> epoch ms.

@@ -1,6 +1,13 @@
 # Stream OpsAfterDark — herramientas de OBS
 
-Todo se maneja desde una carpeta y un punto de entrada:
+El motor genérico (servidor, conexión OBS, control de escenas, etc.) vive en
+[`packages/stream-ops-kit/`](../../../packages/stream-ops-kit) y es compartido con
+futuros tenants del vertical `gaming-streamer`. Esta carpeta solo tiene la
+**config y los datos de OpsAfterDark**: `stream.config.json` (rutas/nombres de
+escena/pistas de audio de este tenant), `schedule.json`, `activity.json`,
+`scenes.mjs` (branding/HTML), `music/`, y los scripts de `setup/` que son
+específicos de este tenant (instalan fuentes con los nombres exactos de este
+canal en OBS). Todo se maneja desde un punto de entrada:
 
 ```powershell
 cd C:\Users\opsly\OneDrive\Documents\ChatGPT\intcloudsysops\stream-overlay
@@ -27,7 +34,7 @@ powershell -ExecutionPolicy Bypass -File .\run.ps1 <comando>
 
 ## Alertas (follow, sub, raid) — solo simuladas
 
-- Overlay: `/alerts` (fuente de navegador "Alertas", arriba de Streaming, Gaming, Coding y Battlefield 6). Se instala con `node configure-alerts.mjs`.
+- Overlay: `/alerts` (fuente de navegador "Alertas", arriba de Streaming, Gaming, Coding y Battlefield 6). Se instala con `node setup/configure-alerts.mjs`.
 - Probar: `run.ps1 alert follow` · `alert sub` · `alert raid` · `alert all`.
 - El servidor solo acepta eventos por `POST /alerts/test` con la cabecera `x-stream-tool: 1`, desde esta máquina.
 - **No hay conexión con Twitch.** Para alertas reales haría falta EventSub con tu autorización, y no está hecho.
@@ -65,4 +72,17 @@ Patrones techno, house, build-up y drop en `music/`; instructivo en [music/INSTR
 
 ## Archivos
 
-`server.mjs` (servidor y rutas) · `scenes.mjs` (páginas de overlay) · `schedule.mjs`/`schedule.json` (cuenta regresiva) · `obs.mjs` (conexión a OBS) · `stream-ctl.mjs` · `auto-start.mjs` · `preflight.mjs` · `hotkeys.ps1` · `configure-*.mjs` (instalan fuentes en OBS) · `music.mjs`/`music/` · `check-music-licenses.mjs` · `log-activity.mjs`/`activity.json` (resumen de sesión) · `start-stream-tools.vbs` (arranque con Windows).
+**En esta carpeta (config/datos de este tenant):** `stream.config.json` (rutas OBS,
+nombres de escena, pistas de audio, proceso del juego) · `scenes.mjs` (branding/HTML
+de las páginas de overlay) · `schedule.json` · `activity.json` (resumen de sesión) ·
+`music/` · `hotkeys.ps1` · `start-stream-tools.vbs` (arranque con Windows) ·
+`setup/configure-*.mjs` (instalan fuentes con los nombres exactos de este canal en
+OBS) · `setup/test-ndi-frame.mjs`, `setup/test-vod-audio.mjs` (pruebas atadas a este
+hardware/layout).
+
+**Motor compartido en [`packages/stream-ops-kit/src/`](../../../packages/stream-ops-kit/src):**
+`server.mjs` (servidor y rutas) · `obs.mjs`/`obs-connection.mjs` (conexión a OBS) ·
+`schedule.mjs` · `stream-ctl.mjs` · `auto-start.mjs` · `scene-rotator.mjs` ·
+`preflight.mjs` · `music.mjs` · `check-music-licenses.mjs` · `log-activity.mjs` ·
+`extract-audio-tracks.mjs` · `fix-vod-audio.mjs` · `tenant-config.mjs`/`tenant-paths.mjs`
+(leen `stream.config.json` y los datos de la carpeta que apunte `STREAM_KIT_DATA_DIR`).

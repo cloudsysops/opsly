@@ -1,14 +1,9 @@
-import crypto from 'node:crypto';
-import fs from 'node:fs';
+import { readObsWebsocketConfig, authenticate } from './obs-connection.mjs';
 
-const config = JSON.parse(fs.readFileSync('C:/Users/opsly/AppData/Roaming/obs-studio/plugin_config/obs-websocket/config.json', 'utf8'));
+const config = readObsWebsocketConfig();
 const ws = new WebSocket(`ws://127.0.0.1:${config.server_port}`);
 const pending = new Map();
 let sequence = 0;
-function auth(password, salt, challenge) {
-  const secret = crypto.createHash('sha256').update(password + salt).digest('base64');
-  return crypto.createHash('sha256').update(secret + challenge).digest('base64');
-}
 function request(requestType, requestData = {}) {
   const requestId = String(++sequence);
   ws.send(JSON.stringify({ op: 6, d: { requestType, requestId, requestData } }));
@@ -18,7 +13,7 @@ ws.onmessage = async ({ data }) => {
   const message = JSON.parse(data);
   if (message.op === 0) {
     const login = message.d.authentication;
-    ws.send(JSON.stringify({ op: 1, d: { rpcVersion: 1, authentication: auth(config.server_password, login.salt, login.challenge) } }));
+    ws.send(JSON.stringify({ op: 1, d: { rpcVersion: 1, authentication: authenticate(config.server_password, login.salt, login.challenge) } }));
   } else if (message.op === 7) {
     const waiter = pending.get(message.d.requestId);
     pending.delete(message.d.requestId);

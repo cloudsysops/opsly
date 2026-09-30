@@ -4,6 +4,8 @@
 # Solo cambian de escena; no pueden iniciar ni detener el stream.
 param([string]$Action = 'start')
 $dir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$engine = Join-Path $dir '..\..\..\packages\stream-ops-kit\src'
+$env:STREAM_KIT_DATA_DIR = $dir
 $pidFile = Join-Path $dir '.hotkeys.pid'
 
 function Find-Node {
@@ -44,6 +46,6 @@ try {
     if ($msg.message -ne 0x0312) { continue }
     $id = [int]$msg.wParam
     if ($id -eq 0) { $enabled = -not $enabled; [Console]::Beep($(if ($enabled) { 900 } else { 400 }), 120); continue }
-    if ($enabled -and $names.ContainsKey($id)) { Start-Process $node -ArgumentList @((Join-Path $dir 'stream-ctl.mjs'), $names[$id]) -WindowStyle Hidden }
+    if ($enabled -and $names.ContainsKey($id)) { Start-Process $node -ArgumentList @((Join-Path $engine 'stream-ctl.mjs'), $names[$id]) -WindowStyle Hidden }
   }
 } finally { foreach ($i in 0..6) { [void][HK]::UnregisterHotKey([IntPtr]::Zero, $i) }; Remove-Item $pidFile -Force -ErrorAction SilentlyContinue }

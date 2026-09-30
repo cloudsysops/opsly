@@ -1,0 +1,23 @@
+{
+  "obsConfigPath": "C:/Users/opsly/AppData/Roaming/obs-studio/plugin_config/obs-websocket/config.json",
+  "apiBase": "http://127.0.0.1:8765",
+  "overlaySourceName": "Overlay PC — Live",
+  "obsSceneNames": {
+    "inicio": "Iniciando Stream",
+    "coding": "Coding",
+    "juego": "Battlefield 6 — Día 2",
+    "dj": "Streaming",
+    "brb": "Vuelvo en un momento",
+    "fin": "Terminando Stream"
+  },
+  "audioTracks": {
+    "Mic/Aux": [1, 2, 3],
+    "Desktop Audio": [1, 2],
+    "Strudel Música": [1]
+  },
+  "game": {
+    "processName": "bf6.exe",
+    "label": "Battlefield 6",
+    "liveStatusLabel": "LIVE · BATTLEFIELD"
+  }
+}

@@ -3,7 +3,7 @@
 // La grabación lleva las mismas pistas que el directo: 1 Mezcla, 2 VOD (juego+voz), 3 Micro, 4 DJ.
 // Nunca inicia el stream. Al terminar restaura la fuente Strudel, la escena "inicio" y oculta el widget.
 //   node test-vod-audio.mjs           (imprime la ruta del archivo y los picos por fase)
-import { withObs, api, tool } from './obs.mjs';
+import { withObs, api, tool } from '@intcloudsysops/stream-ops-kit/obs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const PHASES = [['A', 40], ['B', 70], ['C', 30]];

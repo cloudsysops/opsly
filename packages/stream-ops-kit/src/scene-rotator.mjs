@@ -1,36 +1,38 @@
-import crypto from 'node:crypto';
+// Vigila si el proceso del juego del tenant (stream.config.json → game.processName) está
+// corriendo y alterna entre la escena de juego y la escena "segura" (brb) en consecuencia.
+// Solo actúa si la escena actual ya es una de las dos gestionadas; nunca toca otra escena.
 import { execFile } from 'node:child_process';
-import fs from 'node:fs';
+import { readObsWebsocketConfig, authenticate } from './obs-connection.mjs';
+import { tenantConfig } from './tenant-config.mjs';
 
-const config = JSON.parse(fs.readFileSync('C:/Users/opsly/AppData/Roaming/obs-studio/plugin_config/obs-websocket/config.json', 'utf8'));
-const gameScene = 'Battlefield 6 — Día 2';
-const safeScene = 'Vuelvo en un momento';
+const config = readObsWebsocketConfig();
+const { obsSceneNames = {}, game } = tenantConfig();
+if (!game?.processName) throw new Error('stream.config.json no define "game.processName" (ej: "bf6.exe").');
+const gameScene = obsSceneNames.juego;
+const safeScene = obsSceneNames.brb;
+if (!gameScene || !safeScene) throw new Error('stream.config.json debe definir obsSceneNames.juego y obsSceneNames.brb.');
 const managedScenes = new Set([gameScene, safeScene]);
 const ws = new WebSocket(`ws://127.0.0.1:${config.server_port}`);
 let requestNumber = 0;
 const pending = new Map();
 let lastTarget = null;
 
-function authentication(password, salt, challenge) {
-  const secret = crypto.createHash('sha256').update(password + salt).digest('base64');
-  return crypto.createHash('sha256').update(secret + challenge).digest('base64');
-}
 function request(requestType, requestData = {}) {
   const requestId = String(++requestNumber);
   ws.send(JSON.stringify({ op: 6, d: { requestType, requestId, requestData } }));
   return new Promise((resolve, reject) => pending.set(requestId, { resolve, reject }));
 }
-function battlefieldRunning() {
-  return new Promise((resolve) => execFile('tasklist', ['/FI', 'IMAGENAME eq bf6.exe', '/NH'], { windowsHide: true }, (_error, stdout) => resolve(/bf6\.exe/i.test(stdout))));
+function gameRunningCheck() {
+  return new Promise((resolve) => execFile('tasklist', ['/FI', `IMAGENAME eq ${game.processName}`, '/NH'], { windowsHide: true }, (_error, stdout) => resolve(new RegExp(game.processName.replace('.', '\\.'), 'i').test(stdout))));
 }
 async function rotate() {
-  const gameRunning = await battlefieldRunning();
+  const gameRunning = await gameRunningCheck();
   const target = gameRunning ? gameScene : safeScene;
   const current = await request('GetCurrentProgramScene');
   if (!managedScenes.has(current.currentProgramSceneName)) return;
   if (current.currentProgramSceneName !== target) {
     await request('SetCurrentProgramScene', { sceneName: target });
-    console.log(JSON.stringify({ changed: true, target, reason: gameRunning ? 'battlefield-running' : 'battlefield-not-running' }));
+    console.log(JSON.stringify({ changed: true, target, reason: gameRunning ? 'game-running' : 'game-not-running' }));
   }
   lastTarget = target;
 }
@@ -39,7 +41,7 @@ ws.onmessage = async ({ data }) => {
   const message = JSON.parse(data);
   if (message.op === 0) {
     const auth = message.d.authentication;
-    ws.send(JSON.stringify({ op: 1, d: { rpcVersion: 1, authentication: authentication(config.server_password, auth.salt, auth.challenge) } }));
+    ws.send(JSON.stringify({ op: 1, d: { rpcVersion: 1, authentication: authenticate(config.server_password, auth.salt, auth.challenge) } }));
   } else if (message.op === 7) {
     const waiter = pending.get(message.d.requestId);
     pending.delete(message.d.requestId);
@@ -48,7 +50,7 @@ ws.onmessage = async ({ data }) => {
   } else if (message.op === 2) {
     rotate().catch(() => undefined);
     setInterval(() => rotate().catch(() => undefined), 5000).unref();
-    console.log(JSON.stringify({ started: true, policy: 'battlefield-to-game-or-brb-only' }));
+    console.log(JSON.stringify({ started: true, policy: 'game-to-scene-or-brb-only' }));
   }
 };
 ws.onerror = () => console.log(JSON.stringify({ started: false, reason: 'obs-websocket-unavailable' }));

@@ -1,6 +1,6 @@
 // Crea la fuente de audio independiente "Strudel Música" (navegador con audio redirigido a OBS).
 // No toca Desktop Audio, Mic/Aux, el dispositivo de monitoreo ni los ajustes de salida. Se niega a correr en vivo.
-import { withObs } from './obs.mjs';
+import { withObs } from '@intcloudsysops/stream-ops-kit/obs';
 
 const source = 'Strudel Música';
 const scenes = ['Iniciando Stream', 'Gaming', 'Coding', 'Battlefield 6 — Día 2', 'Streaming', 'Vuelvo en un momento', 'Terminando Stream'];

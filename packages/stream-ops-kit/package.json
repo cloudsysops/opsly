@@ -1,0 +1,28 @@
+{
+  "name": "@intcloudsysops/stream-ops-kit",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Motor genérico de automatización de OBS/stream para tenants del vertical gaming-streamer (primer tenant: opsafterdark).",
+  "type": "module",
+  "exports": {
+    "./obs": "./src/obs.mjs",
+    "./obs-connection": "./src/obs-connection.mjs",
+    "./tenant-config": "./src/tenant-config.mjs",
+    "./tenant-paths": "./src/tenant-paths.mjs"
+  },
+  "bin": {
+    "stream-ops-server": "./src/server.mjs",
+    "stream-ops-preflight": "./src/preflight.mjs",
+    "stream-ops-auto-start": "./src/auto-start.mjs",
+    "stream-ops-stream-ctl": "./src/stream-ctl.mjs",
+    "stream-ops-scene-rotator": "./src/scene-rotator.mjs",
+    "stream-ops-music": "./src/music.mjs",
+    "stream-ops-log-activity": "./src/log-activity.mjs",
+    "stream-ops-preview-obs": "./src/preview-obs.mjs",
+    "stream-ops-obs-status": "./src/obs-status.mjs",
+    "stream-ops-check-music-licenses": "./src/check-music-licenses.mjs",
+    "stream-ops-extract-audio-tracks": "./src/extract-audio-tracks.mjs",
+    "stream-ops-fix-vod-audio": "./src/fix-vod-audio.mjs",
+    "stream-ops-test-alert": "./src/test-alert.mjs"
+  }
+}

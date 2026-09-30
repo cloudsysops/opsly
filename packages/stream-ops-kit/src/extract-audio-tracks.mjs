@@ -2,6 +2,8 @@
 //   node extract-audio-tracks.mjs "D:\Content\Media\OBS\archivo.mp4"
 // Sin dependencias externas. Solo lee el archivo; escribe únicamente en .analysis/.
 import fs from 'node:fs';
+import path from 'node:path';
+import { tenantPath } from './tenant-paths.mjs';
 
 const file = process.argv[2];
 if (!file) { console.log('uso: extract-audio-tracks.mjs <archivo.mp4>'); process.exit(1); }
@@ -87,7 +89,7 @@ if (tracks.some((t) => t.samples.length === 0)) {
   }
 }
 
-fs.mkdirSync(new URL('./.analysis/', import.meta.url), { recursive: true });
+fs.mkdirSync(tenantPath('.analysis'), { recursive: true });
 const srTable = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
 const meta = [];
 tracks.forEach((t, i) => {
@@ -96,9 +98,9 @@ tracks.forEach((t, i) => {
     h[0] = 0xff; h[1] = 0xf1; h[2] = ((t.objectType - 1) << 6) | (t.sfi << 2) | (t.chCfg >> 2); h[3] = ((t.chCfg & 3) << 6) | (total >> 11); h[4] = (total >> 3) & 0xff; h[5] = ((total & 7) << 5) | 0x1f; h[6] = 0xfc;
     return Buffer.concat([h, read(pos, len)]);
   });
-  fs.writeFileSync(new URL(`./.analysis/track${i + 1}.aac`, import.meta.url), Buffer.concat(chunks));
+  fs.writeFileSync(path.join(tenantPath('.analysis'), `track${i + 1}.aac`), Buffer.concat(chunks));
   meta.push({ track: i + 1, trackId: t.trackId, frames: t.samples.length, sampleRate: srTable[t.sfi], channels: t.chCfg || t.channels, seconds: +(t.samples.length * 1024 / srTable[t.sfi]).toFixed(1) });
 });
-fs.writeFileSync(new URL('./.analysis/meta.json', import.meta.url), JSON.stringify(meta));
+fs.writeFileSync(path.join(tenantPath('.analysis'), 'meta.json'), JSON.stringify(meta));
 console.log(JSON.stringify(meta));
 fs.closeSync(fd);

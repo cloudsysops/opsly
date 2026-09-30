@@ -1,7 +1,7 @@
-import crypto from 'node:crypto';
-import fs from 'node:fs';
+import { readObsWebsocketConfig, authenticate } from './obs-connection.mjs';
+import { tenantConfig } from './tenant-config.mjs';
 
-const config = JSON.parse(fs.readFileSync('C:/Users/opsly/AppData/Roaming/obs-studio/plugin_config/obs-websocket/config.json', 'utf8'));
+const config = readObsWebsocketConfig();
 
 // Conecta a OBS, corre fn(request) y cierra. Rechaza si OBS no responde en 5 s.
 export function withObs(fn, timeoutMs = 5000, { eventSubscriptions, onEvent } = {}) {
@@ -19,10 +19,7 @@ export function withObs(fn, timeoutMs = 5000, { eventSubscriptions, onEvent } = 
       const m = JSON.parse(data);
       if (m.op === 0) {
         const a = m.d.authentication;
-        const proof = a && (() => {
-          const secret = crypto.createHash('sha256').update(config.server_password + a.salt).digest('base64');
-          return crypto.createHash('sha256').update(secret + a.challenge).digest('base64');
-        })();
+        const proof = a && authenticate(config.server_password, a.salt, a.challenge);
         ws.send(JSON.stringify({ op: 1, d: { rpcVersion: 1, ...(a ? { authentication: proof } : {}), ...(eventSubscriptions ? { eventSubscriptions } : {}) } }));
       } else if (m.op === 7) {
         const w = pending.get(m.d.requestId);
@@ -38,6 +35,8 @@ export function withObs(fn, timeoutMs = 5000, { eventSubscriptions, onEvent } = 
   });
 }
 
-export const scenes = { inicio: 'Iniciando Stream', coding: 'Coding', juego: 'Battlefield 6 — Día 2', dj: 'Streaming', brb: 'Vuelvo en un momento', fin: 'Terminando Stream' };
-export const api = 'http://127.0.0.1:8765';
+// Antes hardcodeado aquí mismo; ahora viene de stream.config.json del tenant
+// (obsSceneNames), así cada tenant mapea sus propios nombres de escena de OBS.
+export const scenes = tenantConfig().obsSceneNames ?? {};
+export const api = tenantConfig().apiBase ?? 'http://127.0.0.1:8765';
 export const tool = (path) => fetch(`${api}${path}`, { method: 'POST', headers: { 'x-stream-tool': '1' } }).then((r) => r.json());

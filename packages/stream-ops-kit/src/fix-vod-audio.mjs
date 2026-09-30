@@ -1,15 +1,11 @@
-// Deja las pistas de audio como debe ser para el VOD de Twitch (pista 2):
-//   Mic/Aux         -> 1 (directo) + 2 (VOD) + 3 (pista "Micro" para grabar)
-//   Desktop Audio   -> 1 + 2 (sin cambios)
-//   Strudel Música  -> SOLO 1
+// Deja las pistas de audio como declara stream.config.json → audioTracks del tenant.
 // No toca dispositivos, volúmenes, monitoreo ni Desktop Audio. Se niega a correr en vivo.
 import { withObs } from './obs.mjs';
+import { tenantConfig } from './tenant-config.mjs';
 
-const want = {
-  'Mic/Aux': [1, 2, 3],
-  'Desktop Audio': [1, 2],
-  'Strudel Música': [1],
-};
+const { audioTracks: want = {} } = tenantConfig();
+if (!Object.keys(want).length) throw new Error('stream.config.json no define "audioTracks".');
+
 await withObs(async (req) => {
   if ((await req('GetStreamStatus')).outputActive) throw new Error('stream-live-refusing-to-edit');
   for (const [inputName, tracks] of Object.entries(want)) {
