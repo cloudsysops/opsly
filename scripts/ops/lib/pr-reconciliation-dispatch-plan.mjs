@@ -7,6 +7,8 @@ export function planReconciliationDispatch(workpack) {
     action: 'HOLD',
     mutatesBranch: false,
     reason: null,
+    parallelLane: workpack.parallelLane ?? 'reconciliation',
+    sharedGate: workpack.sharedGate ?? null,
   };
 
   if (workpack.operation === 'REQUEST_INDEPENDENT_REVIEW') {
@@ -51,7 +53,24 @@ export function planReconciliationDispatch(workpack) {
 }
 
 export function buildReconciliationDispatchPlan(source) {
-  const actions = (source.workpacks || []).map(planReconciliationDispatch);
+  const rawActions = (source.workpacks || []).map(planReconciliationDispatch);
+  const seenSharedGates = new Set();
+  const actions = rawActions.map((action) => {
+    if (
+      action.action === 'DISPATCH_INDEPENDENT_REVIEW' &&
+      action.sharedGate
+    ) {
+      if (seenSharedGates.has(action.sharedGate)) {
+        return {
+          ...action,
+          action: 'HOLD_SHARED_GATE',
+          reason: `shared gate ${action.sharedGate} already has a probe in this sweep`,
+        };
+      }
+      seenSharedGates.add(action.sharedGate);
+    }
+    return action;
+  });
   return {
     schema_version: 'ReconciliationDispatchPlanV1',
     generated_at: new Date().toISOString(),

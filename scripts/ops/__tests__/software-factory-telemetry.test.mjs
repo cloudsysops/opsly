@@ -38,9 +38,9 @@ function reconciliation() {
   return {
     mode: 'READ_ONLY',
     pullRequests: [
-      { lane: 'MERGE_READY' },
-      { lane: 'CHECK_FAILED' },
-      { lane: 'CONFLICTED' },
+      { lane: 'MERGE_READY', parallelLane: 'reconciliation' },
+      { lane: 'CHECK_FAILED', parallelLane: 'reconciliation' },
+      { lane: 'CONFLICTED', parallelLane: 'reconciliation' },
     ],
   };
 }
@@ -220,4 +220,28 @@ test('does not count READY when verifier or checks are not PASS', () => {
 
   assert.equal(snapshot.metrics.merge_ready, 1);
   assert.equal(snapshot.metrics.merge_ready_ratio, 0.3333);
+});
+
+
+test('surfaces shared-gate pressure without treating it as a global factory stall', () => {
+  const snapshot = buildFactoryTelemetry({
+    workstreams: completeWorkstreams(),
+    reconciliation: {
+      mode: 'READ_ONLY',
+      pullRequests: [
+        { lane: 'REVIEW_BLOCKED', parallelLane: 'reviewer', sharedGate: 'independent-review-runtime' },
+        { lane: 'REVIEW_BLOCKED', parallelLane: 'reviewer', sharedGate: 'independent-review-runtime' },
+        { lane: 'CHECK_FAILED', parallelLane: 'reconciliation', sharedGate: null },
+        { lane: 'PROTECTED', parallelLane: 'qa-evidence', sharedGate: null },
+      ],
+    },
+    policy,
+  });
+
+  assert.equal(snapshot.metrics.reconciliation.shared_gates['independent-review-runtime'], 2);
+  assert.equal(snapshot.metrics.reconciliation.parallel_lanes.reviewer, 2);
+  assert.equal(snapshot.metrics.reconciliation.parallel_lanes.reconciliation, 1);
+  assert.equal(snapshot.metrics.reconciliation.parallel_lanes['qa-evidence'], 1);
+  assert.ok(snapshot.recommendations.some((item) => item.id === 'probe-shared-review-gate-once'));
+  assert.ok(snapshot.recommendations.some((item) => item.id === 'repair-failing-checks'));
 });

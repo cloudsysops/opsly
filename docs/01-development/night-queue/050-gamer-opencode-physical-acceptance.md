@@ -18,7 +18,8 @@ autonomy: supervised
 estimated_minutes: 15
 resource_class: small
 node_types: gamer
-architecture_patterns: BullMQ, OpenCode, Ollama, ephemeral runtime
+architecture_patterns: BullMQ, OpenCode, Ollama, ephemeral runtime, machine claim
+depends_on: PR #1616 physical machine-claim acceptance
 ---
 
 # Gamer OpenCode Physical Acceptance
@@ -31,6 +32,8 @@ Produce the first physical proof that the governed path reaches the PC Gamer, in
 
 If any precondition is missing, return `BLOCKED` with the exact missing item and do not fall back:
 
+- PR #1616 machine-claim primitive is available on the execution path and has real acquire/refuse/renew/release evidence;
+- the PC Gamer machine claim is acquired by this acceptance holder before any disruptive runtime action;
 - Gamer worker is online;
 - `local_opencode` is claimed by the Gamer, not Mac;
 - OpenCode bridge is healthy;
@@ -53,7 +56,9 @@ Then verify:
 3. evidence identifies the selected model as `ollama/qwen*`;
 4. no paid API was used;
 5. ephemeral task session is gone;
-6. healthy idle returns to zero `opsly-task-*` sessions.
+6. healthy idle returns to zero `opsly-task-*` sessions;
+7. evidence records the machine-claim holder/lease lifecycle for this run without exposing secrets;
+8. the claim is released (or expires safely) after teardown and a competing holder could not enter during the run.
 
 ## Hard boundaries
 

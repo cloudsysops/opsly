@@ -51,6 +51,8 @@ type GitHubWorkItem = {
   agent_id: string | null;
   workstream: string | null;
   conflict_key: string | null;
+  parallel_lane: 'runtime' | 'reviewer' | 'reconciliation' | 'qa-evidence' | null;
+  shared_gate: string | null;
   transport: 'autonomous' | 'human_relay' | 'unknown';
   pr_number: number;
   pr_url: string;
@@ -71,6 +73,8 @@ type Marker = {
   agent_id?: unknown;
   workstream?: unknown;
   conflict_key?: unknown;
+  parallel_lane?: unknown;
+  shared_gate?: unknown;
   transport?: unknown;
 };
 
@@ -466,6 +470,13 @@ async function readGithubWork(): Promise<{
             agent_id: asString(marker?.agent_id) || fallbackBodyField(body, 'Worker'),
             workstream: asString(marker?.workstream) || fallbackBodyField(body, 'Workstream'),
             conflict_key: asString(marker?.conflict_key) || fallbackBodyField(body, 'Conflict-Key'),
+            parallel_lane: (() => {
+              const value = asString(marker?.parallel_lane) || fallbackBodyField(body, 'Parallel-Lane');
+              return ['runtime', 'reviewer', 'reconciliation', 'qa-evidence'].includes(value || '')
+                ? (value as GitHubWorkItem['parallel_lane'])
+                : null;
+            })(),
+            shared_gate: asString(marker?.shared_gate) || fallbackBodyField(body, 'Shared-Gate'),
             transport,
             pr_number: Number(pull.number),
             pr_url: asString(pull.html_url) || '',

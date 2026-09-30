@@ -195,6 +195,10 @@ for (const pull of pulls) {
     },
     supersedes: supersededByReference(pull, comments, openPullNumbers),
     supersededBy: [],
+    sharedGate:
+      !changesRequested && independentState !== 'success'
+        ? 'independent-review-runtime'
+        : null,
     checks: checkSummary(checks.check_runs || []),
   });
 }
@@ -207,7 +211,17 @@ for (const record of records) {
   }
 }
 
-for (const record of records) record.lane = chooseLane(record);
+for (const record of records) {
+  record.lane = chooseLane(record);
+  record.parallelLane =
+    record.lane === 'REVIEW_BLOCKED'
+      ? 'reviewer'
+      : ['BEHIND', 'CONFLICTED', 'CHECK_FAILED'].includes(record.lane)
+        ? 'reconciliation'
+        : record.lane === 'PROTECTED'
+          ? 'qa-evidence'
+          : 'reconciliation';
+}
 
 const laneOrder = [
   'MERGE_READY',

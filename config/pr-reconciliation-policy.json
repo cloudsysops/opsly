@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "mode": "inventory-first",
   "lanes": [
     "MERGE_READY",
@@ -61,5 +61,60 @@
     "deleteMergedBranches": "manual-or-supervised",
     "deleteSupersededBranches": "manual-or-supervised",
     "forceDelete": false
+  },
+  "supervisor": {
+    "mode": "parallel-lanes",
+    "max_wip_per_conflict_key": 1,
+    "shared_gate_probe_limit_per_sweep": 1,
+    "no_progress_attempts_before_needs_human": 3,
+    "continue_independent_work_when_shared_gate_blocked": true,
+    "lanes": [
+      {
+        "id": "runtime",
+        "conflict_key_prefix": "runtime/",
+        "purpose": "physical/local compute recovery and acceptance"
+      },
+      {
+        "id": "reviewer",
+        "conflict_key_prefix": "review/",
+        "purpose": "independent exact-head local review"
+      },
+      {
+        "id": "reconciliation",
+        "conflict_key_prefix": "pr-reconcile/",
+        "purpose": "PR inventory, ordering and branch reconciliation"
+      },
+      {
+        "id": "qa-evidence",
+        "conflict_key_prefix": "qa/",
+        "purpose": "non-production QA and evidence collection"
+      }
+    ],
+    "shared_gates": {
+      "independent_review": {
+        "key": "independent-review-runtime",
+        "behavior": "probe-one-per-sweep",
+        "blocks": "merge-readiness-only",
+        "must_not_block": [
+          "technical-ci-repair",
+          "runtime-recovery",
+          "qa-evidence",
+          "backlog-classification"
+        ]
+      }
+    },
+    "canonical_owners": {
+      "dependency_planning": "TaskGraphV1",
+      "task_ownership": "DispatchClaimV1/apps-orchestrator",
+      "physical_machine_ownership": "PR #1616 machine-claim",
+      "runtime_routing": "external-agent-registry + compute worker health",
+      "zero_cost_execution": "PR #1686 local_opencode -> Ollama/Qwen",
+      "independent_review": "Issue #1644 Open Review Agent",
+      "pr_reconciliation": "PR reconciliation + PR Doctor",
+      "physical_acceptance": "Issue #1191 / #1634 workpack #050",
+      "mission_control": "Issue #1447 / factory-workstreams",
+      "cleanup": "reconciliation cleanup plan",
+      "telemetry": "Software Factory Telemetry / AgentTaskEnvelopeV1.request_id"
+    }
   }
 }

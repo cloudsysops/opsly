@@ -166,8 +166,18 @@ export function buildFactoryTelemetry({ workstreams = {}, reconciliation = {}, p
     : null;
 
   const lanes = {};
+  const parallelLanes = {};
+  const sharedGates = {};
   if (reconciliationState.observed) {
-    for (const pr of reconciliationPrs) lanes[pr.lane] = (lanes[pr.lane] || 0) + 1;
+    for (const pr of reconciliationPrs) {
+      lanes[pr.lane] = (lanes[pr.lane] || 0) + 1;
+      if (typeof pr.parallelLane === 'string' && pr.parallelLane) {
+        parallelLanes[pr.parallelLane] = (parallelLanes[pr.parallelLane] || 0) + 1;
+      }
+      if (typeof pr.sharedGate === 'string' && pr.sharedGate) {
+        sharedGates[pr.sharedGate] = (sharedGates[pr.sharedGate] || 0) + 1;
+      }
+    }
   }
 
   const evidencedPullRequests = githubObserved ? prs.length : null;
@@ -196,6 +206,8 @@ export function buildFactoryTelemetry({ workstreams = {}, reconciliation = {}, p
           superseded: lanes.SUPERSEDED || 0,
           protected: lanes.PROTECTED || 0,
           unknown: lanes.UNKNOWN || 0,
+          parallel_lanes: parallelLanes,
+          shared_gates: sharedGates,
         }
       : null,
   };
@@ -249,6 +261,16 @@ export function buildFactoryTelemetry({ workstreams = {}, reconciliation = {}, p
         priority: 'high',
         reason: `${metrics.reconciliation.check_failed} PR(s) have failed checks`,
         next_action: 'classify failure from trusted evidence; auto-rerun only bounded verified transient failures',
+      });
+    }
+    const independentReviewWaiters =
+      metrics.reconciliation.shared_gates?.['independent-review-runtime'] || 0;
+    if (independentReviewWaiters > 1) {
+      recommendations.push({
+        id: 'probe-shared-review-gate-once',
+        priority: 'high',
+        reason: `${independentReviewWaiters} PR(s) share the independent-review runtime gate`,
+        next_action: 'dispatch one reviewer probe per sweep while continuing independent runtime, CI repair, QA and backlog work',
       });
     }
     if (metrics.reconciliation.merge_ready >= thresholds.mergeReadyBacklogWarn) {

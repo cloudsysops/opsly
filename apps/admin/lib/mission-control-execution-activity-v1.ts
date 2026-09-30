@@ -27,6 +27,8 @@ export type MissionControlExecutionActivityV1 = {
   machine: string | null;
   workstream: string | null;
   conflict_key: string | null;
+  parallel_lane: 'runtime' | 'reviewer' | 'reconciliation' | 'qa-evidence' | null;
+  shared_gate: string | null;
   branch: string | null;
   pr_url: string | null;
   verifier: 'PASS' | 'FAIL' | 'BLOCKED' | 'UNKNOWN';
@@ -79,6 +81,8 @@ export type FactoryPullRequestInputV1 = {
   agent_id: string | null;
   workstream: string | null;
   conflict_key: string | null;
+  parallel_lane: 'runtime' | 'reviewer' | 'reconciliation' | 'qa-evidence' | null;
+  shared_gate: string | null;
   transport: 'autonomous' | 'human_relay' | 'unknown';
   pr_number: number;
   pr_url: string;
@@ -166,6 +170,8 @@ export function buildMissionControlExecutionProjectionV1(input: {
       machine: null,
       workstream: claim.workstream,
       conflict_key: claim.conflict_key,
+      parallel_lane: null,
+      shared_gate: null,
       branch: null,
       pr_url: null,
       verifier: 'UNKNOWN',
@@ -214,6 +220,8 @@ export function buildMissionControlExecutionProjectionV1(input: {
       machine: null,
       workstream: null,
       conflict_key: null,
+      parallel_lane: null,
+      shared_gate: null,
       branch: session.branch,
       pr_url: null,
       verifier: 'UNKNOWN',
@@ -232,6 +240,8 @@ export function buildMissionControlExecutionProjectionV1(input: {
       existing.pr_url = pr.pr_url || null;
       existing.workstream = existing.workstream ?? pr.workstream;
       existing.conflict_key = existing.conflict_key ?? pr.conflict_key;
+      existing.parallel_lane = existing.parallel_lane ?? pr.parallel_lane;
+      existing.shared_gate = existing.shared_gate ?? pr.shared_gate;
       existing.verifier = pr.verifier;
       existing.merge_readiness = pr.merge_readiness;
       existing.blocker = pr.blocker;
@@ -265,6 +275,8 @@ export function buildMissionControlExecutionProjectionV1(input: {
       machine: null,
       workstream: pr.workstream,
       conflict_key: pr.conflict_key,
+      parallel_lane: pr.parallel_lane,
+      shared_gate: pr.shared_gate,
       branch: pr.branch || null,
       pr_url: pr.pr_url || null,
       verifier: pr.verifier,
