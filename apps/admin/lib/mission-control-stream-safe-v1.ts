@@ -48,6 +48,13 @@ export function streamSafeText(value: string | null | undefined): string | null 
 
   let result = value;
 
+  // URL sanitization runs FIRST, on the original text, via proper URL parsing.
+  // Running it after the generic patterns below let userinfo/query fragments
+  // (e.g. `user:pass@host`, `?session=xyz`) survive when they didn't happen to
+  // look like an email or match the fixed secret-keyword list — `new URL()`
+  // strips username/password/search/hash unconditionally, regardless of naming.
+  result = result.replace(/https?:\/\/[^\s)\]}>,]+/gi, (url) => sanitizeUrl(url));
+
   for (const pattern of SECRET_PATTERNS) {
     result = result.replace(pattern, '[REDACTED]');
   }
@@ -57,8 +64,6 @@ export function streamSafeText(value: string | null | undefined): string | null 
   result = result.replace(TENANT_PATTERN, (_match, label: string, separator: string, tenant: string) => {
     return `${label}${separator}${stableAlias(tenant)}`;
   });
-
-  result = result.replace(/https?:\/\/[^\s)\]}>,]+/gi, (url) => sanitizeUrl(url));
 
   return result;
 }

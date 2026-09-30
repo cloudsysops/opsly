@@ -24,6 +24,17 @@ test('removes URL query strings and credentials', () => {
   assert.equal(safe, 'https://example.com/path');
 });
 
+test('strips URL userinfo/query even when they do not match a known secret keyword or email shape', () => {
+  // Regression: the URL sanitizer previously ran AFTER the generic secret/email
+  // patterns, so a password or query param that didn't happen to look like an
+  // email or match the fixed keyword list (api_key|token|secret|password|...)
+  // survived untouched. `session=xyz789` and `hunter2` are neither.
+  const safe = streamSafeText('https://john:hunter2@example.com/path?session=xyz789#frag') ?? '';
+  assert.equal(safe, 'https://example.com/path');
+  assert.doesNotMatch(safe, /hunter2/);
+  assert.doesNotMatch(safe, /xyz789/);
+});
+
 test('aliases tenant-shaped identifiers deterministically', () => {
   const one = aliasTenantIdentifier('customer-real-name');
   const two = aliasTenantIdentifier('customer-real-name');
