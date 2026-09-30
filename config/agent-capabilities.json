@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "updated_at": "2026-05-13",
+  "updated_at": "2026-09-30",
   "routing_policy": {
-    "default_agent": "codex",
+    "default_agent": "opencode",
     "prefer_localhost": true,
     "remote_requires_tailscale": true,
     "remote_requires_execute_token": true,
-    "notes": "Use this registry to route orchestration jobs by role, risk, write permissions, and runtime cost."
+    "notes": "Autonomous agent routing defaults to local OpenCode. Codex/OpenAI are optional non-critical paths and must never be required for factory progress."
   },
   "agents": {
     "cursor": {

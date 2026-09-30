@@ -75,27 +75,28 @@
       "type": "http",
       "timeoutMs": 120000,
       "retries": 1,
-      "description": "opencode real local CLI bridge service"
+      "description": "Canonical zero-cost autonomous coding/review bridge: OpenCode with local Ollama/Qwen; fail closed, no paid-provider fallback.",
+      "llmFallback": null
     },
     "local_codex": {
-      "enabled": true,
+      "enabled": false,
       "external_cli": "codex",
       "url": "http://localhost:5005",
       "envUrl": "OPSLY_CODEX_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
       "retries": 1,
-      "description": "codex real local CLI bridge service"
+      "description": "Optional Codex CLI bridge; disabled from autonomous routing because quota/credits must not block the factory."
     },
     "local_openai": {
-      "enabled": true,
+      "enabled": false,
       "external_cli": "openai",
       "url": "http://localhost:5006",
       "envUrl": "OPSLY_OPENAI_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
       "retries": 1,
-      "description": "openai real local CLI bridge service"
+      "description": "Optional OpenAI CLI bridge; disabled from autonomous routing. Local OpenCode + Ollama/Qwen is the zero-cost default."
     },
     "local_hermes": {
       "enabled": true,

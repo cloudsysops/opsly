@@ -1,14 +1,14 @@
 {
   "version": 1,
-  "updated_at": "2026-09-12",
-  "principle": "Opsly orchestrates external market binaries only; no native duplicate agents.",
-  "default_worker_id": "codex-cli",
+  "updated_at": "2026-09-30",
+  "principle": "Opsly orchestrates external market binaries only; autonomous critical-path coding/review defaults to local OpenCode + Ollama/Qwen at provider cost $0 with no paid-provider fallback.",
+  "default_worker_id": "opencode",
   "routing_notes": {
     "architecture": "claude-code",
     "planning": "claude-code",
     "implementation": "opencode",
-    "debugging": "codex-cli",
-    "review": "hermes-cli",
+    "debugging": "opencode",
+    "review": "opencode",
     "security_review": "decepticon-cli",
     "tests": "playwright-runner",
     "assistant": "copilot-cli"
@@ -110,11 +110,12 @@
       ],
       "local": true,
       "open_source": false,
-      "priority": 25,
+      "priority": 999,
       "fallback_agents": [
         "opencode"
       ],
-      "enabled": true
+      "enabled": false,
+      "disabled_reason": "Paid/quota-dependent Codex must not be on the autonomous critical path; use local OpenCode + Ollama/Qwen."
     },
     "cursor-ide": {
       "kind": "external-binary",
@@ -215,7 +216,7 @@
     "decepticon-cli": {
       "kind": "external-binary",
       "adapter": "agent-binary-http-bridge",
-      "command": "codex",
+      "command": "opencode",
       "opsly_job_type": "local_decepticon",
       "bridge_port": 5008,
       "endpoint_env": "OPSLY_DECEPTICON_AGENT_URL",
@@ -226,7 +227,7 @@
         "security-review",
         "adversarial-audit"
       ],
-      "provider": "security",
+      "provider": "opencode-local",
       "runtime": "cli",
       "supported_task_types": [
         "review"
@@ -236,7 +237,7 @@
         "opsly-qa"
       ],
       "local": true,
-      "open_source": false,
+      "open_source": true,
       "priority": 20,
       "fallback_agents": [
         "opencode"
