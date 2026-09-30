@@ -17,5 +17,5 @@ Next
 
 WScript.Sleep 30000
 shell.Run node & " """ & engineRoot & "server.mjs""", 0, False
-WScript.Sleep 5000
-shell.Run node & " """ & engineRoot & "scene-rotator.mjs""", 0, False
+' Rotación de escenas por foco de BF6: scripts/ops/obs-scene-automation.ps1 (PR #1680),
+' no packages/stream-ops-kit — arrancar ese watcher aparte una vez que ese PR mergee.

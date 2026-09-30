@@ -149,7 +149,8 @@ function handleApi(request, reply) {
     return json(reply, 200, { queued: alertQueue.length }), true;
   }
   if (url.pathname === '/alerts/push') {
-    // Eventos REALES de Twitch (EventSub vía twitch-eventsub.mjs), no simulados. Local-only.
+    // Eventos REALES (no simulados) que empuje una herramienta local — ej. apps/twitch-agent
+    // (PR #1677, agente Twitch Helix con EventSub) POSTeando acá. Local-only.
     if (!isLocalTool(request)) return json(reply, 403, { error: 'forbidden' }), true;
     const type = url.searchParams.get('type');
     if (!alertTypes.has(type)) return json(reply, 400, { error: 'type must be follow|sub|raid' }), true;

@@ -82,7 +82,11 @@ hardware/layout).
 
 **Motor compartido en [`packages/stream-ops-kit/src/`](../../../packages/stream-ops-kit/src):**
 `server.mjs` (servidor y rutas) · `obs.mjs`/`obs-connection.mjs` (conexión a OBS) ·
-`schedule.mjs` · `stream-ctl.mjs` · `auto-start.mjs` · `scene-rotator.mjs` ·
+`schedule.mjs` · `stream-ctl.mjs` · `auto-start.mjs` ·
 `preflight.mjs` · `music.mjs` · `check-music-licenses.mjs` · `log-activity.mjs` ·
 `extract-audio-tracks.mjs` · `fix-vod-audio.mjs` · `tenant-config.mjs`/`tenant-paths.mjs`
+
+**Fuera de este paquete a propósito (no duplicado):** la rotación de escenas por foco de
+BF6 vive en `scripts/ops/obs-scene-automation.ps1` (PR #1680) y el control del canal de
+Twitch (VOD, alertas reales) vive en `apps/twitch-agent` (PR #1677, con refresh de OAuth).
 (leen `stream.config.json` y los datos de la carpeta que apunte `STREAM_KIT_DATA_DIR`).

@@ -21,9 +21,7 @@
     "liveStatusLabel": "LIVE · BATTLEFIELD"
   },
   "twitch": {
-    "channel": "opsafterdark",
-    "vodRetentionDays": 15,
-    "eventSubTypes": ["follow", "subscribe", "raid"]
+    "channel": "opsafterdark"
   },
   "alerts": {
     "gpuHighPercent": 95,

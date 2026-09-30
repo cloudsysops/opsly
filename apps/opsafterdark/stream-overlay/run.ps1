@@ -37,9 +37,9 @@ switch ($Cmd) {
   'test-ndi'   { Setup 'test-ndi-frame.mjs' }
   'hotkeys-on' { Start-Process powershell -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $dir 'hotkeys.ps1') -WindowStyle Hidden; Start-Sleep 3; & (Join-Path $dir 'hotkeys.ps1') status }
   'hotkeys-off'{ & (Join-Path $dir 'hotkeys.ps1') stop }
-  'vod-archive'{ Engine 'vod-policy.mjs' @('archive') }                                        # registra los VODs recientes (requiere TWITCH_CLIENT_ID/TWITCH_ACCESS_TOKEN)
-  'vod-check'  { Engine 'vod-policy.mjs' @('check') }                                           # avisa VODs por vencer, no borra nada
-  'twitch-events' { Start-Process $node -ArgumentList (Join-Path $engine 'twitch-eventsub.mjs') -WorkingDirectory $dir -WindowStyle Hidden }  # alertas reales follow/sub/raid
   'hardware-trend' { Engine 'hardware-trend.mjs' @($(if ($Arg) { $Arg })) }                     # tendencia de GPU/temp entre sesiones
-  default      { 'Comandos: preflight | start | scene <inicio|coding|juego|dj|brb|fin> | stop | post-stream <url> | test-countdown [seg] | alert [follow|sub|raid|all] | music <techno|house|buildup|drop|off|"texto"> | music-check | vod-audio-fix | test-vod-audio | music-setup | test-ndi | hotkeys-on | hotkeys-off | vod-archive | vod-check | twitch-events | hardware-trend [--all]' }
+  # Nota: control de Twitch (VOD/alertas) vive en apps/twitch-agent (PR #1677, agente Python con
+  # refresh de OAuth) y la rotación de escenas por foco de BF6 vive en scripts/ops/obs-scene-automation.ps1
+  # (PR #1680) — no duplicados aquí.
+  default      { 'Comandos: preflight | start | scene <inicio|coding|juego|dj|brb|fin> | stop | post-stream <url> | test-countdown [seg] | alert [follow|sub|raid|all] | music <techno|house|buildup|drop|off|"texto"> | music-check | vod-audio-fix | test-vod-audio | music-setup | test-ndi | hotkeys-on | hotkeys-off | hardware-trend [--all]' }
 }
