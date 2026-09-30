@@ -140,3 +140,12 @@ The factory is certified operational only after #1588 records all of the followi
 ## Evidence discipline
 
 #1581 is the canonical control item. Implementation PRs and agents should link evidence there instead of creating competing orchestration systems. Evidence must identify exact work/PR/head, worker/attempt, relevant checks/reviews, terminal state and cleanup result.
+
+
+## Permanent parallel supervisor
+
+Factory supervision is lane-based, not globally serialized. The canonical lanes are `runtime`, `reviewer`, `reconciliation`, and `qa-evidence`. They all reuse TaskGraphV1, DispatchClaimV1, BullMQ, external-agent-registry, Mission Control and the existing reconciliation workflow.
+
+A dependency blocks only its descendants. A shared reviewer outage may block merges, but it must not freeze independent runtime recovery, CI repair, QA/evidence or backlog classification. The supervisor probes a shared failing gate once per sweep, continues independent work, and keeps WIP=1 per conflict key.
+
+No-progress is bounded: after repeated equivalent attempts with no new evidence, the task is escalated to `NEEDS_HUMAN` instead of looping or opening competing work.
