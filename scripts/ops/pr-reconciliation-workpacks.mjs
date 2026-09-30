@@ -42,6 +42,8 @@ const workpacks = inventory.pullRequests
       (pr.lane === 'CHECK_FAILED' || (pr.lane === 'REVIEW_BLOCKED' && pr.changesRequested === true)),
     changesRequested: pr.changesRequested === true,
     independentReview: pr.independentReview ?? { state: 'missing', needsRun: true },
+    parallelLane: pr.parallelLane ?? 'reconciliation',
+    sharedGate: pr.sharedGate ?? null,
     behindBy: pr.behindBy,
     aheadBy: pr.aheadBy,
     instructions: [
@@ -63,7 +65,10 @@ const payload = {
   generatedAt: new Date().toISOString(),
   repository: inventory.repository,
   mode: 'SUPERVISED_RECONCILIATION',
-  maxParallelismRecommendation: Math.min(20, Math.max(1, workpacks.length)),
+  maxParallelismRecommendation: Math.min(
+    20,
+    Math.max(1, new Set(workpacks.map((item) => item.parallelLane)).size * 2)
+  ),
   count: workpacks.length,
   workpacks,
 };
