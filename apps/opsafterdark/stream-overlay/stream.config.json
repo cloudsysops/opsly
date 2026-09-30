@@ -19,5 +19,14 @@
     "processName": "bf6.exe",
     "label": "Battlefield 6",
     "liveStatusLabel": "LIVE · BATTLEFIELD"
+  },
+  "twitch": {
+    "channel": "opsafterdark",
+    "vodRetentionDays": 15,
+    "eventSubTypes": ["follow", "subscribe", "raid"]
+  },
+  "alerts": {
+    "gpuHighPercent": 95,
+    "gpuHighSustainedMinutes": 5
   }
 }

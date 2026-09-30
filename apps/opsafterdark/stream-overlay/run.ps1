@@ -29,5 +29,9 @@ switch ($Cmd) {
   'test-ndi'   { Setup 'test-ndi-frame.mjs' }
   'hotkeys-on' { Start-Process powershell -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $dir 'hotkeys.ps1') -WindowStyle Hidden; Start-Sleep 3; & (Join-Path $dir 'hotkeys.ps1') status }
   'hotkeys-off'{ & (Join-Path $dir 'hotkeys.ps1') stop }
-  default      { 'Comandos: preflight | start | scene <inicio|coding|juego|dj|brb|fin> | stop | test-countdown [seg] | alert [follow|sub|raid|all] | music <techno|house|buildup|drop|off|"texto"> | music-check | vod-audio-fix | test-vod-audio | music-setup | test-ndi | hotkeys-on | hotkeys-off' }
+  'vod-archive'{ Engine 'vod-policy.mjs' @('archive') }                                        # registra los VODs recientes (requiere TWITCH_CLIENT_ID/TWITCH_ACCESS_TOKEN)
+  'vod-check'  { Engine 'vod-policy.mjs' @('check') }                                           # avisa VODs por vencer, no borra nada
+  'twitch-events' { Start-Process $node -ArgumentList (Join-Path $engine 'twitch-eventsub.mjs') -WorkingDirectory $dir -WindowStyle Hidden }  # alertas reales follow/sub/raid
+  'hardware-trend' { Engine 'hardware-trend.mjs' @($(if ($Arg) { $Arg })) }                     # tendencia de GPU/temp entre sesiones
+  default      { 'Comandos: preflight | start | scene <inicio|coding|juego|dj|brb|fin> | stop | test-countdown [seg] | alert [follow|sub|raid|all] | music <techno|house|buildup|drop|off|"texto"> | music-check | vod-audio-fix | test-vod-audio | music-setup | test-ndi | hotkeys-on | hotkeys-off | vod-archive | vod-check | twitch-events | hardware-trend [--all]' }
 }

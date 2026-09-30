@@ -11,6 +11,7 @@ const sh = (cmd, args) => new Promise((r) => execFile(cmd, args, { windowsHide: 
 try {
   const m = await fetch(`${apiBase}/metrics`).then((r) => r.json());
   check(true, 'Servidor de overlays', `CPU ${m.cpu}% · GPU ${m.gpu}% ${m.gpuTemp ?? '?'}°C`);
+  if (m.gpuAlert) check(false, 'GPU sostenida en alerta', `lleva ${m.gpuHighMinutes}min alta — revisar antes de salir en vivo`);
   const sc = await fetch(`${apiBase}/schedule`).then((r) => r.json());
   const left = `${Math.floor(sc.remaining / 3600)}h ${Math.floor((sc.remaining % 3600) / 60)}m`;
   check(sc.remaining > 0, 'Cuenta regresiva', sc.remaining > 0 ? `${sc.label} (${sc.timezone}) · faltan ${left} → "${sc.scene}"` : 'la hora de schedule.json ya pasó');

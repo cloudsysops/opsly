@@ -22,12 +22,21 @@ const host = new URL(apiBase).hostname || '127.0.0.1';
 
 let previous = os.cpus().map((cpu) => ({ ...cpu.times }));
 let gpu = { usage: null, temperature: null };
+let gpuHighSince = null; // timestamp desde que el uso de GPU está >= umbral sin bajar
+
+const alertsCfg = config.alerts ?? {};
+const GPU_HIGH_PERCENT = alertsCfg.gpuHighPercent ?? 95;
+const GPU_HIGH_SUSTAINED_MIN = alertsCfg.gpuHighSustainedMinutes ?? 5;
 
 function refreshGpu() {
   execFile('nvidia-smi', ['--query-gpu=utilization.gpu,temperature.gpu', '--format=csv,noheader,nounits'], { windowsHide: true }, (error, stdout) => {
     if (error) return;
     const [usage, temperature] = stdout.trim().split(',').map((value) => Number.parseInt(value.trim(), 10));
-    if (Number.isFinite(usage) && Number.isFinite(temperature)) gpu = { usage, temperature };
+    if (Number.isFinite(usage) && Number.isFinite(temperature)) {
+      gpu = { usage, temperature };
+      if (usage >= GPU_HIGH_PERCENT) gpuHighSince ??= Date.now();
+      else gpuHighSince = null;
+    }
   });
 }
 
@@ -50,18 +59,35 @@ function cpuLoad() {
   return total ? Math.round((1 - idle / total) * 100) : 0;
 }
 
-function response() {
+function metricsSnapshot() {
   const total = os.totalmem();
   const used = total - os.freemem();
-  return JSON.stringify({
+  const gpuHighMinutes = gpuHighSince ? (Date.now() - gpuHighSince) / 60000 : 0;
+  return {
     cpu: cpuLoad(),
     ram: Math.round((used / total) * 100),
     ramGb: `${(used / 1024 ** 3).toFixed(1)} / ${(total / 1024 ** 3).toFixed(1)} GB`,
     gpu: gpu.usage,
     gpuTemp: gpu.temperature,
     status: config.game?.liveStatusLabel ?? 'LIVE',
-  });
+    gpuHighMinutes: Math.round(gpuHighMinutes * 10) / 10,
+    gpuAlert: gpuHighMinutes >= GPU_HIGH_SUSTAINED_MIN,
+  };
 }
+function response() {
+  return JSON.stringify(metricsSnapshot());
+}
+
+// Historial liviano para poder ver tendencia entre streams (¿esto necesita
+// mantenimiento/upgrade?), no solo el estado del momento. Un renglón cada 60s.
+const METRICS_LOG_INTERVAL_MS = 60000;
+function logMetricsSnapshot() {
+  const snap = metricsSnapshot();
+  if (snap.cpu == null && snap.gpu == null) return; // aún sin datos válidos de nvidia-smi
+  const line = JSON.stringify({ t: new Date().toISOString(), ...snap }) + '\n';
+  try { fs.appendFileSync(tenantPath('metrics-history.jsonl'), line); } catch {}
+}
+setInterval(logMetricsSnapshot, METRICS_LOG_INTERVAL_MS).unref();
 
 // Alertas: solo eventos simulados. Nada aquí se conecta a Twitch; ver README del tenant.
 let musicTestState = { play: false, file: '' };
@@ -120,6 +146,16 @@ function handleApi(request, reply) {
     const type = url.searchParams.get('type');
     if (!alertTypes.has(type)) return json(reply, 400, { error: 'type must be follow|sub|raid' }), true;
     alertQueue.push({ type, test: true, name: (url.searchParams.get('name') || 'UsuarioDePrueba').slice(0, 25), months: Number(url.searchParams.get('months')) || 1, viewers: Number(url.searchParams.get('viewers')) || 42 });
+    return json(reply, 200, { queued: alertQueue.length }), true;
+  }
+  if (url.pathname === '/alerts/push') {
+    // Eventos REALES de Twitch (EventSub vía twitch-eventsub.mjs), no simulados. Local-only.
+    if (!isLocalTool(request)) return json(reply, 403, { error: 'forbidden' }), true;
+    const type = url.searchParams.get('type');
+    if (!alertTypes.has(type)) return json(reply, 400, { error: 'type must be follow|sub|raid' }), true;
+    const name = (url.searchParams.get('name') || '').slice(0, 25);
+    if (!name) return json(reply, 400, { error: 'name required' }), true;
+    alertQueue.push({ type, test: false, name, months: Number(url.searchParams.get('months')) || 1, viewers: Number(url.searchParams.get('viewers')) || 0 });
     return json(reply, 200, { queued: alertQueue.length }), true;
   }
   return false;

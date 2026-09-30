@@ -23,6 +23,9 @@
     "stream-ops-check-music-licenses": "./src/check-music-licenses.mjs",
     "stream-ops-extract-audio-tracks": "./src/extract-audio-tracks.mjs",
     "stream-ops-fix-vod-audio": "./src/fix-vod-audio.mjs",
-    "stream-ops-test-alert": "./src/test-alert.mjs"
+    "stream-ops-test-alert": "./src/test-alert.mjs",
+    "stream-ops-vod-policy": "./src/vod-policy.mjs",
+    "stream-ops-twitch-eventsub": "./src/twitch-eventsub.mjs",
+    "stream-ops-hardware-trend": "./src/hardware-trend.mjs"
   }
 }
