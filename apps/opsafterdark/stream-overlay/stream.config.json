@@ -28,5 +28,10 @@
   "alerts": {
     "gpuHighPercent": 95,
     "gpuHighSustainedMinutes": 5
+  },
+  "contentPolicy": {
+    "blockedWords": [],
+    "maxDurationSec": { "tiktok": 60, "shorts": 60, "reels": 90, "twitch": 60 },
+    "aspectRatio": "9:16"
   }
 }

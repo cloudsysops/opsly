@@ -26,6 +26,7 @@
     "stream-ops-test-alert": "./src/test-alert.mjs",
     "stream-ops-vod-policy": "./src/vod-policy.mjs",
     "stream-ops-twitch-eventsub": "./src/twitch-eventsub.mjs",
-    "stream-ops-hardware-trend": "./src/hardware-trend.mjs"
+    "stream-ops-hardware-trend": "./src/hardware-trend.mjs",
+    "stream-ops-content-policy-check": "./src/content-policy-check.mjs"
   }
 }
