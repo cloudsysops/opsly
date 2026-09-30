@@ -15,6 +15,9 @@ concurrency:
 jobs:
   physical-acceptance:
     runs-on: ubuntu-latest
+    env:
+      GAMER_HOST: smdqcia-pc.taile4fe40.ts.net
+      GAMER_WORKER_ID: home-gpu-01
     timeout-minutes: 15
     steps:
       - name: Checkout trusted main
@@ -35,15 +38,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status_json="$(tailscale status --json)"
-          if printf '%s' "$status_json" | jq -e '
-            [.Peer[]? | select(any(.TailscaleIPs[]?; . == "100.74.88.103")) | .Online] | any
-          ' >/dev/null; then
+          if tailscale ping -c 1 --timeout=8s "$GAMER_HOST" >/tmp/gamer-ping.txt 2>&1; then
             echo "online=true" >> "$GITHUB_OUTPUT"
-            echo "PC_GAMER_ONLINE"
+            echo "PC_GAMER_ONLINE worker_id=$GAMER_WORKER_ID host=$GAMER_HOST"
           else
+            cat /tmp/gamer-ping.txt || true
             echo "online=false" >> "$GITHUB_OUTPUT"
-            echo "PC_GAMER_OFFLINE_DEFERRED"
+            echo "PC_GAMER_OFFLINE_DEFERRED worker_id=$GAMER_WORKER_ID host=$GAMER_HOST"
           fi
 
       - name: Verify PC Gamer runtime surfaces
@@ -51,9 +52,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsS --max-time 8 http://100.74.88.103:3011/health | tee /tmp/gamer-health.json
-          curl -fsS --max-time 8 http://100.74.88.103:5004/health | tee /tmp/opencode-health.json
-          curl -fsS --max-time 8 http://100.74.88.103:11434/api/tags >/tmp/ollama-tags.json
+          curl -fsS --max-time 8 http://$GAMER_HOST:3011/health | tee /tmp/gamer-health.json
+          curl -fsS --max-time 8 http://$GAMER_HOST:5004/health | tee /tmp/opencode-health.json
+          curl -fsS --max-time 8 http://$GAMER_HOST:11434/api/tags >/tmp/ollama-tags.json
           jq -e '.status == "ok"' /tmp/gamer-health.json >/dev/null
           echo "GAMER_RUNTIME_SURFACES_OK"
 
