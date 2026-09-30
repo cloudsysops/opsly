@@ -139,9 +139,9 @@ export function MissionControlLiveBoard() {
       <div className="relative mx-auto flex min-h-[calc(100vh-2rem)] max-w-[1920px] flex-col gap-4">
         <header className="flex items-center justify-between rounded-2xl border border-cyan-400/20 bg-slate-950/70 px-5 py-4 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur">
           <div>
-            <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-cyan-400/70">Opsly</div>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-cyan-400/70">OPS AFTER DARK</div>
             <h1 className="text-2xl font-semibold tracking-[0.12em] text-cyan-50 lg:text-3xl">MISSION CONTROL · LIVE</h1>
-            <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-500">OBS projection · evidence first · autonomous factory</div>
+            <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-500">AI SOFTWARE FACTORY · LIVE · evidence first</div>
           </div>
           <div className="flex gap-2 text-[10px] uppercase tracking-[0.14em]">
             <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-emerald-200">Live {live}</span>
