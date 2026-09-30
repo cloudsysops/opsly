@@ -10,7 +10,7 @@
  * Integrates with ValidationOrchestrator for validation → decision → commit flow
  */
 
-import { Job, Worker, UnrecoverableError } from 'bullmq';
+import { DelayedError, Job, Worker, UnrecoverableError } from 'bullmq';
 import { promises as fsp } from 'node:fs';
 import * as path from 'node:path';
 import { getAgentServiceRegistry } from '../lib/agent/agent-service-registry.js';
@@ -22,6 +22,7 @@ import {
   type LocalAgentKind,
   externalCliLabelForOpslyLocalAgent,
   waitForFile,
+  shouldDeferLocalAgentJobForHost,
 } from '../lib/local-worker-utils.js';
 import {
   logWorkerInfo,
@@ -448,14 +449,25 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
 
   const worker = new Worker(
     'local-agents',
-    async (job: Job) => {
+    async (job: Job, token?: string) => {
       const jobType = job.name; // Should be local_cursor, local_claude, etc.
       const data = job.data as { payload?: LocalAgentPayload };
 
-      if (!validJobTypes.has(jobType)) {
-        throw new Error(
-          `job name ${jobType} is not in OPSLY_LOCAL_AGENT_KINDS; retry so another host can claim it`
-        );
+      if (shouldDeferLocalAgentJobForHost(jobType, [...validJobTypes] as LocalAgentKind[])) {
+        if (!token) {
+          throw new Error(
+            `job name ${jobType} is not eligible on WORKER_ID=${process.env.WORKER_ID ?? 'unknown'} and BullMQ lock token is unavailable`
+          );
+        }
+        const delayUntil = Date.now() + 15_000;
+        logWorkerInfo('local-agents', 'Deferring job for a different eligible physical worker', {
+          job_id: job.id,
+          job_type: jobType,
+          worker_id: process.env.WORKER_ID?.trim() || null,
+          delayed_until: new Date(delayUntil).toISOString(),
+        });
+        await job.moveToDelayed(delayUntil, token);
+        throw new DelayedError();
       }
 
       // Validate payload
