@@ -107,3 +107,19 @@ The hourly workflow publishes:
 ## Remaining boundary
 
 Typed approval is still required before generic `BEHIND`/`CONFLICTED` write envelopes can execute autonomously. Until then, the controller automates only the already-canonical PR Doctor repair path and read-only reviewer re-dispatch. Merge remains independently gated and protected by exact-head checks.
+
+
+## Parallel supervisor v2
+
+The reconciliation controller uses four permanent execution lanes that share the existing control plane rather than creating new schedulers:
+
+- `runtime`: physical/local worker recovery and acceptance;
+- `reviewer`: exact-head independent review;
+- `reconciliation`: PR classification, technical repair and branch reconciliation;
+- `qa-evidence`: non-production validation and evidence.
+
+A blocked shared gate must only block work that actually depends on that gate. In particular, an unavailable independent reviewer blocks merge readiness but MUST NOT stop technical CI repair, runtime recovery, backlog classification or unrelated QA evidence.
+
+Shared gates use one probe per reconciliation sweep. If many PRs are waiting on the same `independent-review-runtime`, the controller dispatches one reviewer probe and marks the remaining requests `HOLD_SHARED_GATE` for that sweep. This prevents retry storms while preserving exact-head review requirements.
+
+WIP remains one active owner per `conflict_key`. Repeated no-progress attempts should converge to `NEEDS_HUMAN` rather than spawning duplicate branches or agents.
