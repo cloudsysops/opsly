@@ -1,0 +1,21 @@
+{
+  "goal": "Mejorar las escenas del stream",
+  "items": [
+    {
+      "tool": "claude",
+      "text": "Revisa las escenas de OBS y sus fuentes"
+    },
+    {
+      "tool": "claude",
+      "text": "Crea pantallas animadas: inicio, pausa y final"
+    },
+    {
+      "tool": "codex",
+      "text": "Armó el servidor de overlay y el rotador de escenas"
+    },
+    {
+      "tool": "claude",
+      "text": "Panel de resumen en vivo para la escena Coding"
+    }
+  ]
+}

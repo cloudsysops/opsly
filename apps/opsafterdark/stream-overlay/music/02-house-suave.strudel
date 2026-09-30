@@ -1,0 +1,38 @@
+// ═══════════════════════════════════════════════════════════════
+//  02 · HOUSE SUAVE  ·  122 BPM  ·  Re menor (progresión Dm9-G13-Cmaj7-Am7)
+//  Sonidos: SOLO sintetizadores incorporados de Strudel
+//  (sine, triangle, sawtooth, white, pink). Cero samples de terceros.
+// ═══════════════════════════════════════════════════════════════
+//  CÓMO USARLO EN VIVO
+//   · Ctrl+Enter = aplicar cambios   ·  Ctrl+. = parar todo
+//   · _$:  silencia una capa; quita el _ para activarla
+// ═══════════════════════════════════════════════════════════════
+
+setcps(122/60/4)   // ← VELOCIDAD: 118-126 va bien para house
+
+// BOMBO "four on the floor": uno por tiempo, más redondo y suave que el techno
+$: note("c1*4").s("sine").penv(30).pdec(.09).decay(.34).sustain(0).gain(.95)
+
+// CLAP en 2 y 4, con sala
+$: s("~ pink ~ pink").decay(.14).sustain(0).bpf(1400).room(.4).gain(.5)
+
+// HI-HAT ABIERTO en el contratiempo: el "tss" clásico del house
+$: s("[~ white]*4").decay(.11).sustain(0).hpf(6500).gain(.38)
+
+// SHAKER: semicorcheas casi imperceptibles que dan swing
+$: s("white*16").decay(.018).sustain(0).hpf(8000).gain("<.16 .1>*8")
+
+// SUB-BAJO al contratiempo (entre los bombos), un pulso cálido
+$: note("<d2 g1 c2 a1>").s("sine").struct("[~ x]*4")
+  .decay(.2).sustain(.15).lpf(220).gain(.85)
+
+// ACORDES CÁLIDOS (Dm9 → G13 → Cmaj7 → Am7), un acorde por compás.
+// EN VIVO: cambia .lpf(1800) → más bajo = más "apagado", más alto = más brillante.
+$: note("<[d3,f3,a3,c4,e4] [g2,b2,d3,f3,e4] [c3,e3,g3,b3] [a2,c3,e3,g3]>")
+  .s("triangle").lpf(1800)
+  .attack(.02).decay(.4).sustain(.25).release(.4)
+  .room(.45).gain(.32)
+
+// MELODÍA SUAVE (opcional, empieza silenciada): quita el _ para activarla
+_$: note("<f5 e5 g5 e5>*2").s("sine").decay(.25).sustain(0)
+  .delay(.3).delaytime(.246).delayfeedback(.4).room(.5).gain(.18)
