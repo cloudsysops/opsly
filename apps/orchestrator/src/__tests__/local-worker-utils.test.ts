@@ -5,6 +5,7 @@ import {
   normalizeLocalAgentKind,
   parseLocalAgentKindAllowlist,
   parsePromptFrontmatter,
+  shouldDeferLocalAgentJobForHost,
 } from '../lib/local-worker-utils.js';
 
 describe('local-worker-utils', () => {
@@ -57,6 +58,12 @@ describe('local-worker-utils', () => {
     expect(normalizeLocalAgentKind('bogus')).toBe('local_cursor');
     expect(normalizeLocalAgentKind('opencode')).toBe('local_opencode');
     expect(normalizeLocalAgentKind('openclaw')).toBe('local_openclaw');
+  });
+
+  it('defers a local job that is not allowed on this physical worker', () => {
+    const macKinds = parseLocalAgentKindAllowlist('local_cursor,local_claude');
+    expect(shouldDeferLocalAgentJobForHost('local_opencode', macKinds)).toBe(true);
+    expect(shouldDeferLocalAgentJobForHost('local_cursor', macKinds)).toBe(false);
   });
 
   it('parses OPSLY_LOCAL_AGENT_KINDS host allowlist', () => {
