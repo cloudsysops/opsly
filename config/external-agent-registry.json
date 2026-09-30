@@ -1,7 +1,7 @@
 {
   "version": 1,
   "updated_at": "2026-09-30",
-  "principle": "Opsly orchestrates external market binaries only; no native duplicate agents.",
+  "principle": "Opsly orchestrates external market binaries only; autonomous critical-path coding/review defaults to local OpenCode + Ollama/Qwen at provider cost $0 with no paid-provider fallback.",
   "default_worker_id": "opencode",
   "routing_notes": {
     "architecture": "claude-code",
