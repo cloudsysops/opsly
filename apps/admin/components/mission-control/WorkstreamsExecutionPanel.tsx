@@ -283,6 +283,14 @@ export function WorkstreamsExecutionPanel() {
                       <div className="truncate font-mono text-[10px] text-slate-600">
                         {activity.conflict_key ?? 'lock UNKNOWN'}
                       </div>
+                      <div className="truncate text-[10px] text-slate-500">
+                        lane {activity.parallel_lane ?? 'UNKNOWN'}
+                      </div>
+                      {activity.shared_gate ? (
+                        <div className="truncate text-[10px] text-amber-400">
+                          gate {activity.shared_gate}
+                        </div>
+                      ) : null}
                     </td>
                     <td className="px-3 py-3 text-cyan-300">{activity.transport}</td>
                     <td className={`px-3 py-3 font-semibold ${stateTone(activity.state)}`}>
