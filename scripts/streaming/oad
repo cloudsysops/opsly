@@ -1,0 +1,234 @@
+#!/home/opsly/.venvs/obs-watcher/bin/python3
+"""oad — Ops After Dark allowlisted OBS scene-control adapter.
+
+Canonical design: docs/streaming/REMOTE-STREAM-CONTROL.md
+
+Minimal command surface, nothing else:
+
+    oad status
+    oad scene gaming|coding|factory|intermission [--dry-run]
+
+Deliberately does NOT:
+  - accept arbitrary scene names (fails closed on unknown logical scenes);
+  - touch the stream key, start/stop streaming, or any source other than the
+    current program scene;
+  - print or log the OBS WebSocket password;
+  - listen on any port or expose obs-websocket beyond its existing bind.
+
+Run only on the local host (or over Tailscale SSH into it) — this is a
+client, it never opens a network listener itself.
+
+If the venv at the shebang path has moved, run instead with:
+  /path/to/python3 -m pip install obsws-python
+  /path/to/python3 scripts/streaming/oad status
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import os
+import sys
+from pathlib import Path
+
+# obsws_python logs connection parameters (including password) at INFO level.
+# Keep that out of stderr/journal no matter what the caller's log level is.
+logging.basicConfig(level=logging.WARNING)
+for _noisy in ("obsws_python", "websocket", "websockets.client", "websockets.protocol"):
+    logging.getLogger(_noisy).setLevel(logging.ERROR)
+
+try:
+    import obsws_python as obs
+except ImportError:
+    print("OAD_ERROR=obsws_python not importable; see module docstring", file=sys.stderr)
+    sys.exit(4)
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SCENE_MAP_PATH = Path(__file__).resolve().parent / "oad-scenes.json"
+ENV_PATH = Path(os.environ.get("OAD_OBS_ENV", str(Path.home() / ".config/opsly/obs-websocket.env")))
+
+ALLOWED_LOGICAL_SCENES = ("GAMING", "CODING", "FACTORY_FOCUS", "INTERMISSION")
+
+# CLI word -> logical scene name, per docs/streaming/REMOTE-STREAM-CONTROL.md
+# ("oad scene factory" is the documented UX; FACTORY_FOCUS is the internal name).
+CLI_ALIASES = {
+    "gaming": "GAMING",
+    "coding": "CODING",
+    "factory": "FACTORY_FOCUS",
+    "intermission": "INTERMISSION",
+}
+
+
+def resolve_cli_alias(raw: str) -> str:
+    """Maps a CLI word to its logical scene name. Raises ValueError if the
+    word isn't a known alias — never falls back to guessing."""
+    key = raw.strip().lower()
+    if key not in CLI_ALIASES:
+        raise ValueError(f"unknown scene alias: {raw!r}")
+    return CLI_ALIASES[key]
+
+EXIT_OK = 0
+EXIT_UNKNOWN_SCENE = 2
+EXIT_SCENE_NOT_CONFIGURED = 3
+EXIT_OBS_UNREACHABLE = 4
+EXIT_PHYSICAL_SCENE_MISSING = 5
+EXIT_READBACK_MISMATCH = 6
+
+
+def _load_env(path: Path) -> dict[str, str]:
+    """Reads KEY=VALUE pairs from an env file. Never prints contents."""
+    if not path.exists():
+        print(f"OAD_ERROR=env file not found: {path}", file=sys.stderr)
+        sys.exit(EXIT_OBS_UNREACHABLE)
+    env: dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        env[key.strip()] = value.strip().strip('"').strip("'")
+    return env
+
+
+def _load_scene_map() -> dict[str, str | None]:
+    try:
+        return json.loads(SCENE_MAP_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"OAD_ERROR=could not load scene map {SCENE_MAP_PATH}: {exc}", file=sys.stderr)
+        sys.exit(EXIT_SCENE_NOT_CONFIGURED)
+
+
+def resolve_physical_scene(logical: str, scene_map: dict[str, str | None]) -> str | None:
+    """Returns the physical OBS scene name for a logical name, or None if
+    unmapped. Raises ValueError if the logical name is not in the allowlist —
+    this never touches OBS, so it's safe to call before connecting."""
+    if logical not in ALLOWED_LOGICAL_SCENES:
+        raise ValueError(f"unknown logical scene: {logical!r}")
+    return scene_map.get(logical)
+
+
+def _connect(env: dict[str, str]) -> "obs.ReqClient":
+    host = env.get("OBS_WEBSOCKET_HOST", "127.0.0.1")
+    port = int(env.get("OBS_WEBSOCKET_PORT", "4455"))
+    password = env.get("OBS_WEBSOCKET_PASSWORD", "")
+    try:
+        return obs.ReqClient(host=host, port=port, password=password, timeout=5)
+    except Exception as exc:
+        # str(exc) from obsws_python does not include the password, only
+        # host/port/error class — safe to print.
+        print(f"OAD_ERROR=OBS_UNREACHABLE: {type(exc).__name__}", file=sys.stderr)
+        sys.exit(EXIT_OBS_UNREACHABLE)
+
+
+def _disconnect(client: "obs.ReqClient") -> None:
+    closer = getattr(client, "disconnect", None)
+    if callable(closer):
+        try:
+            closer()
+        except Exception:
+            pass
+
+
+def cmd_status(_args: argparse.Namespace) -> int:
+    env = _load_env(ENV_PATH)
+    client = _connect(env)
+    try:
+        current = client.get_current_program_scene().current_program_scene_name
+        streaming = client.get_stream_status().output_active
+    except Exception as exc:
+        print(f"OAD_ERROR=OBS_UNREACHABLE: {type(exc).__name__}", file=sys.stderr)
+        return EXIT_OBS_UNREACHABLE
+    finally:
+        _disconnect(client)
+
+    scene_map = _load_scene_map()
+    reverse = {v: k for k, v in scene_map.items() if v}
+    logical = reverse.get(current, "UNKNOWN_LOGICAL")
+
+    print(f"CURRENT_SCENE={current}")
+    print(f"CURRENT_LOGICAL={logical}")
+    print(f"STREAMING={streaming}")
+    return EXIT_OK
+
+
+def cmd_scene(args: argparse.Namespace) -> int:
+    try:
+        logical = resolve_cli_alias(args.name)
+    except ValueError:
+        print(f"OAD_ERROR=UNKNOWN_SCENE: {args.name!r} (allowed: {', '.join(CLI_ALIASES)})", file=sys.stderr)
+        return EXIT_UNKNOWN_SCENE
+
+    scene_map = _load_scene_map()
+
+    try:
+        physical = resolve_physical_scene(logical, scene_map)
+    except ValueError:
+        print(f"OAD_ERROR=UNKNOWN_SCENE: {args.name!r} (allowed: {', '.join(CLI_ALIASES)})", file=sys.stderr)
+        return EXIT_UNKNOWN_SCENE
+
+    if not physical:
+        print(f"OAD_ERROR=SCENE_NOT_CONFIGURED: {logical} has no physical scene mapped in {SCENE_MAP_PATH.name}", file=sys.stderr)
+        return EXIT_SCENE_NOT_CONFIGURED
+
+    env = _load_env(ENV_PATH)
+    client = _connect(env)
+    try:
+        try:
+            scenes = [s["sceneName"] for s in client.get_scene_list().scenes]
+        except Exception as exc:
+            print(f"OAD_ERROR=OBS_UNREACHABLE: {type(exc).__name__}", file=sys.stderr)
+            return EXIT_OBS_UNREACHABLE
+
+        if physical not in scenes:
+            print(f"OAD_ERROR=PHYSICAL_SCENE_MISSING: {physical!r} not found in current OBS scene collection", file=sys.stderr)
+            return EXIT_PHYSICAL_SCENE_MISSING
+
+        before = client.get_current_program_scene().current_program_scene_name
+
+        if args.dry_run:
+            print(f"DRY_RUN=true")
+            print(f"LOGICAL_SCENE={logical}")
+            print(f"PHYSICAL_SCENE={physical}")
+            print(f"CURRENT_SCENE={before}")
+            print("NO_MUTATION_PERFORMED=true")
+            return EXIT_OK
+
+        client.set_current_program_scene(physical)
+        after = client.get_current_program_scene().current_program_scene_name
+
+        print(f"LOGICAL_SCENE={logical}")
+        print(f"PHYSICAL_SCENE={physical}")
+        print(f"READBACK_SCENE={after}")
+
+        if after != physical:
+            print(f"OAD_ERROR=READBACK_MISMATCH: requested {physical!r}, OBS reports {after!r}", file=sys.stderr)
+            return EXIT_READBACK_MISMATCH
+
+        print("SWITCH_CONFIRMED=true")
+        return EXIT_OK
+    finally:
+        _disconnect(client)
+
+
+def main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="oad", description=__doc__.splitlines()[0])
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    sub.add_parser("status", help="print current OBS scene and streaming state")
+
+    scene_parser = sub.add_parser("scene", help="switch to an allowlisted logical scene")
+    scene_parser.add_argument("name", help=f"one of: {', '.join(s.lower() for s in ALLOWED_LOGICAL_SCENES)}")
+    scene_parser.add_argument("--dry-run", action="store_true", help="validate and print the plan without mutating OBS")
+
+    args = parser.parse_args(argv)
+
+    if args.command == "status":
+        return cmd_status(args)
+    if args.command == "scene":
+        return cmd_scene(args)
+    parser.print_help()
+    return EXIT_UNKNOWN_SCENE
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

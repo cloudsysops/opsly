@@ -1,6 +1,14 @@
 # Ops After Dark — Remote Stream Control
 
-Status: canonical design for safe remote control while the operator is away.
+Status: `oad` adapter implemented (`scripts/streaming/oad`) — `status` and
+`scene {gaming,coding,factory,intermission} [--dry-run]` only. Validated
+2026-10-01 against the live OBS WebSocket (connect, scene list, dry-run
+readback plan) and against a live broadcast's `status` read. Real
+(non-dry-run) scene mutation has not yet been exercised against the live
+show — do that deliberately, not as a side effect of testing. `FACTORY_FOCUS`
+has no physical scene mapped yet in `scripts/streaming/oad-scenes.json`
+(no existing OBS scene currently shows Mission Control Dev); `oad scene
+factory` fails closed with `SCENE_NOT_CONFIGURED` until one is added.
 
 ## Goal
 
