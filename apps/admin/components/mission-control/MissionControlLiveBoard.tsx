@@ -96,7 +96,7 @@ function avatarLabel(agent: string): string {
   return agent.slice(0, 3).toUpperCase();
 }
 
-export function MissionControlLiveBoard() {
+export function MissionControlLiveBoard({ devMode = false }: { devMode?: boolean }) {
   const baseUrl = useMemo(() => getBaseUrl(), []);
 
   const { data: sources, error: sourcesError } = useSWR<ExecutionSourcesPayload>(
@@ -135,6 +135,11 @@ export function MissionControlLiveBoard() {
   const review = projection.activities.filter((a) => a.state === 'REVIEW').length;
   const ready = projection.activities.filter((a) => a.state === 'MERGE_READY').length;
   const activities = projection.activities.slice(0, 8);
+  const current =
+    projection.activities.find((a) => a.state === 'RUNNING') ??
+    projection.activities.find((a) => a.state === 'REVIEW') ??
+    projection.activities[0] ??
+    null;
 
   return (
     <div className="relative min-h-screen bg-[radial-gradient(circle_at_top,_rgba(8,145,178,0.16),_transparent_28%),linear-gradient(180deg,#020611_0%,#050914_55%,#02040a_100%)] p-4 lg:p-6">
@@ -155,6 +160,107 @@ export function MissionControlLiveBoard() {
           </div>
         </header>
 
+        {devMode ? (
+          <section className="rounded-2xl border border-fuchsia-400/30 bg-slate-950/80 p-4 shadow-[0_0_30px_rgba(217,70,239,0.12)]">
+            <div className="flex items-center justify-between">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-fuchsia-300/80">Dev Mode · Vibe Coding</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Stream Safe ON</div>
+            </div>
+            {current ? (
+              <div className="mt-3 grid gap-3 lg:grid-cols-4">
+                <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                  <div className="text-[9px] uppercase tracking-[0.14em] text-slate-500">Current task</div>
+                  <div className="mt-1 truncate font-mono text-sm text-slate-100">{current.work_id}</div>
+                  <div className="mt-1 truncate text-[10px] text-slate-400">{current.agent_id} · {current.state}</div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                  <div className="text-[9px] uppercase tracking-[0.14em] text-slate-500">GitHub</div>
+                  <div className="mt-1 truncate text-sm text-slate-100">{current.branch ?? 'branch unknown'}</div>
+                  <div className="mt-1 truncate text-[10px] text-slate-400">{current.pr_url ?? 'no PR yet'}</div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                  <div className="text-[9px] uppercase tracking-[0.14em] text-slate-500">Tests / QA</div>
+                  <div className="mt-1 text-sm text-slate-100">{current.verifier}</div>
+                  <div className="mt-1 text-[10px] text-slate-400">Merge: {current.merge_readiness}</div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                  <div className="text-[9px] uppercase tracking-[0.14em] text-slate-500">Blocker</div>
+                  <div className="mt-1 line-clamp-2 text-[11px] text-slate-300">{current.blocker ?? 'none'}</div>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-3 rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-xs text-slate-500">No active task evidence yet.</div>
+            )}
+            <div className="mt-3 grid gap-1 text-[11px] text-slate-400 lg:grid-cols-3">
+              <div><span className="text-fuchsia-300/80">LORE </span>Repair sequence initiated.</div>
+              <div><span className="text-cyan-300/80">REAL </span>{current ? `${current.workstream ?? 'workstream unknown'} · ${current.source_id}` : 'waiting for evidence'}</div>
+              <div><span className="text-emerald-300/80">LEARNING </span>Mission Control Live reflects real factory state — no simulated status.</div>
+            </div>
+          </section>
+        ) : null}
+
+        {devMode ? (
+          <section className="rounded-2xl border border-fuchsia-400/30 bg-slate-950/80 p-4 shadow-[0_0_30px_rgba(217,70,239,0.12)]">
+            <div className="flex items-center justify-between">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-fuchsia-300/80">MISSION CONTROL DEV</div>
+              <div className="flex gap-2 text-[10px] uppercase tracking-[0.2em]">
+                <span className="rounded-full border border-cyan-400/30 px-2 py-1">Stream Safe ON</span>
+                {live > 0 ? (
+                  <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-2 py-1 text-emerald-200">THINKING / RUNNING</span>
+                ) : (
+                  <span className="rounded-full border border-slate-600 px-2 py-1 text-slate-400">IDLE</span>
+                )}
+              </div>
+            </div>
+            {current ? (
+              <div className="mt-3 grid gap-4 lg:grid-cols-4">
+                <div className="rounded-lg border border-slate-700/60 bg-slate-950/60 p-3">
+                  <div className="text-[9px] uppercase tracking-[0.24em] text-slate-500">CURRENT TASK</div>
+                  <div className="mt-2 text-sm text-slate-100">{current.work_id || 'NO ACTIVE TASK'}</div>
+                  <div className="mt-1 text-xs text-slate-400">Agent: {current.agent_id || '—'}</div>
+                  <div className="mt-1 text-xs text-emerald-300">Status: {current.state}</div>
+                </div>
+                <div className="rounded-lg border border-slate-700/60 bg-slate-950/60 p-3">
+                  <div className="text-[9px] uppercase tracking-[0.24em] text-slate-500">CURRENT CHANGE</div>
+                  <div className="mt-2 text-sm text-slate-100">FILE / MODULE</div>
+                  <div className="mt-1 text-xs text-slate-400">Type: feature / edit</div>
+                  <div className="mt-1 text-xs text-cyan-300">Summary: sanitized change preview</div>
+                </div>
+                <div className="rounded-lg border border-slate-700/60 bg-slate-950/60 p-3">
+                  <div className="text-[9px] uppercase tracking-[0.24em] text-slate-500">TESTS · QA</div>
+                  <div className="mt-2 text-sm text-slate-100">
+                    {current.verifier === 'PASS' ? 'PASS' : current.verifier === 'FAIL' ? 'FAIL' : current.verifier === 'BLOCKED' ? 'BLOCKED' : 'RUNNING'}
+                  </div>
+                  <div className="mt-1 text-xs text-slate-400">QA RUNNING / PASS / FAIL</div>
+                </div>
+                <div className="rounded-lg border border-slate-700/60 bg-slate-950/60 p-3">
+                  <div className="text-[9px] uppercase tracking-[0.24em] text-slate-500">GITHUB</div>
+                  <div className="mt-2 text-sm text-slate-100">Branch: {current.branch || '—'}</div>
+                  <div className="mt-1 text-xs text-slate-400">PR: {current.pr_url || '—'}</div>
+                  <div className="mt-1 text-xs text-slate-400">Review: {current.state === 'REVIEW' ? 'IN REVIEW' : current.merge_readiness}</div>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-2 text-xs text-slate-400">No active task · Waiting for instruction</div>
+            )}
+            <div className="mt-3 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-lg border border-slate-700/60 bg-slate-950/60 p-3">
+                <div className="text-[9px] uppercase tracking-[0.24em] text-slate-500">LIVE EVENTS</div>
+                <div className="mt-2 space-y-1 text-xs text-slate-300">
+                  {activities.slice(0, 3).map((a) => (
+                    <div key={a.work_id}>• {a.state}: {a.agent_id}</div>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-lg border border-slate-700/60 bg-slate-950/60 p-3">
+                <div className="text-[9px] uppercase tracking-[0.24em] text-slate-500">EXPLANATION</div>
+                <div className="mt-2 text-xs text-slate-300">LORE: "Repair sequence initiated"</div>
+                <div className="mt-1 text-xs text-slate-400">REAL: Sanitized activity evidence only</div>
+                <div className="mt-1 text-xs text-cyan-300">LEARNING: Following safe, evidence-first flow</div>
+              </div>
+            </div>
+          </section>
+        ) : null}
         <section className="grid flex-1 gap-4 xl:grid-cols-[1.25fr_0.75fr]">
           <div className="grid gap-4 md:grid-cols-2">
             {activities.length ? activities.map((activity) => (
