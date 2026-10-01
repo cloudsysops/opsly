@@ -157,3 +157,15 @@ Issue #1692 owns the live format and launch.
 PR #1691 owns the current Mission Control Live implementation.
 
 All improvements that belong to this experience must JOIN_EXISTING unless a different canonical owner clearly exists.
+
+## Tonight: temporary preview port (2026-10-01)
+
+Canonical port `3001` is occupied by the `uptime-kuma` container (operator decision: do not stop/move it).
+
+Admin dev server for tonight's `mode=dev` preview runs on `:4001` instead:
+
+```
+npm run dev --workspace=@intcloudsysops/admin -- -p 4001
+```
+
+OBS source should point at `http://127.0.0.1:4001/mission-control/live?mode=dev`, not `:3001`. This is a temporary, local-only override for tonight — `mission-control-live-preview.sh` still assumes `:3001` and needs a real fix (param or free port) as follow-up, not tonight.
