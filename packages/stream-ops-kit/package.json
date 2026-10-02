@@ -11,6 +11,7 @@
     "./tenant-paths": "./src/tenant-paths.mjs"
   },
   "bin": {
+    "oad": "./bin/oad",
     "stream-ops-server": "./src/server.mjs",
     "stream-ops-preflight": "./src/preflight.mjs",
     "stream-ops-auto-start": "./src/auto-start.mjs",
