@@ -181,6 +181,9 @@ logs/
 .agent-bootstrap-state/
 runtime/peskids.env
 runtime/twitch.env
+# Rotated secret backups (same sensitivity as the live file they were copied from)
+runtime/twitch.env.bak*
+runtime/peskids.env.bak*
 
 # Peskids local secrets (Doppler only)
 apps/peskids/.secrets/

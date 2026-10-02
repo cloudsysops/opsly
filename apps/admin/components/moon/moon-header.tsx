@@ -58,6 +58,9 @@ export function MoonHeader(): React.ReactElement {
 
   useEffect(() => {
     const supabase = createClient();
+    if (!supabase) {
+      return;
+    }
     void withTimeout(supabase.auth.getUser(), AUTH_TIMEOUT_MS)
       .then(({ data }) => {
         setEmail(data.user?.email ?? '');
