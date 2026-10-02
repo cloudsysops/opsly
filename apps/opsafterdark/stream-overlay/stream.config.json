@@ -11,8 +11,9 @@
     "fin": "Terminando Stream"
   },
   "audioTracks": {
-    "Mic/Aux": [1, 2, 3],
-    "Desktop Audio": [1, 2],
+    "MIC_OPERATOR": [1, 2, 3],
+    "GAME_AUDIO": [1, 2],
+    "CHATGPT_VOICE": [1, 2],
     "Strudel Música": [1]
   },
   "game": {
