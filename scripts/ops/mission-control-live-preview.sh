@@ -12,19 +12,32 @@ BRANCH="${MISSION_CONTROL_LIVE_BRANCH:-feat/mission-control-live-obs}"
 PORT="${MISSION_CONTROL_PREVIEW_PORT:-4001}"
 URL="http://127.0.0.1:${PORT}/mission-control/live"
 
-echo "[mission-control-live] syncing $BRANCH"
-git fetch origin "$BRANCH"
-git checkout "$BRANCH"
-git pull --ff-only origin "$BRANCH"
+# Under systemd supervision we must not touch git: a dirty worktree would make
+# `git checkout`/`git pull` fail and take the unit down with it.
+if [[ "${MISSION_CONTROL_LIVE_SKIP_SYNC:-0}" == "1" ]]; then
+  echo "[mission-control-live] sync skipped (MISSION_CONTROL_LIVE_SKIP_SYNC=1), serving the checked-out tree as-is"
+else
+  echo "[mission-control-live] syncing $BRANCH"
+  git fetch origin "$BRANCH"
+  git checkout "$BRANCH"
+  git pull --ff-only origin "$BRANCH"
+fi
 
-if [[ ! -d node_modules ]]; then
+if [[ ! -d node_modules && "${MISSION_CONTROL_LIVE_SKIP_SYNC:-0}" != "1" ]]; then
   echo "[mission-control-live] installing dependencies"
   npm ci
 fi
 
+if [[ ! -d node_modules ]]; then
+  echo "[mission-control-live] WARNING: node_modules is missing and this run may not install it." >&2
+  echo "[mission-control-live] Run 'npm ci' manually once, then restart the unit." >&2
+fi
+
 echo
-echo "OPS_AFTER_DARK_URL=$URL"
-echo "OBS: use Window Capture on the authenticated browser window at this URL."
+echo "OPS_AFTER_DARK_URL=${URL}?mode=dev"
+echo "OBS: add a Browser source pointing at that URL (not Window Capture)."
+echo "Under systemd the admin login gate stays enabled — the board needs a real"
+echo "Supabase session in the OBS browser, so sign in once from a normal browser first."
 echo "Resolution target: 1920x1080."
 echo
 
