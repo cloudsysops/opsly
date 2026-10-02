@@ -12,7 +12,8 @@ related: ["#1681", "#1691", "#1692"]
 | Iniciando / Vuelvo / Terminando | Browser `127.0.0.1:8765/{starting,brb,ending}` | — | Strudel Música | Fondos/textos GDI ocultos = fallback |
 | Battlefield 6 — Día 2 | **Game Capture `bf6.exe`** | Marca, Reloj, HUD, Overlay PC, Vibe Glass, Alertas | GAME_AUDIO (bf6.exe), CHATGPT_VOICE (ChatGPT.exe), Mic | Display Capture LG = **oculto, solo fallback manual** |
 | Gaming | **Game Capture `bf6.exe`** | Marca, Reloj, HUD, Alertas | GAME_AUDIO, CHATGPT_VOICE, MIC_OPERATOR | Display Capture/LG ocultos |
-| Coding | Window Capture (ventana OpenCode / Windows Terminal) | Marca, Vibe Glass, Overlay PC, HUD, Alertas | MIC_OPERATOR, CHATGPT_VOICE | Revisar que la terminal no muestre env/tokens |
+| Coding | Window Capture 65 % + MISSION_CONTROL_DEV_PANEL 35 % | Marca, Overlay PC, HUD, Alertas (Vibe Glass oculto) | MIC_OPERATOR, CHATGPT_VOICE | Revisar que la terminal no muestre env/tokens |
+| OAD_FACTORY_FOCUS | MISSION_CONTROL_DEV_FULL (`:4001`) | Marca | CHATGPT_VOICE | Creada 2026-10-02; `oad factory` se mapea tras validación visual |
 | gaming 2 | Display Capture LG | — | — | **SUPERSEDED por Gaming** — retirar tras verificar |
 | Streaming | Game Capture | Overlay Streaming | — | DJ NDI (Mac) **oculto**: sin `ndi_source_name`; reconfigurar solo si la Mac vuelve al setup |
 | Vertical TikTok / Vertical Scene | Game Capture | — | — | Vertical Scene vacía (pendiente) |
@@ -43,5 +44,5 @@ related: ["#1681", "#1691", "#1692"]
 - Ajuste: confirmación al iniciar stream ON.
 - Dispositivos Windows: Headphones (HyperX Cloud Jet), Speakers (Realtek) = AUX, HDMI LG/Dell.
 - Pendiente manual (Windows → Mezclador de volumen): bf6.exe → Headphones; ChatGPT.exe → Speakers (Realtek).
-- Pendiente OBS (fuera de LIVE): GAME_AUDIO y CHATGPT_VOICE a pistas 1,2 (hoy 1–6).
+- 2026-10-02: pistas GAME_AUDIO/CHATGPT_VOICE = 1,2 ✅; Mission Control Dev en Coding y OAD_FACTORY_FOCUS ✅ (doctor sin FAIL). Plantilla reproducible en `obs/`.
 - Backups: `Untitled.json.bak-pre-claude-fix-*`, `Untitled.json.bak-post-stream-*`, `OpsAfterDark.json.bak-clean-*`.
