@@ -1,0 +1,35 @@
+// ═══════════════════════════════════════════════════════════════
+//  03 · BUILD-UP (tensión)  ·  130 BPM  ·  La menor
+//  Dura 8 compases y se repite. Sube la energía hasta el silencio previo al DROP.
+//  Sonidos: SOLO sintetizadores incorporados de Strudel
+//  (sine, sawtooth, white, pink). Cero samples de terceros.
+// ═══════════════════════════════════════════════════════════════
+//  CÓMO USARLO EN VIVO
+//   · Empieza este patrón ~8 compases antes de querer el drop
+//     (a 130 BPM, 1 compás ≈ 1,85 s → 8 compases ≈ 15 s).
+//   · Cuando quieras el golpe: carga 04-drop.strudel y Ctrl+Enter.
+//   · Ctrl+. = parar todo
+// ═══════════════════════════════════════════════════════════════
+
+setcps(130/60/4)   // ← usa los MISMOS BPM que el patrón que venías tocando
+
+// BOMBO que entra cada vez más fuerte (de 30% a 100% en 8 compases)
+$: note("c1*4").s("sine").penv(36).pdec(.07).decay(.25).sustain(0)
+  .gain(saw.range(.3, 1).slow(8))
+
+// REDOBLE: ruido rosa que se acelera cada 2 compases (4 → 8 → 16 → 32 golpes)
+$: s("pink*<4 8 16 32>").slow(2).decay(.06).sustain(0).bpf(2000)
+  .gain(saw.range(.2, .7).slow(8))
+
+// RISER (subida de tono): sierra que sube 3 octavas y se abre el filtro.
+// EN VIVO: cambia (45, 81) → rango de notas; mayor diferencia = subida más dramática.
+$: note(saw.range(45, 81).slow(8).segment(16).round())
+  .s("sawtooth").lpf(saw.range(300, 6000).slow(8)).lpq(6)
+  .sustain(.8).decay(.1).gain(saw.range(.06, .3).slow(8))
+
+// BARRIDO DE RUIDO: ruido blanco con filtro que sube = "wooosh"
+$: s("white").hpf(saw.range(300, 9000).slow(8)).sustain(1)
+  .gain(saw.range(.03, .28).slow(8))
+
+// HI-HAT en semicorcheas
+$: s("white*16").decay(.02).sustain(0).hpf(9000).gain(.25)
