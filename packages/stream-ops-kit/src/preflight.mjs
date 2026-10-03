@@ -45,7 +45,7 @@ try {
     check(stats.availableDiskSpace > 20000, 'Espacio en disco', `${Math.round(stats.availableDiskSpace / 1024)} GB libres`);
     check(stats.activeFps > 55, 'FPS de OBS', `${Math.round(stats.activeFps)} fps`);
     const st = await req('GetStreamServiceSettings');
-    check(Boolean(st.streamServiceType), 'Destino de stream', `${st.streamServiceType} (clave configurada: ${st.streamServiceSettings?.key ? 'sí' : 'NO'})`);
+    const hasStreamKey = Boolean(st.streamServiceSettings?.key);\n    check(Boolean(st.streamServiceType) && hasStreamKey, 'Destino de stream', `${st.streamServiceType || 'sin servicio'} (clave configurada: ${hasStreamKey ? 'sí' : 'NO'})`);
     const s = await req('GetStreamStatus');
     check(true, 'Estado', s.outputActive ? 'YA ESTÁS EN VIVO' : 'fuera de línea');
   });
