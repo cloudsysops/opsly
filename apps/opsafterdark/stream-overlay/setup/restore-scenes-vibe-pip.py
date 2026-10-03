@@ -64,6 +64,6 @@ for n in ['Overlay PC — Live','Vibe Coding Glass']:
     if not item('Gaming',n):
         t=copy.deepcopy(item('Battlefield 6 — Día 2',n)); s=src['Gaming']['settings']
         s['id_counter']+=1; t['id']=s['id_counter']; t['visible']=True; s['items'].append(t)
-json.dump(d,open(P,'w',encoding='utf-8'),ensure_ascii=False,indent=4)
+with open(P,'w',encoding='utf-8') as f:\n    json.dump(d,f,ensure_ascii=False,indent=4)
 for sc in ['Gaming','Coding','Battlefield 6 — Día 2','VIBE_PIP']:
     print(sc,[(i['name'],i['visible']) for i in items(sc)])
