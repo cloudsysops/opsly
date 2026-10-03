@@ -2,13 +2,13 @@
 """OpsAfterDark OBS doctor (READ-ONLY). Audita una scene collection de OBS.
 Uso: python3 obs-doctor.py <scene-collection.json> [stream.config.json]
 No lee perfiles (stream key) ni imprime secretos. Exit 1 si hay FAIL."""
-import json, sys, re
+import json, sys
 GAMEPLAY = {"Battlefield 6 — Día 2", "Gaming"}
 MISSION_CONTROL_URL = "127.0.0.1:4001/mission-control"
 FACTORY_SCENE = "OAD_FACTORY_FOCUS"
 PRIVATE_CAPTURES = {"monitor_capture"}
 def main(p):
-    d = json.load(open(p, encoding="utf-8"))
+    with open(p, encoding="utf-8") as f:\n        d = json.load(f)
     S = {s["name"]: s for s in d["sources"]}
     fails, warns, info = [], [], []
     scenes = [s for s in d["sources"] if s["id"] == "scene"]
@@ -38,7 +38,7 @@ def main(p):
     elif FACTORY_SCENE not in mc_scenes: fails.append(f"{FACTORY_SCENE} existe pero no muestra Mission Control Dev")
     # Pistas vs stream.config.json audioTracks
     if len(sys.argv) > 2:
-        want = json.load(open(sys.argv[2], encoding="utf-8")).get("audioTracks", {})
+        with open(sys.argv[2], encoding="utf-8") as f:\n            want = json.load(f).get("audioTracks", {})
         mix = {s["name"]: s.get("mixers", 0) for s in d["sources"]}
         for k in ("AuxAudioDevice1", "AuxAudioDevice2", "DesktopAudioDevice1"):
             if d.get(k): mix[d[k]["name"]] = d[k].get("mixers", 0)
