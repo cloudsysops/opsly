@@ -4,7 +4,7 @@ Uso: python3 add_coding4.py <OpsAfterDark.json>"""
 import json,copy,shutil,time,uuid,sys
 P=sys.argv[1]
 shutil.copy(P,P+'.bak-pre-coding4-'+time.strftime('%Y%m%d-%H%M%S'))
-d=json.load(open(P,encoding='utf-8'))
+with open(P,encoding='utf-8') as f:\n    d=json.load(f)
 src={s['name']:s for s in d['sources']}
 SCENE='CODING_4'
 wc=src['Window Capture']                      # plantilla: WGC method 2 (OpenCode)
@@ -54,5 +54,5 @@ else:
     sc['settings']={'id_counter':n,'custom_size':False,'items':items}
     sc['hotkeys']={'OBSBasic.SelectScene':[]}
     d['sources'].append(sc); d['scene_order'].append({'name':SCENE})
-json.dump(d,open(P,'w',encoding='utf-8'),ensure_ascii=False,indent=4)
+with open(P,'w',encoding='utf-8') as f:\n    json.dump(d,f,ensure_ascii=False,indent=4)
 print(SCENE,[(i['name'],i['pos'],i.get('bounds')) for i in items])
