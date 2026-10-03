@@ -9,6 +9,8 @@ tags:
 
 # Worker como servicio persistente (systemd) — Mac 2011 Ubuntu
 
+> ⚠️ **RETIRADO (2026-10-03):** el worker Mac 2011 `opsly-worker` (`opslyquantum@100.80.41.29`) ya no existe. El nodo worker/GPU vigente es **`smdqcia-pc`** (`smdqcia-pc.taile4fe40.ts.net`, WSL2 + RTX 3060 + Ollama) — ver `infra/nodes-registry.json`. Este documento se conserva como histórico.
+
 ## Requisitos
 
 - Repo en `~/opsly`, `REDIS_URL` en `~/opsly/.env.local` (misma URL que Doppler `prd` / VPS).

@@ -72,7 +72,8 @@ jobs:
   - id: 'job-002-ollama-worker-setup'
     type: 'cursor-ssh-script'
     priority: 0
-    status: 'queued'
+    status: 'cancelled'
+    cancelled_reason: 'Mac2011 worker (100.80.41.29) retirado 2026-10-03; Ollama consolidado en smdqcia-pc. No ejecutar.'
     depends_on: ['job-001-docker-optimize']
     timeout_minutes: 25
     assignee: 'cursor-worker-1'
@@ -225,8 +226,8 @@ jobs:
           reason: 'Tailscale IP for LLM Gateway in distributed mode'
 
         - key: 'OLLAMA_URL'
-          value: 'http://100.80.41.29:11434'
-          reason: 'Mac2011 Ollama local worker endpoint'
+          value: 'http://smdqcia-pc.taile4fe40.ts.net:11434'
+          reason: 'Ollama en smdqcia-pc (worker GPU consolidado; Mac2011 retirado 2026-10-03)'
 
         - key: 'OLLAMA_MODEL'
           value: 'llama3.2'

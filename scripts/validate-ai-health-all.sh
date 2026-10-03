@@ -3,9 +3,9 @@ set -euo pipefail
 
 DRY_RUN="false"
 VPS_SSH_TARGET="${VPS_SSH_TARGET:-vps-dragon@100.120.151.91}"
-WORKER_SSH_TARGET="${WORKER_SSH_TARGET:-opslyquantum@100.80.41.29}"
+WORKER_SSH_TARGET="${WORKER_SSH_TARGET:-opsly@smdqcia-pc.taile4fe40.ts.net}"
 VPS_TAILSCALE_IP="${VPS_TAILSCALE_IP:-100.120.151.91}"
-WORKER_TAILSCALE_IP="${WORKER_TAILSCALE_IP:-100.80.41.29}"
+WORKER_TAILSCALE_IP="${WORKER_TAILSCALE_IP:-smdqcia-pc.taile4fe40.ts.net}"
 for arg in "$@"; do
   if [[ "$arg" == "--dry-run" ]]; then
     DRY_RUN="true"
@@ -81,7 +81,7 @@ check_worker() {
   remote_health="$(check_cmd "ssh $WORKER_SSH_TARGET \"curl -sf http://$VPS_TAILSCALE_IP:3010/health >/dev/null\"")"
   queue_path="$(check_cmd "ssh $WORKER_SSH_TARGET \"cd ~/opsly && set -a && source .env.worker >/dev/null 2>&1 && set +a && redis-cli -u \\\"\$REDIS_URL\\\" ping | grep -q PONG\"")"
   latency="$(latency_check "ssh $WORKER_SSH_TARGET \"curl -sf http://$VPS_TAILSCALE_IP:3010/health >/dev/null\"")"
-  print_row "opsly-mac2011" "worker-plane" "$local_health" "$remote_health" "$queue_path" "$latency"
+  print_row "smdqcia-pc" "worker-plane" "$local_health" "$remote_health" "$queue_path" "$latency"
 }
 
 echo "| Máquina | Rol | Salud local | Salud remota | Cola/Redis | Latencia remota <100ms |"
