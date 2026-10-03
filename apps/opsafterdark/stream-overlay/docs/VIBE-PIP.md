@@ -29,3 +29,9 @@ OBS 32 guarda `pos_rel/scale_rel/bounds_rel`; si existen, **ganan** sobre `pos/s
 - `run.ps1 vibe pin claude` → `activity.json.pinned = "claude"`; gana sobre todo. `run.ps1 vibe unpin` → automático.
 - También se puede fijar desde un agente escribiendo `pinned` en `activity.json` (el vigía lo aplica en ≤3 s). Solo afecta VIBE_PIP.
 - Opción `mission` (alias `mc`): muestra MISSION_CONTROL_DEV_PANEL dentro de VIBE_PIP. Hasta #1691 puede verse login/negro.
+
+## CODING_4 — reglas de privacidad
+- Window Capture por ventana (WGC), nunca Display Capture. Recorte de barras laterales de Claude (295px) y ChatGPT (335px).
+- Cortina de privacidad: items `Fondo BRB` + `Texto BRB` ocultos en CODING_4; encender el ojo (o asignar hotkey) ante cualquier dato sensible.
+- Recomendado: Settings → Advanced → Stream Delay 20–30 s cuando haya agentes ejecutando comandos.
+- Prohibido en pantalla: `env`, `.env`, `doppler secrets`, `gh auth token`, `cat ~/.ssh/*`, `git config user.email` real (usar noreply de GitHub).

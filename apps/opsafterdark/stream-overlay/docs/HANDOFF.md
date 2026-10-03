@@ -12,7 +12,7 @@ Estado verificado al 2026-10-02. Si algo de aquí contradice lo que ves, **verif
 ## Mapa de piezas (dónde vive cada cosa)
 | Pieza | Dónde | Canónico |
 |---|---|---|
-| Colección OBS | `%APPDATA%/obs-studio/basic/scenes/OpsAfterDark.json` (perfil `OpsAfterDark`) | OBS 32.2.2, PC Gamer Windows |
+| Colección OBS | **única**: `%APPDATA%/obs-studio/basic/scenes/OpsAfterDark.backup-opencode-20261002-213403.json` (nombre interno `OpsAfterDark`; es el archivo que OBS carga). El antiguo `OpsAfterDark.json` quedó como `*.stale-*.bak` (2026-10-03) | OBS 32.2.2, PC Gamer Windows |
 | Plantilla sanitizada | `obs/OpsAfterDark.scene-collection.template.json` | este repo |
 | Overlays :8765 | `local-tools/server.mjs` (en el PC: OneDrive/Documents/ChatGPT/intcloudsysops/stream-overlay) | `run.ps1` lo levanta (Ensure-Server); `start-stream-tools.vbs` al iniciar Windows |
 | Mission Control :4001 | `apps/admin` (Next 15) — `mission-control/live` en rama `feat/opsafterdark-tenant` (worktree WSL) | #1691 pendiente: vista stream-only |
@@ -37,6 +37,10 @@ No es configuración perdida (verificado contra 14 backups). Comprobar en orden:
 2. `:4001` arriba (Mission Control).
 3. `bf6.exe` abierto (Game Capture), OpenCode/Claude/ChatGPT/Cursor abiertos y no minimizados (VIBE_PIP).
 4. Si los servidores se levantaron con OBS abierto: cerrar y abrir OBS (recarga browser sources).
+
+## Escenas añadidas 2026-10-03
+- `CODING_4`: 2×2 Claude | Cursor / ChatGPT | OpenCode (WGC), recorte de sidebars, cortina de privacidad oculta (Fondo/Texto BRB). Script: `setup/add-coding4.py`.
+- `CHATGPT_VOICE` corregido a ChatGPT.exe (antes capturaba todo chrome.exe → eco del propio stream).
 
 ## Pendientes (prioridad)
 1. Aplicar `setup/restore-scenes-vibe-pip.py` (OBS cerrado) → validar escena por escena.
