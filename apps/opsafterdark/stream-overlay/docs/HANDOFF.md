@@ -56,3 +56,5 @@ No es configuración perdida (verificado contra 14 backups). Comprobar en orden:
 - Layout: OAD_FACTORY_FOCUS = Mission Control 2560×1024 arriba + btop|nvtop abajo (~25%). Coding = OpenCode 1808×1170 izq, MC 704×880 der, btop/nvtop 704×248 debajo.
 - Script: `setup/add-monitors.py` (OBS cerrado, idempotente, backup). El arranque de las ventanas lo agrega el humano a `Opsly-Workstation-Startup.cmd` (owner único), con `wt --title ... --suppressApplicationTitle` para que el título no cambie.
 - CODING_4 guardado por el humano 03:14 (incluye MISSION_CONTROL_DEV_PANEL al centro).
+- 2026-10-03 03:24 APLICADO: monitores NOC en Factory/Coding; Coding Game Capture OFF; DISCORD_REMOTE_MIC oculto (inactivo) en Factory y Coding. Backup `*.bak-pre-noc-*`.
+- OBSERVADO: OBS cambia de escena solo (LG Desktop ↔ CODING_4) sin acción humana → hay una automatización activa (Advanced Scene Switcher / tarea / agente). Riesgo: puede poner `LG Desktop` (escritorio completo) al aire.
