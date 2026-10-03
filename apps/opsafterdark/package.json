@@ -1,0 +1,7 @@
+{
+  "name": "@intcloudsysops/opsafterdark",
+  "private": true,
+  "version": "0.1.0",
+  "description": "OpsAfterDark — primer tenant del vertical gaming-streamer. Config/datos del canal; el motor vive en packages/stream-ops-kit (importado por ruta relativa, no como dependencia npm — ver packages/stream-ops-kit/README.md).",
+  "type": "module"
+}

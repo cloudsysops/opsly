@@ -1,0 +1,41 @@
+{
+  "obsConfigPath": "C:/Users/opsly/AppData/Roaming/obs-studio/plugin_config/obs-websocket/config.json",
+  "apiBase": "http://127.0.0.1:8765",
+  "overlaySourceName": "Overlay PC — Live",
+  "obsSceneNames": {
+    "inicio": "Iniciando Stream",
+    "coding": "Coding",
+    "juego": "Battlefield 6 — Día 2",
+    "dj": "Streaming",
+    "brb": "Vuelvo en un momento",
+    "fin": "Terminando Stream"
+  },
+  "audioTracks": {
+    "MIC_OPERATOR": [1, 2, 3],
+    "GAME_AUDIO": [1, 2],
+    "CHATGPT_VOICE": [1, 2],
+    "Strudel Música": [1]
+  },
+  "game": {
+    "processName": "bf6.exe",
+    "label": "Battlefield 6",
+    "liveStatusLabel": "LIVE · BATTLEFIELD"
+  },
+  "twitch": {
+    "channel": "opsafterdark"
+  },
+  "alerts": {
+    "gpuHighPercent": 95,
+    "gpuHighSustainedMinutes": 5
+  },
+  "contentPolicy": {
+    "blockedWords": [],
+    "maxDurationSec": { "tiktok": 60, "shorts": 60, "reels": 90, "twitch": 60 },
+    "aspectRatio": "9:16"
+  },
+  "postStream": {
+    "candidateCount": 15,
+    "minGapSeconds": 90
+  },
+  "clipsDir": "clips"
+}
