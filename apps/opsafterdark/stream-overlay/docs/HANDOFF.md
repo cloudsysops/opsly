@@ -58,3 +58,4 @@ No es configuración perdida (verificado contra 14 backups). Comprobar en orden:
 - CODING_4 guardado por el humano 03:14 (incluye MISSION_CONTROL_DEV_PANEL al centro).
 - 2026-10-03 03:24 APLICADO: monitores NOC en Factory/Coding; Coding Game Capture OFF; DISCORD_REMOTE_MIC oculto (inactivo) en Factory y Coding. Backup `*.bak-pre-noc-*`.
 - OBSERVADO: OBS cambia de escena solo (LG Desktop ↔ CODING_4) sin acción humana → hay una automatización activa (Advanced Scene Switcher / tarea / agente). Riesgo: puede poner `LG Desktop` (escritorio completo) al aire.
+- 2026-10-03 03:30 REVERTIDO por el humano ("quedó mal"): se restauró `*.bak-pre-noc-*`. Monitores btop/nvtop NO están en OBS; añadirlos a mano viendo el resultado. Coding vuelve a tener Game Capture visible y Discord activo (apagar a mano antes de ir en vivo).
