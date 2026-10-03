@@ -1,13 +1,15 @@
 ﻿# Automatiza cambio de escena en OBS segun el foco de Battlefield 6, sin tocar el juego.
 # Regla A: BF6 gana el foco -> escena "Battlefield 6 -- Dia 2"
-# Regla B: bf6.exe deja de existir (cerraste el juego) -> escena "Vuelvo en un momento"
+# Regla B: bf6.exe deja de existir (cerraste el juego) -> escena "OAD_FACTORY_FOCUS"
+# "Vuelvo en un momento" queda como escena manual: antes se automatizaba aqui y
+# exponia una pantalla vacia durante la sesion.
 # Todo lo demas (alt-tab a Discord/Chrome/terminal, escenas manuales) NO se toca,
 # para no exponer contenido privado ni pelear con cambios manuales (Vibe Coding, BRB, etc).
 
 . "$PSScriptRoot\obs-ws-client.ps1"
 
 $SceneGame = "Battlefield 6 — Día 2"
-$SceneBrb  = "Vuelvo en un momento"
+$SceneIdle = "OAD_FACTORY_FOCUS"
 $ProcessName = "bf6"
 $PollSeconds = 2
 $LogFile = "$env:TEMP\obs-scene-automation.log"
@@ -61,7 +63,7 @@ while ($true) {
     if (-not $proc) {
         if ($lastState -ne "closed") {
             Write-Log "$ProcessName.exe no esta corriendo"
-            Set-ObsScene -SceneName $SceneBrb
+            Set-ObsScene -SceneName $SceneIdle
             $lastState = "closed"
         }
         continue
