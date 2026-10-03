@@ -50,3 +50,9 @@ No es configuración perdida (verificado contra 14 backups). Comprobar en orden:
 5. Diseño retro Game Boy aprobado como dirección visual (ver `docs/MISSION-CONTROL-RETRO.md`).
 6. Audio Windows por app: bf6 → HyperX, ChatGPT → Realtek (manual).
 7. Acceso remoto: TightVNC (Windows) solo vía Tailscale; nunca abrir 5900 a internet.
+
+## Telemetría NOC (btop / nvtop) — 2026-10-03
+- Fuentes: `OAD_SYSTEM_MONITOR` (ventana `OAD-BTOP`) y `OAD_GPU_MONITOR` (ventana `OAD-NVTOP`), Window Capture WGC, match por **título** (priority 0).
+- Layout: OAD_FACTORY_FOCUS = Mission Control 2560×1024 arriba + btop|nvtop abajo (~25%). Coding = OpenCode 1808×1170 izq, MC 704×880 der, btop/nvtop 704×248 debajo.
+- Script: `setup/add-monitors.py` (OBS cerrado, idempotente, backup). El arranque de las ventanas lo agrega el humano a `Opsly-Workstation-Startup.cmd` (owner único), con `wt --title ... --suppressApplicationTitle` para que el título no cambie.
+- CODING_4 guardado por el humano 03:14 (incluye MISSION_CONTROL_DEV_PANEL al centro).
