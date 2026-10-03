@@ -226,8 +226,8 @@ jobs:
           reason: 'Tailscale IP for LLM Gateway in distributed mode'
 
         - key: 'OLLAMA_URL'
-          value: 'http://smdqcia-pc.taile4fe40.ts.net:11434'
-          reason: 'Ollama en smdqcia-pc (worker GPU consolidado; Mac2011 retirado 2026-10-03)'
+          value: 'http://127.0.0.1:11434'
+          reason: 'Ollama es local al compute node (smdqcia-pc consume 127.0.0.1 vía cola openclaw; nodos compute son tailscale-outbound, sin inbound). Mac2011 retirado 2026-10-03'
 
         - key: 'OLLAMA_MODEL'
           value: 'llama3.2'

@@ -27,7 +27,7 @@ class HealthMonitor:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(
-                    f"{os.environ.get('OLLAMA_URL', 'http://smdqcia-pc.taile4fe40.ts.net:11434').rstrip('/')}/api/tags",
+                    f"{os.environ.get('OLLAMA_URL', 'http://127.0.0.1:11434').rstrip('/')}/api/tags",
                     timeout=aiohttp.ClientTimeout(total=5)
                 ) as resp:
                     if resp.status == 200:
