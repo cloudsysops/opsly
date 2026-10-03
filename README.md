@@ -71,9 +71,9 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | [`docs/TROUBLESHOOTING.md`](docs/01-development/TROUBLESHOOTING.md)                                 | Diagnóstico y soluciones comunes                                                     |
 | [`docs/SECURITY_CHECKLIST.md`](docs/04-infrastructure/SECURITY_CHECKLIST.md)                           | Checklist Zero-Trust por ruta                                                        |
 | [`docs/SECURITY-MITIGATIONS-2026-04-09.md`](docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md) | Mitigaciones UFW + Tailscale + CF                                                    |
-| [`docs/SESSION-GIT-SYNC.md`](docs/01-development/SESSION-GIT-SYNC.md)                               | `git pull` / `git-sync-repo.sh` en opsly-admin, opsly-worker y VPS antes de cambios  |
-| [`docs/TAILSCALE-NOMENCLATURA.md`](docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md)                   | Tailscale + SSH: **`opsly-admin`** (Mac dev), **`opsly-worker`** (100.80.41.29), VPS |
-| [`docs/WORKER-SETUP-MAC2011.md`](docs/04-infrastructure/WORKER-SETUP-MAC2011.md)                       | Worker Ubuntu en Mac 2011 (`opsly-worker`) + orchestrator                            |
+| [`docs/SESSION-GIT-SYNC.md`](docs/01-development/SESSION-GIT-SYNC.md)                               | `git pull` / `git-sync-repo.sh` en opsly-admin, smdqcia-pc y VPS antes de cambios    |
+| [`docs/TAILSCALE-NOMENCLATURA.md`](docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md)                   | Tailscale + SSH: **`opsly-admin`** (Mac dev), **`smdqcia-pc`** (worker GPU), VPS |
+| [`docs/WORKER-SETUP-MAC2011.md`](docs/04-infrastructure/WORKER-SETUP-MAC2011.md)                       | ~~Worker Ubuntu en Mac 2011~~ — **retirado 2026-10-03** (histórico)                    |
 | [`docs/WORKER-SERVICE-MAC2011.md`](docs/04-infrastructure/WORKER-SERVICE-MAC2011.md)                   | Worker como servicio **systemd** (persistente, reinicio automático)                  |
 
 ### Infra y deploy

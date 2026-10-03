@@ -8,9 +8,9 @@
 # Uso:
 #   ./scripts/verify-platform-smoke.sh
 #   SKIP_WORKER=1 ./scripts/verify-platform-smoke.sh
-#   WORKER_TAILSCALE_NAME=otro-nodo ./scripts/verify-platform-smoke.sh       # si el worker no se llama opsly-worker en Tailscale
-#   WORKER_SSH=opsly-worker ./scripts/verify-platform-smoke.sh               # solo alias ~/.ssh/config (sin FQDN auto)
-#   OPSLY_WORKER_HOSTNAME=opsly-worker.taile4fe40.ts.net ./scripts/verify-platform-smoke.sh
+#   WORKER_TAILSCALE_NAME=otro-nodo ./scripts/verify-platform-smoke.sh       # si el worker no se llama smdqcia-pc en Tailscale
+#   WORKER_SSH=smdqcia-pc ./scripts/verify-platform-smoke.sh               # solo alias ~/.ssh/config (sin FQDN auto)
+#   OPSLY_WORKER_HOSTNAME=smdqcia-pc.taile4fe40.ts.net ./scripts/verify-platform-smoke.sh
 #   USE_TAILSCALE_SSH=0 ./scripts/verify-platform-smoke.sh                    # no construir FQDN; usa WORKER_SSH o alias
 #
 # Requisitos: curl, jq, ssh. Worker: Tailscale + `tailscale` CLI recomendado para leer el suffix DNS.
@@ -33,8 +33,8 @@ fi
 API_URL="${API_URL:-https://api.op-sly.com}"
 VPS_SSH="${VPS_SSH:-vps-dragon@100.120.151.91}"
 
-WORKER_USER="${WORKER_USER:-opslyquantum}"
-WORKER_TAILSCALE_NAME="${WORKER_TAILSCALE_NAME:-opsly-worker}"
+WORKER_USER="${WORKER_USER:-opsly}"
+WORKER_TAILSCALE_NAME="${WORKER_TAILSCALE_NAME:-smdqcia-pc}"
 OPSLY_WORKER_HOSTNAME="${OPSLY_WORKER_HOSTNAME:-}"
 USE_TAILSCALE_SSH="${USE_TAILSCALE_SSH:-1}"
 WORKER_SSH="${WORKER_SSH:-}"

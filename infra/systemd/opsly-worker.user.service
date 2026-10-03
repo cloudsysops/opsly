@@ -3,7 +3,7 @@
 #   systemctl --user daemon-reload && systemctl --user enable --now opsly-worker
 #
 # Arranque tras boot sin sesión de login (una vez, con sudo):
-#   sudo loginctl enable-linger opslyquantum
+#   sudo loginctl enable-linger "$USER"
 #
 # Requiere: ~/opsly/.env.local con REDIS_URL; scripts/run-worker-with-nvm.sh ejecutable.
 

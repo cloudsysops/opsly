@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gestión del servicio systemd opsly-worker (orchestrator en Mac 2011).
+# Gestión del servicio systemd opsly-worker (orchestrator en un worker Linux/WSL).
 # Uso: ./scripts/manage-worker.sh status
 set -euo pipefail
 SVC=opsly-worker.service
