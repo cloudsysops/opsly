@@ -7,7 +7,7 @@ import {
   validateInviteActivationForm,
 } from '@/lib/invite-activation-validation';
 import { isSuperAdminUser } from '@/lib/super-admin';
-import { createClient } from '@/lib/supabase/client';
+import { createRequiredAuthClient } from '@/lib/supabase/client';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
@@ -46,7 +46,7 @@ export function InviteActivate(): React.ReactElement {
 
     setLoading(true);
     try {
-      const supabase = createClient();
+      const supabase = createRequiredAuthClient();
       if (code && code.length > 0) {
         const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
         if (exchangeError) {

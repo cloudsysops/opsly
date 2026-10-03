@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { isSuperAdminUser } from '@/lib/super-admin';
-import { createClient } from '@/lib/supabase/client';
+import { createRequiredAuthClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,7 @@ export default function UpdatePasswordPage(): React.ReactElement {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const supabase = createClient();
+    const supabase = createRequiredAuthClient();
     void supabase.auth.getSession().then(({ data }) => {
       const user = data.session?.user;
       if (!user || !isSuperAdminUser(user)) {
@@ -43,7 +43,7 @@ export default function UpdatePasswordPage(): React.ReactElement {
     }
     setLoading(true);
     try {
-      const supabase = createClient();
+      const supabase = createRequiredAuthClient();
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) {
         setError(updateError.message);
