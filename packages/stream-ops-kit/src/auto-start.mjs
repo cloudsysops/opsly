@@ -11,7 +11,7 @@ const get = () => fetch(`${api}/schedule`).then((r) => r.json());
 let previous = null;
 if (testSeconds) {
   previous = await withObs((req) => req('GetCurrentProgramScene')).then((x) => x.currentProgramSceneName);
-  if ((await withObs((req) => req('GetStreamStatus'))).outputActive) console.log('AVISO: ya estás en vivo; la prueba solo cambia escenas.');
+  if ((await withObs((req) => req('GetStreamStatus'))).outputActive) {\n    throw new Error('test-countdown rechazado: OBS está transmitiendo; no se cambiarán escenas en vivo');\n  }
   await tool(`/schedule/test?secs=${testSeconds}`);
   await withObs((req) => req('SetCurrentProgramScene', { sceneName: scenes.inicio }));
   console.log(`Prueba: ${testSeconds}s en "${scenes.inicio}"`);
