@@ -384,6 +384,12 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
           typeof b.correlation_id === 'string' && b.correlation_id.trim().length > 0
             ? b.correlation_id.trim()
             : requestId,
+        // Allow callers (e.g. CI review dispatchers) to request a longer execution
+        // window than the envelope's 120s default — local LLM-backed agents such as
+        // local_opencode are configured for up to 300s in agent-services.yaml, but
+        // that per-service HTTP timeout never reached this envelope-level timeout,
+        // so requests silently timed out at 120s regardless of the service config.
+        timeoutMs: typeof b.timeout_ms === 'number' && b.timeout_ms > 0 ? b.timeout_ms : undefined,
         executionMode: 'enqueue',
         localOnly: true,
         writeAllowed,

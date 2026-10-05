@@ -200,6 +200,11 @@ async function reviewWithLocalWorker({ pr, diff, failingChecks }) {
     agent: 'local_opencode',
     agent_role: 'review',
     max_steps: 4,
+    // local_opencode is configured for up to 300s in agent-services.yaml (local
+    // LLM review of a full PR diff routinely takes longer than the orchestrator's
+    // 120s envelope default). Pass it explicitly so the task envelope actually
+    // gets the budget the service is provisioned for.
+    timeout_ms: 300_000,
     goal: `Independent open-source review for PR #${pr.number}`,
     prompt_content: prompt,
     context: {
