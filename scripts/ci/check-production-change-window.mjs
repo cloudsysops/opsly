@@ -12,46 +12,19 @@
  */
 'use strict';
 
+import { classifyChangeImpact } from './change-impact.mjs';
+
 const TIME_ZONE = 'America/Bogota';
 const WINDOW_START_HOUR = 22; // inclusive
 const WINDOW_END_HOUR = 6; // exclusive
 
-/** Paths that require night window (or hotfix / safe-daytime label). */
-const PROD_IMPACT_PREFIXES = [
-  'apps/',
-  'infra/',
-  'supabase/',
-  'packages/',
-  'lib/',
-];
-
-const PROD_IMPACT_PATH_MATCHERS = [
-  /^\.github\/workflows\/deploy/i,
-  /^scripts\/.*deploy/i,
-  /^scripts\/peskids/i,
-  /^scripts\/vps-/i,
-  /^scripts\/onboard-/i,
-  /^package\.json$/,
-  /^package-lock\.json$/,
-];
-
-/** If every changed path matches these, daytime merge is OK without labels. */
-const SAFE_DAYTIME_MATCHERS = [
-  /^docs\//,
-  /^\.cursor\//,
-  /^\.agents\//,
-  /^skills\//,
-  /^AGENTS\.md$/,
-  /^VISION\.md$/,
-  /^ROADMAP\.md$/,
-  /^README\.md$/,
-  /^SECURITY\.md$/,
-  /^CONTRIBUTING\.md$/,
-  /^CODE_OF_CONDUCT\.md$/,
-  /^\.github\/(PULL_REQUEST_TEMPLATE|ISSUE_TEMPLATE|CODEOWNERS|copilot-instructions)/i,
-  /^\.github\/AGENTS\.md$/,
-  /\.md$/i,
-];
+// Per docs/runbooks/PRODUCTION-CHANGE-WINDOW.md, the night window gates
+// Peskids specifically (its deploy/release surface is what the window
+// protects). Platform/Content/Games/Health-Travel/shared-runtime changes are
+// `merge:daytime`-eligible and must not be blocked by this gate — reuse the
+// canonical classifier (scripts/ci/change-impact.mjs) instead of maintaining
+// a second, broader prefix list here.
+const WINDOWED_DOMAINS = new Set(['peskids']);
 
 function bogotaParts(date = new Date()) {
   const fmt = new Intl.DateTimeFormat('en-US', {
@@ -81,26 +54,15 @@ function normalizePath(p) {
     .replace(/\\/g, '/');
 }
 
-function isSafeDaytimePath(path) {
-  const p = normalizePath(path);
-  if (!p) return true;
-  return SAFE_DAYTIME_MATCHERS.some((re) => re.test(p));
-}
-
-function isProdImpactPath(path) {
-  const p = normalizePath(path);
-  if (!p) return false;
-  if (PROD_IMPACT_PREFIXES.some((prefix) => p.startsWith(prefix))) return true;
-  return PROD_IMPACT_PATH_MATCHERS.some((re) => re.test(p));
-}
-
 function classifyPaths(paths) {
   const normalized = [...new Set(paths.map(normalizePath).filter(Boolean))];
-  const prod = normalized.filter(isProdImpactPath);
-  const unsafe = normalized.filter((p) => !isSafeDaytimePath(p));
-  // Impact if any prod path OR any path not in the safe allowlist.
-  const hasImpact = prod.length > 0 || unsafe.length > 0;
-  return { normalized, prod, unsafe, hasImpact };
+  const impact = classifyChangeImpact(normalized);
+  const windowed = impact.domains.some((domain) => WINDOWED_DOMAINS.has(domain));
+  // Only the windowed domains (currently: peskids) require the night window.
+  // Everything else classifies as merge:daytime-eligible per the canonical
+  // classifier and is not blocked here.
+  const prod = windowed ? normalized : [];
+  return { normalized, prod, unsafe: [], hasImpact: windowed, impact };
 }
 
 function truthy(v) {
@@ -182,9 +144,9 @@ function main() {
   }
 
   // PR mode
-  const { hasImpact, prod, unsafe, normalized } = classifyPaths(args.paths);
+  const { hasImpact, prod, normalized } = classifyPaths(args.paths);
   if (!hasImpact) {
-    console.log(`ok daytime-safe paths only (${normalized.length} files)`);
+    console.log(`ok merge:daytime-eligible paths only (${normalized.length} files)`);
     process.exit(0);
   }
 
@@ -195,16 +157,16 @@ function main() {
         ? ' [label/force]'
         : '';
     console.log(
-      `ok production-impact PR (${stamp})${tag} impact=${prod.length || unsafe.length}`
+      `ok peskids-impact PR (${stamp})${tag} impact=${prod.length}`
     );
     process.exit(0);
   }
 
   console.error(
     [
-      `❌ Merge/deploy de impacto en producción bloqueado de día.`,
+      `❌ Merge/deploy de Peskids bloqueado de día.`,
       `   Zona: ${TIME_ZONE} | Ventana permitida: ${WINDOW_START_HOUR}:00–${WINDOW_END_HOUR}:00 | Ahora: ${stamp}`,
-      `   Paths de impacto (muestra): ${(prod.length ? prod : unsafe).slice(0, 12).join(', ')}`,
+      `   Paths de impacto (muestra): ${prod.slice(0, 12).join(', ')}`,
       `   Opciones:`,
       `   1) Label night-merge (CI verde de día; merge automático a la 01:00 Bogotá)`,
       `   2) Esperar a la noche y mergear entonces`,
