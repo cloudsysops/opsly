@@ -20,17 +20,17 @@ Documento **canónico** para que agentes (Cursor, Claude, automatismos) y person
 | Destino | Usuario SSH | IP / nombre Tailscale | Uso típico |
 | ------- | ----------- | --------------------- | ---------- |
 | **VPS** (control plane, `/opt/opsly`) | **`vps-dragon`** | `100.120.151.91` / `vps-dragon` | Docker plataforma, Traefik, API, Redis, deploy |
-| **PC gamer / home-gpu-01** (WSL + Windows) | **`opsly`** | `100.117.5.102` / **`smdqcia-pc`** | Repo `~/opsly`, worker GPU, OBS. Shell default = **WSL**. Windows: `powershell.exe` remoto |
-| **PC gamer backup** (WSL Tailscale) | **`opsly`** | `100.115.197.109` / `smdqcia-wsl` | Solo si `smdqcia-pc:22` cae |
+| **PC gamer / home-gpu-01** (WSL + Windows) | **`opsly`** | MagicDNS **`smdqcia-pc`** (IP actual vía Tailscale) | Repo `~/opsly`, worker GPU, OBS. Shell default = **WSL** vía Windows OpenSSH `:22`. Windows: `powershell.exe` remoto |
 | **Worker Ubuntu** (Mac 2011, legacy) | **`opslyquantum`** | `100.80.41.29` / `opsly-worker` | Orchestrator legacy; ver PR retire Mac2011 |
 | **Mac principal** (desarrollo) | **`dragon`** (opsly-quantum) | `100.89.38.3` / `opsly-quantum` | Cursor en Mac; **no** es el usuario del PC gamer |
+
+**No usar** el nodo MagicDNS `smdqcia-wsl` / `100.115.197.109` como destino de recuperación: en `infra/nodes-registry.json` está marcado como phantom/legacy. Camino canónico = solo **`smdqcia-pc`**. Si `:22` cae, reparar con `ensure-smdqcia-agent-access.ps1` (Admin), no inventar un segundo host.
 
 Comandos de referencia (desde el Mac):
 
 ```bash
-ssh opsly@smdqcia-pc 'cd ~/opsly && git status -sb'          # WSL
+ssh opsly@smdqcia-pc 'cd ~/opsly && git status -sb'          # WSL (DefaultShell)
 ssh opsly@smdqcia-pc "powershell.exe -NoProfile -Command 'Write-Output WIN_OK'"
-ssh opsly@smdqcia-wsl 'uname -s'                             # backup
 ssh vps-dragon@100.120.151.91
 ```
 
