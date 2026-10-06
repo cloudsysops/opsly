@@ -14,15 +14,16 @@ tags:
 Acceso SSH al nodo **`smdqcia-pc`** (host Windows `DESKTOP-SMDQCIA` + WSL2 Ubuntu, usuario `opsly`)
 usando **Tailscale + MagicDNS**, con causes raíz y comandos de verificación documentados.
 
-## Resumen de estado (2026-09-22)
+## Resumen de estado (2026-10-05)
 
-- ✅ **Acceso directo por tailnet FUNCIONA.** `ssh opsly@smdqcia-pc.<suffix>.ts.net` (puerto 22)
-  responde con `hostname` = `DESKTOP-SMDQCIA`.
-- ✅ `sshd` de WSL escucha en `0.0.0.0:22` y `[::]:22` (OpenSSH de Windows **no** está instalado; el SSH vive en WSL).
-- ✅ Causa raíz de semanas de "CERRADO": **portproxy residual de Windows** ocupando el 22 (resuelto, ver abajo).
-- ✅ Firewall Windows activo: 3 perfiles `Enabled=True`, `DefaultInboundAction=Block`, con reglas allow explícitas.
-- ✅ Llave para **iPhone** creada y autorizada (ver sección iPhone; **referir por ruta, no pegar llaves**).
-- ⚠️ Node fantasma `desktop-smdqcia` (Linux) aún visible en la tailnet (cosmético; retirar en admin).
+- ✅ **Acceso directo por tailnet FUNCIONA.** `ssh opsly@smdqcia-pc` (puerto 22) → shell **WSL** (Linux).
+- ✅ Camino: **Windows OpenSSH :22** + `DefaultShell=C:\Opsly\bin\opsly-agent-shell.cmd` → `wsl.exe -e bash`.
+- ✅ Windows PowerShell desde Mac: `ssh opsly@smdqcia-pc "powershell.exe -NoProfile -Command '...'"`
+- ✅ Backup: `ssh opsly@smdqcia-wsl` (Tailscale dentro de WSL).
+- ✅ Reparación idempotente (Admin): `scripts/ops/ensure-smdqcia-agent-access.ps1`
+- ✅ Plantilla Mac: `cboteros/opsly-bootstrap` → `ssh/config.mac` + `mac-apply-ssh-config.sh`
+- ⚠️ No usar el nodo Tailscale legacy `pc-gamer` (`DESKTOP-P06TD4R`) para `home-gpu-01`.
+- ⚠️ Tras cambiar el host key de OpenSSH, en el Mac: `ssh-keygen -R smdqcia-pc`.
 
 ## Arquitectura
 
