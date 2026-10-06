@@ -7,7 +7,7 @@
   Idempotent. Safe to re-run after reboot.
   - WSL networkingMode=mirrored
   - Deletes only portproxy rules listening on :22 (does not wipe unrelated proxies)
-  - Windows OpenSSH :22 with DefaultShell -> C:\Opsly\bin\opsly-agent-shell.cmd (WSL bash)
+  - Windows OpenSSH :22 with DefaultShell -> C:\Opsly\bin\opsly-agent-shell.exe (WSL bash)
   - Syncs authorized_keys (+ administrators_authorized_keys)
   - Firewall allow TCP/22 scoped to Tailscale CGNAT (100.64.0.0/10) only
   - Disables WSL ssh.socket to avoid bind fight; WSL Tailscale remains optional backup
@@ -22,7 +22,10 @@ $ErrorActionPreference = "Stop"
 $LogDir = "C:\Opsly\logs"
 $Log = Join-Path $LogDir "ensure-agent-access.log"
 $BinDir = "C:\Opsly\bin"
-$Wrapper = Join-Path $BinDir "opsly-agent-shell.cmd"
+$WrapperExe = Join-Path $BinDir "opsly-agent-shell.exe"
+$WrapperCmd = Join-Path $BinDir "opsly-agent-shell.cmd"
+# Built-in Administrators well-known SID (locale-independent)
+$AdministratorsSid = "*S-1-5-32-544"
 # Tailscale CGNAT — SSH must not be open on LAN/public interfaces
 $TailscaleCidr = "100.64.0.0/10"
 $MagicDnsProbeHost = "smdqcia-pc"
@@ -31,6 +34,17 @@ function Write-Log([string]$Message) {
   $line = "{0} {1}" -f ([DateTimeOffset]::Now.ToString("o")), $Message
   Add-Content -Path $Log -Value $line -Encoding utf8
   Write-Host $line
+}
+
+function Invoke-IcaclsChecked {
+  param(
+    [Parameter(Mandatory = $true)][string]$Path,
+    [Parameter(Mandatory = $true)][string[]]$Arguments
+  )
+  & icacls.exe @Arguments | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    throw "icacls failed (exit=$LASTEXITCODE) for $Path :: $($Arguments -join ' ')"
+  }
 }
 
 function Remove-Port22Proxies {
@@ -91,11 +105,180 @@ function Remove-Port22Proxies {
   Write-Log "portproxy :22 removals=$removed"
 }
 
+function Build-OpslyAgentShellExe {
+  param([Parameter(Mandatory = $true)][string]$OutputPath)
+
+  $source = @'
+using System;
+using System.Diagnostics;
+
+public static class OpslyAgentShell
+{
+    public static int Main(string[] args)
+    {
+        string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? @"C:\Windows";
+        string wsl = System.IO.Path.Combine(systemRoot, "System32", "wsl.exe");
+        var psi = new ProcessStartInfo
+        {
+            FileName = wsl,
+            UseShellExecute = false,
+        };
+
+        if (args.Length >= 1 && string.Equals(args[0], "-c", StringComparison.OrdinalIgnoreCase))
+        {
+            if (args.Length < 2 || string.IsNullOrEmpty(args[1]))
+            {
+                psi.Arguments = "-e bash -l";
+            }
+            else
+            {
+                psi.Arguments = "-e bash -lc " + QuoteForCmd(args[1]);
+            }
+        }
+        else
+        {
+            psi.Arguments = "-e bash -l";
+        }
+
+        using (var process = Process.Start(psi))
+        {
+            if (process == null)
+            {
+                return 1;
+            }
+            process.WaitForExit();
+            return process.ExitCode;
+        }
+    }
+
+    private static string QuoteForCmd(string value)
+    {
+        if (value.IndexOfAny(new[] { ' ', '\t', '"' }) < 0)
+        {
+            return value;
+        }
+        return "\"" + value.Replace("\"", "\\\"") + "\"";
+    }
+}
+'@
+
+  $tempDir = Join-Path $env:TEMP ("opsly-agent-shell-" + [guid]::NewGuid().ToString("n"))
+  New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
+  try {
+    $csPath = Join-Path $tempDir "OpslyAgentShell.cs"
+    [System.IO.File]::WriteAllText($csPath, $source)
+
+    $cscCandidates = @(
+      "${env:WINDIR}\Microsoft.NET\Framework64\v4.0.30319\csc.exe",
+      "${env:WINDIR}\Microsoft.NET\Framework\v4.0.30319\csc.exe"
+    )
+    $csc = $cscCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if (-not $csc) {
+      throw "csc.exe not found — cannot build opsly-agent-shell.exe (OpenSSH DefaultShell requires an executable)"
+    }
+
+    $outTmp = Join-Path $tempDir "opsly-agent-shell.exe"
+    & $csc /nologo /target:exe /optimize+ /out:$outTmp $csPath | ForEach-Object { Write-Log "csc: $_" }
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path $outTmp)) {
+      throw "failed to compile opsly-agent-shell.exe (csc exit=$LASTEXITCODE)"
+    }
+    Copy-Item -Force $outTmp $OutputPath
+    Write-Log "wrote executable DefaultShell candidate $OutputPath"
+  }
+  finally {
+    Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+  }
+}
+
+function ConvertTo-ManagedSshdConfig {
+  param([Parameter(Mandatory = $true)][string[]]$ExistingLines)
+
+  # Rewrite only GLOBAL (pre-Match) directives. Preserve everything inside Match blocks.
+  $out = [System.Collections.Generic.List[string]]::new()
+  $out.Add("Port 22")
+  $out.Add("PubkeyAuthentication yes")
+  $out.Add("PasswordAuthentication no")
+  $out.Add("AuthorizedKeysFile .ssh/authorized_keys")
+  $out.Add("Subsystem sftp sftp-server.exe")
+
+  $inMatch = $false
+  $sawAdminMatch = $false
+  foreach ($line in $ExistingLines) {
+    if ($line -match '^\s*Match\s+') {
+      $inMatch = $true
+      if ($line -match '(?i)Match\s+Group\s+administrators\b') {
+        $sawAdminMatch = $true
+      }
+      $out.Add($line)
+      continue
+    }
+
+    if (-not $inMatch) {
+      if ($line -match '^\s*Port\s+') { continue }
+      if ($line -match '^\s*PubkeyAuthentication\s+') { continue }
+      if ($line -match '^\s*PasswordAuthentication\s+') { continue }
+      if ($line -match '^\s*AuthorizedKeysFile\s+') { continue }
+      if ($line -match '^\s*Subsystem\s+sftp') { continue }
+      if ($line -match 'BEGIN OPSLY|END OPSLY') { continue }
+    }
+
+    $out.Add($line)
+  }
+
+  if (-not $sawAdminMatch) {
+    $out.Add("")
+    $out.Add("Match Group administrators")
+    $out.Add("       AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys")
+  }
+
+  return , $out.ToArray()
+}
+
+function Invoke-OptionalWslTailscale {
+  # Optional backup MagicDNS only. Never block on interactive `tailscale up`.
+  $authKey = $env:OPSLY_WSL_TAILSCALE_AUTHKEY
+  if (-not $authKey) { $authKey = $env:TS_AUTHKEY }
+
+  $statusScript = @'
+set -euo pipefail
+if ! command -v tailscale >/dev/null 2>&1; then
+  echo "wsl-tailscale: binary missing — skip"
+  exit 0
+fi
+systemctl enable --now tailscaled 2>/dev/null || true
+backend="$(tailscale status --json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get(\"BackendState\",\"\"))" 2>/dev/null || true)"
+echo "wsl-tailscale: BackendState=${backend:-unknown}"
+case "${backend:-}" in
+  Running)
+    tailscale status --self 2>/dev/null | head -2 || true
+    ;;
+  *)
+    if [ -n "${OPSLY_WSL_TAILSCALE_AUTHKEY:-}" ] || [ -n "${TS_AUTHKEY:-}" ]; then
+      key="${OPSLY_WSL_TAILSCALE_AUTHKEY:-$TS_AUTHKEY}"
+      timeout 20 tailscale up --accept-dns=false --authkey="$key" 2>/dev/null || echo "wsl-tailscale: noninteractive up failed/timeout — skip"
+      tailscale status --self 2>/dev/null | head -2 || true
+    else
+      echo "wsl-tailscale: not Running and no OPSLY_WSL_TAILSCALE_AUTHKEY/TS_AUTHKEY — skip interactive up"
+    fi
+    ;;
+esac
+'@
+
+  $envAssign = ""
+  if ($authKey) {
+    # Pass auth key only into this one wsl invocation; do not persist it.
+    $escaped = $authKey.Replace("'", "'\''")
+    $envAssign = "OPSLY_WSL_TAILSCALE_AUTHKEY='$escaped' "
+  }
+
+  wsl -u root -e bash -lc ($envAssign + $statusScript) | ForEach-Object { Write-Log $_ }
+}
+
 New-Item -ItemType Directory -Force -Path $LogDir, $BinDir | Out-Null
 Write-Log "=== ensure-smdqcia-agent-access START dryRun=$DryRun ==="
 
 if ($DryRun) {
-  Write-Log "[dry-run] would enforce mirrored WSL, OpenSSH:22 + WSL wrapper, keys, Tailscale-scoped firewall, portproxy:22 only"
+  Write-Log "[dry-run] would enforce mirrored WSL, OpenSSH:22 + WSL exe wrapper, keys, Tailscale-scoped firewall, portproxy:22 only"
   exit 0
 }
 
@@ -116,8 +299,10 @@ instanceIdleTimeout=-1
 [System.IO.File]::WriteAllText("$env:USERPROFILE\.wslconfig", $wslcfg.Replace("`r`n", "`n"))
 Write-Log "wrote mirrored .wslconfig"
 
-# 2) Wrapper: OpenSSH passes `-c "cmd"`; wsl.exe needs `-e bash -lc`.
-# Delayed expansion so exit code reflects wsl.exe, not pre-block ERRORLEVEL=0.
+# 2) Executable wrapper (OpenSSH DefaultShell MUST be an .exe, not .cmd)
+Build-OpslyAgentShellExe -OutputPath $WrapperExe
+
+# Keep a .cmd twin for manual Windows debugging only (not used as DefaultShell).
 $wrapperBody = @"
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
@@ -132,8 +317,8 @@ if /I "%~1"=="-c" (
 wsl.exe -e bash -l
 exit /b !ERRORLEVEL!
 "@
-[System.IO.File]::WriteAllText($Wrapper, $wrapperBody.Replace("`r`n", "`n"))
-Write-Log "wrote $Wrapper (delayed ERRORLEVEL)"
+[System.IO.File]::WriteAllText($WrapperCmd, $wrapperBody.Replace("`r`n", "`n"))
+Write-Log "wrote debug helper $WrapperCmd (not DefaultShell)"
 
 # 3) Kill broken portproxy loops on :22 only
 Remove-Port22Proxies
@@ -145,46 +330,28 @@ if (-not $keys) { throw "WSL ~/.ssh/authorized_keys empty — authorize Mac pubk
 $userAuth = Join-Path $env:USERPROFILE ".ssh\authorized_keys"
 New-Item -ItemType Directory -Force -Path (Split-Path $userAuth) | Out-Null
 Set-Content -Path $userAuth -Value $keys -Encoding ASCII
-icacls $userAuth /inheritance:r | Out-Null
-icacls $userAuth /grant:r "${env:USERNAME}:R" | Out-Null
+Invoke-IcaclsChecked -Path $userAuth -Arguments @($userAuth, "/inheritance:r")
+Invoke-IcaclsChecked -Path $userAuth -Arguments @($userAuth, "/grant:r", "${env:USERNAME}:R")
 
 $adminAuth = "C:\ProgramData\ssh\administrators_authorized_keys"
 Set-Content -Path $adminAuth -Value $keys -Encoding ASCII
-icacls $adminAuth /inheritance:r | Out-Null
-icacls $adminAuth /grant:r "Administrators:F" | Out-Null
-icacls $adminAuth /grant:r "SYSTEM:F" | Out-Null
-Write-Log "synced authorized_keys"
+Invoke-IcaclsChecked -Path $adminAuth -Arguments @($adminAuth, "/inheritance:r")
+Invoke-IcaclsChecked -Path $adminAuth -Arguments @($adminAuth, "/grant:r", "${AdministratorsSid}:F")
+Invoke-IcaclsChecked -Path $adminAuth -Arguments @($adminAuth, "/grant:r", "SYSTEM:F")
+Write-Log "synced authorized_keys (Administrators SID $AdministratorsSid)"
 
-# 5) sshd_config: Port 22 + pubkey
+# 5) sshd_config: Port 22 + pubkey — only rewrite GLOBAL directives; preserve Match bodies
 $sshdConfig = "C:\ProgramData\ssh\sshd_config"
 Copy-Item $sshdConfig "$sshdConfig.bak-opsly-$(Get-Date -Format yyyyMMddHHmmss)" -Force
 $base = Get-Content $sshdConfig
-$out = [System.Collections.Generic.List[string]]::new()
-$out.Add("Port 22")
-$out.Add("PubkeyAuthentication yes")
-$out.Add("PasswordAuthentication no")
-$out.Add("AuthorizedKeysFile .ssh/authorized_keys")
-$out.Add("Subsystem sftp sftp-server.exe")
-foreach ($line in $base) {
-  if ($line -match '^\s*Port\s+') { continue }
-  if ($line -match '^\s*PubkeyAuthentication\s+') { continue }
-  if ($line -match '^\s*PasswordAuthentication\s+') { continue }
-  if ($line -match '^\s*AuthorizedKeysFile\s+') { continue }
-  if ($line -match '^\s*Subsystem\s+sftp') { continue }
-  if ($line -match 'BEGIN OPSLY|END OPSLY') { continue }
-  $out.Add($line)
-}
-if (-not ($out | Where-Object { $_ -match 'administrators_authorized_keys' })) {
-  $out.Add("")
-  $out.Add("Match Group administrators")
-  $out.Add("       AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys")
-}
-$out | Set-Content -Path $sshdConfig -Encoding ASCII
+$managed = ConvertTo-ManagedSshdConfig -ExistingLines $base
+$managed | Set-Content -Path $sshdConfig -Encoding ASCII
 
 New-Item -Path "HKLM:\SOFTWARE\OpenSSH" -Force | Out-Null
-New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value $Wrapper -PropertyType String -Force | Out-Null
-Remove-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShellCommandOption -ErrorAction SilentlyContinue
-Write-Log "DefaultShell=$Wrapper"
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value $WrapperExe -PropertyType String -Force | Out-Null
+# OpenSSH appends CommandOption + remote command; our exe understands `-c`.
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShellCommandOption -Value "-c" -PropertyType String -Force | Out-Null
+Write-Log "DefaultShell=$WrapperExe DefaultShellCommandOption=-c"
 
 # 6) Firewall — Tailscale CGNAT only (never open :22 to LAN/public Any)
 $ruleName = "Opsly-SSH-Tailscale-22"
@@ -229,8 +396,8 @@ $st = (Get-Service sshd).Status
 Write-Log "sshd=$st"
 if ($st -ne "Running") { throw "sshd failed to start — see Application log" }
 
-# 8) Optional WSL Tailscale (backup MagicDNS) — do not treat as canonical inventory node
-wsl -u root -e bash -lc "systemctl enable --now tailscaled 2>/dev/null || true; tailscale up --accept-dns=false 2>/dev/null || true; tailscale status --self | head -2" | ForEach-Object { Write-Log $_ }
+# 8) Optional WSL Tailscale (backup MagicDNS) — gated; never interactive hang
+Invoke-OptionalWslTailscale
 
 # Probe via MagicDNS (survives re-enroll / IP change); fall back to local listen check
 $probeOk = $false
@@ -250,4 +417,5 @@ Write-Log "=== DONE ==="
 Write-Log "WSL (default):  ssh opsly@smdqcia-pc"
 Write-Log "Windows:        ssh opsly@smdqcia-pc `"powershell.exe -NoProfile -Command 'Write-Output WIN_OK'`""
 Write-Log "Firewall:       TCP/22 RemoteAddress=$TailscaleCidr only"
+Write-Log "DefaultShell:   $WrapperExe (executable, not .cmd)"
 Write-Log "Do NOT start WSL ssh.socket — Windows OpenSSH owns :22"

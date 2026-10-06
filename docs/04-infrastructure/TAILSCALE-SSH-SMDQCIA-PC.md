@@ -17,7 +17,7 @@ usando **Tailscale + MagicDNS**, con causes raíz y comandos de verificación do
 ## Resumen de estado (2026-10-05, reconciliado)
 
 - ✅ **Dueño de `:22` = Windows OpenSSH** (servicio `sshd`), no `ssh.socket` de WSL.
-- ✅ Shell por defecto: `DefaultShell=C:\Opsly\bin\opsly-agent-shell.cmd` → `wsl.exe -e bash` (WSL).
+- ✅ Shell por defecto: `DefaultShell=C:\Opsly\bin\opsly-agent-shell.exe` → `wsl.exe -e bash` (WSL; executable, not `.cmd`).
 - ✅ Windows PowerShell desde Mac: `ssh opsly@smdqcia-pc "powershell.exe -NoProfile -Command '...'"`
 - ✅ Firewall inbound TCP/22 **scoped a Tailscale CGNAT** `100.64.0.0/10` (regla `Opsly-SSH-Tailscale-22`).
 - ✅ Reparación idempotente (Admin): `scripts/ops/ensure-smdqcia-agent-access.ps1` — **no** hacer `portproxy reset` global; solo borra proxies en `:22`.
