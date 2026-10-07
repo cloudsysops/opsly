@@ -40,6 +40,11 @@ Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orches
 
 Enrutar por **capacidad** (`gpu.nvidia`, `video.render`, `llm.local`, `ffmpeg`), no por hostname. Registro: [`config/compute-workers.json`](../../config/compute-workers.json). CLI: `npm run compute:workers` / `npm run compute:assign -- --job content.render.video`.
 
+### Shared media (action cam → edición)
+
+Raw de action cam 4K y edición local: hub Mac `~/opsly-media` → sync Tailscale → PC `~/opsly-media`.
+**Agentes en este host:** seguir el playbook en [`docs/runbooks/OPSLY-SHARED-MEDIA.md`](../runbooks/OPSLY-SHARED-MEDIA.md) (no editar la SD; trabajar en `~/opsly-media`; sync desde Mac con `scripts/ops/sync-media-to-pc-gamer.sh`).
+
 ## Nodos gamer e identidad de worker
 
 Hay **dos inventarios distintos** y no se deben mezclar:
