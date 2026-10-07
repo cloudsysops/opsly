@@ -8,8 +8,8 @@ MEDIA_ROOT="${OPSLY_MEDIA_ROOT:-$HOME/opsly-media}"
 SSH_HOST="${OPSLY_MEDIA_SSH_HOST:-smdqcia-pc}"
 # WSL path on PC gamer (Windows editors can use \\wsl$\Ubuntu\home\opsly\opsly-media
 # or a junction to D:\opsly-media — see runbook).
-# Prefer Windows D: HDD (WSL /mnt/d) so media does not fill the WSL ext4 VHD.
-# Agents still use ~/opsly-media (symlink → /mnt/d/opsly-media).
+# Prefer Windows D: HDD via compat alias /mnt/d/opsly-media
+# (camera/exports/projects → D:\Content\… — see OPSLY-SHARED-MEDIA.md).
 REMOTE_ROOT="${OPSLY_MEDIA_REMOTE_ROOT:-/mnt/d/opsly-media}"
 # What to push: latest camera ingest + exports by default
 SRC_REL="${OPSLY_MEDIA_SRC_REL:-to-pc-gamer/latest-camera}"
@@ -25,7 +25,7 @@ Usage: sync-media-to-pc-gamer.sh [--dry-run] [--all] [--src REL]
 Env:
   OPSLY_MEDIA_ROOT          default: ~/opsly-media
   OPSLY_MEDIA_SSH_HOST      default: smdqcia-pc
-  OPSLY_MEDIA_REMOTE_ROOT   default: /home/opsly/opsly-media
+  OPSLY_MEDIA_REMOTE_ROOT   default: /mnt/d/opsly-media  (= alias → D:\Content)
 EOF
 }
 
@@ -53,8 +53,16 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
 fi
 
 remote_prep() {
-  ssh -o BatchMode=yes -o ConnectTimeout=20 "$SSH_HOST" \
-    "bash --noprofile --norc -lc 'mkdir -p \"$REMOTE_ROOT\"/{camera,inbox,projects,exports,from-mac,to-mac}'"
+  # Ensure Content canon + opsly-media aliases exist on PC before rsync
+  local ensure_script
+  ensure_script="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/ensure-pc-gamer-media-layout.sh"
+  if [[ -f "$ensure_script" ]]; then
+    ssh -o BatchMode=yes -o ConnectTimeout=20 "$SSH_HOST" \
+      'bash --noprofile --norc -s' <"$ensure_script"
+  else
+    ssh -o BatchMode=yes -o ConnectTimeout=20 "$SSH_HOST" \
+      "bash --noprofile --norc -lc 'mkdir -p \"$REMOTE_ROOT\"/{from-mac,to-mac,to-pc-gamer} /mnt/d/Content/Media/Camara/inbox'"
+  fi
 }
 
 sync_one() {
