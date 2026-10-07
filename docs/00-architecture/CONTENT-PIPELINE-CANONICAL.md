@@ -75,7 +75,7 @@ This is the only production path for Mauro gameplay.
 | gameplay.ingest | `ingestOwnedVideo`, `ingestPrecutHighlight`, watcher `ingest` (old), `prepareGameplaySession` (#1158) | `pipeline.ts` | CANONICAL | bare ingest for Instant Replay | KEEP session path; Instant Replay → `prepare-session` |
 | session.registry | `envelope.session` (#1158) | `types.ts` envelope field | CANONICAL | none | KEEP; no DB table |
 | transcription | `transcribe.ts` sidecar; Whisper blocked | `transcribe.ts` | CANONICAL interface, adapter missing | WhisperX / gamer STT not wired | ADAPT future STT into this file only |
-| highlight.detect | `audio-peak-discovery.ts`, `clip-discovery.ts`, Auto-clipper research | `audio-peak-discovery.ts` | CANONICAL | transcript discovery; Auto-clipper | KEEP audio-peak; clip-discovery ADAPTER for scripted; Auto-clipper ADAPT patterns only |
+| highlight.detect | `audio-peak-discovery.ts` (strategy: audio-peak), `session-window-discovery.ts` (strategy: session-window), `clip-discovery.ts`, Auto-clipper research | `audio-peak-discovery.ts` (+ `session-window-discovery.ts` as alternate strategy, same capability) | CANONICAL | transcript discovery; Auto-clipper | KEEP audio-peak as default; KEEP session-window as the POV-gameplay/no-audio-cue strategy (selected via `detectionStrategy`, not a second engine); clip-discovery ADAPTER for scripted; Auto-clipper ADAPT patterns only |
 | highlight.score | `highlight-score.ts` (#1158); raw `clip.score` | `highlight-score.ts` | CANONICAL | discovery heuristic | KEEP; quality > quota |
 | clip.extract | studio `extractClip`; content-engine `trim` | `ffmpeg.ts` `extractClip` | CANONICAL | second ffmpeg | KEEP studio; ADAPT engine later (ADR-058) |
 | vertical.reframe | `verticalReframe`; engine `scale` | `ffmpeg.ts` `verticalReframe` | CANONICAL | engine scale lacks yuv420p lock | KEEP studio |
@@ -89,6 +89,45 @@ This is the only production path for Mauro gameplay.
 | metrics | `capabilities.ts` `not-wired-no-metrics-source` | none | MISSING | fake dashboards | BLOCK invented numbers |
 
 Full machine-readable copy: `config/content-capabilities.json`.
+
+## highlight.detect strategies
+
+`highlight.detect` is one capability with two selectable strategies, both
+feeding the same `scoreGameplayCandidate` / `highlight-score.ts` stage and
+the same `extractClip` / `verticalReframe` / `captionBurn` / rights / QA /
+approval / `publishing.ts` gate downstream. Neither is a second pipeline.
+
+| Strategy | File | When |
+| --- | --- | --- |
+| `audio-peak` (default) | `audio-peak-discovery.ts` | Footage with a discrete audio cue — silencedetect finds loud/quiet boundaries. |
+| `session-window` | `session-window-discovery.ts` | POV gameplay with no reliable audio cue (gunfire/engine noise is ambient, not a discrete peak — e.g. airsoft). Splits the source into dense, chronological, fixed-length windows tagged with narrative-beat labels (`hook`, `push`, `contact`, `cqb`, `reload_move`, `pressure`, `close`, `open`, `mid`, `midA`, `midB`, `full`) and pre-scores each window by **source-capture tier** (`match_4k60` > `action_cam` > `iphone`) rather than by any detected action intensity. Every candidate sets `confirmedElimination: false` and a `description` of the form `"POV segment (<tag>) — activity window only; eliminations unverified"` — it never claims a kill/elimination happened. `highlight-score.ts` reads the candidate's `captureTier` to seed its `REACTION_STRENGTH` dimension, the same way it already special-cases `nvidia_highlight`/`audio_peak` categories. |
+
+Selected per session via `GameplaySessionMeta.detectionStrategy` /
+`prepareGameplaySession({ detectionStrategy: 'session-window', sessionWindow: { captureTier, ... } })`.
+Omitting `detectionStrategy` keeps the existing `audio-peak` behavior —
+this is additive, not a breaking change to the canonical path.
+
+### Migration note: ad-hoc airsoft script superseded
+
+An ad-hoc, out-of-repo Node script (`airsoft-edit-pipeline.cjs`, run by hand
+on the PC-gamer workstation, **not** in this monorepo) previously did
+highlight/session-window detection, scoring, clip extraction, vertical
+reframe, caption generation, and review-folder output
+(`approved`/`needs_blur`/`rejected`, `PUBLISH=OFF`) entirely outside this
+pipeline. Its method — dense session windows scored by capture-device tier,
+"no invented kills" — is now implemented here as the `session-window`
+strategy above.
+
+**This has not been run in production yet.** No metrics, counts, or
+outputs from the migration are claimed here — this is the capability
+landing in the codebase, not a deployment or a backfill of past runs.
+
+Future airsoft/POV gameplay sessions should go through
+`ingestOwnedVideo` / `prepareGameplaySession` with
+`detectionStrategy: 'session-window'` instead of running that standalone
+script. The script's review-folder/`PUBLISH=OFF` human gate maps onto the
+existing Moon approval + `publishing.ts` gate here — it does not need its
+own gate once ingested through this path.
 
 ## Worker roles
 
@@ -217,6 +256,10 @@ Do **not** start Remotion, Auto-clipper, Whisper, or Dragon overlay.
 1. Night stack only: #1154 → #1157 → #1155 → #1158.
 2. First real Instant Replay through watcher → Moon review.
 3. Only then: STT adapter behind `transcribe.ts`, or ffmpeg golden tests for ADR-058.
+4. `session-window` strategy (see above) is implemented but not yet run
+   against real airsoft footage in production — that first real run,
+   through `prepareGameplaySession({ detectionStrategy: 'session-window' })`
+   to Moon review, is the next step for the airsoft/POV-gameplay channel.
 
 ## Enlaces relacionados
 
