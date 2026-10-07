@@ -113,14 +113,20 @@ Fotos/videos del teléfono van **directo al HDD del PC**. No pases por iCloud/Dr
 | Drop móvil | `D:\Content\Media\Camara\inbox\mobile-drop\` |
 | Sesión del día | `D:\Content\Media\Camara\inbox\mobile_YYYY-MM-DD\` |
 
-### Opción A — LocalSend (recomendada, ya en el PC)
+### Opción A — LocalSend (recomendada)
 
-1. **PC:** abrir **LocalSend** (instalado). En ajustes → carpeta de recepción =  
-   `D:\Content\Media\Camara\inbox\mobile-drop`
-2. **Móvil:** instalar [LocalSend](https://localsend.org/) (iOS/Android). Misma Wi‑Fi **o** ambos en Tailscale.
-3. Enviar fotos/álbum → aparecen en `mobile-drop` del PC.
-4. En el teléfono: borrar originales solo cuando confirmes el conteo en el PC.
-5. Opcional en PC (WSL): mover a sesión fechada:
+**Flota (misma Wi‑Fi o Tailscale):**
+
+| Dispositivo | Estado | Carpeta de recepción |
+|-------------|--------|----------------------|
+| Móvil | Tú lo instalas | (app) |
+| PC gamer `smdqcia-pc` | Instalado + corriendo | `D:\Content\Media\Camara\inbox\mobile-drop` |
+| Mac hub (`mac2011`) | Instalado + corriendo | `~/Downloads/LocalSend-inbox` (solo staging) |
+
+1. **Destino habitual de fotos:** en el móvil, enviar a **PC gamer** (no al Mac).
+2. **PC:** LocalSend → ajustes → recepción = `D:\Content\Media\Camara\inbox\mobile-drop`.
+3. Enviar fotos/álbum → HDD del PC. Borrar en el teléfono solo tras confirmar conteo.
+4. Opcional en PC (WSL) — archivar sesión:
    ```bash
    ID=mobile_$(date +%Y-%m-%d)
    mkdir -p /mnt/d/Content/Media/Camara/inbox/$ID
