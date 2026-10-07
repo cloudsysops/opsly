@@ -42,8 +42,8 @@ Enrutar por **capacidad** (`gpu.nvidia`, `video.render`, `llm.local`, `ffmpeg`),
 
 ### Shared media (action cam → edición)
 
-Raw de action cam 4K y edición local: hub Mac `~/opsly-media` → sync Tailscale → PC `~/opsly-media`.
-**Agentes en este host:** seguir el playbook en [`docs/runbooks/OPSLY-SHARED-MEDIA.md`](../runbooks/OPSLY-SHARED-MEDIA.md) (no editar la SD; trabajar en `~/opsly-media`; sync desde Mac con `scripts/ops/sync-media-to-pc-gamer.sh`).
+Raw de action cam 4K y edición local: sync Tailscale → **`D:\Content`** (canon). Alias agentes: `~/opsly-media` → symlinks a Content.
+**Agentes en este host:** playbook [`docs/runbooks/OPSLY-SHARED-MEDIA.md`](../runbooks/OPSLY-SHARED-MEDIA.md) — editar en `D:\Content\…`; layout: `scripts/ops/ensure-pc-gamer-media-layout.sh`; sync: `scripts/ops/sync-media-to-pc-gamer.sh`.
 
 ## Nodos gamer e identidad de worker
 
