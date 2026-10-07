@@ -104,6 +104,37 @@ Tarjeta action cam montada típica: `/Volumes/Untitled` (`VIDEO/`, `PHOTO/`).
 
 **Preferido:** no llenar el Mac — empujar **directo SD → `D:\Content`** por Tailscale.
 
+## Móvil → PC (sin ocupar Mac)
+
+Fotos/videos del teléfono van **directo al HDD del PC**. No pases por iCloud/Drive del Mac ni copies a DragonB.
+
+| Destino PC | Path |
+|------------|------|
+| Drop móvil | `D:\Content\Media\Camara\inbox\mobile-drop\` |
+| Sesión del día | `D:\Content\Media\Camara\inbox\mobile_YYYY-MM-DD\` |
+
+### Opción A — LocalSend (recomendada, ya en el PC)
+
+1. **PC:** abrir **LocalSend** (instalado). En ajustes → carpeta de recepción =  
+   `D:\Content\Media\Camara\inbox\mobile-drop`
+2. **Móvil:** instalar [LocalSend](https://localsend.org/) (iOS/Android). Misma Wi‑Fi **o** ambos en Tailscale.
+3. Enviar fotos/álbum → aparecen en `mobile-drop` del PC.
+4. En el teléfono: borrar originales solo cuando confirmes el conteo en el PC.
+5. Opcional en PC (WSL): mover a sesión fechada:
+   ```bash
+   ID=mobile_$(date +%Y-%m-%d)
+   mkdir -p /mnt/d/Content/Media/Camara/inbox/$ID
+   mv /mnt/d/Content/Media/Camara/inbox/mobile-drop/* /mnt/d/Content/Media/Camara/inbox/$ID/ 2>/dev/null || true
+   ```
+
+### Opción B — Tailscale Taildrop
+
+1. App **Tailscale** en el móvil (misma cuenta que el PC `smdqcia-pc`, IP tipica `100.117.5.102`).
+2. Compartir → Tailscale → enviar al PC.
+3. Mover lo recibido a `D:\Content\Media\Camara\inbox\mobile-drop\` (Taildrop suele caer en Descargas).
+
+**No uses** AirDrop/cable al Mac como destino final: llena el Mac. Si el Mac es solo puente, reenvía al PC el mismo día y borra la copia local.
+
 ## Ingesta recomendada: SD (Mac) → HDD PC
 
 ```bash

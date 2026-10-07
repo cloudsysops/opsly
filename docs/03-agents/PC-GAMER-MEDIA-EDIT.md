@@ -23,5 +23,6 @@ tags:
 5. Si falta material: Mac empuja por Tailscale (`sync-media-to-pc-gamer.sh` o rsync SD→`/mnt/d/opsly-media/camera/…`)
 6. Layout roto → `./scripts/ops/ensure-pc-gamer-media-layout.sh` (idempotente)
 7. Nunca editar la SD; nunca guardar raw en el VHD de WSL; nunca `git add` videos al repo
+8. Fotos del **móvil** → LocalSend / Taildrop a `D:\Content\Media\Camara\inbox\mobile-drop\` (no al Mac)
 
 SSH: `opsly@smdqcia-pc` — ver [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md).
