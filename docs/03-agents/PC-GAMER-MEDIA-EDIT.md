@@ -15,11 +15,11 @@ tags:
 
 ## Resumen para agentes en `smdqcia-pc`
 
-1. Media de trabajo: `~/opsly-media` (WSL) / Explorer `\\wsl$\Ubuntu\home\opsly\opsly-media`
+1. Media de trabajo en el **HDD D:** → `D:\opsly-media` (= WSL `/mnt/d/opsly-media`; `~/opsly-media` es symlink)
 2. Raw de action cam: `~/opsly-media/camera/<ingest_id>/{VIDEO,PHOTO}`
-3. Proyectos de edición: `~/opsly-media/projects/<nombre>/`
+3. Proyectos de edición: `~/opsly-media/projects/<nombre>/` (también en D:)
 4. Exports: `~/opsly-media/exports/`
-5. Si falta material: el **Mac** debe correr `./scripts/ops/sync-media-to-pc-gamer.sh`
-6. Nunca editar la SD montada en el Mac; nunca `git add` videos al repo
+5. Si falta material: el **Mac** empuja por Tailscale (`./scripts/ops/sync-media-to-pc-gamer.sh` o rsync directo SD→`/mnt/d/opsly-media`)
+6. Nunca editar la SD del Mac; nunca guardar raw en el VHD de WSL; nunca `git add` videos al repo
 
 SSH: `opsly@smdqcia-pc` — ver [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md).

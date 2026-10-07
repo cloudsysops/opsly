@@ -70,10 +70,12 @@ Tarjeta action cam montada típica: `/Volumes/Untitled` (`VIDEO/`, `PHOTO/`).
 
 | Path | Rol |
 |------|-----|
-| WSL `~/opsly-media` (`/home/opsly/opsly-media`) | Copia de trabajo |
-| Explorer | `\\wsl$\Ubuntu\home\opsly\opsly-media` |
+| **HDD Windows `D:\opsly-media`** | Root real (disco grande; ~1.9 TB hoy) |
+| WSL `/mnt/d/opsly-media` | Mismo path desde Ubuntu |
+| WSL `~/opsly-media` | Symlink → `/mnt/d/opsly-media` (agentes usan este) |
+| Explorer | `D:\opsly-media` (preferido) o `\\wsl$\Ubuntu\home\opsly\opsly-media` |
 
-Opcional (Windows): junction `D:\opsly-media` → carpeta WSL o disco de edición dedicado (4 TB).
+**Importante:** el material vive en **D:**, no en el VHD de WSL ni en el SSD del Mac.
 
 ## Ingesta desde la cámara (Mac)
 
@@ -92,22 +94,38 @@ ln -sfn "$MEDIA" "$HOME/opsly-media"
 
 Luego sync al PC (abajo).
 
-## Sync Mac → PC (Tailscale SSH)
+## Sync Mac → PC HDD (Tailscale SSH)
+
+Destino canónico: **`/mnt/d/opsly-media`** (= `D:\opsly-media`). Así **no ocupa** el disco del Mac ni el VHD de WSL.
+
+### A) Desde hub Mac (`~/opsly-media` ya ingestado)
 
 ```bash
-# En el Mac, desde la raíz del repo opsly:
+# En el Mac, repo opsly:
 ./scripts/ops/sync-media-to-pc-gamer.sh --dry-run
-./scripts/ops/sync-media-to-pc-gamer.sh          # último ingest (latest-camera)
-./scripts/ops/sync-media-to-pc-gamer.sh --all    # camera/ + exports/ + to-pc-gamer/
+./scripts/ops/sync-media-to-pc-gamer.sh          # último ingest
+./scripts/ops/sync-media-to-pc-gamer.sh --all
+```
+
+### B) Directo tarjeta → PC (recomendado: cero copia local en Mac)
+
+```bash
+# Mac: SD montada (ej. /Volumes/Untitled) → D: del PC por Tailscale
+ID="action-cam-4k_$(date +%Y-%m-%d)"
+ssh smdqcia-pc "mkdir -p /mnt/d/opsly-media/camera/$ID/{VIDEO,PHOTO}"
+caffeinate -i rsync -a --progress --partial -e ssh \
+  /Volumes/Untitled/PHOTO/ smdqcia-pc:/mnt/d/opsly-media/camera/$ID/PHOTO/
+caffeinate -i rsync -a --progress --partial -e ssh \
+  /Volumes/Untitled/VIDEO/ smdqcia-pc:/mnt/d/opsly-media/camera/$ID/VIDEO/
 ```
 
 | Env | Default |
 |-----|---------|
-| `OPSLY_MEDIA_ROOT` | `~/opsly-media` |
+| `OPSLY_MEDIA_ROOT` | `~/opsly-media` (Mac) |
 | `OPSLY_MEDIA_SSH_HOST` | `smdqcia-pc` |
-| `OPSLY_MEDIA_REMOTE_ROOT` | `/home/opsly/opsly-media` |
+| `OPSLY_MEDIA_REMOTE_ROOT` | `/mnt/d/opsly-media` (**HDD D:**) |
 
-Requisitos: `ssh smdqcia-pc` OK (DefaultShell WSL + `opsly-agent-shell.exe`), Tailscale online en ambos lados.
+Requisitos: `ssh smdqcia-pc` OK, Tailscale online. No desconectar la SD hasta `VIDEO_DONE`.
 
 ## Reglas
 

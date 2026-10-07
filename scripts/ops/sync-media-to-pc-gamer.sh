@@ -8,7 +8,9 @@ MEDIA_ROOT="${OPSLY_MEDIA_ROOT:-$HOME/opsly-media}"
 SSH_HOST="${OPSLY_MEDIA_SSH_HOST:-smdqcia-pc}"
 # WSL path on PC gamer (Windows editors can use \\wsl$\Ubuntu\home\opsly\opsly-media
 # or a junction to D:\opsly-media — see runbook).
-REMOTE_ROOT="${OPSLY_MEDIA_REMOTE_ROOT:-/home/opsly/opsly-media}"
+# Prefer Windows D: HDD (WSL /mnt/d) so media does not fill the WSL ext4 VHD.
+# Agents still use ~/opsly-media (symlink → /mnt/d/opsly-media).
+REMOTE_ROOT="${OPSLY_MEDIA_REMOTE_ROOT:-/mnt/d/opsly-media}"
 # What to push: latest camera ingest + exports by default
 SRC_REL="${OPSLY_MEDIA_SRC_REL:-to-pc-gamer/latest-camera}"
 
