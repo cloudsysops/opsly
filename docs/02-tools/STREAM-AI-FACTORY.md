@@ -86,3 +86,12 @@ Arranque/parada completos: `tools/stream-overlay/start-production.ps1` y `stop-p
 - Chat de Twitch (`chat.html`, lector anónimo IRC) pendiente de comprobar en directo; sin el aviso de cookies porque ya no usa el popout de Twitch.
 - DDJ-SX2: audio medido; MIDI (faders/jog) todavía sin leer. Ecualizador reacciona al volumen, no al espectro.
 - Música del sello: ver "Derechos" en `PRODUCCION.md`; la parte generada solo por código tiene protección de autor limitada.
+
+## Tema original: "Midnight Merge" (compositor offline)
+
+`node tools/stream-overlay/compose-track.mjs --title "Midnight Merge" [--seed N]` renderiza un tema completo de ~4:08 (124 BPM, Re menor;
+INTRO 16 → BUILD 8 → DROP 32 → BREAKDOWN 16 → BUILD 8 → DROP 32 → OUTRO 16 compases) en `D:\Content\Music\Factory\tracks\<slug>_<fecha>\`:
+master WAV 24 bit + MP3 320, **stems** (kick, sub, bass, drums, pad, lead, fx, space), `report.json` y espectrograma/forma de onda para revisión.
+Es determinista (semilla) y 100 % código, sin muestras. El motivo melódico sale de las notas de lead/pluck de las sesiones `session.mid` de los agentes.
+Medido: −10 LUFS integrado, LRA 6,5 LU, pico real ≈ −1,4 dBTP; breakdown ≈ 5,5 LU bajo los drops. **No se ha escuchado**: requiere oído humano
+(y arreglo/mezcla humana) antes de publicar; ver derechos en `PRODUCCION.md`.
