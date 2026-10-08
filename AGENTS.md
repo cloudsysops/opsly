@@ -708,7 +708,10 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │ ├── rendering-engine/ # Motor de renderizado de artefactos
 │ ├── slack-bot/ # Bot Slack para notificaciones e interacción
 │ ├── tenant-invitations/ # Servicio de invitaciones por email
-│ └── tenant-onboarding-agent/ # Agente de onboarding automático por tenant
+│ ├── tenant-onboarding-agent/ # Agente de onboarding automático por tenant
+│ ├── local-services/ # Dev activo — servicios locales (ver docs/02-architecture/)
+│ ├── task-orchestrator/ # Orquestador de tareas (ver docs/02-architecture/)
+│ └── __tests__/ # Fixtures/tests a nivel apps/, no es un servicio
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
 ├── agents/prompts/          # Plantillas Claude / Cursor
