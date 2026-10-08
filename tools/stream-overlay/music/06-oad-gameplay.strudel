@@ -1,0 +1,24 @@
+// ═══════════════════════════════════════════════════════════════
+//  06 · OAD GAMEPLAY  ·  140 BPM  ·  Re menor (D minor)
+//  Para Battlefield / shooters: tenso, militar, sin tapar el juego.
+//  Sonidos: SOLO sintetizadores incorporados.
+// ═══════════════════════════════════════════════════════════════
+setcps(140/60/4)
+
+// BOMBO con doble golpe al final del compás (energía de combate)
+$: note("d1 d1 d1 [d1 d1]").s("sine").penv(36).pdec(.06)
+  .decay(.25).sustain(0).gain(1)
+
+// CAJA MILITAR: ruido blanco en los tiempos 2 y 4 + redoble cada 4 compases
+$: s("<[~ white ~ white] [~ white ~ white] [~ white ~ white] [~ white ~ white*4]>")
+  .decay(.1).sustain(0).bpf(2200).gain(.5)
+
+// HATS rápidos
+$: s("white*8").decay(.02).sustain(0).hpf(9000).gain(.18)
+
+// BAJO "RADAR": sierra con filtro que sube cada 4 compases
+$: note("d2 [~ d2] f2 [~ d2] c2 [~ d2] a1 [~ c2]").s("sawtooth")
+  .lpf(sine.range(300, 1400).slow(4)).lpq(6).decay(.15).sustain(0).gain(.55)
+
+// ALARMA: dos notas tipo sirena, solo para momentos de acción (quita el _)
+_$: note("<a4 g#4>").s("square").lpf(1800).attack(.05).release(.3).gain(.12).slow(2)
