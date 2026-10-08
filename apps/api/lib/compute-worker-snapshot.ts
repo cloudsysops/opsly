@@ -28,6 +28,14 @@ export interface ComputeWorkersRegistry {
   workers: ComputeWorkerRecord[];
 }
 
+export interface ComputeWorkerStreamingStatus {
+  live: boolean;
+  platforms: string[];
+  uptimeSec: number | null;
+  sceneName: string | null;
+  updatedAt: string;
+}
+
 export interface ComputeHeartbeat {
   at?: string;
   gpuVendor?: string;
@@ -37,6 +45,40 @@ export interface ComputeHeartbeat {
   diskFreeGb?: number;
   activeJobs?: number;
   temperatureC?: number;
+  // Optional, PC-gamer-execution-plane-sourced streaming signal (OBS
+  // WebSocket, READ-only) folded into the same worker heartbeat payload.
+  // Never contains credentials — see pc-gamer-heartbeat-payload.mjs.
+  streaming?: ComputeWorkerStreamingStatus;
+}
+
+function sanitizeStreaming(streaming: unknown): ComputeWorkerStreamingStatus | undefined {
+  if (!streaming || typeof streaming !== 'object') return undefined;
+  const value = streaming as Partial<ComputeWorkerStreamingStatus> & Record<string, unknown>;
+  const platforms = Array.isArray(value.platforms)
+    ? value.platforms.filter((p): p is string => typeof p === 'string').slice(0, 8)
+    : [];
+  const uptimeSec = typeof value.uptimeSec === 'number' ? value.uptimeSec : null;
+  const sceneName = typeof value.sceneName === 'string' ? value.sceneName.slice(0, 80) : null;
+  const updatedAt =
+    typeof value.updatedAt === 'string' ? value.updatedAt : new Date().toISOString();
+  return {
+    live: Boolean(value.live),
+    platforms,
+    uptimeSec,
+    sceneName,
+    updatedAt,
+  };
+}
+
+// Only trust a heartbeat's streaming block when that heartbeat is itself
+// fresh enough to be classified ONLINE/BUSY. A stale/offline heartbeat must
+// never report a stale "live: true" as current truth.
+function resolveStreamingForStatus(
+  status: ComputeWorkerStatus,
+  heartbeat: ComputeHeartbeat | null
+): ComputeWorkerStreamingStatus | undefined {
+  if (status !== 'ONLINE' && status !== 'BUSY') return undefined;
+  return sanitizeStreaming(heartbeat?.streaming);
 }
 
 export function getComputeWorkersRegistry(): ComputeWorkersRegistry {
@@ -92,6 +134,52 @@ export function classifyComputeStatus(input: {
   return 'ONLINE';
 }
 
+type ComputeWorkerRow = {
+  workerId: string;
+  hostname: string;
+  status: ComputeWorkerStatus;
+  capabilities: string[];
+  gpuVendor?: string;
+  gpuModel?: string;
+  vramGb?: number;
+  diskFreeGb?: number;
+  activeJobs: number;
+  lastHeartbeat: string | null;
+  replaceable: boolean;
+  streaming?: ComputeWorkerStreamingStatus;
+};
+
+function buildComputeWorkerRow(
+  worker: ComputeWorkerRecord,
+  heartbeatValue: string | null,
+  registry: ComputeWorkersRegistry,
+  now: Date
+): ComputeWorkerRow {
+  const heartbeat = parseComputeHeartbeat(heartbeatValue);
+  const status = classifyComputeStatus({
+    heartbeat,
+    now,
+    staleSec: registry.limits?.heartbeatStaleSec,
+    maxGpuJobs: worker.limits?.maxConcurrentGpuJobs ?? registry.limits?.maxConcurrentGpuJobs,
+    vramBusyThresholdPct: registry.limits?.vramBusyThresholdPct,
+  });
+  const streaming = resolveStreamingForStatus(status, heartbeat);
+  return {
+    workerId: worker.workerId,
+    hostname: worker.hostname,
+    status,
+    capabilities: worker.capabilities,
+    gpuVendor: heartbeat?.gpuVendor ?? worker.gpuVendor,
+    gpuModel: heartbeat?.gpuModel ?? worker.gpuModel,
+    vramGb: heartbeat?.vramGb ?? worker.vramGb,
+    diskFreeGb: heartbeat?.diskFreeGb,
+    activeJobs: heartbeat?.activeJobs ?? 0,
+    lastHeartbeat: heartbeat?.at ?? null,
+    replaceable: worker.replaceable === true,
+    ...(streaming ? { streaming } : {}),
+  };
+}
+
 export function buildComputeWorkerSnapshot(
   heartbeats: Record<string, string | null>,
   queues: Record<string, { waiting: number; active: number; completed: number; failed: number }>,
@@ -99,46 +187,14 @@ export function buildComputeWorkerSnapshot(
 ): {
   rule: string;
   generatedAt: string;
-  workers: Array<{
-    workerId: string;
-    hostname: string;
-    status: ComputeWorkerStatus;
-    capabilities: string[];
-    gpuVendor?: string;
-    gpuModel?: string;
-    vramGb?: number;
-    diskFreeGb?: number;
-    activeJobs: number;
-    lastHeartbeat: string | null;
-    replaceable: boolean;
-  }>;
+  workers: ComputeWorkerRow[];
   queues: typeof queues;
   jobTypes: string[];
 } {
   const registry = getComputeWorkersRegistry();
-  const workers = registry.workers.map((worker) => {
-    const heartbeat = parseComputeHeartbeat(heartbeats[worker.workerId] ?? null);
-    const status = classifyComputeStatus({
-      heartbeat,
-      now,
-      staleSec: registry.limits?.heartbeatStaleSec,
-      maxGpuJobs: worker.limits?.maxConcurrentGpuJobs ?? registry.limits?.maxConcurrentGpuJobs,
-      vramBusyThresholdPct: registry.limits?.vramBusyThresholdPct,
-    });
-    return {
-      workerId: worker.workerId,
-      hostname: worker.hostname,
-      status,
-      capabilities: worker.capabilities,
-      gpuVendor: heartbeat?.gpuVendor ?? worker.gpuVendor,
-      gpuModel: heartbeat?.gpuModel ?? worker.gpuModel,
-      vramGb: heartbeat?.vramGb ?? worker.vramGb,
-      diskFreeGb: heartbeat?.diskFreeGb,
-      activeJobs: heartbeat?.activeJobs ?? 0,
-      lastHeartbeat: heartbeat?.at ?? null,
-      replaceable: worker.replaceable === true,
-    };
-  });
+  const workers = registry.workers.map((worker) =>
+    buildComputeWorkerRow(worker, heartbeats[worker.workerId] ?? null, registry, now)
+  );
   return {
     rule: registry.rule,
     generatedAt: now.toISOString(),
