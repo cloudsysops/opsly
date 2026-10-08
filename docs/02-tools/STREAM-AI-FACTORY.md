@@ -78,6 +78,10 @@ Arranque/parada completos: `tools/stream-overlay/start-production.ps1` y `stop-p
 
 - Proyector HDMI: **no detectado** por Windows. El Ryzen 5 3600X no tiene gráfica integrada, por lo que el HDMI de la placa base (ASUS PRIME X570-P)
   no sirve; hay que conectarlo a la RTX 3060 (adaptador DP→HDMI si no hay puertos). Lanzador: `projector.ps1 -Screen N`; mapeo: `/festival?edit=1`.
+- **Canvas vertical sin salida activa:** en `plugin_config/vertical-canvas` las salidas `YouTube Vertical (mobile)` y `TikTok Live` están
+  **desactivadas** (`enabled:false`); los espectadores de Twitch móvil ven el stream 16:9 principal. El dock "Aitum Vertical" del OBS se ve
+  **negro/distorsionado** (verificado por captura de pantalla, 2026-10-07) aunque la escena `V_GAMING` renderiza bien (`GetSourceScreenshot` con
+  `canvasUuid`). Para ver el vertical real: clic derecho en la vista previa → proyector en ventana; no confiar en el dock.
 - `Encoding overloaded` en OBS: NVENC `p5` + `multipass qres` + `psycho_aq` mientras se juega; sugerido p4/p3 sin multipass (no aplicado en vivo).
 - Chat de Twitch (`chat.html`, lector anónimo IRC) pendiente de comprobar en directo; sin el aviso de cookies porque ya no usa el popout de Twitch.
 - DDJ-SX2: audio medido; MIDI (faders/jog) todavía sin leer. Ecualizador reacciona al volumen, no al espectro.
