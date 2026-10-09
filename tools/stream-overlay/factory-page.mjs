@@ -41,10 +41,11 @@ canvas#net{width:100%;height:360px;border:1px solid rgba(57,255,136,.3);backgrou
 <div class="foot"><span>$ <span id="cmd"></span><span class="cur"></span></span><span id="ev">0 ops</span></div>
 </div></div><script>
 const $=id=>document.getElementById(id),rnd=(a,b)=>a+Math.random()*(b-a);
+const Q0=new URLSearchParams(location.search),ENGINE=Q0.has('engine'),VISUAL=Q0.has('visual'); // engine = solo audio (ligero); visual = solo imagen (sin audio)
 // ---- lluvia de codigo
 const R=$('rain'),rc=R.getContext('2d');R.width=780;R.height=1170;const cols=Math.floor(R.width/18),drops=Array.from({length:cols},()=>rnd(-60,0));
 const chars='01アイウエオカキクケコサシスセソ{}[]<>=/\\\\;:#\\$%&*+-ABCDEF'.split('');
-setInterval(()=>{rc.fillStyle='rgba(2,8,6,.16)';rc.fillRect(0,0,R.width,R.height);rc.font='18px monospace';
+!ENGINE&&setInterval(()=>{rc.fillStyle='rgba(2,8,6,.16)';rc.fillRect(0,0,R.width,R.height);rc.font='18px monospace';
   drops.forEach((y,i)=>{rc.fillStyle=Math.random()>.97?'#eafff3':'#39ff88';rc.fillText(chars[Math.random()*chars.length|0],i*18,y*18);drops[i]=y*18>R.height&&Math.random()>.975?0:y+1})},60);
 // ---- grafo de agentes
 const N=$('net'),g=N.getContext('2d');const W=N.width,H=N.height;
@@ -59,7 +60,7 @@ function draw(){ph+=.03;g.clearRect(0,0,W,H);
   for(let i=pulses.length-1;i>=0;i--)if(pulses[i].p>=1)pulses.splice(i,1);
   nodes.forEach((n,i)=>{const r=(i?22:30)+Math.sin(ph*2+i)*3;g.strokeStyle=n.c;g.lineWidth=2.5;g.shadowColor=n.c;g.shadowBlur=16;g.beginPath();g.arc(n.x,n.y,r,0,7);g.stroke();g.shadowBlur=0;
     g.fillStyle=n.c;g.font='bold 17px monospace';g.textAlign='center';g.fillText(n.n,n.x,n.y+(i?r+22:5))});
-  requestAnimationFrame(draw)}draw();
+  requestAnimationFrame(draw)}if(!ENGINE)draw();
 // ---- terminal con actividad real
 const log=$('log');let seen=new Set(),ops=0;
 const hex=()=>Array.from({length:4},()=>(Math.random()*65535|0).toString(16).padStart(4,'0')).join(':');
@@ -83,7 +84,7 @@ const E=$('eq'),eg=E.getContext('2d'),bars=Array(36).fill(0),ph2=Array.from({len
 function eqDraw(t){eg.clearRect(0,0,E.width,E.height);const w=E.width/bars.length;
   bars.forEach((b,i)=>{const target=Math.min(1,lvl*(0.55+0.7*Math.abs(Math.sin(t/260+ph2[i]+i*.45)))*1.6);bars[i]=Math.max(target,b*0.86);
     const h=Math.max(3,bars[i]*(E.height-6));const gr=eg.createLinearGradient(0,E.height,0,0);gr.addColorStop(0,'#39ff88');gr.addColorStop(.65,'#47d7ff');gr.addColorStop(1,'#ff3df2');
-    eg.fillStyle=gr;eg.shadowColor='#39ff88';eg.shadowBlur=8;eg.fillRect(i*w+2,E.height-h,w-4,h)});eg.shadowBlur=0;requestAnimationFrame(eqDraw)}requestAnimationFrame(eqDraw);
+    eg.fillStyle=gr;eg.shadowColor='#39ff88';eg.shadowBlur=8;eg.fillRect(i*w+2,E.height-h,w-4,h)});eg.shadowBlur=0;requestAnimationFrame(eqDraw)}if(!ENGINE)requestAnimationFrame(eqDraw);
 const SIM=location.search.includes('sim');let simB=0;
 async function audioTick(){if(SIM){const t=Date.now();lvl=Math.max(0,.45+.4*Math.sin(t/230)+.1*Math.random());const b=Math.floor(t/470);if(b!==simB){simB=b;const p=$('panel');p.classList.add('beat');setTimeout(()=>p.classList.remove('beat'),140);for(let i=1;i<nodes.length;i++)ping(i)}$('npt').textContent='demo · techno oscuro';$('bpm').textContent='128 BPM';return}try{const a=await fetch('/audio',{cache:'no-store'}).then(r=>r.json());lvl=Math.max(a.strudel,a.ddj);
   $('npt').textContent=(a.playing[0]||(lvl>0.02?'en vivo':'sin música')).slice(0,30);$('bpm').textContent=a.bpm?a.bpm+' BPM':'';
@@ -127,7 +128,7 @@ function sched(){if(!ac)return;const win=ac.currentTime+.15;
 setInterval(sched,25);
 function feedEvent(ev){recent.push(Date.now());if(sOn||recOn||Q.has('sound'))queue.push(ev);if(queue.length>12)queue.shift()}
 setInterval(()=>{const n=Date.now();recent=recent.filter(x=>n-x<20000);const target=setS?setS.target:Math.max(sOn?.22:0,Math.min(1,recent.length/7));inten+=(target-inten)*.15;if(ac&&out)out.gain.setTargetAtTime(sOn?sVol:0,ac.currentTime,.4)},200);
-async function sonState(){try{const s=await fetch('/sonify',{cache:'no-store'}).then(r=>r.json());if(!Q.has('sound')){sOn=s.on;sVol=s.vol}if(sOn||s.rec){initAudio();if(ac.state==='suspended')ac.resume()}recCtl(s);setCtl(s.set)}catch{}}
+async function sonState(){try{const s=await fetch('/sonify',{cache:'no-store'}).then(r=>r.json());if(!Q.has('sound')){sOn=s.on;sVol=s.vol}if((sOn||s.rec)&&!VISUAL){initAudio();if(ac.state==='suspended')ac.resume()}recCtl(s);setCtl(s.set)}catch{}}
 let setS=null,lastIdx=-1,pendingHit='';
 function setCtl(x){setS=x&&x.on?x:null;if(setS&&setS.idx!==lastIdx){lastIdx=setS.idx;pendingHit=setS.name}if(!setS)lastIdx=-1}
 function hit(n,t){if(n==='DROP'){kick(t);noise(t,.9,2500,.5);CHORDS[stepN>>4&3].forEach(f=>osc('sawtooth',f*4,t,1.4,.14,3800,.4))}else if(n==='BUILD'){riser(t)}else if(n==='BREAKDOWN'){pad(t,CHORDS[0])}}
