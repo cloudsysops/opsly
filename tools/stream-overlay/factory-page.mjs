@@ -93,14 +93,14 @@ async function audioTick(){if(SIM){const t=Date.now();lvl=Math.max(0,.45+.4*Math
 setInterval(audioTick,80);
 // ---- SONIFICACION: el trabajo de los agentes se convierte en musica (Web Audio, D menor, 124 BPM)
 const Q=new URLSearchParams(location.search);const BPM=124,STEP=60/BPM/4;
-let ac,master,comp,out,recDest,dly,noiseBuf,recOn=false,recorder=null,recT0=0,rid='',evlog=[],sOn=Q.has('sound'),sVol=+(Q.get('vol')||0.25),inten=0,recent=[],queue=[],stepN=0,nextT=0,lastCommit=0;
+let armT=0,ac,master,comp,out,recDest,dly,noiseBuf,recOn=false,recorder=null,recT0=0,rid='',evlog=[],sOn=Q.has('sound'),sVol=+(Q.get('vol')||0.25),inten=0,recent=[],queue=[],stepN=0,nextT=0,lastCommit=0;
 const PENT=[293.66,349.23,392,440,523.25,587.33,698.46,783.99,880,1046.5];
 const CHORDS=[[146.83,174.61,220],[116.54,146.83,174.61],[174.61,220,261.63],[130.81,164.81,196]];
 const ROOTS=[73.42,58.27,87.31,65.41];
 const hash=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h};
 function initAudio(){if(ac)return;ac=new(window.AudioContext||window.webkitAudioContext)();comp=ac.createDynamicsCompressor();comp.threshold.value=-16;comp.ratio.value=12;comp.knee.value=6;master=ac.createGain();master.gain.value=0.6;
   dly=ac.createDelay(1);dly.delayTime.value=STEP*3;const fb=ac.createGain();fb.gain.value=.38;const wet=ac.createGain();wet.gain.value=.28;dly.connect(fb);fb.connect(dly);dly.connect(wet);wet.connect(master);
-  master.connect(comp);out=ac.createGain();out.gain.value=0;comp.connect(out);out.connect(ac.destination);recDest=ac.createMediaStreamDestination();comp.connect(recDest);
+  master.connect(comp);const lim=ac.createWaveShaper(),cv=new Float32Array(4096);for(let i=0;i<4096;i++){const x=i/2047.5-1;cv[i]=Math.tanh(x*1.2)/Math.tanh(1.2)*.98}lim.curve=cv;lim.oversample='2x';comp.connect(lim);out=ac.createGain();out.gain.value=0;lim.connect(out);out.connect(ac.destination);recDest=ac.createMediaStreamDestination();lim.connect(recDest);armT=ac.currentTime+1.5;
   noiseBuf=ac.createBuffer(1,ac.sampleRate,ac.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;nextT=ac.currentTime+.1}
 function ml(ch,f,t,dur,vel){if(recOn)evlog.push({ch,n:ch===9?f:Math.round(69+12*Math.log2(f/440)),t:t-recT0,d:dur,v:vel})}
 function env(g,t,a,d,pk){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(pk,t+a);g.gain.exponentialRampToValueAtTime(.0008,t+a+d)}
@@ -118,7 +118,7 @@ function voice(ev,t){const n=PENT[hash(ev.target||ev.tool)%PENT.length];
   else if(/Read|Grep|Glob/.test(ev.tool)){osc('triangle',n*2,t,.35,.22,5000,.5)}
   else if(/Bash|PowerShell|Monitor/.test(ev.tool)){noise(t,.12,7000,.3);osc('sine',n/2,t,.18,.25,800,.2)}
   else{CHORDS[stepN>>4&3].forEach((f,i)=>osc('square',f*4,t+i*STEP*.5,.3,.07,2500,.4))}}
-function sched(){if(!ac)return;const win=ac.currentTime+.15;
+function sched(){if(!ac)return;if(ac.currentTime<armT){nextT=ac.currentTime+.1;return}const win=ac.currentTime+.15;
   while(nextT<win){const s=stepN%16,bar=stepN>>4&3,t=nextT;
     if(pendingHit&&s%4===0){hit(pendingHit,t);pendingHit=''}
     if((setS||sOn)&&s%2===0&&!queue.length&&Math.random()<(setS?.25+inten*.55:.1+inten*.3)){const T=['Edit','Read','Bash','Agent','Write','Grep'];queue.push({tool:T[Math.random()*T.length|0],target:'set'+(Math.random()*40|0)})}
@@ -127,8 +127,8 @@ function sched(){if(!ac)return;const win=ac.currentTime+.15;
     nextT+=STEP;stepN++}}
 setInterval(sched,25);
 function feedEvent(ev){recent.push(Date.now());if(sOn||recOn||Q.has('sound'))queue.push(ev);if(queue.length>12)queue.shift()}
-setInterval(()=>{const n=Date.now();recent=recent.filter(x=>n-x<20000);const target=setS?setS.target:Math.max(sOn?.22:0,Math.min(1,recent.length/7));inten+=(target-inten)*.15;if(ac&&out)out.gain.setTargetAtTime(sOn?sVol:0,ac.currentTime,.4)},200);
-async function sonState(){try{const s=await fetch('/sonify',{cache:'no-store'}).then(r=>r.json());if(!Q.has('sound')){sOn=s.on;sVol=s.vol}if((sOn||s.rec)&&!VISUAL){initAudio();if(ac.state==='suspended')ac.resume()}recCtl(s);setCtl(s.set)}catch{}}
+setInterval(()=>{const n=Date.now();recent=recent.filter(x=>n-x<20000);const target=setS?setS.target:Math.max(sOn?.22:0,Math.min(1,recent.length/7));inten+=(target-inten)*.15;if(ac&&out)out.gain.setTargetAtTime(sOn&&Number.isFinite(sVol)&&ac.currentTime>=armT?Math.min(sVol,.6):0,ac.currentTime,.4)},200);
+async function sonState(){try{const s=await fetch('/sonify',{cache:'no-store'}).then(r=>r.json());if(!Q.has('sound')){sOn=!!s.on;sVol=Number.isFinite(+s.vol)?+s.vol:0.22}if((sOn||s.rec)&&!VISUAL){initAudio();if(ac.state==='suspended')ac.resume()}recCtl(s);setCtl(s.set)}catch{}}
 let setS=null,lastIdx=-1,pendingHit='';
 function setCtl(x){setS=x&&x.on?x:null;if(setS&&setS.idx!==lastIdx){lastIdx=setS.idx;pendingHit=setS.name}if(!setS)lastIdx=-1}
 function hit(n,t){if(n==='DROP'){kick(t);noise(t,.9,2500,.5);CHORDS[stepN>>4&3].forEach(f=>osc('sawtooth',f*4,t,1.4,.14,3800,.4))}else if(n==='BUILD'){riser(t)}else if(n==='BREAKDOWN'){pad(t,CHORDS[0])}}
