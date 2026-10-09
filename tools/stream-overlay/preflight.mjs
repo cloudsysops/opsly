@@ -1,6 +1,6 @@
 // Revisión antes de salir en vivo: node preflight.mjs
 import { execFile } from 'node:child_process';
-import { withObs } from './obs.mjs';
+import { scenes as sceneMap, withObs } from './obs.mjs';
 
 const rows = [];
 const check = (ok, name, detail = '') => rows.push({ ok, name, detail });
@@ -23,17 +23,25 @@ try {
     const v = await req('GetVersion');
     check(true, 'OBS conectado', `OBS ${v.obsVersion}`);
     const scenes = (await req('GetSceneList')).scenes.map((s) => s.sceneName);
-    for (const s of ['Iniciando Stream', 'Gaming', 'Coding', 'Streaming', 'Vuelvo en un momento', 'Terminando Stream']) check(scenes.includes(s), `Escena "${s}"`);
+    for (const [k, s] of Object.entries(sceneMap)) check(scenes.includes(s), `Escena "${s}" (${k})`);
     const special = await req('GetSpecialInputs');
     for (const [k, name] of Object.entries(special).filter(([, n]) => n)) {
       const { inputMuted } = await req('GetInputMute', { inputName: name });
       check(!inputMuted, `Audio ${k}`, inputMuted ? `"${name}" está SILENCIADO` : name);
     }
     // Pista 2 = VOD de Twitch: debe llevar micrófono y juego, y nunca la música.
-    for (const name of ['Mic/Aux', 'Desktop Audio']) {
-      const t = (await req('GetInputAudioTracks', { inputName: name })).inputAudioTracks;
-      check(Boolean(t[1] && t[2]), `${name} en pistas 1 y 2 (directo + VOD)`, JSON.stringify(t));
+    for (const name of ['MIC_OPERATOR', 'GAME_AUDIO']) {
+      try {
+        const t = (await req('GetInputAudioTracks', { inputName: name })).inputAudioTracks, muted = (await req('GetInputMute', { inputName: name })).inputMuted;
+        check(Boolean(t[1] && t[2]) && !muted, `${name} en pistas 1 y 2 (directo + VOD), sin silenciar`, JSON.stringify(t) + (muted ? ' SILENCIADO' : ''));
+      } catch { check(false, `Fuente "${name}"`, 'no existe'); }
     }
+    try { // motor de musica de la factory: solo directo (pista 1), nunca VOD
+      const t = (await req('GetInputAudioTracks', { inputName: 'FACTORY Hacker Overlay' })).inputAudioTracks;
+      check(t[1] && !t[2], 'Motor de música (FACTORY) en pista 1 y NO en la 2 (VOD)', JSON.stringify(t));
+    } catch { check(false, 'Fuente "FACTORY Hacker Overlay"', 'no existe'); }
+    try { const r = await fetch('http://127.0.0.1:8766/sonify').then((x) => x.json()); check(true, 'Servidor de música/visuales (:8766)', `sonido ${r.on ? 'ENCENDIDO' : 'apagado'} · vol ${r.vol}`); }
+    catch { check(false, 'Servidor de música/visuales (:8766)', 'no responde: node vibe-live.mjs'); }
     try {
       const tracks = (await req('GetInputAudioTracks', { inputName: 'Strudel Música' })).inputAudioTracks;
       const monitor = (await req('GetInputAudioMonitorType', { inputName: 'Strudel Música' })).monitorType;

@@ -38,9 +38,9 @@ export const ending = page(
 export const hud = `<!doctype html><html><head><meta charset="utf-8"><style>
 html,body{margin:0;background:transparent;font-family:Bahnschrift,Arial,sans-serif;overflow:hidden}
 .hud{display:flex;align-items:center;gap:18px;height:90px;padding:0 24px;border-left:5px solid #47d7ff;border-top:1px solid rgba(102,224,255,.45);background:linear-gradient(90deg,rgba(6,14,24,.78),rgba(6,14,24,.12));color:#f6fbff;text-shadow:1px 1px 0 rgba(0,0,0,.8)}
-.clock{font-size:46px;font-weight:800;letter-spacing:1px}.sep{width:1px;height:46px;background:rgba(126,228,255,.4)}
+.clock{font-size:46px;font-weight:800;letter-spacing:1px;white-space:nowrap}.sep{width:1px;height:46px;background:rgba(126,228,255,.4)}
 .name{font-family:Impact,Bahnschrift,Arial,sans-serif;font-size:34px;letter-spacing:4px}.name b{color:#62e3ff;font-weight:400}.dot{color:#70ffac;font-size:22px;animation:p 1.6s infinite}@keyframes p{50%{opacity:.3}}
-</style></head><body><div class="hud"><span class="clock" id="c"></span><span class="sep"></span><span class="name">OPS<b>AFTERDARK</b></span><span class="dot">●</span></div><script>function u(){c.textContent=new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})}u();setInterval(u,1000)</script></body></html>`;
+</style></head><body><div class="hud"><span class="clock" id="c"></span><span class="sep"></span><span class="name">OPS<b>AFTERDARK</b></span><span class="dot">●</span></div><script>function u(){c.textContent=new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',hour12:false})}u();setInterval(u,1000)</script></body></html>`;
 
 export const summary = `<!doctype html><html><head><meta charset="utf-8"><style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Bahnschrift,Arial,sans-serif;color:#f6fbff}
