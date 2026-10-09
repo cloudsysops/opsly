@@ -95,3 +95,9 @@ master WAV 24 bit + MP3 320, **stems** (kick, sub, bass, drums, pad, lead, fx, s
 Es determinista (semilla) y 100 % código, sin muestras. El motivo melódico sale de las notas de lead/pluck de las sesiones `session.mid` de los agentes.
 Medido: −10 LUFS integrado, LRA 6,5 LU, pico real ≈ −1,4 dBTP; breakdown ≈ 5,5 LU bajo los drops. **No se ha escuchado**: requiere oído humano
 (y arreglo/mezcla humana) antes de publicar; ver derechos en `PRODUCCION.md`.
+
+## Notas de operación (2026-10-09)
+- **No apagar WSL (`wsl --shutdown`)**: el Ubuntu de este PC aloja infraestructura de Opsly (worker Docker `opsly-pc-gamer-worker-openclaw`, Uptime Kuma, sesión tmux `opsly-harness`, servicios Node en 5004/5007 y el servidor de overlays `:8765`). Por eso `server.mjs` no se puede reemplazar desde Windows.
+- `tools/stream-overlay/scene-watch.mjs`: al **abrirse** `bf6.exe` pasa de una escena de espera a `Battlefield 6`; al **cerrarse** pasa de una escena de juego a `Vuelvo en un momento` (evita pantalla negra). Solo reacciona al cambio de estado, nunca inicia/detiene el stream; `--dry` solo registra. Registro: `stream-scene-watch.log`. Sin probar de extremo a extremo (el juego estaba abierto al lanzarlo).
+- La tarea programada `OBS-Scene-Automation-BF6` (script `C:\Users\opsly\obs-scene-automation.ps1`, al iniciar sesión) apunta a `Battlefield 6 — Día 2` / `OAD_FACTORY_FOCUS` y puede pelear con `scene-watch.mjs`: conviene deshabilitarla.
+- Windows: **Integridad de memoria (VBS/HVCI) activa** (puede restar CPU en juegos; decisión de seguridad del operador). Carga de la infraestructura del stream medida: 0,28 % de la CPU total.
