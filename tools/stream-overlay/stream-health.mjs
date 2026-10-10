@@ -1,4 +1,4 @@
-// Vigilante de salud del directo (solo lectura). Una linea cada 10 s en stream-health.log y avisos si algo se degrada.
+// Vigilante de salud del directo (solo lectura). Espera a que salgas en vivo; entonces anota una linea cada 10 s en stream-health.log y avisa si algo se degrada. Termina al cortar el directo.
 // Uso: node stream-health.mjs [minutos]      (por defecto 120)
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -8,11 +8,12 @@ const smi = () => { try { const o = execFileSync('nvidia-smi', ['--query-gpu=uti
 const out = (l) => { fs.appendFileSync(LOG, l + '\n'); };
 out(`--- vigilante iniciado ${new Date().toISOString()} (${MIN} min)`);
 await withObs(async (r) => {
-  let prev = await r('GetStreamStatus'); const end = Date.now() + MIN * 60_000; let bad = 0;
+  let prev = await r('GetStreamStatus'); let wasLive = prev.outputActive; const end = Date.now() + MIN * 60_000; let bad = 0;
   while (Date.now() < end) {
     await new Promise((s) => setTimeout(s, 10_000));
     const st = await r('GetStreamStatus'), s = await r('GetStats'), g = smi();
-    if (!st.outputActive) { out(`${new Date().toLocaleTimeString('es-CO')} fuera de linea`); break; }
+    if (!st.outputActive) { if (!wasLive) { prev = st; continue; } out(`${new Date().toLocaleTimeString('es-CO')} fuera de linea`); break; }
+    if (!wasLive) { wasLive = true; out(`${new Date().toLocaleTimeString('es-CO')} directo detectado: empieza el registro`); prev = st; continue; }
     const dSk = st.outputSkippedFrames - prev.outputSkippedFrames, dTot = Math.max(1, st.outputTotalFrames - prev.outputTotalFrames), pct = 100 * dSk / dTot;
     const flag = pct > 5 ? ' ⚠ CODIFICADOR' : s.activeFps < 45 ? ' ⚠ FPS' : st.outputCongestion > 0.5 ? ' ⚠ RED' : g.vram > 95 ? ' ⚠ VRAM' : '';
     bad = flag ? bad + 1 : 0;
