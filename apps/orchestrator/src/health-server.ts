@@ -32,6 +32,7 @@ import {
   handleLocalDispatchAttempts,
   handleLocalQueueHealth,
   handleLocalPromptSubmit,
+  handleAgentTaskWriteApproval,
   handleExternalAgentsRegistry,
   handleValidationMetrics,
   handleValidationMetricsByAgent,
@@ -152,6 +153,7 @@ function buildRouter(): Router {
   r.get('/internal/meta-optimizer/metrics', handleMetaOptimizerMetrics);
 
   r.post('/api/local/prompt-submit', handleLocalPromptSubmit);
+  r.post('/api/local/agent-task-write-approval', handleAgentTaskWriteApproval);
   r.post('/api/local/control-mode', handleLocalControlMode);
   r.get('/api/local/state', handleLocalState);
   r.get('/api/local/dispatch-attempts', handleLocalDispatchAttempts);

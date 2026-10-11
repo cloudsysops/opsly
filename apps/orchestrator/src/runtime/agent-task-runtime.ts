@@ -1,8 +1,14 @@
 import { agentTaskEnvelopeV1Schema, type AgentTaskEnvelopeV1 } from '@intcloudsysops/types/agent-task';
 import {
   evaluateAgentTaskPolicy,
+  extractWriteApprovalContext,
   type EvaluatePolicyOptions,
+  type WriteApprovalRejectReason,
 } from '@intcloudsysops/agent-task-core';
+import type {
+  WriteApprovalConsumeInput,
+  WriteApprovalConsumeResult,
+} from '../write-approval-store.js';
 
 export type AgentTaskRuntimeStatus =
   | 'running'
@@ -47,13 +53,24 @@ export type AgentTaskRuntimeResult = {
   error_code?: string;
 };
 
+export type WriteApprovalConsumer = {
+  consume(input: WriteApprovalConsumeInput): Promise<WriteApprovalConsumeResult>;
+};
+
 export type AgentTaskRuntimeOptions = {
   onEvent?: (event: AgentTaskRuntimeEvent) => void;
   policy?: EvaluatePolicyOptions;
+  /** Server-side authoritative write approval store. Required for write_allowed=true. */
+  writeApproval?: WriteApprovalConsumer;
 };
 
 export type AgentTaskRuntimeExecuteOptions = {
   timeoutMs?: number;
+  /**
+   * Informational only — NEVER satisfies write approval.
+   * Present so callers cannot confuse x-autonomy-approved with typed approval.
+   */
+  autonomyHeaderApproved?: boolean;
 };
 
 type ActiveExecution = {
@@ -74,6 +91,37 @@ function baseResult(envelope: AgentTaskEnvelopeV1, agent: AgentTaskAdapter, stat
     status,
     duration_ms,
   };
+}
+
+async function requireTypedWriteApproval(
+  envelope: AgentTaskEnvelopeV1,
+  options: AgentTaskRuntimeOptions,
+  executeOptions: AgentTaskRuntimeExecuteOptions
+): Promise<WriteApprovalRejectReason | null> {
+  if (envelope.constraints.write_allowed !== true) {
+    return null;
+  }
+
+  // Header-only approval is never sufficient for write_allowed.
+  if (executeOptions.autonomyHeaderApproved && !options.writeApproval) {
+    return 'WRITE_APPROVAL_HEADER_NOT_SUFFICIENT';
+  }
+
+  if (!options.writeApproval) {
+    return 'WRITE_APPROVAL_STORE_MISSING';
+  }
+
+  const ctx = extractWriteApprovalContext(envelope);
+  if (ctx.error) return ctx.error;
+  if (!ctx.ref) return 'WRITE_APPROVAL_REF_MISSING';
+  if (!ctx.binding) return 'WRITE_APPROVAL_BINDING_MISMATCH';
+
+  const consumed = await options.writeApproval.consume({
+    approval_id: ctx.ref.approval_id,
+    binding: ctx.binding,
+  });
+  if (!consumed.ok) return consumed.error;
+  return null;
 }
 
 /**
@@ -99,7 +147,15 @@ export class AgentTaskRuntime {
     executeOptions: AgentTaskRuntimeExecuteOptions = {}
   ): Promise<AgentTaskRuntimeResult> {
     const envelope = agentTaskEnvelopeV1Schema.parse(rawEnvelope);
-    const policy = evaluateAgentTaskPolicy(envelope, this.options.policy);
+    // Never honor global/test autoApproveSensitive for write_allowed — typed approval only.
+    const policyOptions: EvaluatePolicyOptions = {
+      ...this.options.policy,
+      autoApproveSensitive:
+        envelope.constraints.write_allowed === true
+          ? false
+          : this.options.policy?.autoApproveSensitive,
+    };
+    const policy = evaluateAgentTaskPolicy(envelope, policyOptions);
     const startedAt = Date.now();
 
     if (policy.decision === 'deny') {
@@ -116,7 +172,23 @@ export class AgentTaskRuntime {
       return result;
     }
 
-    if (policy.decision === 'require_approval') {
+    if (envelope.constraints.write_allowed === true) {
+      const writeErr = await requireTypedWriteApproval(envelope, this.options, executeOptions);
+      if (writeErr) {
+        const result = baseResult(envelope, adapter, 'awaiting_approval', 0);
+        result.error_code = writeErr;
+        emit(this.options, {
+          type: 'task_approval_required',
+          request_id: envelope.request_id,
+          correlation_id: envelope.correlation_id,
+          tenant_slug: envelope.tenant_slug,
+          agent: adapter.id,
+          error_code: writeErr,
+        });
+        return result;
+      }
+      // Typed approval consumed — write gate satisfied; still honor other policy denies above.
+    } else if (policy.decision === 'require_approval') {
       const result = baseResult(envelope, adapter, 'awaiting_approval', 0);
       emit(this.options, {
         type: 'task_approval_required',

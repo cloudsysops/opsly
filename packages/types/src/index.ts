@@ -4,5 +4,6 @@ export * from './gcloud.js';
 export * from './notebooklm.js';
 export * from './hermes.js';
 export * from './agent-task.js';
+export * from './agent-task-write-approval.js';
 export * from './creator-os.js';
 export * from './release-candidate.js';

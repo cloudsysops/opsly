@@ -70,6 +70,23 @@ A write-capable task must prove all of the following:
 - one canonical control plane;
 - one PR with migration notes.
 
+## Threat model (brief)
+
+| Threat | Mitigation |
+| --- | --- |
+| Caller self-asserts `approved=true` / header-only | Runtime ignores `x-autonomy-approved` for `write_allowed`; requires server-minted `AgentTaskWriteApprovalV1` |
+| Replay across jobs | Consume-once in Redis (`opsly:write-approval:v1:*`) |
+| Cross-PR / SHA confusion | Exact binding: work_id, request_id, workstream, conflict_key, repository, pr_number, pr_branch, pr_head_sha (40-char), write_allowed=true |
+| Confusing claim with approval | DispatchClaimV1 remains independent; approval does not grant ownership |
+| Sandbox Approval Gate confusion | Separate namespace/API; not reused |
+| Global `autoApproveSensitive` | Forced off when `write_allowed=true` |
+
+## Canonical API
+
+`POST /api/local/agent-task-write-approval` with `action: mint | consume` (Bearer `PLATFORM_ADMIN_TOKEN`).
+
+Envelope carries `metadata.write_approval_ref = { schema_version, approval_id }` plus binding fields; runtime consumes before adapter.
+
 ## Hard boundaries
 
 - ~~HOLD until the read-only GitHub → Gamer E2E is green.~~ **Satisfied by 050 / run 38166358478.**
@@ -77,3 +94,4 @@ A write-capable task must prove all of the following:
 - No paid resources.
 - Do not weaken existing fail-closed policy.
 - Do not redispatch #1691 until this workpack is implemented, tested, exact-head reviewed, and merged.
+- Reviewer/CWD hardening (`pc-gamer-opencode-plane.sh` overnight cwd, independent-review plan agent) is a **separate follow-up**, not part of this PR.

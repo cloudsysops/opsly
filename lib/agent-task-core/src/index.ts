@@ -63,3 +63,21 @@ export {
   type DispatchClaimDimension,
   type DispatchConflictDecision,
 } from './dispatch-claim.js';
+
+export {
+  AGENT_TASK_WRITE_APPROVAL_VERSION,
+  agentTaskWriteApprovalBindingSchema,
+  agentTaskWriteApprovalRefSchema,
+  agentTaskWriteApprovalV1Schema,
+  parseAgentTaskWriteApproval,
+  parseAgentTaskWriteApprovalRef,
+  writeApprovalBindingFingerprint,
+  isWriteApprovalExpired,
+  bindingsEqual,
+  extractWriteApprovalContext,
+  assertWriteApprovalMatchesBinding,
+  type AgentTaskWriteApprovalBinding,
+  type AgentTaskWriteApprovalRef,
+  type AgentTaskWriteApprovalV1,
+  type WriteApprovalRejectReason,
+} from './write-approval.js';

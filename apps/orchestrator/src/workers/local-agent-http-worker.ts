@@ -33,6 +33,7 @@ import { getWorkerConcurrency, type WorkerConcurrencyKey } from '../worker-concu
 import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { writeValidationGuard } from '../lib/validation/validation-utils.js';
 import { AgentTaskRuntime } from '../runtime/agent-task-runtime.js';
+import { getWriteApprovalStore } from '../write-approval-store-singleton.js';
 import {
   completeTaskDispatchClaim,
   parseDispatchClaimLease,
@@ -523,7 +524,9 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
         const result = payload.agent_task === undefined
           ? await process()
           : await (async () => {
+              const writeApprovalStore = await getWriteApprovalStore();
               const runtime = new AgentTaskRuntime({
+                writeApproval: writeApprovalStore,
                 onEvent: (event) =>
                   logWorkerInfo('local-agents', event.type, {
                     request_id: event.request_id,
