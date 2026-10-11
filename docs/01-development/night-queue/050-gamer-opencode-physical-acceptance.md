@@ -25,35 +25,29 @@ architecture_patterns: BullMQ, OpenCode, Ollama, ephemeral runtime
 
 ## Goal
 
-Produce the first physical proof that the governed path reaches the PC Gamer, invokes real OpenCode against local Ollama, returns the expected result, and tears down cleanly.
+Produce the first physical proof that the governed path reaches the PC Gamer WSL worker, invokes real OpenCode against local Ollama, and returns the acceptance marker.
 
 ## Preconditions
 
 If any precondition is missing, return `BLOCKED` with the exact missing item and do not fall back:
 
-- Gamer WSL worker (`smdqcia-wsl`) is online for HTTP `:3011` / `:5004` / `:11434` (not Windows `smdqcia-pc`, not legacy `pc-gamer` / `100.74.88.103`);
+- Gamer worker is online (`smdqcia-wsl`);
 - `local_opencode` is claimed by the Gamer, not Mac;
-- OpenCode bridge is healthy;
+- OpenCode bridge is healthy with cwd under `/home/opsly/opsly`;
 - Ollama is healthy and has an already-installed Qwen coding model (`qwen3-coder*` or `qwen2.5-coder*`);
 - governed task contains `AgentTaskEnvelopeV1`;
 - no paid provider fallback is enabled.
 
 ## Task
 
-Run a bounded read-only repository check through the real governed path.
+This is a bounded read-only acceptance probe.
 
-Return exactly this marker on successful runtime output:
+Do not plan features. Do not ask clarifying questions. Do not discuss other projects.
 
-`GAMER_OPENCODE_OK`
+1. Confirm you can see this Opsly repository checkout.
+2. Reply with exactly one line containing only this marker (no markdown fences, no commentary):
 
-Then verify:
-
-1. job terminal state is success;
-2. evidence identifies the Gamer node/runtime;
-3. evidence identifies the selected model as `ollama/qwen*`;
-4. no paid API was used;
-5. ephemeral task session is gone;
-6. healthy idle returns to zero `opsly-task-*` sessions.
+GAMER_OPENCODE_OK
 
 ## Hard boundaries
 

@@ -25,10 +25,12 @@ jobs:
       # Documented current Tailscale IPv4 for smdqcia-wsl (prefer MagicDNS; IP is fallback only).
       GAMER_WORKER_IP_FALLBACK: '100.115.197.109'
     steps:
-      - name: Checkout trusted main
+      # Use the dispatched ref (PR branch or main) so acceptance workpack/scripts
+      # match the topology under test. workflow_dispatch already selects the YAML from that ref.
+      - name: Checkout acceptance ref
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: false
 

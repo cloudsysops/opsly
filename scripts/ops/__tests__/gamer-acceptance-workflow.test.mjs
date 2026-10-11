@@ -55,4 +55,10 @@ describe('gamer physical acceptance workflow topology', () => {
     assert.match(workflow, /direct connection not established/);
     assert.match(workflow, /tailscale_pong_derp_ok/);
   });
+
+  it('checkouts the dispatched ref so PR workpack/scripts are used', () => {
+    assert.match(workflow, /Checkout acceptance ref/);
+    assert.match(workflow, /github\.sha/);
+    assert.doesNotMatch(workflow, /ref:\s*main/);
+  });
 });
