@@ -35,7 +35,9 @@ import {
   AGENT_TASK_WRITE_APPROVAL_VERSION,
   agentTaskWriteApprovalRefSchema,
   buildAgentTaskEnvelope,
+  digestTaskContent,
   inferTaskType,
+  resolveEffectiveWriteAllowed,
 } from '@intcloudsysops/agent-task-core';
 import {
   acquireTaskDispatchClaim,
@@ -369,12 +371,20 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
   const requiresPr = context.requires_pr === true;
   const inferredWriteAllowed =
     requiresPr ||
+    roleHint.includes('executor') ||
     roleHint.includes('build') ||
     roleHint.includes('implement') ||
     roleHint.includes('debug');
-  const writeAllowed = taskEnvelopeResult?.success
-    ? taskEnvelopeResult.data.constraints.write_allowed === true
-    : inferredWriteAllowed;
+  // Caller may strengthen write_allowed; never downgrade server-inferred write intent.
+  const envelopeWriteAllowed =
+    taskEnvelopeResult?.success === true &&
+    taskEnvelopeResult.data.constraints.write_allowed === true;
+  const writeAllowed = resolveEffectiveWriteAllowed({
+    inferredWriteAllowed,
+    envelopeWriteAllowed,
+  });
+
+  const taskContentSha256 = digestTaskContent(promptForWorker);
 
   let taskEnvelope = taskEnvelopeResult?.success
     ? taskEnvelopeResult.data
@@ -399,6 +409,7 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
           agent_role: agentRole,
           goal,
           requires_pr: requiresPr,
+          task_content_sha256: taskContentSha256,
           ...context,
         },
       });
@@ -411,6 +422,25 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     );
     return;
   }
+
+  // Preserve server-inferred write intent even if caller supplied write_allowed=false.
+  if (writeAllowed && taskEnvelope.constraints.write_allowed !== true) {
+    taskEnvelope = {
+      ...taskEnvelope,
+      constraints: { ...taskEnvelope.constraints, write_allowed: true },
+    };
+  }
+
+  // Stamp authoritative task digest (recomputed from the executed prompt).
+  taskEnvelope = {
+    ...taskEnvelope,
+    metadata: {
+      ...(typeof taskEnvelope.metadata === 'object' && taskEnvelope.metadata !== null
+        ? (taskEnvelope.metadata as Record<string, unknown>)
+        : {}),
+      task_content_sha256: taskContentSha256,
+    },
+  };
 
   if (
     taskEnvelope.tenant_slug !== tenantSlug ||

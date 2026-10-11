@@ -31,7 +31,16 @@ export type WriteApprovalRejectReason =
   | 'WRITE_APPROVAL_HEADER_NOT_SUFFICIENT'
   | 'WRITE_APPROVAL_STORE_MISSING'
   | 'WRITE_APPROVAL_CLAIM_MISMATCH'
-  | 'WRITE_APPROVAL_TTL_EXCEEDED';
+  | 'WRITE_APPROVAL_TTL_EXCEEDED'
+  | 'WRITE_APPROVAL_TASK_CONTENT_MISMATCH';
+
+/**
+ * Canonical digest of the exact task/workpack body that will execute.
+ * UTF-8 SHA-256 of the string as provided (no trim) — callers must digest the same bytes.
+ */
+export function digestTaskContent(taskBody: string): string {
+  return createHash('sha256').update(taskBody, 'utf8').digest('hex');
+}
 
 export type DispatchClaimIdentity = {
   claimId: string;
@@ -61,6 +70,7 @@ export function writeApprovalBindingFingerprint(binding: AgentTaskWriteApprovalB
     pr_number: normalized.pr_number,
     repository: normalized.repository,
     request_id: normalized.request_id,
+    task_content_sha256: normalized.task_content_sha256.toLowerCase(),
     work_id: normalized.work_id,
     workstream: normalized.workstream,
     write_allowed: true as const,
@@ -170,6 +180,20 @@ export function extractWriteApprovalContext(envelope: AgentTaskEnvelopeV1): {
       ? meta.claim_id.trim()
       : claim?.claimId ?? '';
 
+  // Always recompute from the envelope task that will execute — closes prompt substitution.
+  const executedDigest = digestTaskContent(envelope.task);
+  const metaDigest =
+    typeof meta.task_content_sha256 === 'string' ? meta.task_content_sha256.trim().toLowerCase() : '';
+  if (metaDigest && metaDigest !== executedDigest) {
+    return {
+      ref,
+      binding: null,
+      writeAllowed,
+      claim,
+      error: 'WRITE_APPROVAL_TASK_CONTENT_MISMATCH',
+    };
+  }
+
   const bindingResult = agentTaskWriteApprovalBindingSchema.safeParse({
     work_id: meta.work_id,
     request_id: envelope.request_id,
@@ -180,6 +204,7 @@ export function extractWriteApprovalContext(envelope: AgentTaskEnvelopeV1): {
     pr_number: meta.pr_number,
     pr_branch: meta.pr_branch,
     pr_head_sha: meta.pr_head_sha,
+    task_content_sha256: executedDigest,
     write_allowed: true,
   });
 
@@ -200,6 +225,16 @@ export function extractWriteApprovalContext(envelope: AgentTaskEnvelopeV1): {
       writeAllowed,
       claim,
       error: 'WRITE_APPROVAL_BINDING_MISMATCH',
+    };
+  }
+
+  if (bindingResult.data.task_content_sha256.toLowerCase() !== executedDigest) {
+    return {
+      ref,
+      binding: null,
+      writeAllowed,
+      claim,
+      error: 'WRITE_APPROVAL_TASK_CONTENT_MISMATCH',
     };
   }
 
@@ -248,4 +283,15 @@ export function policyRequiresNonWriteApproval(reasons: string[]): boolean {
   return reasons.some((r) =>
     (NON_WRITE_SENSITIVE_POLICY_REASONS as readonly string[]).includes(r)
   );
+}
+
+/**
+ * Effective write intent: server inference OR envelope flag.
+ * Callers may strengthen (true), never remove inferred write intent.
+ */
+export function resolveEffectiveWriteAllowed(input: {
+  inferredWriteAllowed: boolean;
+  envelopeWriteAllowed: boolean;
+}): boolean {
+  return input.inferredWriteAllowed || input.envelopeWriteAllowed;
 }

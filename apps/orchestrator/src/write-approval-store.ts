@@ -100,6 +100,7 @@ function buildApproval(input: WriteApprovalMintInput): AgentTaskWriteApprovalV1 
     pr_number: input.pr_number,
     pr_branch: input.pr_branch,
     pr_head_sha: input.pr_head_sha.toLowerCase(),
+    task_content_sha256: input.task_content_sha256.toLowerCase(),
     write_allowed: true,
   };
   return parseAgentTaskWriteApproval({

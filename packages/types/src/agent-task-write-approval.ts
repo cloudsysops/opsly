@@ -8,6 +8,11 @@ export const exactGitShaSchema = z
   .string()
   .regex(/^[a-f0-9]{40}$/i, 'pr_head_sha must be an exact 40-char git SHA');
 
+/** SHA-256 hex of the approved task/workpack body (prompt substitution guard). */
+export const taskContentSha256Schema = z
+  .string()
+  .regex(/^[a-f0-9]{64}$/i, 'task_content_sha256 must be a 64-char hex SHA-256');
+
 /** Bound string fields must not contain NULs or newlines (injective fingerprint). */
 function boundText(maxLen: number) {
   return z
@@ -28,6 +33,8 @@ export const agentTaskWriteApprovalBindingSchema = z.object({
   pr_number: z.number().int().positive(),
   pr_branch: boundText(300),
   pr_head_sha: exactGitShaSchema,
+  /** Digest of the exact task/workpack body approved for execution. */
+  task_content_sha256: taskContentSha256Schema,
   write_allowed: z.literal(true),
 });
 

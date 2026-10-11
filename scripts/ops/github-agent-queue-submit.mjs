@@ -209,6 +209,8 @@ const writeBinding = typedWrite ? readTypedWriteBinding() : null;
 const writeApprovalId = typedWrite ? readPreMintedWriteApprovalId() : null;
 // DispatchClaimV1.claimId === requestId (server acquire). Pre-minted approval must use the same ids.
 const writeClaimId = requestId;
+// Digest of the exact workpack body that becomes prompt_body / AgentTaskEnvelopeV1.task.
+const taskContentSha256 = crypto.createHash('sha256').update(body, 'utf8').digest('hex');
 
 const payload = {
   tenant_slug: 'local',
@@ -250,6 +252,7 @@ const payload = {
           pr_number: writeBinding.pr_number,
           pr_branch: writeBinding.pr_branch,
           pr_head_sha: writeBinding.pr_head_sha,
+          task_content_sha256: taskContentSha256,
           write_approval_ref: {
             schema_version: 'AgentTaskWriteApprovalV1',
             approval_id: writeApprovalId,

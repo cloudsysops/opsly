@@ -14,6 +14,7 @@ const base = {
   pr_number: 1710,
   pr_branch: 'feat/example',
   pr_head_sha: 'e43e2bc8f57d5ea2002e3de82d5a5c4d78ffc824',
+  task_content_sha256: 'a'.repeat(64),
   write_allowed: true as const,
 };
 
@@ -62,6 +63,15 @@ describe('writeApprovalBindingFingerprint injectivity', () => {
       ...base,
       claim_id: 'req-b',
       request_id: 'req-b',
+    });
+    expect(left).not.toBe(right);
+  });
+
+  it('changes when task_content_sha256 differs', () => {
+    const left = writeApprovalBindingFingerprint(base);
+    const right = writeApprovalBindingFingerprint({
+      ...base,
+      task_content_sha256: 'b'.repeat(64),
     });
     expect(left).not.toBe(right);
   });

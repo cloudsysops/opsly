@@ -2,25 +2,31 @@ import { describe, expect, it } from 'vitest';
 import {
   assertWriteApprovalMatchesBinding,
   bindingsEqual,
+  digestTaskContent,
   extractWriteApprovalContext,
   isWriteApprovalExpired,
   parseAgentTaskWriteApproval,
+  resolveEffectiveWriteAllowed,
   writeApprovalBindingFingerprint,
 } from './write-approval.js';
 import { buildAgentTaskEnvelope } from './envelope.js';
 
 const SHA = 'a'.repeat(40);
 const SHA2 = 'b'.repeat(40);
+const TASK_BODY = 'write something';
+const TASK_DIGEST = digestTaskContent(TASK_BODY);
 
 const baseBinding = {
   work_id: 'github-queue-write-approval-051',
   request_id: 'req-051-1',
+  claim_id: 'req-051-1',
   workstream: 'github-queue-write-approval',
   conflict_key: 'github-queue-write-approval',
   repository: 'cloudsysops/opsly',
   pr_number: 1691,
   pr_branch: 'feat/example',
   pr_head_sha: SHA,
+  task_content_sha256: TASK_DIGEST,
   write_allowed: true as const,
 };
 
@@ -43,7 +49,7 @@ describe('AgentTaskWriteApprovalV1 helpers', () => {
 
   it('extracts binding from envelope metadata', () => {
     const envelope = buildAgentTaskEnvelope({
-      task: 'write something',
+      task: TASK_BODY,
       tenantSlug: 'academy-demo',
       taskType: 'code',
       selectedAgent: 'local_opencode',
@@ -51,12 +57,20 @@ describe('AgentTaskWriteApprovalV1 helpers', () => {
       writeAllowed: true,
       metadata: {
         work_id: baseBinding.work_id,
+        claim_id: baseBinding.claim_id,
         workstream: baseBinding.workstream,
         conflict_key: baseBinding.conflict_key,
         repository: baseBinding.repository,
         pr_number: baseBinding.pr_number,
         pr_branch: baseBinding.pr_branch,
         pr_head_sha: baseBinding.pr_head_sha,
+        task_content_sha256: TASK_DIGEST,
+        dispatch_claim: {
+          claimId: baseBinding.claim_id,
+          taskId: baseBinding.work_id,
+          workstream: baseBinding.workstream,
+          conflictKey: baseBinding.conflict_key,
+        },
         write_approval_ref: {
           schema_version: 'AgentTaskWriteApprovalV1',
           approval_id: 'apr-1',
@@ -67,6 +81,50 @@ describe('AgentTaskWriteApprovalV1 helpers', () => {
     expect(ctx.writeAllowed).toBe(true);
     expect(ctx.ref?.approval_id).toBe('apr-1');
     expect(ctx.binding?.pr_head_sha).toBe(SHA);
+    expect(ctx.binding?.task_content_sha256).toBe(TASK_DIGEST);
+  });
+
+  it('rejects metadata digest that does not match envelope.task', () => {
+    const envelope = buildAgentTaskEnvelope({
+      task: TASK_BODY,
+      tenantSlug: 'academy-demo',
+      taskType: 'code',
+      selectedAgent: 'local_opencode',
+      requestId: 'req-051-1',
+      writeAllowed: true,
+      metadata: {
+        work_id: baseBinding.work_id,
+        claim_id: baseBinding.claim_id,
+        workstream: baseBinding.workstream,
+        conflict_key: baseBinding.conflict_key,
+        repository: baseBinding.repository,
+        pr_number: baseBinding.pr_number,
+        pr_branch: baseBinding.pr_branch,
+        pr_head_sha: baseBinding.pr_head_sha,
+        task_content_sha256: 'a'.repeat(64),
+        dispatch_claim: {
+          claimId: baseBinding.claim_id,
+          taskId: baseBinding.work_id,
+          workstream: baseBinding.workstream,
+          conflictKey: baseBinding.conflict_key,
+        },
+      },
+    });
+    const ctx = extractWriteApprovalContext(envelope);
+    expect(ctx.error).toBe('WRITE_APPROVAL_TASK_CONTENT_MISMATCH');
+    expect(ctx.binding).toBeNull();
+  });
+
+  it('resolveEffectiveWriteAllowed never lets callers downgrade inferred write intent', () => {
+    expect(
+      resolveEffectiveWriteAllowed({ inferredWriteAllowed: true, envelopeWriteAllowed: false })
+    ).toBe(true);
+    expect(
+      resolveEffectiveWriteAllowed({ inferredWriteAllowed: false, envelopeWriteAllowed: true })
+    ).toBe(true);
+    expect(
+      resolveEffectiveWriteAllowed({ inferredWriteAllowed: false, envelopeWriteAllowed: false })
+    ).toBe(false);
   });
 
   it('assertWriteApprovalMatchesBinding catches wrong SHA and consumed', () => {

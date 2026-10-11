@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { AgentTaskEnvelopeV1 } from '@intcloudsysops/types';
+import { digestTaskContent, resolveEffectiveWriteAllowed } from '@intcloudsysops/agent-task-core';
 import {
   AgentTaskRuntime,
   type AgentTaskAdapter,
@@ -14,6 +15,8 @@ const SHA_OTHER = 'a785b34d00000000000000000000000000000000';
 /** acquireTaskDispatchClaim sets claimId = requestId */
 const REQUEST_ID = 'req-write-051';
 const CLAIM_ID = REQUEST_ID;
+const TASK_BODY = 'implement approved write';
+const TASK_CONTENT_SHA256 = digestTaskContent(TASK_BODY);
 
 const binding = {
   work_id: 'github-queue-write-approval-051',
@@ -25,6 +28,7 @@ const binding = {
   pr_number: 1691,
   pr_branch: 'feat/example-write',
   pr_head_sha: SHA,
+  task_content_sha256: TASK_CONTENT_SHA256,
   write_allowed: true as const,
 };
 
@@ -56,7 +60,7 @@ function envelope(overrides: Partial<AgentTaskEnvelopeV1> = {}): AgentTaskEnvelo
     correlation_id: binding.request_id,
     tenant_slug: 'academy-demo',
     task_type: 'code',
-    task: 'implement approved write',
+    task: TASK_BODY,
     requested_agent: 'mock_agent',
     selected_agent: 'mock_agent',
     skills: [],
@@ -97,6 +101,7 @@ function writeEnvelope(meta: Record<string, unknown> = {}): AgentTaskEnvelopeV1 
       pr_number: binding.pr_number,
       pr_branch: binding.pr_branch,
       pr_head_sha: binding.pr_head_sha,
+      task_content_sha256: TASK_CONTENT_SHA256,
       dispatch_claim: dispatchClaim,
       ...meta,
     },
@@ -398,6 +403,7 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
           pr_number: binding.pr_number,
           pr_branch: binding.pr_branch,
           pr_head_sha: binding.pr_head_sha,
+          task_content_sha256: TASK_CONTENT_SHA256,
           dispatch_claim: dispatchClaim,
           write_approval_ref: {
             schema_version: 'AgentTaskWriteApprovalV1',
@@ -557,6 +563,79 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
     } finally {
       vi.unstubAllEnvs();
     }
+  });
+
+  it('22. substituted task body cannot reuse minted approval', async () => {
+    const store = new InMemoryWriteApprovalStore();
+    const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
+    expect(minted.ok).toBe(true);
+    if (!minted.ok) return;
+    const adapter: AgentTaskAdapter = {
+      id: 'mock_agent',
+      execute: vi.fn(async () => ({ success: true })),
+    };
+    const runtime = new AgentTaskRuntime({ writeApproval: store });
+    const substituted = {
+      ...writeEnvelope({
+        write_approval_ref: {
+          schema_version: 'AgentTaskWriteApprovalV1',
+          approval_id: minted.approval.approval_id,
+        },
+      }),
+      task: 'substituted malicious prompt',
+    };
+    // Drop stale metadata digest so extract recomputes from the substituted task.
+    delete (substituted.metadata as Record<string, unknown>).task_content_sha256;
+    const result = await runtime.execute(substituted, adapter);
+    expect(result.status).toBe('awaiting_approval');
+    expect(result.error_code).toBe('WRITE_APPROVAL_BINDING_MISMATCH');
+    expect(adapter.execute).not.toHaveBeenCalled();
+  });
+
+  it('23. metadata task_content_sha256 mismatch with envelope.task is rejected', async () => {
+    const store = new InMemoryWriteApprovalStore();
+    const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
+    expect(minted.ok).toBe(true);
+    if (!minted.ok) return;
+    const adapter: AgentTaskAdapter = {
+      id: 'mock_agent',
+      execute: vi.fn(async () => ({ success: true })),
+    };
+    const runtime = new AgentTaskRuntime({ writeApproval: store });
+    const result = await runtime.execute(
+      writeEnvelope({
+        task_content_sha256: 'a'.repeat(64),
+        write_approval_ref: {
+          schema_version: 'AgentTaskWriteApprovalV1',
+          approval_id: minted.approval.approval_id,
+        },
+      }),
+      adapter
+    );
+    expect(result.status).toBe('awaiting_approval');
+    expect(result.error_code).toBe('WRITE_APPROVAL_TASK_CONTENT_MISMATCH');
+    expect(adapter.execute).not.toHaveBeenCalled();
+  });
+
+  it('24. caller cannot downgrade inferred write_allowed (effective OR)', () => {
+    expect(
+      resolveEffectiveWriteAllowed({
+        inferredWriteAllowed: true,
+        envelopeWriteAllowed: false,
+      })
+    ).toBe(true);
+    expect(
+      resolveEffectiveWriteAllowed({
+        inferredWriteAllowed: false,
+        envelopeWriteAllowed: true,
+      })
+    ).toBe(true);
+    expect(
+      resolveEffectiveWriteAllowed({
+        inferredWriteAllowed: false,
+        envelopeWriteAllowed: false,
+      })
+    ).toBe(false);
   });
 });
 

@@ -36,6 +36,7 @@ function parseBinding(b: Record<string, unknown>):
     pr_number: b.pr_number,
     pr_branch: b.pr_branch,
     pr_head_sha: b.pr_head_sha,
+    task_content_sha256: b.task_content_sha256,
     write_allowed: true,
   });
   if (!bindingResult.success) {
