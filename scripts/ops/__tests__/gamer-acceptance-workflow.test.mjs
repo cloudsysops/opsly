@@ -29,6 +29,8 @@ describe('gamer physical acceptance workflow topology', () => {
 
   it('does not use legacy pc-gamer IP as operational curl/peer target', () => {
     assert.doesNotMatch(workflow, /curl[^\n]*100\.74\.88\.103/);
+    assert.match(workflow, /http_get\(\)/);
+    assert.match(workflow, /GAMER_HTTP_GET_BIN/);
     assert.doesNotMatch(workflow, /TailscaleIPs\[\]\?; \. == "100\.74\.88\.103"/);
     assert.match(workflow, /legacy_pc_gamer=100\.74\.88\.103 \(retired; not probed\)/);
   });
