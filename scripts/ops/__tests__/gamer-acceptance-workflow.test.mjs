@@ -48,4 +48,11 @@ describe('gamer physical acceptance workflow topology', () => {
     assert.match(hotfix, /probe home-gpu-01-wsl smdqcia-wsl/);
     assert.match(hotfix, /LEGACY-offline-pc-gamer 100\.74\.88\.103/);
   });
+
+  it('treats HTTP health or DERP pong as online (not direct-only ping exit)', () => {
+    assert.match(workflow, /http_health/);
+    assert.match(workflow, /pong from/);
+    assert.match(workflow, /direct connection not established/);
+    assert.match(workflow, /tailscale_pong_derp_ok/);
+  });
 });

@@ -53,11 +53,34 @@ jobs:
           echo "GAMER_RESOLVED_HOST=$host"
           cat /tmp/gamer-dns.txt || true
 
-          if tailscale ping -c 1 --timeout=8s "$host" >/tmp/gamer-ping.txt 2>&1; then
-            echo "online=true" >> "$GITHUB_OUTPUT"
-            echo "PC_GAMER_ONLINE worker_id=$GAMER_WORKER_ID host=$host windows_host=$GAMER_WINDOWS_HOST"
+          # Online = reachable for acceptance HTTP surfaces.
+          # `tailscale ping` often exits non-zero when only DERP works
+          # ("direct connection not established") even after a pong — that
+          # must NOT mark the worker offline. Prefer HTTP :3011/health;
+          # accept ping output containing "pong from" as secondary signal.
+          online=false
+          reason=""
+          http_get() { command "${GAMER_HTTP_GET_BIN:-curl}" "$@"; }
+          if http_get -fsS --max-time 8 "http://${host}:3011/health" >/tmp/gamer-detect-health.json 2>/tmp/gamer-detect-health.err; then
+            online=true
+            reason="http_health"
           else
+            cat /tmp/gamer-detect-health.err || true
+            set +e
+            tailscale ping -c 1 --timeout=8s "$host" >/tmp/gamer-ping.txt 2>&1
+            ping_rc=$?
+            set -e
             cat /tmp/gamer-ping.txt || true
+            if grep -qiE 'pong from' /tmp/gamer-ping.txt; then
+              online=true
+              reason="tailscale_pong_derp_ok rc=${ping_rc}"
+            fi
+          fi
+
+          if [[ "$online" == "true" ]]; then
+            echo "online=true" >> "$GITHUB_OUTPUT"
+            echo "PC_GAMER_ONLINE worker_id=$GAMER_WORKER_ID host=$host windows_host=$GAMER_WINDOWS_HOST reason=$reason"
+          else
             echo "online=false" >> "$GITHUB_OUTPUT"
             echo "PC_GAMER_OFFLINE worker_id=$GAMER_WORKER_ID host=$host"
           fi
