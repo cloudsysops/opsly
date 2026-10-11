@@ -1,12 +1,15 @@
 ---
 id: github-queue-write-approval-051
-status: held
+status: pending
 priority: P2
 agent: local_claude
 owner: platform
 environment: local
 cost_class: free_with_quota
 estimated_cost_usd: 0
+workstream: github-queue-write-approval
+conflict_key: github-queue-write-approval
+semantic_scope: github-queue-write-approval/051
 requires_pr: true
 requires_approval: true
 paid_infra_required: false
@@ -24,9 +27,24 @@ architecture_patterns: AgentTaskEnvelopeV1, explicit approval, governed dispatch
 
 Design and implement a first-class approval chain for future write-capable GitHub Agent Queue work without weakening AgentTask policy.
 
+## Unhold evidence (050 GREEN)
+
+Hard boundary satisfied — read-only GitHub → Gamer E2E is green:
+
+| Field | Value |
+| --- | --- |
+| 050 | completed |
+| GHA run | `38166358478` |
+| marker | `GAMER_OPENCODE_OK` |
+| worker | `home-gpu-01` |
+| model | `ollama/qwen3.5:latest` |
+| PR #1709 | OPEN (not merged); head `e43e2bc8f57d5ea2002e3de82d5a5c4d78ffc824` |
+
+Previous status: `held` → now `pending` (night-queue ready-to-implement).
+
 ## Context
 
-The canonical GitHub Agent Queue is intentionally read-only today. Do **not** change that invariant until this workpack is explicitly unheld and approved.
+The canonical GitHub Agent Queue remains fail-closed for writes until this typed approval chain exists and is validated. Do **not** treat `x-autonomy-approved`, DispatchClaimV1, or sandbox Approval Gate as substitutes.
 
 ## Required design
 
@@ -54,7 +72,8 @@ A write-capable task must prove all of the following:
 
 ## Hard boundaries
 
-- HOLD until the read-only GitHub → Gamer E2E is green.
+- ~~HOLD until the read-only GitHub → Gamer E2E is green.~~ **Satisfied by 050 / run 38166358478.**
 - No production deploy.
 - No paid resources.
 - Do not weaken existing fail-closed policy.
+- Do not redispatch #1691 until this workpack is implemented, tested, exact-head reviewed, and merged.
