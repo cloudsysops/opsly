@@ -4,10 +4,8 @@ import {
   type AgentTaskWriteApprovalBinding,
 } from '@intcloudsysops/agent-task-core';
 import { parseBody, verifyPlatformAdminToken } from '../utils.js';
-import {
-  getWriteApprovalStore,
-  type WriteApprovalStorePort,
-} from '../../write-approval-store-singleton.js';
+import { getWriteApprovalStore } from '../../write-approval-store-singleton.js';
+import type { WriteApprovalStorePort } from '../../write-approval-store.js';
 
 type RouteCtx = { req: IncomingMessage; res: ServerResponse };
 
