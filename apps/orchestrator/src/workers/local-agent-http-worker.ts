@@ -193,6 +193,35 @@ export function allowLegacyLocalAgentPayload(env: NodeJS.ProcessEnv = process.en
   return env.OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD === 'true';
 }
 
+/** Read-only review/plan jobs must not run post-response type-check/iterate gates. */
+export function shouldSkipLocalAgentValidation(
+  agentRole: string,
+  jobId: string
+): boolean {
+  const role = agentRole.trim().toLowerCase();
+  if (role.includes('review') || role.includes('plan')) return true;
+  if (jobId.startsWith('open-review-')) return true;
+  return false;
+}
+
+/**
+ * Open-source independent review requires evidence matching /^ollama\/qwen/i.
+ * Prefer an already-installed Qwen (e.g. qwen3.5) — do not pull models here.
+ */
+export function resolveLocalAgentExecuteModel(
+  model: string | undefined,
+  agentRole: string,
+  jobId: string,
+  env: NodeJS.ProcessEnv = process.env
+): string | undefined {
+  const explicit = model?.trim();
+  if (explicit) return explicit;
+  if (!shouldSkipLocalAgentValidation(agentRole, jobId)) return undefined;
+  const reviewDefault =
+    env.OPSLY_OPEN_REVIEW_MODEL?.trim() || 'ollama/qwen3.5:latest';
+  return reviewDefault;
+}
+
 async function finalizeDispatchClaimForPayload(
   payload: LocalAgentPayload,
   outcome: 'completed' | 'failed',
@@ -307,6 +336,7 @@ async function processLocalAgentJob(
       throw new Error(`Service not configured or disabled for ${agent}`);
     }
 
+    const executeModel = resolveLocalAgentExecuteModel(model, agent_role, job_id);
     logWorkerInfo('local-agents', `${agent}: invoking ${serviceUrl}/execute`);
     const response = await fetch(`${serviceUrl.replace(/\/+$/, '')}/execute`, {
       method: 'POST',
@@ -316,7 +346,7 @@ async function processLocalAgentJob(
         agent_role,
         max_steps,
         job_id,
-        ...(model ? { model } : {}),
+        ...(executeModel ? { model: executeModel } : {}),
       }),
       signal: signal ?? AbortSignal.timeout(service.timeout_ms),
     });
@@ -361,8 +391,9 @@ async function processLocalAgentJob(
       );
     }
 
-    // Validate response and decide next action (validation orchestration)
-    if (responsePath) {
+    // Validate response and decide next action (validation orchestration).
+    // Skip for review/plan: type-check iterate gates are for code-edit jobs, not PR reviews.
+    if (responsePath && !shouldSkipLocalAgentValidation(agent_role, job_id)) {
       logWorkerInfo('local-agents', `Starting validation orchestration for ${responsePath}`);
       const decision = await validationOrchestrator.validateAndDecide(
         job_id,
@@ -385,12 +416,31 @@ async function processLocalAgentJob(
         result: responseText ?? undefined,
         durationMs: Date.now() - startTime,
         runtime: agent,
-        model: typeof result.model === 'string' ? result.model : model,
+        model: typeof result.model === 'string' ? result.model : executeModel,
         response_path: responsePath,
         execution_time_ms: Date.now() - startTime,
         validation_decision: {
           action: decision.action,
           reason: decision.reason,
+        },
+      };
+    }
+
+    if (responsePath && shouldSkipLocalAgentValidation(agent_role, job_id)) {
+      return {
+        success: true,
+        jobId: job_id,
+        requestId: job_id,
+        workerId: process.env.WORKER_ID,
+        result: responseText ?? undefined,
+        durationMs: Date.now() - startTime,
+        runtime: agent,
+        model: typeof result.model === 'string' ? result.model : executeModel,
+        response_path: responsePath,
+        execution_time_ms: Date.now() - startTime,
+        validation_decision: {
+          action: 'commit',
+          reason: 'skipped validation for review/plan local agent job',
         },
       };
     }
@@ -403,7 +453,7 @@ async function processLocalAgentJob(
       result: responseText ?? undefined,
       durationMs: Date.now() - startTime,
       runtime: agent,
-      model: typeof result.model === 'string' ? result.model : model,
+      model: typeof result.model === 'string' ? result.model : executeModel,
       response_path: responsePath || undefined,
       execution_time_ms: Date.now() - startTime,
     };
