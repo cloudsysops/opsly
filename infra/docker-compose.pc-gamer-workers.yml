@@ -42,6 +42,8 @@ services:
       OPSLY_LOCAL_AGENT_UNIFIED_ONLY: ${OPSLY_LOCAL_AGENT_UNIFIED_ONLY:-true}
       OPSLY_LOCAL_AGENT_KINDS: ${OPSLY_LOCAL_AGENT_KINDS:-}
       OPSLY_OPENCODE_AGENT_URL: ${OPSLY_OPENCODE_AGENT_URL:-http://127.0.0.1:5004}
+      # Review/acceptance default when job payload omits model (must already be installed on Ollama).
+      OPSLY_OPEN_REVIEW_MODEL: ${OPSLY_OPEN_REVIEW_MODEL:-ollama/qwen2.5-coder:7b}
       OPSLY_CLI_AGENT_TOKEN: ${OPSLY_CLI_AGENT_TOKEN:-}
       # Conservadores: máquina compartida / gaming
       WORKER_CONCURRENCY_CURSOR: ${WORKER_CONCURRENCY_CURSOR:-1}
