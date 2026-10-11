@@ -35,7 +35,10 @@ export type WriteApprovalConsumeResult =
 
 export type WriteApprovalStorePort = {
   mint(input: WriteApprovalMintInput): Promise<WriteApprovalMintResult>;
-  consume(input: WriteApprovalConsumeInput): Promise<WriteApprovalConsumeResult>;
+  consume(
+    input: WriteApprovalConsumeInput,
+    options?: { signal?: AbortSignal }
+  ): Promise<WriteApprovalConsumeResult>;
 };
 
 interface RedisLike {
@@ -167,7 +170,13 @@ export class WriteApprovalStore implements WriteApprovalStorePort {
     }
   }
 
-  async consume(input: WriteApprovalConsumeInput): Promise<WriteApprovalConsumeResult> {
+  async consume(
+    input: WriteApprovalConsumeInput,
+    options?: { signal?: AbortSignal }
+  ): Promise<WriteApprovalConsumeResult> {
+    if (options?.signal?.aborted) {
+      throw Object.assign(new Error('aborted'), { name: 'AbortError' });
+    }
     const binding: AgentTaskWriteApprovalBinding = {
       ...input.binding,
       pr_head_sha: input.binding.pr_head_sha.toLowerCase(),
@@ -260,7 +269,13 @@ export class InMemoryWriteApprovalStore implements WriteApprovalStorePort {
     }
   }
 
-  async consume(input: WriteApprovalConsumeInput): Promise<WriteApprovalConsumeResult> {
+  async consume(
+    input: WriteApprovalConsumeInput,
+    options?: { signal?: AbortSignal }
+  ): Promise<WriteApprovalConsumeResult> {
+    if (options?.signal?.aborted) {
+      throw Object.assign(new Error('aborted'), { name: 'AbortError' });
+    }
     const stored = this.byId.get(input.approval_id);
     if (!stored) return { ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' };
     const binding: AgentTaskWriteApprovalBinding = {

@@ -55,7 +55,10 @@ export type AgentTaskRuntimeResult = {
 };
 
 export type WriteApprovalConsumer = {
-  consume(input: WriteApprovalConsumeInput): Promise<WriteApprovalConsumeResult>;
+  consume(
+    input: WriteApprovalConsumeInput,
+    options?: { signal?: AbortSignal }
+  ): Promise<WriteApprovalConsumeResult>;
 };
 
 export type AgentTaskRuntimeOptions = {
@@ -94,10 +97,39 @@ function baseResult(envelope: AgentTaskEnvelopeV1, agent: AgentTaskAdapter, stat
   };
 }
 
+async function consumeWithSignal(
+  consumer: WriteApprovalConsumer,
+  input: WriteApprovalConsumeInput,
+  signal?: AbortSignal
+): Promise<WriteApprovalConsumeResult> {
+  if (!signal) {
+    return consumer.consume(input);
+  }
+  if (signal.aborted) {
+    throw Object.assign(new Error('aborted'), { name: 'AbortError' });
+  }
+  return new Promise<WriteApprovalConsumeResult>((resolve, reject) => {
+    const onAbort = (): void => {
+      reject(Object.assign(new Error('aborted'), { name: 'AbortError' }));
+    };
+    signal.addEventListener('abort', onAbort, { once: true });
+    Promise.resolve(consumer.consume(input, { signal }))
+      .then((result) => {
+        signal.removeEventListener('abort', onAbort);
+        resolve(result);
+      })
+      .catch((err: unknown) => {
+        signal.removeEventListener('abort', onAbort);
+        reject(err);
+      });
+  });
+}
+
 async function requireTypedWriteApproval(
   envelope: AgentTaskEnvelopeV1,
   options: AgentTaskRuntimeOptions,
-  executeOptions: AgentTaskRuntimeExecuteOptions
+  executeOptions: AgentTaskRuntimeExecuteOptions,
+  signal?: AbortSignal
 ): Promise<WriteApprovalRejectReason | null> {
   if (envelope.constraints.write_allowed !== true) {
     return null;
@@ -117,12 +149,23 @@ async function requireTypedWriteApproval(
   if (!ctx.ref) return 'WRITE_APPROVAL_REF_MISSING';
   if (!ctx.binding) return 'WRITE_APPROVAL_BINDING_MISMATCH';
 
-  const consumed = await options.writeApproval.consume({
-    approval_id: ctx.ref.approval_id,
-    binding: ctx.binding,
-  });
-  if (!consumed.ok) return consumed.error;
-  return null;
+  try {
+    const consumed = await consumeWithSignal(
+      options.writeApproval,
+      {
+        approval_id: ctx.ref.approval_id,
+        binding: ctx.binding,
+      },
+      signal
+    );
+    if (!consumed.ok) return consumed.error;
+    return null;
+  } catch (err) {
+    if (err && typeof err === 'object' && 'name' in err && (err as { name: string }).name === 'AbortError') {
+      return null; // caller interprets aborted signal as TASK_TIMEOUT
+    }
+    throw err;
+  }
 }
 
 /**
@@ -247,7 +290,12 @@ export class AgentTaskRuntime {
           });
           return result;
         }
-        const writeErr = await requireTypedWriteApproval(envelope, this.options, executeOptions);
+        const writeErr = await requireTypedWriteApproval(
+          envelope,
+          this.options,
+          executeOptions,
+          execution.controller.signal
+        );
         if (execution.controller.signal.aborted && !execution.cancelled) {
           const duration_ms = Date.now() - startedAt;
           const result = baseResult(envelope, adapter, 'timed_out', duration_ms);

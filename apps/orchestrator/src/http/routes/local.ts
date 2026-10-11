@@ -33,7 +33,7 @@ import { jsonResponse, errorResponse } from '../router.js';
 import { agentTaskEnvelopeV1Schema } from '@intcloudsysops/types/agent-task';
 import {
   AGENT_TASK_WRITE_APPROVAL_VERSION,
-  agentTaskWriteApprovalBindingSchema,
+  agentTaskWriteApprovalRefSchema,
   buildAgentTaskEnvelope,
   inferTaskType,
 } from '@intcloudsysops/agent-task-core';
@@ -48,7 +48,6 @@ import {
   checkLocalPromptAdmission,
   releaseLocalPromptAdmissionReservation,
 } from '../local-prompt-admission.js';
-import { getWriteApprovalStore } from '../../write-approval-store-singleton.js';
 
 const MAX_RECENT_LOCAL_JOBS = 25;
 const MAX_LOCAL_PROMPT_BODY_BYTES = 65_536;
@@ -598,24 +597,48 @@ let admission;
       };
 
       // Bind server-acquired claim into AgentTask metadata for typed write approval.
+      // claimId === requestId (acquireTaskDispatchClaim). Never auto-mint approvals here.
       const prevMeta =
         typeof taskEnvelope.metadata === 'object' && taskEnvelope.metadata !== null
           ? { ...(taskEnvelope.metadata as Record<string, unknown>) }
           : {};
+      const writeApprovalRefRaw = context.write_approval_ref ?? prevMeta.write_approval_ref;
+      let writeApprovalRef: { schema_version: typeof AGENT_TASK_WRITE_APPROVAL_VERSION; approval_id: string } | undefined;
+      if (writeApprovalRefRaw !== undefined && writeApprovalRefRaw !== null) {
+        const parsedRef = agentTaskWriteApprovalRefSchema.safeParse(writeApprovalRefRaw);
+        if (!parsedRef.success) {
+          await releaseTaskDispatchClaim(dispatchClaimLease).catch(() => undefined);
+          errorResponse(ctx.res, 400, 'WRITE_APPROVAL_REF_MISSING');
+          return;
+        }
+        writeApprovalRef = parsedRef.data;
+      }
+      // Never mint here — typed approvals are operator/admin pre-minted only.
+      // Runtime fail-closes write_allowed=true without a valid consumable ref.
+
       taskEnvelope = {
         ...taskEnvelope,
+        ...(writeAllowed
+          ? { constraints: { ...taskEnvelope.constraints, write_allowed: true as const } }
+          : {}),
         metadata: {
           ...prevMeta,
           claim_id: dispatchClaimLease.claimId,
           work_id:
             typeof prevMeta.work_id === 'string' && prevMeta.work_id.trim()
               ? prevMeta.work_id
-              : dispatchClaimLease.taskId,
+              : typeof context.work_id === 'string' && context.work_id.trim()
+                ? context.work_id.trim()
+                : dispatchClaimLease.taskId,
           workstream: dispatchClaimLease.workstream,
           conflict_key:
             typeof prevMeta.conflict_key === 'string' && prevMeta.conflict_key.trim()
               ? prevMeta.conflict_key
               : dispatchClaimRequest.conflictKey,
+          repository: context.repository ?? context.github_repository ?? prevMeta.repository,
+          pr_number: context.pr_number ?? prevMeta.pr_number,
+          pr_branch: context.pr_branch ?? prevMeta.pr_branch,
+          pr_head_sha: context.pr_head_sha ?? prevMeta.pr_head_sha,
           dispatch_claim: {
             version: dispatchClaimLease.version,
             claimId: dispatchClaimLease.claimId,
@@ -623,61 +646,12 @@ let admission;
             taskId: dispatchClaimLease.taskId,
             task_id: dispatchClaimLease.taskId,
             workstream: dispatchClaimLease.workstream,
+            conflictKey: dispatchClaimRequest.conflictKey,
+            conflict_key: dispatchClaimRequest.conflictKey,
           },
+          ...(writeApprovalRef ? { write_approval_ref: writeApprovalRef } : {}),
         },
       };
-
-      if (writeAllowed && context.mint_write_approval === true) {
-        const bindingParse = agentTaskWriteApprovalBindingSchema.safeParse({
-          work_id: taskEnvelope.metadata?.work_id,
-          request_id: requestId,
-          claim_id: dispatchClaimLease.claimId,
-          workstream: dispatchClaimLease.workstream,
-          conflict_key: taskEnvelope.metadata?.conflict_key,
-          repository: context.repository ?? context.github_repository,
-          pr_number: context.pr_number,
-          pr_branch: context.pr_branch,
-          pr_head_sha: context.pr_head_sha,
-          write_allowed: true,
-        });
-        if (!bindingParse.success) {
-          await releaseTaskDispatchClaim(dispatchClaimLease).catch(() => undefined);
-          errorResponse(
-            ctx.res,
-            400,
-            `WRITE_APPROVAL_BINDING_INVALID: ${bindingParse.error.issues[0]?.message ?? 'invalid binding'}`
-          );
-          return;
-        }
-        const store = await getWriteApprovalStore();
-        const minted = await store.mint({
-          ...bindingParse.data,
-          approved_by: 'platform-admin',
-        });
-        if (!minted.ok) {
-          await releaseTaskDispatchClaim(dispatchClaimLease).catch(() => undefined);
-          jsonResponse(ctx.res, 409, {
-            success: false,
-            ok: false,
-            error: minted.error,
-            message: minted.message,
-            request_id: requestId,
-          });
-          return;
-        }
-        taskEnvelope = {
-          ...taskEnvelope,
-          constraints: { ...taskEnvelope.constraints, write_allowed: true },
-          metadata: {
-            ...(taskEnvelope.metadata as Record<string, unknown>),
-            ...bindingParse.data,
-            write_approval_ref: {
-              schema_version: AGENT_TASK_WRITE_APPROVAL_VERSION,
-              approval_id: minted.approval.approval_id,
-            },
-          },
-        };
-      }
 
       job.payload.context = context;
       job.payload.agent_task = taskEnvelope;

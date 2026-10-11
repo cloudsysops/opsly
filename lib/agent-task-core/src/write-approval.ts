@@ -37,6 +37,7 @@ export type DispatchClaimIdentity = {
   claimId: string;
   taskId: string;
   workstream: string;
+  conflictKey?: string;
 };
 
 export function parseAgentTaskWriteApproval(input: unknown): AgentTaskWriteApprovalV1 {
@@ -90,9 +91,14 @@ export function assertWriteApprovalMatchesClaim(
   if (!claim?.claimId?.trim() || !claim.taskId?.trim() || !claim.workstream?.trim()) {
     return 'WRITE_APPROVAL_CLAIM_MISMATCH';
   }
+  // acquireTaskDispatchClaim sets claimId = requestId — both must match the binding.
   if (binding.claim_id !== claim.claimId) return 'WRITE_APPROVAL_CLAIM_MISMATCH';
+  if (binding.request_id !== claim.claimId) return 'WRITE_APPROVAL_CLAIM_MISMATCH';
   if (binding.work_id !== claim.taskId) return 'WRITE_APPROVAL_CLAIM_MISMATCH';
   if (binding.workstream !== claim.workstream) return 'WRITE_APPROVAL_CLAIM_MISMATCH';
+  if (claim.conflictKey && binding.conflict_key !== claim.conflictKey) {
+    return 'WRITE_APPROVAL_CLAIM_MISMATCH';
+  }
   return null;
 }
 
@@ -112,8 +118,14 @@ export function parseDispatchClaimIdentity(raw: unknown): DispatchClaimIdentity 
         ? o.task_id.trim()
         : '';
   const workstream = typeof o.workstream === 'string' ? o.workstream.trim() : '';
+  const conflictKey =
+    typeof o.conflictKey === 'string'
+      ? o.conflictKey.trim()
+      : typeof o.conflict_key === 'string'
+        ? o.conflict_key.trim()
+        : undefined;
   if (!claimId || !taskId || !workstream) return null;
-  return { claimId, taskId, workstream };
+  return { claimId, taskId, workstream, ...(conflictKey ? { conflictKey } : {}) };
 }
 
 /**

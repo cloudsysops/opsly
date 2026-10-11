@@ -66,6 +66,16 @@ function typedWriteEnabled() {
   return process.env.OPSLY_GITHUB_AGENT_TYPED_WRITE === 'true';
 }
 
+function readPreMintedWriteApprovalId() {
+  const approvalId = String(process.env.OPSLY_GITHUB_AGENT_WRITE_APPROVAL_ID || '').trim();
+  if (!approvalId) {
+    throw new Error(
+      'OPSLY_GITHUB_AGENT_WRITE_APPROVAL_ID is required for typed write (pre-minted AgentTaskWriteApprovalV1)'
+    );
+  }
+  return approvalId;
+}
+
 function readTypedWriteBinding() {
   const repository = String(
     process.env.OPSLY_GITHUB_AGENT_WRITE_REPOSITORY || process.env.GITHUB_REPOSITORY || ''
@@ -132,6 +142,7 @@ function assertSafe(meta) {
       );
     }
     readTypedWriteBinding();
+    readPreMintedWriteApprovalId();
   }
   if (meta.production_deploy === true) {
     throw new Error('production_deploy=true is forbidden in GitHub Agent Queue');
@@ -195,6 +206,9 @@ const sha = process.env.GITHUB_SHA || crypto.createHash('sha256').update(content
 const requestId = `ghq-${safeIdSegment(meta.id)}-${sha.slice(0, 12)}`;
 const typedWrite = typedWriteEnabled();
 const writeBinding = typedWrite ? readTypedWriteBinding() : null;
+const writeApprovalId = typedWrite ? readPreMintedWriteApprovalId() : null;
+// DispatchClaimV1.claimId === requestId (server acquire). Pre-minted approval must use the same ids.
+const writeClaimId = requestId;
 
 const payload = {
   tenant_slug: 'local',
@@ -227,15 +241,19 @@ const payload = {
     requires_pr: typedWrite ? true : false,
     production_deploy: false,
     paid_infra_required: false,
-    ...(typedWrite && writeBinding
+    ...(typedWrite && writeBinding && writeApprovalId
       ? {
-          mint_write_approval: true,
+          // Propagate operator/admin pre-minted approval only — never mint here.
           work_id: String(meta.id),
+          claim_id: writeClaimId,
           repository: writeBinding.repository,
           pr_number: writeBinding.pr_number,
           pr_branch: writeBinding.pr_branch,
           pr_head_sha: writeBinding.pr_head_sha,
-          write_approval_schema: 'AgentTaskWriteApprovalV1',
+          write_approval_ref: {
+            schema_version: 'AgentTaskWriteApprovalV1',
+            approval_id: writeApprovalId,
+          },
         }
       : {}),
   }

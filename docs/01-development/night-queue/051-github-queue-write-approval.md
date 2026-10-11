@@ -88,8 +88,17 @@ A write-capable task must prove all of the following:
 ## Canonical API
 
 `POST /api/local/agent-task-write-approval` with `action: mint | consume` (Bearer `PLATFORM_ADMIN_TOKEN`).
+Mint sets `approved_by=platform-admin` from the token principal (caller `approved_by` is audit `requested_by` only).
 
-Envelope carries `metadata.write_approval_ref = { schema_version, approval_id }` plus binding fields; runtime consumes before adapter.
+Envelope carries `metadata.write_approval_ref = { schema_version, approval_id }` plus binding fields; runtime consumes under the task AbortController after dry-run / non-write gates.
+
+### GitHub queue submitter (typed write)
+
+Read-only by default. Typed write only when `OPSLY_GITHUB_AGENT_TYPED_WRITE=true` **and** the workpack has `requires_pr=true` + `requires_approval=true`, with:
+
+- `OPSLY_GITHUB_AGENT_WRITE_APPROVAL_ID` — **pre-minted** approval (never auto-minted by the submitter)
+- `OPSLY_GITHUB_AGENT_WRITE_PR_NUMBER` / `_PR_BRANCH` / `_PR_HEAD_SHA` (+ repository)
+- Binding `claim_id` / `request_id` must equal the submit `request_id` (`DispatchClaimV1.claimId === requestId`)
 
 ## Hard boundaries
 

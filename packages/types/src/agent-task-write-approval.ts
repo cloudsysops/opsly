@@ -9,22 +9,24 @@ export const exactGitShaSchema = z
   .regex(/^[a-f0-9]{40}$/i, 'pr_head_sha must be an exact 40-char git SHA');
 
 /** Bound string fields must not contain NULs or newlines (injective fingerprint). */
-const boundText = z
-  .string()
-  .min(1)
-  .max(300)
-  .refine((v) => !/[\u0000\r\n]/.test(v), 'bound fields must not contain NUL or newlines');
+function boundText(maxLen: number) {
+  return z
+    .string()
+    .min(1)
+    .max(maxLen)
+    .refine((v) => !/[\u0000\r\n]/.test(v), 'bound fields must not contain NUL or newlines');
+}
 
 export const agentTaskWriteApprovalBindingSchema = z.object({
-  work_id: boundText.max(160),
-  request_id: boundText.max(200),
-  /** Server-acquired DispatchClaimV1.claimId — required for write identity. */
-  claim_id: boundText.max(200),
-  workstream: boundText.max(160),
-  conflict_key: boundText.max(200),
-  repository: boundText.max(300),
+  work_id: boundText(160),
+  request_id: boundText(200),
+  /** Server-acquired DispatchClaimV1.claimId (= requestId on acquire) — required. */
+  claim_id: boundText(200),
+  workstream: boundText(160),
+  conflict_key: boundText(200),
+  repository: boundText(300),
   pr_number: z.number().int().positive(),
-  pr_branch: boundText.max(300),
+  pr_branch: boundText(300),
   pr_head_sha: exactGitShaSchema,
   write_allowed: z.literal(true),
 });

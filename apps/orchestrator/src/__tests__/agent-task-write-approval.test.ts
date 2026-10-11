@@ -1,15 +1,23 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { AgentTaskEnvelopeV1 } from '@intcloudsysops/types';
-import { AgentTaskRuntime, type AgentTaskAdapter } from '../runtime/agent-task-runtime.js';
+import {
+  AgentTaskRuntime,
+  type AgentTaskAdapter,
+  type WriteApprovalConsumer,
+} from '../runtime/agent-task-runtime.js';
 import { InMemoryWriteApprovalStore } from '../write-approval-store.js';
+import { handleAgentTaskWriteApproval } from '../http/routes/write-approval.js';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 const SHA = 'e43e2bc8f57d5ea2002e3de82d5a5c4d78ffc824';
 const SHA_OTHER = 'a785b34d00000000000000000000000000000000';
-const CLAIM_ID = 'claim-write-051';
+/** acquireTaskDispatchClaim sets claimId = requestId */
+const REQUEST_ID = 'req-write-051';
+const CLAIM_ID = REQUEST_ID;
 
 const binding = {
   work_id: 'github-queue-write-approval-051',
-  request_id: 'req-write-051',
+  request_id: REQUEST_ID,
   claim_id: CLAIM_ID,
   workstream: 'github-queue-write-approval',
   conflict_key: 'github-queue-write-approval',
@@ -27,6 +35,8 @@ const dispatchClaim = {
   taskId: binding.work_id,
   task_id: binding.work_id,
   workstream: binding.workstream,
+  conflictKey: binding.conflict_key,
+  conflict_key: binding.conflict_key,
 };
 
 function envelope(overrides: Partial<AgentTaskEnvelopeV1> = {}): AgentTaskEnvelopeV1 {
@@ -240,7 +250,9 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
     env.request_id = 'req-other';
     const blocked = await runtime.execute(env, adapter);
     expect(blocked.status).toBe('awaiting_approval');
-    expect(blocked.error_code).toBe('WRITE_APPROVAL_BINDING_MISMATCH');
+    expect(['WRITE_APPROVAL_BINDING_MISMATCH', 'WRITE_APPROVAL_CLAIM_MISMATCH']).toContain(
+      blocked.error_code
+    );
     expect(adapter.execute).not.toHaveBeenCalled();
   });
 
@@ -446,6 +458,105 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
     });
     expect(minted.ok).toBe(false);
     expect(minted.ok === false && minted.error).toBe('WRITE_APPROVAL_TTL_EXCEEDED');
+  });
+
+  it('19. normal TTL accepted; expired mint rejected', async () => {
+    const store = new InMemoryWriteApprovalStore();
+    const ok = await store.mint({
+      ...binding,
+      approved_by: 'caller-ignored',
+      expires_at: new Date(Date.now() + 60_000).toISOString(),
+    });
+    expect(ok.ok).toBe(true);
+    if (ok.ok) {
+      // Store accepts caller label on mint input; HTTP route forces trusted principal.
+      expect(ok.approval.approved_by).toBe('caller-ignored');
+    }
+    const expired = await store.mint({
+      ...binding,
+      approval_id: 'expired-mint',
+      approved_by: 'platform-admin',
+      expires_at: '2020-01-01T00:00:00.000Z',
+    });
+    expect(expired.ok).toBe(false);
+    expect(expired.ok === false && expired.error).toBe('WRITE_APPROVAL_EXPIRED');
+  });
+
+  it('20. hung consume is aborted by task timeout', async () => {
+    const hung: WriteApprovalConsumer = {
+      consume: (_input, options) =>
+        new Promise((resolve, reject) => {
+          const t = setTimeout(
+            () => resolve({ ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' }),
+            60_000
+          );
+          options?.signal?.addEventListener(
+            'abort',
+            () => {
+              clearTimeout(t);
+              reject(Object.assign(new Error('aborted'), { name: 'AbortError' }));
+            },
+            { once: true }
+          );
+        }),
+    };
+    const adapter: AgentTaskAdapter = {
+      id: 'mock_agent',
+      execute: vi.fn(async () => ({ success: true })),
+    };
+    const runtime = new AgentTaskRuntime({ writeApproval: hung });
+    const result = await runtime.execute(
+      writeEnvelope({
+        write_approval_ref: {
+          schema_version: 'AgentTaskWriteApprovalV1',
+          approval_id: 'hung-approval',
+        },
+      }),
+      adapter,
+      { timeoutMs: 30 }
+    );
+    expect(result.status).toBe('timed_out');
+    expect(result.error_code).toBe('TASK_TIMEOUT');
+    expect(adapter.execute).not.toHaveBeenCalled();
+  });
+
+  it('21. mint route uses trusted approved_by, not caller body', async () => {
+    const { Readable } = await import('node:stream');
+    const store = new InMemoryWriteApprovalStore();
+    const body = JSON.stringify({
+      action: 'mint',
+      ...binding,
+      approved_by: 'definitely-not-trusted-human',
+    });
+    const req = Readable.from([body]) as IncomingMessage;
+    req.headers = { authorization: 'Bearer test-token' };
+    let responseBody = '';
+    const res = {
+      statusCode: 200,
+      setHeader() {
+        return undefined;
+      },
+      end(payload: string) {
+        responseBody = payload;
+      },
+    } as unknown as ServerResponse;
+
+    vi.stubEnv('PLATFORM_ADMIN_TOKEN', 'test-token');
+    try {
+      await handleAgentTaskWriteApproval({ req, res }, store);
+      const parsed = JSON.parse(responseBody) as {
+        success: boolean;
+        approval: { approved_by: string };
+        audit: { approved_by: string; auth_principal: string; requested_by?: string };
+      };
+      expect(parsed.success).toBe(true);
+      expect(parsed.approval.approved_by).toBe('platform-admin');
+      expect(parsed.audit.approved_by).toBe('platform-admin');
+      expect(parsed.audit.auth_principal).toBe('platform-admin');
+      expect(parsed.audit.requested_by).toBe('definitely-not-trusted-human');
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 });
 

@@ -9,7 +9,9 @@ export async function getWriteApprovalStore(): Promise<WriteApprovalStorePort> {
   if (!building) {
     building = (async () => {
       const client = await localAgentQueue.client;
-      singleton = new WriteApprovalStore(client as ConstructorParameters<typeof WriteApprovalStore>[0]);
+      singleton = new WriteApprovalStore(
+        client as unknown as ConstructorParameters<typeof WriteApprovalStore>[0]
+      );
       return singleton;
     })();
   }
