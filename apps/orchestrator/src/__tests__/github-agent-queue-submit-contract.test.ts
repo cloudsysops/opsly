@@ -35,7 +35,9 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('requires_approval=true is not eligible');
     expect(source).toContain('production_deploy=true is forbidden');
     expect(source).toContain('paid_infra_required=true is forbidden');
-    expect(source).toContain("agent_role: 'review'");
+    expect(source).toContain(
+      "agent_role: String(meta.agent_role || meta.role || 'review')"
+    );
     expect(source).toContain('agent: String(meta.agent)');
     expect(source).toContain('requires_pr: false');
   });
@@ -99,11 +101,12 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('existingCompletedJobId || String(submit.body.job_id)');
   });
 
-  it('Gamer physical acceptance is fixed to trusted main and the #050 read-only workpack', () => {
+  it('Gamer physical acceptance checkouts the dispatched ref and the #050 marker workpack', () => {
     expect(gamerAcceptanceWorkflow).toContain('workflow_dispatch:');
     expect(gamerAcceptanceWorkflow).toContain('runs-on: ubuntu-latest');
     expect(gamerAcceptanceWorkflow).not.toContain('self-hosted');
-    expect(gamerAcceptanceWorkflow).toContain('ref: main');
+    expect(gamerAcceptanceWorkflow).toContain('Checkout acceptance ref');
+    expect(gamerAcceptanceWorkflow).toContain('ref: ${{ github.sha }}');
     expect(gamerAcceptanceWorkflow).toContain(
       'docs/01-development/night-queue/050-gamer-opencode-physical-acceptance.md'
     );
@@ -112,6 +115,8 @@ describe('GitHub Agent Queue submitter contract', () => {
     );
     expect(gamerAcceptanceWorkflow).not.toContain('${{ inputs.');
     expect(gamerAcceptanceWorkpack).toContain('agent: local_opencode');
+    expect(gamerAcceptanceWorkpack).toContain('agent_role: executor');
+    expect(gamerAcceptanceWorkpack).toContain('GAMER_OPENCODE_OK');
     expect(gamerAcceptanceWorkpack).toContain('workstream: gamer-opencode-physical-acceptance');
     expect(gamerAcceptanceWorkpack).toContain('conflict_key: gamer-opencode-physical');
     expect(gamerAcceptanceWorkpack).toContain('requires_pr: false');

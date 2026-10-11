@@ -201,6 +201,9 @@ export function shouldSkipLocalAgentValidation(
   const role = agentRole.trim().toLowerCase();
   if (role.includes('review') || role.includes('plan')) return true;
   if (jobId.startsWith('open-review-')) return true;
+  // Physical acceptance must not run type-check validation loops, but also must
+  // not use the OpenCode "plan" agent (review/plan roles map to --agent plan).
+  if (jobId.includes('gamer-opencode-physical-acceptance')) return true;
   return false;
 }
 

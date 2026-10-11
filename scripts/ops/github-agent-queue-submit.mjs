@@ -174,7 +174,9 @@ const payload = {
   request_id: requestId,
   idempotency_key: requestId,
   agent: String(meta.agent),
-  agent_role: 'review',
+  // Prefer frontmatter agent_role. Physical acceptance must NOT use "review"/"plan"
+  // because cli-agent-service maps those to OpenCode --agent plan (off-topic Q&A).
+  agent_role: String(meta.agent_role || meta.role || 'review'),
   max_steps: Number(meta.max_steps || 6),
   goal: String(meta.title || meta.id),
   prompt_body: body,
