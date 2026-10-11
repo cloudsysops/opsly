@@ -45,6 +45,7 @@ describe('AgentTaskWriteApprovalV1 helpers', () => {
     const envelope = buildAgentTaskEnvelope({
       task: 'write something',
       tenantSlug: 'academy-demo',
+      taskType: 'code',
       selectedAgent: 'local_opencode',
       requestId: 'req-051-1',
       writeAllowed: true,
