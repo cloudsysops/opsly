@@ -313,7 +313,8 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     return;
   }
 
-  const agentRole = (typeof b.agent_role === 'string' ? b.agent_role : 'executor').trim();
+  const hasExplicitAgentRole = typeof b.agent_role === 'string' && b.agent_role.trim().length > 0;
+  const agentRole = (hasExplicitAgentRole ? String(b.agent_role) : 'executor').trim();
   const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
   const maxSteps = typeof b.max_steps === 'number' && Number.isFinite(b.max_steps) ? Math.floor(b.max_steps) : 10;
   const context =
@@ -371,10 +372,11 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
   const requiresPr = context.requires_pr === true;
   const inferredWriteAllowed =
     requiresPr ||
-    roleHint.includes('executor') ||
-    roleHint.includes('build') ||
-    roleHint.includes('implement') ||
-    roleHint.includes('debug');
+    (hasExplicitAgentRole &&
+      (roleHint.includes('executor') ||
+        roleHint.includes('build') ||
+        roleHint.includes('implement') ||
+        roleHint.includes('debug')));
   // Caller may strengthen write_allowed; never downgrade server-inferred write intent.
   const envelopeWriteAllowed =
     taskEnvelopeResult?.success === true &&
