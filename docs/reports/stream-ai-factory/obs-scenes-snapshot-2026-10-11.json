@@ -1,0 +1,1975 @@
+{
+  "generated_at": "2026-10-11T19:51:26.237Z",
+  "current_scene": "Coding-Game",
+  "canvas": {
+    "base": "1920x1080",
+    "output": "1920x1080",
+    "fps": "60/1"
+  },
+  "scenes": {
+    "Terminando Stream": [
+      {
+        "source": "Pantalla Fin",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/ending",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Fondo Fin",
+        "enabled": false,
+        "kind": "color_source_v3",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Texto Fin",
+        "enabled": false,
+        "kind": "text_gdiplus_v3",
+        "text": "Gracias por ver!\nOpsAfterDark - nos vemos pronto",
+        "pos": [
+          960,
+          540
+        ],
+        "size": [
+          929,
+          134
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "https://strudel.cc/",
+        "size": [
+          960,
+          540
+        ],
+        "pos": [
+          2025,
+          0
+        ]
+      }
+    ],
+    "OAD_FACTORY_FOCUS": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MISSION_CONTROL_DEV_FULL",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:4001/mission-control/live?mode=dev",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "enabled": true,
+        "kind": "text_gdiplus_v3",
+        "text": "OpsAfterDark",
+        "pos": [
+          23,
+          998
+        ],
+        "size": [
+          219,
+          45
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      }
+    ],
+    "QUEST_CAST_TEST": [
+      {
+        "source": "Window Capture 3",
+        "enabled": false,
+        "kind": "window_capture",
+        "window": "Meta Horizon Link:Chrome_WidgetWin_1:Client.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "QUEST_CAST_WINDOW",
+        "enabled": true,
+        "kind": "window_capture",
+        "window": "Meta Casting:Meta Quest Casting:Casting.exe",
+        "pos": [
+          960,
+          540
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      }
+    ],
+    "CODING_4": [
+      {
+        "source": "V_BG_OAD",
+        "enabled": true,
+        "kind": "color_source_v3",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Fondo BRB",
+        "enabled": false,
+        "kind": "color_source_v3",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "VIBE.Ubuntu",
+        "enabled": false,
+        "kind": "window_capture",
+        "window": "Ubuntu:CASCADIA_HOSTING_WINDOW_CLASS:WindowsTerminal.exe",
+        "pos": [
+          27,
+          83
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "VIBE · Claude",
+        "enabled": false,
+        "kind": "window_capture",
+        "window": "Ubuntu:CASCADIA_HOSTING_WINDOW_CLASS:WindowsTerminal.exe",
+        "pos": [
+          543,
+          538
+        ],
+        "size": [
+          511,
+          495
+        ]
+      },
+      {
+        "source": "VIBE · Cursor",
+        "enabled": false,
+        "kind": "window_capture",
+        "window": "Cursor:Chrome_WidgetWin_1:Cursor.exe",
+        "pos": [
+          1245,
+          0
+        ],
+        "size": [
+          664,
+          534
+        ]
+      },
+      {
+        "source": "VIBE · ChatGPT",
+        "enabled": false,
+        "kind": "window_capture",
+        "window": "ChatGPT:Chrome_WidgetWin_1:ChatGPT.exe",
+        "pos": [
+          12,
+          576
+        ],
+        "size": [
+          507,
+          504
+        ]
+      },
+      {
+        "source": "VIBE · Terminal",
+        "enabled": true,
+        "kind": "window_capture",
+        "window": "OpenCode:CASCADIA_HOSTING_WINDOW_CLASS:WindowsTerminal.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1248,
+          1080
+        ]
+      },
+      {
+        "source": "MISSION_CONTROL_DEV_PANEL",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:4001/mission-control/live?mode=dev",
+        "size": [
+          672,
+          1080
+        ],
+        "pos": [
+          1248,
+          0
+        ]
+      },
+      {
+        "source": "Music-Claude",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Window Capture 2 2",
+        "enabled": false,
+        "kind": "window_capture",
+        "window": "Counter-Strike 2:SDL_app:cs2.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FACTORY_MC_PANEL_BG",
+        "enabled": true,
+        "kind": "color_source_v3",
+        "pos": [
+          1248,
+          0
+        ],
+        "size": [
+          672,
+          1080
+        ]
+      },
+      {
+        "source": "FACTORY_MC_OFFLINE",
+        "enabled": true,
+        "kind": "text_gdiplus_v3",
+        "text": "MISSION CONTROL — OFFLINE",
+        "pos": [
+          1248,
+          440
+        ],
+        "size": [
+          672,
+          200
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/hud",
+        "size": [
+          450,
+          68
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      }
+    ],
+    "Coding-Game": [
+      {
+        "source": "V_BG_OAD",
+        "enabled": true,
+        "kind": "color_source_v3",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "enabled": true,
+        "kind": "game_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1248,
+          702
+        ]
+      },
+      {
+        "source": "Window Capture",
+        "enabled": true,
+        "kind": "window_capture",
+        "window": "OpenCode:CASCADIA_HOSTING_WINDOW_CLASS:WindowsTerminal.exe",
+        "pos": [
+          1248,
+          0
+        ],
+        "size": [
+          672,
+          420
+        ]
+      },
+      {
+        "source": "Reloj",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "data:text/html,<html><body style=\"margin:0;background:transparent;overflow:hidden\"><div id=\"c\" style=\"font-family:'Bahns",
+        "size": [
+          225,
+          53
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "enabled": true,
+        "kind": "text_gdiplus_v3",
+        "text": "OpsAfterDark",
+        "pos": [
+          23,
+          998
+        ],
+        "size": [
+          244,
+          50
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Vibe Coding Glass",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/summary",
+        "size": [
+          672,
+          392
+        ],
+        "pos": [
+          1248,
+          430
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/hud",
+        "size": [
+          450,
+          68
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      }
+    ],
+    "Streaming-Gaming": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "enabled": true,
+        "kind": "game_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "DJ NDI (Mac)",
+        "enabled": false,
+        "kind": "ndi_source",
+        "pos": [
+          1365,
+          645
+        ],
+        "size": [
+          480,
+          270
+        ]
+      },
+      {
+        "source": "Overlay Streaming",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/stream",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "https://strudel.cc/",
+        "size": [
+          960,
+          540
+        ],
+        "pos": [
+          2216,
+          32
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/",
+        "size": [
+          375,
+          240
+        ],
+        "pos": [
+          1495,
+          189
+        ]
+      },
+      {
+        "source": "Window Capture 2",
+        "enabled": false,
+        "kind": "window_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      }
+    ],
+    "Gaming + Vibe Coding": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "enabled": true,
+        "kind": "game_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          1425,
+          728
+        ],
+        "size": [
+          1,
+          1
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Reloj",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "data:text/html,<html><body style=\"margin:0;background:transparent;overflow:hidden\"><div id=\"c\" style=\"font-family:'Bahns",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "enabled": true,
+        "kind": "text_gdiplus_v3",
+        "text": "OpsAfterDark",
+        "pos": [
+          23,
+          998
+        ],
+        "size": [
+          1,
+          1
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          1506,
+          789
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/hud",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "https://strudel.cc/",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          1947,
+          143
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "VIBE · Claude",
+        "enabled": false,
+        "kind": "window_capture",
+        "window": "Ubuntu:CASCADIA_HOSTING_WINDOW_CLASS:WindowsTerminal.exe",
+        "pos": [
+          1290,
+          30
+        ],
+        "size": [
+          600,
+          390
+        ]
+      },
+      {
+        "source": "Vibe Coding Glass",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/summary",
+        "size": [
+          594,
+          347
+        ],
+        "pos": [
+          1290,
+          428
+        ]
+      },
+      {
+        "source": "CHAT Twitch opsafterdarktv",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "file:///C:/Users/opsly/OneDrive/Documents/ChatGPT/intcloudsysops/stream-overlay/chat.html",
+        "size": [
+          525,
+          570
+        ],
+        "pos": [
+          23,
+          173
+        ]
+      },
+      {
+        "source": "Vibe LIVE",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/",
+        "size": [
+          680,
+          535
+        ],
+        "pos": [
+          1241,
+          218
+        ]
+      },
+      {
+        "source": "FACTORY Engine (audio)",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/factory?engine=1",
+        "size": [
+          240,
+          135
+        ],
+        "pos": [
+          -3000,
+          0
+        ]
+      }
+    ],
+    "Festival — AI Set": [
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FESTIVAL Visuals",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/festival",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHAT Twitch opsafterdarktv",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "file:///C:/Users/opsly/OneDrive/Documents/ChatGPT/intcloudsysops/stream-overlay/chat.html",
+        "size": [
+          525,
+          570
+        ],
+        "pos": [
+          1373,
+          420
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FACTORY Engine (audio)",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/factory?engine=1",
+        "size": [
+          240,
+          135
+        ],
+        "pos": [
+          -3000,
+          0
+        ]
+      }
+    ],
+    "AI Factory — Hacker": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "enabled": true,
+        "kind": "game_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "FACTORY Hacker Overlay",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/factory?visual=1",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          1425,
+          728
+        ],
+        "size": [
+          1,
+          1
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Reloj",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "data:text/html,<html><body style=\"margin:0;background:transparent;overflow:hidden\"><div id=\"c\" style=\"font-family:'Bahns",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "enabled": true,
+        "kind": "text_gdiplus_v3",
+        "text": "OpsAfterDark",
+        "pos": [
+          23,
+          998
+        ],
+        "size": [
+          1,
+          1
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          1506,
+          789
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/hud",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "https://strudel.cc/",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          1947,
+          143
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHAT Twitch opsafterdarktv",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "file:///C:/Users/opsly/OneDrive/Documents/ChatGPT/intcloudsysops/stream-overlay/chat.html",
+        "size": [
+          525,
+          570
+        ],
+        "pos": [
+          23,
+          173
+        ]
+      },
+      {
+        "source": "METER DDJ-SX2 (no sale al aire)",
+        "enabled": true,
+        "kind": "wasapi_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FACTORY Engine (audio)",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/factory?engine=1",
+        "size": [
+          240,
+          135
+        ],
+        "pos": [
+          -3000,
+          0
+        ]
+      }
+    ],
+    "Battlefield 6 — Zoom": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "enabled": true,
+        "kind": "game_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "enabled": true,
+        "kind": "game_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          1260,
+          30
+        ],
+        "size": [
+          630,
+          354
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          1425,
+          728
+        ],
+        "size": [
+          1,
+          1
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Reloj",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "data:text/html,<html><body style=\"margin:0;background:transparent;overflow:hidden\"><div id=\"c\" style=\"font-family:'Bahns",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "enabled": true,
+        "kind": "text_gdiplus_v3",
+        "text": "OpsAfterDark",
+        "pos": [
+          23,
+          998
+        ],
+        "size": [
+          1,
+          1
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          1506,
+          789
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/hud",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "https://strudel.cc/",
+        "size": [
+          1,
+          1
+        ],
+        "pos": [
+          1947,
+          143
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHAT Twitch opsafterdarktv",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "file:///C:/Users/opsly/OneDrive/Documents/ChatGPT/intcloudsysops/stream-overlay/chat.html",
+        "size": [
+          525,
+          570
+        ],
+        "pos": [
+          23,
+          173
+        ]
+      },
+      {
+        "source": "FACTORY Engine (audio)",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/factory?engine=1",
+        "size": [
+          240,
+          135
+        ],
+        "pos": [
+          -3000,
+          0
+        ]
+      }
+    ],
+    "Battlefield 6": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "enabled": true,
+        "kind": "game_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          1425,
+          728
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Reloj",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "data:text/html,<html><body style=\"margin:0;background:transparent;overflow:hidden\"><div id=\"c\" style=\"font-family:'Bahns",
+        "size": [
+          225,
+          53
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "enabled": true,
+        "kind": "text_gdiplus_v3",
+        "text": "OpsAfterDark",
+        "pos": [
+          23,
+          998
+        ],
+        "size": [
+          219,
+          45
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/",
+        "size": [
+          375,
+          240
+        ],
+        "pos": [
+          1506,
+          789
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/hud",
+        "size": [
+          450,
+          68
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "https://strudel.cc/",
+        "size": [
+          960,
+          540
+        ],
+        "pos": [
+          1947,
+          143
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FACTORY Engine (audio)",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/factory?engine=1",
+        "size": [
+          240,
+          135
+        ],
+        "pos": [
+          -3000,
+          0
+        ]
+      }
+    ],
+    "Gaming": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "enabled": true,
+        "kind": "game_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "enabled": false,
+        "kind": "monitor_capture",
+        "pos": [
+          1425,
+          735
+        ],
+        "size": [
+          477,
+          327
+        ]
+      },
+      {
+        "source": "Reloj",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "data:text/html,<html><body style=\"margin:0;background:transparent;overflow:hidden\"><div id=\"c\" style=\"font-family:'Bahns",
+        "size": [
+          225,
+          53
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "enabled": true,
+        "kind": "text_gdiplus_v3",
+        "text": "OpsAfterDark",
+        "pos": [
+          23,
+          998
+        ],
+        "size": [
+          219,
+          45
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/hud",
+        "size": [
+          450,
+          68
+        ],
+        "pos": [
+          23,
+          15
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "https://strudel.cc/",
+        "size": [
+          960,
+          540
+        ],
+        "pos": [
+          1996,
+          -61
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/",
+        "size": [
+          375,
+          240
+        ],
+        "pos": [
+          1506,
+          789
+        ]
+      },
+      {
+        "source": "Window Capture 2",
+        "enabled": false,
+        "kind": "window_capture",
+        "window": "Battlefield™ 6:Battlefield™ 6:bf6.exe",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      }
+    ],
+    "LG Desktop": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "enabled": true,
+        "kind": "monitor_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      }
+    ],
+    "Vuelvo en un momento": [
+      {
+        "source": "Pantalla BRB",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/brb",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Fondo BRB",
+        "enabled": false,
+        "kind": "color_source_v3",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Texto BRB",
+        "enabled": false,
+        "kind": "text_gdiplus_v3",
+        "text": "Vuelvo en un momento...",
+        "pos": [
+          960,
+          540
+        ],
+        "size": [
+          771,
+          75
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "https://strudel.cc/",
+        "size": [
+          960,
+          540
+        ],
+        "pos": [
+          2025,
+          0
+        ]
+      }
+    ],
+    "Iniciando Stream": [
+      {
+        "source": "Pantalla Inicio",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/starting",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Fondo Inicio",
+        "enabled": false,
+        "kind": "color_source_v3",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "source": "Texto Inicio",
+        "enabled": false,
+        "kind": "text_gdiplus_v3",
+        "text": "OpsAfterDark\niniciando stream...",
+        "pos": [
+          960,
+          540
+        ],
+        "size": [
+          686,
+          180
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "enabled": false,
+        "kind": "browser_source",
+        "url": "https://strudel.cc/",
+        "size": [
+          960,
+          540
+        ],
+        "pos": [
+          2025,
+          0
+        ]
+      }
+    ]
+  }
+}
