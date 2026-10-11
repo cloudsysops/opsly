@@ -62,14 +62,35 @@ function ttlSecondsFromExpiresAt(expiresAt: string, now = Date.now()): number {
   return Math.max(1, Math.ceil((expiresMs - now) / 1000));
 }
 
+function resolveExpiresAt(inputExpiresAt: string | undefined, now: Date): string {
+  const ttlMs = boundedTtlMs();
+  const maxExpiresMs = now.getTime() + MAX_TTL_MS;
+  if (!inputExpiresAt) {
+    return new Date(now.getTime() + ttlMs).toISOString();
+  }
+  const parsed = Date.parse(inputExpiresAt);
+  if (!Number.isFinite(parsed)) {
+    throw Object.assign(new Error('invalid expires_at'), { code: 'WRITE_APPROVAL_TTL_EXCEEDED' });
+  }
+  if (parsed > maxExpiresMs) {
+    throw Object.assign(new Error('expires_at exceeds max TTL'), {
+      code: 'WRITE_APPROVAL_TTL_EXCEEDED',
+    });
+  }
+  if (parsed <= now.getTime()) {
+    throw Object.assign(new Error('expires_at already passed'), { code: 'WRITE_APPROVAL_EXPIRED' });
+  }
+  return new Date(parsed).toISOString();
+}
+
 function buildApproval(input: WriteApprovalMintInput): AgentTaskWriteApprovalV1 {
   const now = new Date();
-  const ttlMs = boundedTtlMs();
-  const expiresAt = input.expires_at ?? new Date(now.getTime() + ttlMs).toISOString();
+  const expiresAt = resolveExpiresAt(input.expires_at, now);
   const approvalId = (input.approval_id ?? randomUUID()).trim();
   const binding: AgentTaskWriteApprovalBinding = {
     work_id: input.work_id,
     request_id: input.request_id,
+    claim_id: input.claim_id,
     workstream: input.workstream,
     conflict_key: input.conflict_key,
     repository: input.repository,
@@ -123,9 +144,6 @@ export class WriteApprovalStore implements WriteApprovalStorePort {
       if (!approval.approval_id) {
         return { ok: false, error: 'WRITE_APPROVAL_MINT_FAILED', message: 'approval_id empty' };
       }
-      if (Date.parse(approval.expires_at) <= Date.now()) {
-        return { ok: false, error: 'WRITE_APPROVAL_EXPIRED' };
-      }
       const fingerprint = writeApprovalBindingFingerprint(approval);
       const stored: StoredApproval = { ...approval, binding_fingerprint: fingerprint };
       const ttlSec = ttlSecondsFromExpiresAt(approval.expires_at);
@@ -145,11 +163,7 @@ export class WriteApprovalStore implements WriteApprovalStorePort {
       }
       return { ok: true, approval };
     } catch (err) {
-      return {
-        ok: false,
-        error: 'WRITE_APPROVAL_MINT_FAILED',
-        message: err instanceof Error ? err.message : String(err),
-      };
+      return mapMintError(err);
     }
   }
 
@@ -200,6 +214,30 @@ export class WriteApprovalStore implements WriteApprovalStorePort {
   }
 }
 
+function mapMintError(
+  err: unknown
+): Extract<WriteApprovalMintResult, { ok: false }> {
+  const code =
+    err && typeof err === 'object' && 'code' in err
+      ? String((err as { code?: string }).code)
+      : '';
+  if (code === 'WRITE_APPROVAL_TTL_EXCEEDED') {
+    return {
+      ok: false,
+      error: 'WRITE_APPROVAL_TTL_EXCEEDED',
+      message: 'expires_at exceeds max TTL',
+    };
+  }
+  if (code === 'WRITE_APPROVAL_EXPIRED') {
+    return { ok: false, error: 'WRITE_APPROVAL_EXPIRED' };
+  }
+  return {
+    ok: false,
+    error: 'WRITE_APPROVAL_MINT_FAILED',
+    message: err instanceof Error ? err.message : String(err),
+  };
+}
+
 /** In-memory store for unit tests — same mint/consume semantics. */
 export class InMemoryWriteApprovalStore implements WriteApprovalStorePort {
   private readonly byId = new Map<string, StoredApproval>();
@@ -214,18 +252,11 @@ export class InMemoryWriteApprovalStore implements WriteApprovalStorePort {
           message: 'approval_id already exists',
         };
       }
-      if (Date.parse(approval.expires_at) <= Date.now()) {
-        return { ok: false, error: 'WRITE_APPROVAL_EXPIRED' };
-      }
       const fingerprint = writeApprovalBindingFingerprint(approval);
       this.byId.set(approval.approval_id, { ...approval, binding_fingerprint: fingerprint });
       return { ok: true, approval };
     } catch (err) {
-      return {
-        ok: false,
-        error: 'WRITE_APPROVAL_MINT_FAILED',
-        message: err instanceof Error ? err.message : String(err),
-      };
+      return mapMintError(err);
     }
   }
 

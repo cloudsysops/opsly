@@ -5,10 +5,12 @@ import { InMemoryWriteApprovalStore } from '../write-approval-store.js';
 
 const SHA = 'e43e2bc8f57d5ea2002e3de82d5a5c4d78ffc824';
 const SHA_OTHER = 'a785b34d00000000000000000000000000000000';
+const CLAIM_ID = 'claim-write-051';
 
 const binding = {
   work_id: 'github-queue-write-approval-051',
   request_id: 'req-write-051',
+  claim_id: CLAIM_ID,
   workstream: 'github-queue-write-approval',
   conflict_key: 'github-queue-write-approval',
   repository: 'cloudsysops/opsly',
@@ -16,6 +18,15 @@ const binding = {
   pr_branch: 'feat/example-write',
   pr_head_sha: SHA,
   write_allowed: true as const,
+};
+
+const dispatchClaim = {
+  version: 'dispatch-claim-v1' as const,
+  claimId: CLAIM_ID,
+  claim_id: CLAIM_ID,
+  taskId: binding.work_id,
+  task_id: binding.work_id,
+  workstream: binding.workstream,
 };
 
 function envelope(overrides: Partial<AgentTaskEnvelopeV1> = {}): AgentTaskEnvelopeV1 {
@@ -28,6 +39,7 @@ function envelope(overrides: Partial<AgentTaskEnvelopeV1> = {}): AgentTaskEnvelo
     file_scope: [] as string[],
     max_tokens: 1600,
   };
+  const { constraints: overrideConstraints, ...rest } = overrides;
   return {
     schema_version: 'AgentTaskEnvelopeV1',
     request_id: binding.request_id,
@@ -38,7 +50,10 @@ function envelope(overrides: Partial<AgentTaskEnvelopeV1> = {}): AgentTaskEnvelo
     requested_agent: 'mock_agent',
     selected_agent: 'mock_agent',
     skills: [],
-    constraints: baseConstraints,
+    constraints: {
+      ...baseConstraints,
+      ...(overrideConstraints ?? {}),
+    },
     execution_mode: 'enqueue',
     source: 'write-approval-test',
     actor: 'test',
@@ -48,11 +63,7 @@ function envelope(overrides: Partial<AgentTaskEnvelopeV1> = {}): AgentTaskEnvelo
     budget: { max_tokens: 1600 },
     metadata: {},
     fallback_agents: [],
-    ...overrides,
-    constraints: {
-      ...baseConstraints,
-      ...(overrides.constraints ?? {}),
-    },
+    ...rest,
   };
 }
 
@@ -69,12 +80,14 @@ function writeEnvelope(meta: Record<string, unknown> = {}): AgentTaskEnvelopeV1 
     },
     metadata: {
       work_id: binding.work_id,
+      claim_id: binding.claim_id,
       workstream: binding.workstream,
       conflict_key: binding.conflict_key,
       repository: binding.repository,
       pr_number: binding.pr_number,
       pr_branch: binding.pr_branch,
       pr_head_sha: binding.pr_head_sha,
+      dispatch_claim: dispatchClaim,
       ...meta,
     },
   });
@@ -121,7 +134,7 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
 
   it('4. exact valid approval -> PASS', async () => {
     const store = new InMemoryWriteApprovalStore();
-    const minted = await store.mint({ ...binding, approved_by: 'platform' });
+    const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
     expect(minted.ok).toBe(true);
     if (!minted.ok) return;
 
@@ -147,27 +160,20 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
     const store = new InMemoryWriteApprovalStore();
     const minted = await store.mint({
       ...binding,
-      approved_by: 'platform',
+      approved_by: 'platform-admin',
       expires_at: '2020-01-01T00:00:00.000Z',
     });
     expect(minted.ok).toBe(false);
+    expect(minted.ok === false && minted.error).toBe('WRITE_APPROVAL_EXPIRED');
 
-    const store2 = new InMemoryWriteApprovalStore();
-    const okMint = await store2.mint({ ...binding, approved_by: 'platform' });
-    expect(okMint.ok).toBe(true);
-    if (!okMint.ok) return;
-    // Force-expire by consuming path: mutate via second mint with past expiry fails;
-    // simulate by consuming after rewriting store entry through consume mismatch path.
-    // Direct consume with expired record:
     const expiredStore = new InMemoryWriteApprovalStore();
     const mid = await expiredStore.mint({
       ...binding,
-      approved_by: 'platform',
+      approved_by: 'platform-admin',
       expires_at: new Date(Date.now() + 60_000).toISOString(),
     });
     expect(mid.ok).toBe(true);
     if (!mid.ok) return;
-    // Manually expire by re-mint is blocked; use consume after patching internal map
     const internal = expiredStore as unknown as {
       byId: Map<string, { expires_at: string; consumed_at?: string }>;
     };
@@ -195,7 +201,7 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
 
   it('6. replay -> BLOCK', async () => {
     const store = new InMemoryWriteApprovalStore();
-    const minted = await store.mint({ ...binding, approved_by: 'platform' });
+    const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
     expect(minted.ok).toBe(true);
     if (!minted.ok) return;
     const adapter: AgentTaskAdapter = {
@@ -217,7 +223,7 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
 
   it('7. wrong request_id -> BLOCK', async () => {
     const store = new InMemoryWriteApprovalStore();
-    const minted = await store.mint({ ...binding, approved_by: 'platform' });
+    const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
     expect(minted.ok).toBe(true);
     if (!minted.ok) return;
     const adapter: AgentTaskAdapter = {
@@ -261,10 +267,9 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
 
   it('13. write_allowed mismatch -> BLOCK', async () => {
     const store = new InMemoryWriteApprovalStore();
-    const minted = await store.mint({ ...binding, approved_by: 'platform' });
+    const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
     expect(minted.ok).toBe(true);
     if (!minted.ok) return;
-    // read-only envelope with approval ref must not consume / must pass without write gate
     const adapter: AgentTaskAdapter = {
       id: 'mock_agent',
       execute: vi.fn(async () => ({ success: true })),
@@ -279,7 +284,6 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
       },
     });
     expect((await runtime.execute(readOnly, adapter)).status).toBe('completed');
-    // approval still unused — write with write_allowed false in binding path covered by schema literal
     const writeStill = await runtime.execute(
       writeEnvelope({
         write_approval_ref: {
@@ -293,13 +297,36 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
   });
 
   it('14. claim still independently required (approval ≠ claim)', async () => {
-    // Write approval store has no claim API; DispatchClaimV1 remains separate.
     const store = new InMemoryWriteApprovalStore();
     expect(typeof (store as unknown as { acquireTaskDispatchClaim?: unknown }).acquireTaskDispatchClaim).toBe(
       'undefined'
     );
-    const minted = await store.mint({ ...binding, approved_by: 'platform' });
+    const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
     expect(minted.ok).toBe(true);
+    if (!minted.ok) return;
+
+    const adapter: AgentTaskAdapter = {
+      id: 'mock_agent',
+      execute: vi.fn(async () => ({ success: true })),
+    };
+    const runtime = new AgentTaskRuntime({ writeApproval: store });
+    const wrongClaim = await runtime.execute(
+      writeEnvelope({
+        write_approval_ref: {
+          schema_version: 'AgentTaskWriteApprovalV1',
+          approval_id: minted.approval.approval_id,
+        },
+        // Binding claim_id stays CLAIM_ID (matches minted approval); lease identity differs.
+        dispatch_claim: {
+          ...dispatchClaim,
+          claimId: 'other-claim',
+          claim_id: 'other-claim',
+        },
+      }),
+      adapter
+    );
+    expect(wrongClaim.status).toBe('awaiting_approval');
+    expect(wrongClaim.error_code).toBe('WRITE_APPROVAL_CLAIM_MISMATCH');
   });
 
   it('15. no global autoApproveSensitive bypass for writes', async () => {
@@ -316,11 +343,115 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
     expect(result.error_code).toBe('WRITE_APPROVAL_REF_MISSING');
     expect(adapter.execute).not.toHaveBeenCalled();
   });
+
+  it('16. write approval does not skip network/browser/infra gates', async () => {
+    const store = new InMemoryWriteApprovalStore();
+    const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
+    expect(minted.ok).toBe(true);
+    if (!minted.ok) return;
+    const adapter: AgentTaskAdapter = {
+      id: 'mock_agent',
+      execute: vi.fn(async () => ({ success: true })),
+    };
+    const runtime = new AgentTaskRuntime({ writeApproval: store });
+    const result = await runtime.execute(
+      writeEnvelope({
+        write_approval_ref: {
+          schema_version: 'AgentTaskWriteApprovalV1',
+          approval_id: minted.approval.approval_id,
+        },
+      }),
+      adapter
+    );
+    // baseline write-only still passes
+    expect(result.status).toBe('completed');
+
+    const blocked = await runtime.execute(
+      envelope({
+        constraints: {
+          open_source_only: true,
+          local_only: true,
+          browser_allowed: false,
+          network_allowed: true,
+          write_allowed: true,
+          file_scope: [],
+          max_tokens: 1600,
+        },
+        metadata: {
+          work_id: binding.work_id,
+          claim_id: binding.claim_id,
+          workstream: binding.workstream,
+          conflict_key: binding.conflict_key,
+          repository: binding.repository,
+          pr_number: binding.pr_number,
+          pr_branch: binding.pr_branch,
+          pr_head_sha: binding.pr_head_sha,
+          dispatch_claim: dispatchClaim,
+          write_approval_ref: {
+            schema_version: 'AgentTaskWriteApprovalV1',
+            approval_id: minted.approval.approval_id,
+          },
+        },
+      }),
+      adapter
+    );
+    expect(blocked.status).toBe('awaiting_approval');
+    expect(blocked.error_code).toBe('NETWORK_REQUIRES_APPROVAL');
+    expect(adapter.execute).toHaveBeenCalledOnce();
+  });
+
+  it('17. dry_run does not consume write approval', async () => {
+    const store = new InMemoryWriteApprovalStore();
+    const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
+    expect(minted.ok).toBe(true);
+    if (!minted.ok) return;
+    const adapter: AgentTaskAdapter = {
+      id: 'mock_agent',
+      execute: vi.fn(async () => ({ success: true })),
+    };
+    const runtime = new AgentTaskRuntime({ writeApproval: store });
+    const dry = await runtime.execute(
+      {
+        ...writeEnvelope({
+          write_approval_ref: {
+            schema_version: 'AgentTaskWriteApprovalV1',
+            approval_id: minted.approval.approval_id,
+          },
+        }),
+        execution_mode: 'dry_run',
+      },
+      adapter
+    );
+    expect(dry.status).toBe('dry_run');
+    expect(adapter.execute).not.toHaveBeenCalled();
+    const real = await runtime.execute(
+      writeEnvelope({
+        write_approval_ref: {
+          schema_version: 'AgentTaskWriteApprovalV1',
+          approval_id: minted.approval.approval_id,
+        },
+      }),
+      adapter
+    );
+    expect(real.status).toBe('completed');
+  });
+
+  it('18. caller expires_at beyond max TTL is rejected', async () => {
+    const store = new InMemoryWriteApprovalStore();
+    const far = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
+    const minted = await store.mint({
+      ...binding,
+      approved_by: 'platform-admin',
+      expires_at: far,
+    });
+    expect(minted.ok).toBe(false);
+    expect(minted.ok === false && minted.error).toBe('WRITE_APPROVAL_TTL_EXCEEDED');
+  });
 });
 
 async function expectMismatch(metaPatch: Record<string, unknown>): Promise<void> {
   const store = new InMemoryWriteApprovalStore();
-  const minted = await store.mint({ ...binding, approved_by: 'platform' });
+  const minted = await store.mint({ ...binding, approved_by: 'platform-admin' });
   expect(minted.ok).toBe(true);
   if (!minted.ok) return;
   const adapter: AgentTaskAdapter = {
@@ -339,6 +470,8 @@ async function expectMismatch(metaPatch: Record<string, unknown>): Promise<void>
     adapter
   );
   expect(result.status).toBe('awaiting_approval');
-  expect(result.error_code).toBe('WRITE_APPROVAL_BINDING_MISMATCH');
+  expect(['WRITE_APPROVAL_BINDING_MISMATCH', 'WRITE_APPROVAL_CLAIM_MISMATCH']).toContain(
+    result.error_code
+  );
   expect(adapter.execute).not.toHaveBeenCalled();
 }

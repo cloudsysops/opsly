@@ -31,7 +31,12 @@ import {
 import { buildExternalAgentFleetSnapshot } from './external-agents.js';
 import { jsonResponse, errorResponse } from '../router.js';
 import { agentTaskEnvelopeV1Schema } from '@intcloudsysops/types/agent-task';
-import { buildAgentTaskEnvelope, inferTaskType } from '@intcloudsysops/agent-task-core';
+import {
+  AGENT_TASK_WRITE_APPROVAL_VERSION,
+  agentTaskWriteApprovalBindingSchema,
+  buildAgentTaskEnvelope,
+  inferTaskType,
+} from '@intcloudsysops/agent-task-core';
 import {
   acquireTaskDispatchClaim,
   dispatchClaimRequestFromContext,
@@ -43,6 +48,7 @@ import {
   checkLocalPromptAdmission,
   releaseLocalPromptAdmissionReservation,
 } from '../local-prompt-admission.js';
+import { getWriteApprovalStore } from '../../write-approval-store-singleton.js';
 
 const MAX_RECENT_LOCAL_JOBS = 25;
 const MAX_LOCAL_PROMPT_BODY_BYTES = 65_536;
@@ -371,7 +377,7 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     ? taskEnvelopeResult.data.constraints.write_allowed === true
     : inferredWriteAllowed;
 
-  const taskEnvelope = taskEnvelopeResult?.success
+  let taskEnvelope = taskEnvelopeResult?.success
     ? taskEnvelopeResult.data
     : buildAgentTaskEnvelope({
         task: promptForWorker,
@@ -590,6 +596,91 @@ let admission;
         dispatch_claim_id: dispatchClaimLease.claimId,
         dispatch_claim_expires_at: dispatchClaimLease.expiresAt,
       };
+
+      // Bind server-acquired claim into AgentTask metadata for typed write approval.
+      const prevMeta =
+        typeof taskEnvelope.metadata === 'object' && taskEnvelope.metadata !== null
+          ? { ...(taskEnvelope.metadata as Record<string, unknown>) }
+          : {};
+      taskEnvelope = {
+        ...taskEnvelope,
+        metadata: {
+          ...prevMeta,
+          claim_id: dispatchClaimLease.claimId,
+          work_id:
+            typeof prevMeta.work_id === 'string' && prevMeta.work_id.trim()
+              ? prevMeta.work_id
+              : dispatchClaimLease.taskId,
+          workstream: dispatchClaimLease.workstream,
+          conflict_key:
+            typeof prevMeta.conflict_key === 'string' && prevMeta.conflict_key.trim()
+              ? prevMeta.conflict_key
+              : dispatchClaimRequest.conflictKey,
+          dispatch_claim: {
+            version: dispatchClaimLease.version,
+            claimId: dispatchClaimLease.claimId,
+            claim_id: dispatchClaimLease.claimId,
+            taskId: dispatchClaimLease.taskId,
+            task_id: dispatchClaimLease.taskId,
+            workstream: dispatchClaimLease.workstream,
+          },
+        },
+      };
+
+      if (writeAllowed && context.mint_write_approval === true) {
+        const bindingParse = agentTaskWriteApprovalBindingSchema.safeParse({
+          work_id: taskEnvelope.metadata?.work_id,
+          request_id: requestId,
+          claim_id: dispatchClaimLease.claimId,
+          workstream: dispatchClaimLease.workstream,
+          conflict_key: taskEnvelope.metadata?.conflict_key,
+          repository: context.repository ?? context.github_repository,
+          pr_number: context.pr_number,
+          pr_branch: context.pr_branch,
+          pr_head_sha: context.pr_head_sha,
+          write_allowed: true,
+        });
+        if (!bindingParse.success) {
+          await releaseTaskDispatchClaim(dispatchClaimLease).catch(() => undefined);
+          errorResponse(
+            ctx.res,
+            400,
+            `WRITE_APPROVAL_BINDING_INVALID: ${bindingParse.error.issues[0]?.message ?? 'invalid binding'}`
+          );
+          return;
+        }
+        const store = await getWriteApprovalStore();
+        const minted = await store.mint({
+          ...bindingParse.data,
+          approved_by: 'platform-admin',
+        });
+        if (!minted.ok) {
+          await releaseTaskDispatchClaim(dispatchClaimLease).catch(() => undefined);
+          jsonResponse(ctx.res, 409, {
+            success: false,
+            ok: false,
+            error: minted.error,
+            message: minted.message,
+            request_id: requestId,
+          });
+          return;
+        }
+        taskEnvelope = {
+          ...taskEnvelope,
+          constraints: { ...taskEnvelope.constraints, write_allowed: true },
+          metadata: {
+            ...(taskEnvelope.metadata as Record<string, unknown>),
+            ...bindingParse.data,
+            write_approval_ref: {
+              schema_version: AGENT_TASK_WRITE_APPROVAL_VERSION,
+              approval_id: minted.approval.approval_id,
+            },
+          },
+        };
+      }
+
+      job.payload.context = context;
+      job.payload.agent_task = taskEnvelope;
 
       const ownershipHeader = [
         '[OPSLY DISPATCH OWNERSHIP — TRUSTED CONTROL METADATA]',

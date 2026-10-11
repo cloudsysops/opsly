@@ -2,6 +2,7 @@ import { agentTaskEnvelopeV1Schema, type AgentTaskEnvelopeV1 } from '@intcloudsy
 import {
   evaluateAgentTaskPolicy,
   extractWriteApprovalContext,
+  policyRequiresNonWriteApproval,
   type EvaluatePolicyOptions,
   type WriteApprovalRejectReason,
 } from '@intcloudsysops/agent-task-core';
@@ -172,23 +173,33 @@ export class AgentTaskRuntime {
       return result;
     }
 
-    if (envelope.constraints.write_allowed === true) {
-      const writeErr = await requireTypedWriteApproval(envelope, this.options, executeOptions);
-      if (writeErr) {
-        const result = baseResult(envelope, adapter, 'awaiting_approval', 0);
-        result.error_code = writeErr;
-        emit(this.options, {
-          type: 'task_approval_required',
-          request_id: envelope.request_id,
-          correlation_id: envelope.correlation_id,
-          tenant_slug: envelope.tenant_slug,
-          agent: adapter.id,
-          error_code: writeErr,
-        });
-        return result;
-      }
-      // Typed approval consumed — write gate satisfied; still honor other policy denies above.
-    } else if (policy.decision === 'require_approval') {
+    // Dry-run never consumes one-shot write approval.
+    if (envelope.execution_mode === 'dry_run') {
+      return baseResult(envelope, adapter, 'dry_run', 0);
+    }
+
+    // Typed write approval satisfies ONLY the write gate.
+    if (policyRequiresNonWriteApproval(policy.reasons)) {
+      const nonWriteReason =
+        policy.reasons.find((r) =>
+          ['NETWORK_REQUIRES_APPROVAL', 'BROWSER_REQUIRES_APPROVAL', 'INFRA_REQUIRES_APPROVAL'].includes(
+            r
+          )
+        ) ?? 'NETWORK_REQUIRES_APPROVAL';
+      const result = baseResult(envelope, adapter, 'awaiting_approval', 0);
+      result.error_code = nonWriteReason;
+      emit(this.options, {
+        type: 'task_approval_required',
+        request_id: envelope.request_id,
+        correlation_id: envelope.correlation_id,
+        tenant_slug: envelope.tenant_slug,
+        agent: adapter.id,
+        error_code: nonWriteReason,
+      });
+      return result;
+    }
+
+    if (envelope.constraints.write_allowed !== true && policy.decision === 'require_approval') {
       const result = baseResult(envelope, adapter, 'awaiting_approval', 0);
       emit(this.options, {
         type: 'task_approval_required',
@@ -198,10 +209,6 @@ export class AgentTaskRuntime {
         agent: adapter.id,
       });
       return result;
-    }
-
-    if (envelope.execution_mode === 'dry_run') {
-      return baseResult(envelope, adapter, 'dry_run', 0);
     }
 
     if (adapter.id !== envelope.selected_agent) {
@@ -223,6 +230,54 @@ export class AgentTaskRuntime {
     });
 
     try {
+      // Consume under the same AbortController/deadline as adapter execution.
+      if (envelope.constraints.write_allowed === true) {
+        if (execution.controller.signal.aborted) {
+          const duration_ms = Date.now() - startedAt;
+          const result = baseResult(envelope, adapter, 'timed_out', duration_ms);
+          result.error_code = 'TASK_TIMEOUT';
+          emit(this.options, {
+            type: 'task_timed_out',
+            request_id: envelope.request_id,
+            correlation_id: envelope.correlation_id,
+            tenant_slug: envelope.tenant_slug,
+            agent: adapter.id,
+            duration_ms,
+            error_code: result.error_code,
+          });
+          return result;
+        }
+        const writeErr = await requireTypedWriteApproval(envelope, this.options, executeOptions);
+        if (execution.controller.signal.aborted && !execution.cancelled) {
+          const duration_ms = Date.now() - startedAt;
+          const result = baseResult(envelope, adapter, 'timed_out', duration_ms);
+          result.error_code = 'TASK_TIMEOUT';
+          emit(this.options, {
+            type: 'task_timed_out',
+            request_id: envelope.request_id,
+            correlation_id: envelope.correlation_id,
+            tenant_slug: envelope.tenant_slug,
+            agent: adapter.id,
+            duration_ms,
+            error_code: result.error_code,
+          });
+          return result;
+        }
+        if (writeErr) {
+          const result = baseResult(envelope, adapter, 'awaiting_approval', Date.now() - startedAt);
+          result.error_code = writeErr;
+          emit(this.options, {
+            type: 'task_approval_required',
+            request_id: envelope.request_id,
+            correlation_id: envelope.correlation_id,
+            tenant_slug: envelope.tenant_slug,
+            agent: adapter.id,
+            error_code: writeErr,
+          });
+          return result;
+        }
+      }
+
       const adapterResult = await adapter.execute({ envelope, signal: execution.controller.signal });
       const duration_ms = Date.now() - startedAt;
       if (execution.cancelled) {

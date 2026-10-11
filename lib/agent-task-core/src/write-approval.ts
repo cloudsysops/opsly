@@ -29,7 +29,15 @@ export type WriteApprovalRejectReason =
   | 'WRITE_APPROVAL_BINDING_MISMATCH'
   | 'WRITE_APPROVAL_WRITE_ALLOWED_MISMATCH'
   | 'WRITE_APPROVAL_HEADER_NOT_SUFFICIENT'
-  | 'WRITE_APPROVAL_STORE_MISSING';
+  | 'WRITE_APPROVAL_STORE_MISSING'
+  | 'WRITE_APPROVAL_CLAIM_MISMATCH'
+  | 'WRITE_APPROVAL_TTL_EXCEEDED';
+
+export type DispatchClaimIdentity = {
+  claimId: string;
+  taskId: string;
+  workstream: string;
+};
 
 export function parseAgentTaskWriteApproval(input: unknown): AgentTaskWriteApprovalV1 {
   return agentTaskWriteApprovalV1Schema.parse(input);
@@ -39,20 +47,24 @@ export function parseAgentTaskWriteApprovalRef(input: unknown): AgentTaskWriteAp
   return agentTaskWriteApprovalRefSchema.parse(input);
 }
 
+/**
+ * Injective fingerprint via sorted-key canonical JSON (no delimiter ambiguity).
+ */
 export function writeApprovalBindingFingerprint(binding: AgentTaskWriteApprovalBinding): string {
   const normalized = agentTaskWriteApprovalBindingSchema.parse(binding);
-  const material = [
-    normalized.work_id,
-    normalized.request_id,
-    normalized.workstream,
-    normalized.conflict_key,
-    normalized.repository,
-    String(normalized.pr_number),
-    normalized.pr_branch,
-    normalized.pr_head_sha.toLowerCase(),
-    'write_allowed=true',
-  ].join('\0');
-  return createHash('sha256').update(material).digest('hex');
+  const canonical = {
+    claim_id: normalized.claim_id,
+    conflict_key: normalized.conflict_key,
+    pr_branch: normalized.pr_branch,
+    pr_head_sha: normalized.pr_head_sha.toLowerCase(),
+    pr_number: normalized.pr_number,
+    repository: normalized.repository,
+    request_id: normalized.request_id,
+    work_id: normalized.work_id,
+    workstream: normalized.workstream,
+    write_allowed: true as const,
+  };
+  return createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
 }
 
 export function isWriteApprovalExpired(
@@ -71,6 +83,39 @@ export function bindingsEqual(
   return writeApprovalBindingFingerprint(left) === writeApprovalBindingFingerprint(right);
 }
 
+export function assertWriteApprovalMatchesClaim(
+  binding: AgentTaskWriteApprovalBinding,
+  claim: DispatchClaimIdentity | null | undefined
+): WriteApprovalRejectReason | null {
+  if (!claim?.claimId?.trim() || !claim.taskId?.trim() || !claim.workstream?.trim()) {
+    return 'WRITE_APPROVAL_CLAIM_MISMATCH';
+  }
+  if (binding.claim_id !== claim.claimId) return 'WRITE_APPROVAL_CLAIM_MISMATCH';
+  if (binding.work_id !== claim.taskId) return 'WRITE_APPROVAL_CLAIM_MISMATCH';
+  if (binding.workstream !== claim.workstream) return 'WRITE_APPROVAL_CLAIM_MISMATCH';
+  return null;
+}
+
+export function parseDispatchClaimIdentity(raw: unknown): DispatchClaimIdentity | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const o = raw as Record<string, unknown>;
+  const claimId =
+    typeof o.claimId === 'string'
+      ? o.claimId.trim()
+      : typeof o.claim_id === 'string'
+        ? o.claim_id.trim()
+        : '';
+  const taskId =
+    typeof o.taskId === 'string'
+      ? o.taskId.trim()
+      : typeof o.task_id === 'string'
+        ? o.task_id.trim()
+        : '';
+  const workstream = typeof o.workstream === 'string' ? o.workstream.trim() : '';
+  if (!claimId || !taskId || !workstream) return null;
+  return { claimId, taskId, workstream };
+}
+
 /**
  * Extract binding + approval ref from an AgentTaskEnvelopeV1.
  * Binding fields live in metadata; write_allowed must be true on constraints.
@@ -79,28 +124,44 @@ export function extractWriteApprovalContext(envelope: AgentTaskEnvelopeV1): {
   ref: AgentTaskWriteApprovalRef | null;
   binding: AgentTaskWriteApprovalBinding | null;
   writeAllowed: boolean;
+  claim: DispatchClaimIdentity | null;
   error?: WriteApprovalRejectReason;
 } {
   const writeAllowed = envelope.constraints.write_allowed === true;
   const meta = envelope.metadata ?? {};
-  const refRaw = meta.write_approval_ref;
+  const claim =
+    parseDispatchClaimIdentity(meta.dispatch_claim) ??
+    parseDispatchClaimIdentity(meta.dispatchClaim);
 
+  const refRaw = meta.write_approval_ref;
   let ref: AgentTaskWriteApprovalRef | null = null;
   if (refRaw !== undefined && refRaw !== null) {
     const parsed = agentTaskWriteApprovalRefSchema.safeParse(refRaw);
     if (!parsed.success) {
-      return { ref: null, binding: null, writeAllowed, error: 'WRITE_APPROVAL_REF_MISSING' };
+      return {
+        ref: null,
+        binding: null,
+        writeAllowed,
+        claim,
+        error: 'WRITE_APPROVAL_REF_MISSING',
+      };
     }
     ref = parsed.data;
   }
 
   if (!writeAllowed) {
-    return { ref, binding: null, writeAllowed: false };
+    return { ref, binding: null, writeAllowed: false, claim };
   }
+
+  const claimId =
+    typeof meta.claim_id === 'string' && meta.claim_id.trim()
+      ? meta.claim_id.trim()
+      : claim?.claimId ?? '';
 
   const bindingResult = agentTaskWriteApprovalBindingSchema.safeParse({
     work_id: meta.work_id,
     request_id: envelope.request_id,
+    claim_id: claimId,
     workstream: meta.workstream,
     conflict_key: meta.conflict_key,
     repository: meta.repository,
@@ -111,14 +172,31 @@ export function extractWriteApprovalContext(envelope: AgentTaskEnvelopeV1): {
   });
 
   if (!bindingResult.success) {
-    return { ref, binding: null, writeAllowed, error: 'WRITE_APPROVAL_BINDING_MISMATCH' };
+    return {
+      ref,
+      binding: null,
+      writeAllowed,
+      claim,
+      error: 'WRITE_APPROVAL_BINDING_MISMATCH',
+    };
   }
 
   if (bindingResult.data.request_id !== envelope.request_id) {
-    return { ref, binding: null, writeAllowed, error: 'WRITE_APPROVAL_BINDING_MISMATCH' };
+    return {
+      ref,
+      binding: null,
+      writeAllowed,
+      claim,
+      error: 'WRITE_APPROVAL_BINDING_MISMATCH',
+    };
   }
 
-  return { ref, binding: bindingResult.data, writeAllowed: true };
+  const claimErr = assertWriteApprovalMatchesClaim(bindingResult.data, claim);
+  if (claimErr) {
+    return { ref, binding: null, writeAllowed, claim, error: claimErr };
+  }
+
+  return { ref, binding: bindingResult.data, writeAllowed: true, claim };
 }
 
 export function assertWriteApprovalMatchesBinding(
@@ -145,4 +223,17 @@ export function assertWriteApprovalMatchesBinding(
     return 'WRITE_APPROVAL_NOT_FOUND';
   }
   return null;
+}
+
+/** Reasons that typed write approval does NOT satisfy. */
+export const NON_WRITE_SENSITIVE_POLICY_REASONS = [
+  'NETWORK_REQUIRES_APPROVAL',
+  'BROWSER_REQUIRES_APPROVAL',
+  'INFRA_REQUIRES_APPROVAL',
+] as const;
+
+export function policyRequiresNonWriteApproval(reasons: string[]): boolean {
+  return reasons.some((r) =>
+    (NON_WRITE_SENSITIVE_POLICY_REASONS as readonly string[]).includes(r)
+  );
 }

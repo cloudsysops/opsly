@@ -76,8 +76,13 @@ export {
   bindingsEqual,
   extractWriteApprovalContext,
   assertWriteApprovalMatchesBinding,
+  assertWriteApprovalMatchesClaim,
+  parseDispatchClaimIdentity,
+  policyRequiresNonWriteApproval,
+  NON_WRITE_SENSITIVE_POLICY_REASONS,
   type AgentTaskWriteApprovalBinding,
   type AgentTaskWriteApprovalRef,
   type AgentTaskWriteApprovalV1,
   type WriteApprovalRejectReason,
+  type DispatchClaimIdentity,
 } from './write-approval.js';

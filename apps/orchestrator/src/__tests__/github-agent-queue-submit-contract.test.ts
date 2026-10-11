@@ -35,9 +35,21 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('requires_approval=true is not eligible');
     expect(source).toContain('production_deploy=true is forbidden');
     expect(source).toContain('paid_infra_required=true is forbidden');
-    expect(source).toContain("agent_role: 'review'");
+    expect(source).toContain("agent_role: typedWrite ? 'executor' : 'review'");
     expect(source).toContain('agent: String(meta.agent)');
-    expect(source).toContain('requires_pr: false');
+    expect(source).toContain('requires_pr: typedWrite ? true : false');
+  });
+
+  it('propagates typed write approval only when OPSLY_GITHUB_AGENT_TYPED_WRITE is explicit', () => {
+    expect(source).toContain("OPSLY_GITHUB_AGENT_TYPED_WRITE === 'true'");
+    expect(source).toContain('mint_write_approval: true');
+    expect(source).toContain('OPSLY_GITHUB_AGENT_WRITE_PR_NUMBER');
+    expect(source).toContain('OPSLY_GITHUB_AGENT_WRITE_PR_BRANCH');
+    expect(source).toContain('OPSLY_GITHUB_AGENT_WRITE_PR_HEAD_SHA');
+    expect(source).toContain('write_approval_schema: \'AgentTaskWriteApprovalV1\'');
+    expect(source).toContain(
+      'OPSLY_GITHUB_AGENT_TYPED_WRITE=true requires workpack requires_pr=true and requires_approval=true'
+    );
   });
 
   it('requires explicit boolean safety flags so YAML comments cannot bypass policy', () => {

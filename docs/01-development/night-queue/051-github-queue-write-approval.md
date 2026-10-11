@@ -76,8 +76,12 @@ A write-capable task must prove all of the following:
 | --- | --- |
 | Caller self-asserts `approved=true` / header-only | Runtime ignores `x-autonomy-approved` for `write_allowed`; requires server-minted `AgentTaskWriteApprovalV1` |
 | Replay across jobs | Consume-once in Redis (`opsly:write-approval:v1:*`) |
-| Cross-PR / SHA confusion | Exact binding: work_id, request_id, workstream, conflict_key, repository, pr_number, pr_branch, pr_head_sha (40-char), write_allowed=true |
-| Confusing claim with approval | DispatchClaimV1 remains independent; approval does not grant ownership |
+| Cross-PR / SHA confusion | Exact binding: work_id, request_id, claim_id, workstream, conflict_key, repository, pr_number, pr_branch, pr_head_sha (40-char), write_allowed=true; fingerprint = canonical JSON SHA-256 |
+| Confusing claim with approval | DispatchClaimV1 remains independent; approval binding must match server-acquired `claimId`/`taskId`/`workstream` before consume |
+| Write approval skips other gates | Typed approval satisfies only write; network/browser/infra still `require_approval` |
+| Dry-run burns one-shot approval | `dry_run` returns before consume |
+| Caller-controlled `approved_by` | Mint sets `approved_by=platform-admin` from verified token principal |
+| Unbounded TTL | Caller `expires_at` rejected above 24h max |
 | Sandbox Approval Gate confusion | Separate namespace/API; not reused |
 | Global `autoApproveSensitive` | Forced off when `write_allowed=true` |
 
