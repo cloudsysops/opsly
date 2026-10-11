@@ -12,6 +12,19 @@ tags:
 
 # PC-gamer — worker efímero (best-effort)
 
+<!-- topology-windows-wsl-2026-10-11 -->
+## Topología canónica (Windows vs WSL)
+
+| Plano | Nombre Tailscale | Rol |
+|-------|------------------|-----|
+| Windows desktop | `smdqcia-pc` | Host físico / SSH MagicDNS; **no** asumir HTTP :3011/:5004/:11434 |
+| Worker HTTP | `smdqcia-wsl` | Orchestrator worker, OpenCode `:5004`, Ollama `:11434` (`home-gpu-01`) |
+| Legacy | `pc-gamer` (`100.74.88.103`) | **Retirado/offline** — no usar en acceptance ni dispatch |
+
+Physical acceptance CI must probe **`smdqcia-wsl`**, not `smdqcia-pc` and not the legacy IP.
+Prefer MagicDNS; current WSL IPv4 snapshot is `100.115.197.109` (may change — re-check `tailscale status`).
+
+
 Máquina **prestada / reemplazable** de cómputo GPU para Opsly.  
 **No es control plane. No es necesaria para que producción funcione.**
 

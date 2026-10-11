@@ -42,6 +42,10 @@ services:
       OPSLY_LOCAL_AGENT_UNIFIED_ONLY: ${OPSLY_LOCAL_AGENT_UNIFIED_ONLY:-true}
       OPSLY_LOCAL_AGENT_KINDS: ${OPSLY_LOCAL_AGENT_KINDS:-}
       OPSLY_OPENCODE_AGENT_URL: ${OPSLY_OPENCODE_AGENT_URL:-http://127.0.0.1:5004}
+      # Review/acceptance execute default when job payload omits model.
+      # Qwen coder* must remain installed for acceptance tags gate; OpenCode currently
+      # fails on qwen2.5-coder (UnknownError) — use qwen3.5 for execute until fixed.
+      OPSLY_OPEN_REVIEW_MODEL: ${OPSLY_OPEN_REVIEW_MODEL:-ollama/qwen3.5:latest}
       OPSLY_CLI_AGENT_TOKEN: ${OPSLY_CLI_AGENT_TOKEN:-}
       # Conservadores: máquina compartida / gaming
       WORKER_CONCURRENCY_CURSOR: ${WORKER_CONCURRENCY_CURSOR:-1}

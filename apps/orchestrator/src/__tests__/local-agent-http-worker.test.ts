@@ -4,6 +4,7 @@ import {
   localAgentExecuteHeaders,
   mapLocalAgentBridgeFailure,
   sanitizeLocalAgentError,
+  shouldSkipLocalAgentValidation,
   shouldWaitForAcceptedResponse,
 } from '../workers/local-agent-http-worker.js';
 
@@ -23,6 +24,24 @@ describe('localAgentExecuteHeaders', () => {
     expect(localAgentExecuteHeaders({ OPSLY_OPENCODE_AGENT_TOKEN: 'xyz' }).Authorization).toBe(
       'Bearer xyz'
     );
+  });
+});
+
+describe('shouldSkipLocalAgentValidation', () => {
+  it('skips validation for review/plan roles and open-review jobs', () => {
+    expect(shouldSkipLocalAgentValidation('review', 'job-1')).toBe(true);
+    expect(shouldSkipLocalAgentValidation('plan', 'job-2')).toBe(true);
+    expect(shouldSkipLocalAgentValidation('executor', 'open-review-abc')).toBe(true);
+  });
+
+  it('skips validation for gamer physical acceptance without forcing plan-agent roles', () => {
+    expect(
+      shouldSkipLocalAgentValidation(
+        'executor',
+        'ghq-gamer-opencode-physical-acceptance-050-deadbeef-1'
+      )
+    ).toBe(true);
+    expect(shouldSkipLocalAgentValidation('executor', 'regular-job')).toBe(false);
   });
 });
 

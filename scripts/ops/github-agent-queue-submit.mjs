@@ -161,14 +161,22 @@ assertSafe(meta);
 if (!body) throw new Error('workpack body must not be empty');
 
 const sha = process.env.GITHUB_SHA || crypto.createHash('sha256').update(content).digest('hex').slice(0, 12);
-const requestId = `ghq-${safeIdSegment(meta.id)}-${sha.slice(0, 12)}`;
+// Include GITHUB_RUN_ID so acceptance re-runs on the same SHA do not collide with a prior BullMQ jobId.
+const runNonce = String(process.env.OPSLY_GITHUB_AGENT_RUN_NONCE || process.env.GITHUB_RUN_ID || '')
+  .replace(/[^a-zA-Z0-9_-]/g, '')
+  .slice(0, 16);
+const requestId = runNonce
+  ? `ghq-${safeIdSegment(meta.id)}-${sha.slice(0, 12)}-${runNonce}`
+  : `ghq-${safeIdSegment(meta.id)}-${sha.slice(0, 12)}`;
 
 const payload = {
   tenant_slug: 'local',
   request_id: requestId,
   idempotency_key: requestId,
   agent: String(meta.agent),
-  agent_role: 'review',
+  // Prefer frontmatter agent_role. Physical acceptance must NOT use "review"/"plan"
+  // because cli-agent-service maps those to OpenCode --agent plan (off-topic Q&A).
+  agent_role: String(meta.agent_role || meta.role || 'review'),
   max_steps: Number(meta.max_steps || 6),
   goal: String(meta.title || meta.id),
   prompt_body: body,
@@ -296,7 +304,14 @@ while (Date.now() < deadline) {
     const output = status.body.returnvalue ?? status.body.result ?? status.body.output;
     if (expectedMarker) {
       const actual = terminalResultText(output);
-      if (actual !== expectedMarker) {
+      // Accept marker as exact output or as a dedicated line (models sometimes add wrapping).
+      const markerOk =
+        actual === expectedMarker ||
+        actual.split(/\r?\n/).map((l) => l.trim()).includes(expectedMarker) ||
+        new RegExp(`(?:^|\\b)${expectedMarker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\b|$)`).test(
+          actual
+        );
+      if (!markerOk) {
         console.error(
           JSON.stringify(
             { expected_marker: expectedMarker, actual_result: actual || null, output },

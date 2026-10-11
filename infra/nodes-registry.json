@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "updated_at": "2026-09-17T00:00:00Z",
+  "version": 4,
+  "updated_at": "2026-10-11T00:00:00Z",
   "description": "Inventario operativo de nodos (acceso SSH/Tailscale). NO es el registry de workers: el ruteo por capacidad vive en config/compute-workers.json.",
   "nodes": [
     {
@@ -31,10 +31,19 @@
       "name": "smdqcia-pc",
       "host": "smdqcia-pc.taile4fe40.ts.net",
       "user": "opsly",
+      "role": "desktop",
+      "status": "active",
+      "ssh_in_wsl": true,
+      "notes": "Windows host DESKTOP-SMDQCIA (Tailscale MagicDNS \u2192 typically 100.117.5.102). SSH for agents often resolves via this name into WSL sshd (opsly), but HTTP worker surfaces (:3011 orchestrator, :5004 OpenCode, :11434 Ollama) are on the separate Tailscale node smdqcia-wsl \u2014 do not assume Windows MagicDNS publishes those ports. WORKER_ID home-gpu-01 lives in WSL."
+    },
+    {
+      "name": "smdqcia-wsl",
+      "host": "smdqcia-wsl",
+      "user": "opsly",
       "role": "worker",
       "status": "active",
       "ssh_in_wsl": true,
-      "notes": "Nodo consolidado de la flota gamer (antes pc-gamer/devops): WSL2 + RTX 3060 12GB + Ollama; sshd vive DENTRO del WSL como opsly; worker plane Docker (home-gpu-01). MagicDNS por hostname (no IP estable): resuelve a 100.117.5.102 (WSL mirrored). NO usar 100.115.197.109 (IP fantasma/legacy no fiable)"
+      "notes": "Canonical Gamer worker plane (Tailscale linux node). MagicDNS smdqcia-wsl (FQDN smdqcia-wsl.taile4fe40.ts.net) currently resolves to 100.115.197.109 \u2014 prefer hostname; treat IP as documented snapshot, not a permanent identity. Serves orchestrator :3011, OpenCode bridge :5004, Ollama :11434 (WORKER_ID home-gpu-01). Repo checkout: /home/opsly/opsly (ext4)."
     },
     {
       "name": "desktop-smdqcia-1",
@@ -50,7 +59,7 @@
       "user": "cboteros",
       "role": "worker",
       "status": "offline",
-      "notes": "LEGACY (consolidado en smdqcia-pc): PC gamer Windows via Tailscale; requiere WSL2 + setup-compute-worker.sh"
+      "notes": "LEGACY RETIRED (offline). Former Windows gamer at 100.74.88.103. Do not use as operational acceptance or dispatch target. Consolidated into smdqcia-pc (Windows) + smdqcia-wsl (worker HTTP)."
     },
     {
       "name": "pc-gamer-openclaw-01-wsl",
