@@ -13,10 +13,12 @@ JSON=false
 WORKER_ID="${WORKER_ID:-}"
 # Legacy heartbeat key also accepted
 WORKER_ID_LEGACY="${WORKER_ID_LEGACY:-}"
-# Nodo consolidado 2026-09: smdqcia-pc (Windows DESKTOP-SMDQCIA + WSL, user opsly,
-# WORKER_ID home-gpu-01, RTX 3060). El alias 'pc-gamer' apunta a 100.74.88.103 (offline).
+# Nodo consolidado: Windows smdqcia-pc + worker HTTP smdqcia-wsl (home-gpu-01).
+# Legacy alias pc-gamer → 100.74.88.103 está offline/retirado.
+# Tailscale "online" check uses Windows hostname; HTTP health uses WSL worker host.
 TS_HOST="${PC_GAMER_TAILSCALE_HOST:-smdqcia-pc}"
-HEALTH_URL="${PC_GAMER_HEALTH_URL:-http://${TS_HOST}:3011/health}"
+HEALTH_HOST="${PC_GAMER_HEALTH_HOST:-smdqcia-wsl}"
+HEALTH_URL="${PC_GAMER_HEALTH_URL:-http://${HEALTH_HOST}:3011/health}"
 SSH_HOST="${PC_GAMER_SSH_HOST:-opsly@smdqcia-pc}"
 
 for arg in "$@"; do

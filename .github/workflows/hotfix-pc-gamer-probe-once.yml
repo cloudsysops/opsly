@@ -56,8 +56,10 @@ jobs:
               echo "tailscale=offline"
             fi
           }
-          probe home-gpu-01 smdqcia-pc.taile4fe40.ts.net
-          probe pc-gamer 100.74.88.103
+          # Active HTTP worker plane (WSL). Windows host smdqcia-pc is not the :3011/:5004 target.
+          probe home-gpu-01-wsl smdqcia-wsl
+          # LEGACY diagnostic only (retired offline node). Not the operational worker.
+          probe LEGACY-offline-pc-gamer 100.74.88.103
 
       - name: Read exact adapter failure evidence
         env:

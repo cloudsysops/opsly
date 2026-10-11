@@ -31,7 +31,7 @@ Produce the first physical proof that the governed path reaches the PC Gamer, in
 
 If any precondition is missing, return `BLOCKED` with the exact missing item and do not fall back:
 
-- Gamer worker is online;
+- Gamer WSL worker (`smdqcia-wsl`) is online for HTTP `:3011` / `:5004` / `:11434` (not Windows `smdqcia-pc`, not legacy `pc-gamer` / `100.74.88.103`);
 - `local_opencode` is claimed by the Gamer, not Mac;
 - OpenCode bridge is healthy;
 - Ollama is healthy and has an already-installed Qwen coding model (`qwen3-coder*` or `qwen2.5-coder*`);
