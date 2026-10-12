@@ -167,7 +167,8 @@ export async function checkpointSession(
   const output = await tmuxCapturePane(meta.tmuxSessionName, 80);
   const git = await gitCheckpointState(meta.workspace);
   const updated = await touch(meta, {
-    status: 'checkpointed',
+    // A held command is a pending human decision: checkpointing must not erase it.
+    status: meta.status === 'waiting_approval' ? 'waiting_approval' : 'checkpointed',
     // Pane text is untrusted: redact before it is persisted or returned by the API.
     lastCheckpoint: compactPaneTail(note ?? output),
     checkpointData: { capturedAt: nowIso(), ...git },

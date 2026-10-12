@@ -11,6 +11,20 @@ const REDACTION_RULES: Array<[RegExp, string]> = [
     /\b([A-Za-z0-9_]*(?:token|password|passwd|secret|api[_-]?key|apikey|authorization)[A-Za-z0-9_]*)(["']?\s*[=:]\s*)(?!\*\*\*)("(?:[^"\\]|\\.)*(?:"|$)|'(?:[^'\\]|\\.)*(?:'|$)|[^\s"']+)/gi,
     '$1$2***',
   ],
+  // Space-separated CLI flags: `--password hunter2`, `--api-key abc`, `--token=abc` is handled above.
+  [
+    /(--?(?:password|passwd|pass|token|secret|api[-_]?key|apikey|access[-_]?token|client[-_]?secret|auth(?:orization)?)\b)(\s+)(?!\*\*\*)("[^"]*(?:"|$)|'[^']*(?:'|$)|\S+)/gi,
+    '$1$2***',
+  ],
+  // `... set token <value>` / `config set _authToken <value>`
+  [
+    /\b(set\s+(?:\S+\s+)?)([A-Za-z0-9_]*(?:token|password|passwd|secret|api[_-]?key)[A-Za-z0-9_]*)(\s+)(?!\*\*\*)("[^"]*(?:"|$)|'[^']*(?:'|$)|\S+)/gi,
+    '$1$2$3***',
+  ],
+  // `--user alice:secret` / `-u alice:secret`
+  [/(--user|-u)(\s+)([^\s:]+):(?!\*\*\*)(\S+)/g, '$1$2$3:***'],
+  // Credentials embedded in a URL: scheme://user:secret@host
+  [/(\b[a-z][a-z0-9+.-]*:\/\/[^\s:/@]+:)(?!\*\*\*)([^\s@/]+)(@)/gi, '$1***$3'],
   // Well-known token shapes
   [/\bsk-[A-Za-z0-9_-]{8,}/g, 'sk-***'],
   [/\bgh[pousr]_[A-Za-z0-9]{20,}/g, 'gh*_***'],

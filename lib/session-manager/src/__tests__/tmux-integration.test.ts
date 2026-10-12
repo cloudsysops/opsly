@@ -120,7 +120,8 @@ describe.skipIf(!hasTmux())('session recovery against real tmux', () => {
     await writeFile(file, JSON.stringify(meta), 'utf8');
 
     await tmuxKillSession(s.tmuxSessionName);
-    await resumeSession({ sessionId: s.sessionId });
+    // An unsafe stored branch now blocks recovery outright, and nothing is executed.
+    await expect(resumeSession({ sessionId: s.sessionId })).rejects.toThrow(/Recovery blocked.*unsafe branch/i);
     await sleep(800);
     expect(existsSync(marker)).toBe(false);
   });
@@ -155,6 +156,28 @@ describe.skipIf(!hasTmux())('session recovery against real tmux', () => {
     const result = await resumeSession({ sessionId: s.sessionId, approveRelaunch: true });
     expect(result.pendingCommand).toContain('***');
     expect(result.meta.status).toBe('waiting_approval');
+  });
+
+  it('blocks recovery, and runs nothing, when the branch checkout fails', async () => {
+    const marker = path.join(base, 'ran-on-wrong-branch');
+    const s = await start('true');
+    const file = path.join(base, 'state', `${s.sessionId}.json`);
+    const meta = JSON.parse(await readFile(file, 'utf8'));
+    meta.branch = 'feat/branch-that-does-not-exist';
+    await writeFile(file, JSON.stringify(meta), 'utf8');
+
+    const before = await getSession(s.sessionId);
+    await tmuxKillSession(s.tmuxSessionName);
+    await expect(
+      resumeSession({ sessionId: s.sessionId, relaunchCommand: `touch ${marker}` }),
+    ).rejects.toThrow(/Recovery blocked.*checkout/i);
+
+    await sleep(500);
+    expect(existsSync(marker)).toBe(false); // the explicit command never ran
+    expect(await tmuxHasSession(s.tmuxSessionName)).toBe(false); // nothing half-rebuilt
+    const after = await getSession(s.sessionId);
+    expect(after?.status).toBe(before?.status); // no state change at all
+    expect(after?.lastSeenAt).toBe(before?.lastSeenAt);
   });
 
   it('stopped sessions stay stopped and are still readable', async () => {

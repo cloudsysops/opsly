@@ -125,18 +125,22 @@ export async function resumeSession(input: ResumeSessionInput): Promise<ResumeSe
 
   const recovery = await buildRecoverySnapshot(input.sessionId);
 
+  // Check the branch out BEFORE rebuilding anything. If it fails (missing branch, hook
+  // failure, timeout) the explicit or approved relaunch must not run on the wrong branch or a
+  // half-updated tree, so recovery stops here with nothing created and no state changed.
+  if (meta.branch && meta.branch.trim().length > 0 && !isDryRun()) {
+    const problem = await checkoutBranch(meta.workspace, meta.branch);
+    if (problem) {
+      await appendSessionLog(input.sessionId, `resume blocked: ${problem}`);
+      throw new Error(`Recovery blocked, ${problem}`);
+    }
+  }
+
   if (!isDryRun()) {
     await tmuxNewSession(meta.tmuxSessionName, meta.workspace);
   }
 
   let updated = await touch(meta, { status: 'running' });
-
-  if (meta.branch && meta.branch.trim().length > 0 && !isDryRun()) {
-    const problem = await checkoutBranch(meta.workspace, meta.branch);
-    if (problem) {
-      await appendSessionLog(input.sessionId, `resume ${problem}`);
-    }
-  }
 
   const explicit = input.relaunchCommand?.trim() ?? '';
   const previous = meta.lastCommand?.trim() ?? '';

@@ -6,7 +6,7 @@ import path from 'node:path';
 import { isSafeBranchName } from '../guards.js';
 import { compactPaneTail, redactSecrets } from '../redact.js';
 import { parsePorcelainZ } from '../recovery.js';
-import { createSession, getSession, listSessions } from '../index.js';
+import { checkpointSession, createSession, getSession, listSessions } from '../index.js';
 import { saveSession } from '../store.js';
 import { gitCheckpointState } from '../recovery.js';
 import { execFileSync } from 'node:child_process';
@@ -178,5 +178,41 @@ describe('third review round', () => {
     const created = await createSession({ name: 'run', agentId: 'a', workspace: '/tmp' });
     const listed = (await listSessions()).find((s) => s.sessionId === created.sessionId);
     expect(listed?.status).toBe('resumable');
+  });
+});
+
+describe('fourth review round', () => {
+  it.each([
+    ['docker login --password correcthorsebattery', 'correcthorsebattery'],
+    ['doppler configure set token dp.st.correcthorsebattery', 'correcthorsebattery'],
+    ['npm config set _authToken correcthorsebattery', 'correcthorsebattery'],
+    ['curl --user alice:correcthorsebattery https://x.test', 'correcthorsebattery'],
+    ['curl -u alice:correcthorsebattery https://x.test', 'correcthorsebattery'],
+    ['git clone https://bob:correcthorsebattery@github.com/x/y', 'correcthorsebattery'],
+    ['tool --api-key "correct horse battery"', 'correct horse battery'],
+    ['tool --client-secret correcthorsebattery --verbose', 'correcthorsebattery'],
+  ])('redacts space-separated credentials in %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it.each([
+    'npm run build -- --watch --token-count 5',
+    'git clone https://github.com/x/y',
+    'git set-url origin https://github.com/x/y',
+    'docker login registry.example.com',
+    'ls -u',
+    'echo done',
+  ])('leaves ordinary command %j unchanged', (input) => {
+    expect(redactSecrets(input)).toBe(input);
+  });
+
+  it('keeps waiting_approval across a checkpoint', async () => {
+    const created = await createSession({ name: 'held', agentId: 'a', workspace: '/tmp' });
+    const stored = await getSession(created.sessionId);
+    await saveSession({ ...stored!, status: 'waiting_approval', lastCommand: 'git push' });
+    const cp = await checkpointSession(created.sessionId, 'note');
+    expect(cp.status).toBe('waiting_approval');
+    expect(cp.lastCheckpoint).toBe('note');
+    expect(cp.lastCommand).toBe('git push');
   });
 });

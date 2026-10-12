@@ -326,6 +326,38 @@ describe('mission control chat', () => {
       });
     });
 
+    it('returns a refreshed session summary after approving, not the stale one', async () => {
+      const stale = { ...emptySnapshot, sessionSummary: { ...emptySnapshot.sessionSummary, waitingApproval: 1, running: 0 } };
+      const fresh = { ...emptySnapshot, sessionSummary: { ...emptySnapshot.sessionSummary, waitingApproval: 0, running: 1 } };
+      mocks.collectRuntimeHealthSnapshot.mockReset();
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValueOnce(stale).mockResolvedValueOnce(fresh);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      mocks.resumeSession.mockResolvedValue({
+        meta: { ...waitingSession, status: 'running' },
+        mode: 'reattach',
+      });
+      const ctx = createContext({ message: 'approve and resume', session_id: 'sess-w' });
+      await handleMissionControlChat(ctx);
+      const payload = JSON.parse(ctx.res.body ?? '{}') as {
+        session_summary?: { waitingApproval: number; running: number };
+      };
+      expect(payload.session_summary?.waitingApproval).toBe(0);
+      expect(payload.session_summary?.running).toBe(1);
+    });
+
+    it('reports a blocked recovery (checkout failed) instead of a bare error', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockReset();
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      mocks.resumeSession.mockRejectedValue(new Error('Recovery blocked, checkout failed: pathspec'));
+      const ctx = createContext({ message: 'approve and resume', session_id: 'sess-w' });
+      await handleMissionControlChat(ctx);
+      expect(ctx.res.statusCode).toBe(409);
+      expect(ctx.res.body).toContain('Recovery blocked');
+    });
+
     it('never approves "the latest session" when no session_id is given', async () => {
       mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
       mocks.listSessions.mockResolvedValue([waitingSession]);

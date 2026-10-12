@@ -294,11 +294,20 @@ export async function handleMissionControlChat(ctx: RouteContext): Promise<void>
       typeof request.relaunch_command === 'string' && request.relaunch_command.trim().length > 0
         ? request.relaunch_command.trim()
         : undefined;
-    const approved = await resumeSession({
-      sessionId: requestedSession.sessionId,
-      approveRelaunch: true,
-      relaunchCommand: explicitCommand,
-    });
+    let approved: Awaited<ReturnType<typeof resumeSession>>;
+    try {
+      approved = await resumeSession({
+        sessionId: requestedSession.sessionId,
+        approveRelaunch: true,
+        relaunchCommand: explicitCommand,
+      });
+    } catch (err) {
+      // e.g. branch checkout failed: nothing was relaunched, say so instead of a bare 500.
+      errorResponse(ctx.res, 409, err instanceof Error ? err.message : String(err));
+      return;
+    }
+    // The mutation changed the session counters: do not return the pre-approval summary.
+    const refreshed = await collectRuntimeHealthSnapshot().catch(() => snapshot);
     jsonResponse(ctx.res, 200, {
       ok: true,
       action: 'approve-resume',
@@ -310,8 +319,8 @@ export async function handleMissionControlChat(ctx: RouteContext): Promise<void>
       worker_recommendation: recommendationForSession(approved.meta),
       human_approval_required: approved.meta.status === 'waiting_approval',
       session: compactSession(approved.meta),
-      capabilities: snapshot.capabilities,
-      session_summary: snapshot.sessionSummary,
+      capabilities: refreshed.capabilities,
+      session_summary: refreshed.sessionSummary,
     } satisfies MissionControlChatResponse);
     return;
   }
