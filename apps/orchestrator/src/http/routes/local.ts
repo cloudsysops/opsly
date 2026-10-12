@@ -371,13 +371,12 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
             : undefined
   );
   const requiresPr = context.requires_pr === true;
+  // Same rule as main: `executor` is the default routing role and never implies write intent.
   const inferredWriteAllowed =
     requiresPr ||
-    (hasExplicitAgentRole &&
-      (roleHint.includes('executor') ||
-        roleHint.includes('build') ||
-        roleHint.includes('implement') ||
-        roleHint.includes('debug')));
+    roleHint.includes('build') ||
+    roleHint.includes('implement') ||
+    roleHint.includes('debug');
   // Caller may strengthen write_allowed; never downgrade server-inferred write intent.
   const envelopeWriteAllowed =
     taskEnvelopeResult?.success === true &&

@@ -736,6 +736,110 @@ describe('local prompt-submit → local-agents queue', () => {
     expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
   });
 
+  describe('agent_role is routing metadata, not write authorization', () => {
+    const adminHeaders = { Authorization: 'Bearer test-platform-admin' };
+
+    function writeClassifiedEnvelope(requestId: string) {
+      return {
+        schema_version: 'AgentTaskEnvelopeV1',
+        request_id: requestId,
+        correlation_id: requestId,
+        tenant_slug: 'local',
+        task_type: 'code',
+        task: 'apply the approved change',
+        selected_agent: 'local_opencode',
+        skills: [] as string[],
+        constraints: {
+          open_source_only: false,
+          local_only: false,
+          browser_allowed: false,
+          network_allowed: false,
+          write_allowed: true,
+          file_scope: [] as string[],
+          max_tokens: 1600,
+        },
+        execution_mode: 'enqueue',
+        source: 'opsly',
+        actor: 'system',
+        created_at: '2026-10-12T12:00:00.000Z',
+        timeout_ms: 120_000,
+        max_attempts: 2,
+        budget: { max_tokens: 1600 },
+        metadata: {},
+        fallback_agents: [] as string[],
+      };
+    }
+
+    it.each(['executor'])(
+      'B. agent_role=%s with no requires_pr, no claim, no write envelope routes as non-write',
+      async (agentRole) => {
+        const { status } = await postJson(
+          port,
+          '/api/local/prompt-submit',
+          {
+            tenant_slug: 'local',
+            request_id: `role-only-${agentRole}`,
+            agent: 'local_opencode',
+            agent_role: agentRole,
+            prompt_body: 'Inspect only, do not modify files',
+          },
+          adminHeaders
+        );
+        expect(status).toBe(202);
+        const queued = enqueueLocalAgentJob.mock.calls[0]![0] as {
+          payload: { agent_task?: { constraints: { write_allowed: boolean } } };
+        };
+        expect(queued.payload.agent_task?.constraints.write_allowed).toBe(false);
+        expect(claimMocks.acquireTaskDispatchClaim).not.toHaveBeenCalled();
+      }
+    );
+
+    it('C. requires_pr=true with executor role and no claim fails closed with DISPATCH_CLAIM_REQUIRED', async () => {
+      const { status, raw } = await postJson(
+        port,
+        '/api/local/prompt-submit',
+        {
+          tenant_slug: 'local',
+          request_id: 'write-no-claim-001',
+          agent: 'local_opencode',
+          agent_role: 'executor',
+          prompt_body: 'Open a PR with the change',
+          context: { requires_pr: true },
+        },
+        adminHeaders
+      );
+      expect(status).toBe(400);
+      expect(raw).toContain('DISPATCH_CLAIM_REQUIRED');
+      expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['omitted', {}],
+      ['review', { agent_role: 'review' }],
+      ['planner', { agent_role: 'planner' }],
+    ])(
+      'D. write-classified envelope cannot bypass the claim gate with agent_role %s',
+      async (_label, roleFields) => {
+        const { status, raw } = await postJson(
+          port,
+          '/api/local/prompt-submit',
+          {
+            tenant_slug: 'local',
+            request_id: 'write-envelope-no-claim',
+            agent: 'local_opencode',
+            prompt_body: 'apply the approved change',
+            agent_task: writeClassifiedEnvelope('write-envelope-no-claim'),
+            ...roleFields,
+          },
+          adminHeaders
+        );
+        expect(status).toBe(400);
+        expect(raw).toContain('DISPATCH_CLAIM_REQUIRED');
+        expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+      }
+    );
+  });
+
   it('returns JOIN_EXISTING before acquiring a new claim for a nonterminal duplicate BullMQ id', async () => {
     queueMocks.getLocalAgentJobById.mockResolvedValueOnce({
       getState: vi.fn(async () => 'waiting'),
