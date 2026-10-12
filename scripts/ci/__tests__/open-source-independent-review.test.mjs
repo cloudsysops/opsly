@@ -37,11 +37,14 @@ test('reviewer treats PR diff content as untrusted data', () => {
   assert.match(reviewer, /READ-ONLY/);
 });
 
-test('reviewer treats lack of P0 findings as clean, not only the exact phrase', () => {
-  assert.match(reviewer, /text === CLEAN_PHRASE/);
-  assert.match(reviewer, /P0\[:\\s\]/);
-  assert.match(reviewer, /P1\/P2/);
+test('reviewer treats P1/P2-only findings as non-blocking, only the exact phrase as clean, and invalid output as no review', () => {
+  const verdictModule = readFileSync('scripts/ci/review-verdict.mjs', 'utf8');
+  assert.match(verdictModule, /text === cleanPhrase/);
+  assert.match(verdictModule, /BLOCKING_LINE = .*P0/);
+  assert.match(verdictModule, /P[012]/);
+  assert.doesNotMatch(verdictModule, /includes\(cleanPhrase/);
   assert.doesNotMatch(reviewer, /includes\(CLEAN_PHRASE/);
+  assert.match(reviewer, /classifyVerdict\(verdict, CLEAN_PHRASE\) !== 'blocking'/);
 });
 
 test('reviewer fails closed unless terminal evidence identifies local Qwen and a worker', () => {
