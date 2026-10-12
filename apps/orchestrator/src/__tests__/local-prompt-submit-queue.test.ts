@@ -314,9 +314,8 @@ describe('local prompt-submit → local-agents queue', () => {
         tenant_slug: 'local',
         request_id: 'write-no-claim-001',
         agent: 'local_opencode',
-        agent_role: 'implement',
         prompt_body: 'Implement a code change',
-        context: {},
+        context: { requires_pr: true },
       },
       {
         Authorization: 'Bearer test-platform-admin',
@@ -770,7 +769,7 @@ describe('local prompt-submit → local-agents queue', () => {
       };
     }
 
-    it.each(['executor'])(
+    it.each(['executor', 'build', 'implement', 'debug'])(
       'B. agent_role=%s with no requires_pr, no claim, no write envelope routes as non-write',
       async (agentRole) => {
         const { status } = await postJson(
