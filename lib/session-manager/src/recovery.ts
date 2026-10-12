@@ -50,6 +50,15 @@ async function readLogsTail(sessionId: string, maxLines = 40): Promise<string | 
 const execFileAsync = promisify(execFile);
 
 const GIT_MAX_BUFFER = 16 * 1024 * 1024;
+/**
+ * Git runs while the per-session lock is held (checkpoint), so a stalled filesystem or git process
+ * would block every later send/stop/resume/approval for that session. A timeout is reported as
+ * "no snapshot" (`gitAvailable: false`), never as a clean tree.
+ */
+function gitTimeoutMs(): number {
+  const fromEnv = Number(process.env.OPSLY_GIT_TIMEOUT_MS);
+  return Number.isFinite(fromEnv) && fromEnv > 0 ? fromEnv : 10_000;
+}
 /** Persisted checkpoints keep a bounded sample of dirty paths plus the real total. */
 const MAX_DIRTY_FILES = 200;
 const MAX_CHANGED_FILES = 1000;
@@ -59,7 +68,11 @@ async function runGit(
   cwd: string,
 ): Promise<{ stdout: string; stderr: string; truncated: boolean; failed: boolean }> {
   try {
-    const { stdout, stderr } = await execFileAsync('git', args, { cwd, maxBuffer: GIT_MAX_BUFFER });
+    const { stdout, stderr } = await execFileAsync('git', args, {
+      cwd,
+      maxBuffer: GIT_MAX_BUFFER,
+      timeout: gitTimeoutMs(),
+    });
     return { stdout, stderr, truncated: false, failed: false };
   } catch (err) {
     const e = err as { stdout?: string; stderr?: string; code?: string | number };

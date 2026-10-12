@@ -10,6 +10,7 @@ import { checkpointSession, createSession, getSession, listSessions } from '../i
 import { saveSession } from '../store.js';
 import { gitCheckpointState } from '../recovery.js';
 import { execFileSync } from 'node:child_process';
+import { chmod } from 'node:fs/promises';
 import { writeFile as writeFileFs, mkdir as mkdirFs } from 'node:fs/promises';
 
 let stateDir = '';
@@ -298,5 +299,48 @@ describe('eighth review round', () => {
 
   it('keeps the header name so the line is still recognisable', () => {
     expect(redactSecrets('Authorization: Digest a="b", c="d"')).toBe('Authorization: ***');
+  });
+});
+
+describe('ninth review round', () => {
+  it.each([
+    ['REDIS_URL=redis://:correcthorsebattery@redis:6379/0', 'correcthorsebattery'],
+    ['redis://default:correcthorsebattery@redis:6379', 'correcthorsebattery'],
+    ['git clone https://bob:correcthorsebattery@github.com/x/y', 'correcthorsebattery'],
+    ['amqp://:correcthorsebattery@rabbit:5672/vhost', 'correcthorsebattery'],
+  ])('redacts the password in the connection URL %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it.each([
+    'redis://redis:6379/0',
+    'https://github.com/x/y',
+    'http://localhost:3000/api/health',
+    'postgres://db.internal:5432/app',
+  ])('leaves a URL without credentials unchanged: %s', (input) => {
+    expect(redactSecrets(input)).toBe(input);
+  });
+
+  it('a stalled git cannot hang the snapshot: it times out and reports no snapshot', async () => {
+    delete process.env.OPSLY_RUNTIME_DRY_RUN;
+    const bin = await mkdtemp(path.join(tmpdir(), 'opsly-fakegit-'));
+    const work = await mkdtemp(path.join(tmpdir(), 'opsly-work-'));
+    const oldPath = process.env.PATH;
+    try {
+      await writeFile(path.join(bin, 'git'), '#!/bin/sh\nexec sleep 30\n', 'utf8');
+      await chmod(path.join(bin, 'git'), 0o755);
+      process.env.PATH = `${bin}:${oldPath ?? ''}`;
+      process.env.OPSLY_GIT_TIMEOUT_MS = '300';
+      const started = Date.now();
+      const state = await gitCheckpointState(work);
+      expect(Date.now() - started).toBeLessThan(5000);
+      expect(state.gitAvailable).toBe(false);
+      expect(state.dirtyTotal).toBeUndefined();
+    } finally {
+      process.env.PATH = oldPath;
+      delete process.env.OPSLY_GIT_TIMEOUT_MS;
+      await rm(bin, { recursive: true, force: true });
+      await rm(work, { recursive: true, force: true });
+    }
   });
 });

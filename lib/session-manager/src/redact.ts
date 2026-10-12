@@ -34,8 +34,9 @@ const REDACTION_RULES: Array<[RegExp, string]> = [
   ],
   // `--user alice:secret` / `-u alice:secret`
   [/(--user|-u)(\s+)([^\s:]+):(?!\*\*\*)(\S+)/g, '$1$2$3:***'],
-  // Credentials embedded in a URL: scheme://user:secret@host
-  [/(\b[a-z][a-z0-9+.-]*:\/\/[^\s:/@]+:)(?!\*\*\*)([^\s@/]+)(@)/gi, '$1***$3'],
+  // Credentials embedded in a URL: scheme://user:secret@host. The username may be empty, which is
+  // the password-only form Redis uses: redis://:secret@host.
+  [/(\b[a-z][a-z0-9+.-]*:\/\/[^\s:/@]*:)(?!\*\*\*)([^\s@/]+)(@)/gi, '$1***$3'],
   // Well-known token shapes
   [/\bsk-[A-Za-z0-9_-]{8,}/g, 'sk-***'],
   [/\bgh[pousr]_[A-Za-z0-9]{20,}/g, 'gh*_***'],
