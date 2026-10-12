@@ -100,6 +100,17 @@ function json(reply, status, body) {
 }
 function handleApi(request, reply) {
   const url = new URL(request.url, `http://${host}`);
+  if (url.pathname === '/studio' && request.method === 'GET') {
+    let page;
+    try {
+      page = fs.readFileSync(tenantPath('studio-dashboard.html'));
+    } catch {
+      return json(reply, 404, { error: 'studio asset missing' }), true;
+    }
+    reply.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+    reply.end(page);
+    return true;
+  }
   if (url.pathname === '/schedule') return json(reply, 200, schedule()), true;
   if (url.pathname === '/schedule/test') {
     if (!isLocalTool(request)) return json(reply, 403, { error: 'forbidden' }), true;

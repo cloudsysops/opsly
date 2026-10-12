@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Factory Studio</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  /* Scale: 1rem = 16px at 1920 wide, so the whole layout tracks the 1080p canvas. */
+  html{font-size:calc(100vw / 120)}
+  :root{--bg:#0a0c10;--panel:#11151b;--panel2:#161b23;--ink:#eceff4;--dim:#8b95a5;--line:#232a35;
+        --blue:#6aa8ff;--warm:#e0a862;--warn:#f5b84a}
+  *{box-sizing:border-box;margin:0}
+  html,body{height:100%;background:var(--bg);color:var(--ink);font:1rem/1.4 "Segoe UI",system-ui,sans-serif;overflow:hidden}
+  /* ambient light: purely decorative, carries no state */
+  .glow{position:fixed;inset:-15%;z-index:0;pointer-events:none;
+    background:radial-gradient(38% 30% at 22% 18%,rgba(106,168,255,.08),transparent 70%),
+               radial-gradient(34% 28% at 88% 92%,rgba(224,168,98,.07),transparent 70%);
+    animation:drift 26s ease-in-out infinite alternate}
+  @keyframes drift{to{transform:translate(3%,2%) scale(1.05)}}
+  .wrap{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:1.6rem 2rem;gap:1.3rem}
+  header{display:flex;align-items:baseline;justify-content:space-between}
+  header h1{font-size:2.1rem;letter-spacing:.2em;font-weight:600}
+  header p{color:var(--dim);font-size:1.05rem;letter-spacing:.18em;text-transform:uppercase}
+  .layout{flex:1;min-height:0;display:grid;grid-template-columns:3fr 1fr;gap:1.4rem}
+  .col{display:flex;flex-direction:column;gap:1.4rem;min-height:0}
+  .col>.panel{flex:1;display:flex;flex-direction:column}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:.5rem;padding:1.3rem 1.5rem;min-height:0}
+  .panel h2{font-size:1.25rem;letter-spacing:.18em;font-weight:600;color:var(--dim);text-transform:uppercase}
+  .note{font-size:.95rem;color:var(--dim);margin-top:.4rem}
+
+  /* telemetry: compact strip */
+  .tele{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+  .tile{background:var(--panel2);border:1px solid var(--line);border-radius:.4rem;padding:.8rem 1.1rem;position:relative}
+  .tile h3{font-size:.85rem;letter-spacing:.2em;color:var(--dim);font-weight:500}
+  .tile .v{font-size:2rem;font-weight:300;font-variant-numeric:tabular-nums;line-height:1.15}
+  .tile .v small{font-size:1rem;color:var(--dim);margin-left:.2rem}
+  .tile svg{position:absolute;right:.9rem;bottom:.7rem;width:42%;height:2rem}
+  .tile path{fill:none;stroke:var(--blue);stroke-width:1.6;opacity:.85}
+  .unk{color:var(--dim)!important}
+  .alert .v{color:var(--warn)}
+
+  /* studio surface: Serato / stems / DDJ, labelled slots only, no illustration */
+  .studio{flex:1;display:grid;grid-template-columns:1.1fr 1.5fr .9fr;gap:1.4rem;margin-top:1rem}
+  .slot{background:var(--panel2);border:1px solid var(--line);border-radius:.4rem;padding:1.1rem 1.3rem;display:flex;flex-direction:column;gap:.9rem;min-height:0}
+  .slot h3{font-size:1.1rem;letter-spacing:.16em;font-weight:600}
+  .slot>.kv,.slot>.stem{flex:1}
+  .kv{display:flex;justify-content:space-between;align-items:baseline;font-size:1.15rem;border-bottom:1px solid var(--line);padding:.55rem 0}
+  .kv:last-child{border-bottom:0}
+  .kv span:first-child{color:var(--dim)}
+  .kv span:last-child{font-weight:600;letter-spacing:.08em}
+  .stem{display:grid;grid-template-columns:6.5rem 1fr 2rem;align-items:center;gap:.9rem;font-size:1.15rem;padding:.55rem 0}
+  .stem .bar{height:.7rem;border-radius:.4rem;background:#0c0f14;border:1px solid var(--line)}
+  .stem em{font-style:normal;color:var(--dim);text-align:right}
+  .meter{display:flex;gap:1.2rem;flex:1;min-height:0;padding-top:.4rem}
+  .meter div{flex:1;display:flex;flex-direction:column;align-items:center;gap:.6rem}
+  .meter .col2{flex:1;width:100%;border-radius:.3rem;background:#0c0f14;border:1px solid var(--line)}
+  .meter b{font-size:1rem;color:var(--dim);letter-spacing:.14em}
+
+  /* AI Operations */
+  .ops{display:flex;flex-direction:column;gap:.2rem}
+  .ops .row{display:flex;justify-content:space-between;align-items:center;font-size:1.25rem;padding:1.05rem 0;border-bottom:1px solid var(--line)}
+  .ops .row:last-of-type{border-bottom:0}
+  .ops .row span:last-child{color:var(--dim);letter-spacing:.12em;font-weight:600}
+
+  /* production chain */
+  .chain{display:flex;align-items:center;justify-content:space-between;gap:1rem;font-size:1.5rem;letter-spacing:.24em;font-weight:600;
+         background:var(--panel);border:1px solid var(--line);border-radius:.5rem;padding:1rem 1.6rem}
+  .chain .s{flex:1;text-align:center;padding:.9rem 0;border:1px solid var(--line);border-radius:.4rem;color:var(--dim)}
+  .chain .s.cur{color:var(--ink);border-color:var(--blue);box-shadow:0 0 1.2rem rgba(106,168,255,.25)}
+  .chain i{font-style:normal;color:var(--dim);opacity:.5}
+  .chain .rel{opacity:.4;cursor:not-allowed;border-style:dashed;text-decoration:line-through;text-decoration-thickness:1px}
+  .stagebar{display:flex;justify-content:space-between;font-size:.95rem;color:var(--dim);letter-spacing:.14em;margin-top:-.5rem}
+
+  footer{display:flex;justify-content:space-between;color:var(--dim);font-size:.95rem;letter-spacing:.12em}
+  .dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;background:var(--dim);margin-right:.6rem}
+  .dot.ok{background:var(--blue);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.35}}
+
+  /* camera mode: transparent centre, minimal edge HUD */
+  html.camera,html.camera body{background:transparent}
+  body.camera .glow,body.camera .layout,body.camera .chain,body.camera .stagebar,body.camera header p{display:none}
+  body.camera .wrap{padding:1.2rem 1.6rem}
+  body.camera header h1{font-size:1rem}
+  body.camera .hud{display:flex}
+  .hud{display:none;position:fixed;left:1.6rem;right:1.6rem;bottom:1.2rem;justify-content:space-between;font-size:.95rem;letter-spacing:.14em;color:#fff;text-shadow:0 1px 3px #000;z-index:2}
+  @media (prefers-reduced-motion:reduce){.glow,.dot.ok{animation:none}}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="wrap">
+  <header>
+    <h1>OPSAFTERDARK / AI FACTORY STUDIO</h1>
+    <p>Human-directed music production</p>
+  </header>
+
+  <div class="layout">
+    <div class="col">
+      <section class="panel">
+        <h2>Control Room</h2>
+        <div class="tele" style="margin-top:.9rem">
+          <div class="tile" id="c-cpu"><h3>CPU</h3><div class="v unk" id="cpu">UNKNOWN</div><svg viewBox="0 0 120 34" preserveAspectRatio="none"><path id="p-cpu" d=""/></svg></div>
+          <div class="tile" id="c-gpu"><h3>GPU</h3><div class="v unk" id="gpu">UNKNOWN</div><svg viewBox="0 0 120 34" preserveAspectRatio="none"><path id="p-gpu" d=""/></svg></div>
+          <div class="tile"><h3>GPU TEMP</h3><div class="v unk" id="temp">UNKNOWN</div></div>
+          <div class="tile"><h3>RAM</h3><div class="v unk" id="ram">UNKNOWN</div></div>
+        </div>
+        <div class="studio">
+          <div class="slot">
+            <h3>SERATO · DDJ-SX2</h3>
+            <div class="kv"><span>Serato</span><span>UNVERIFIED</span></div>
+            <div class="kv"><span>DDJ-SX2</span><span>UNVERIFIED</span></div>
+            <div class="kv"><span>Ableton</span><span>UNVERIFIED</span></div>
+            <div class="kv"><span>Audio path</span><span>—</span></div>
+            <div class="kv"><span>Track</span><span>—</span></div>
+            <div class="kv"><span>BPM</span><span>—</span></div>
+          </div>
+          <div class="slot">
+            <h3>STEMS</h3>
+            <div class="stem"><span>Vocals</span><div class="bar"></div><em>—</em></div>
+            <div class="stem"><span>Melody</span><div class="bar"></div><em>—</em></div>
+            <div class="stem"><span>Bass</span><div class="bar"></div><em>—</em></div>
+            <div class="stem"><span>Drums</span><div class="bar"></div><em>—</em></div>
+            <p class="note">No stem data source. Empty until a verified feed exists.</p>
+          </div>
+          <div class="slot">
+            <h3>MASTER</h3>
+            <div class="meter"><div><div class="col2"></div><b>L —</b></div><div><div class="col2"></div><b>R —</b></div></div>
+            <p class="note">MASTER L/R: UNKNOWN</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="panel ops">
+      <h2>AI Operations</h2>
+      <p class="note" style="margin-bottom:.6rem">Per-agent telemetry: not available</p>
+      <div class="row"><span>Claude</span><span>UNKNOWN</span></div>
+      <div class="row"><span>OpenCode</span><span>UNKNOWN</span></div>
+      <div class="row"><span>Music agent</span><span>UNKNOWN</span></div>
+      <div class="row"><span>Reviewer</span><span>UNKNOWN</span></div>
+      <div class="row"><span>Human approval</span><span>—</span></div>
+    </aside>
+  </div>
+
+  <div class="chain" id="chain">
+    <span class="s">COMPOSE</span><i>→</i><span class="s">ARRANGE</span><i>→</i><span class="s">MIX</span><i>→</i><span class="s">MASTER</span><i>→</i>
+    <span class="s rel" aria-disabled="true" title="Awaiting explicit human approval — no evidence">RELEASE</span>
+  </div>
+  <div class="stagebar"><span>CURRENT STAGE: UNKNOWN</span><span>RELEASE LOCKED — AWAITING HUMAN APPROVAL</span></div>
+
+  <footer><span><span class="dot" id="dot"></span><span id="state">UNKNOWN</span></span><span id="age">—</span></footer>
+</div>
+<div class="hud"><span>OPSAFTERDARK / AI FACTORY STUDIO</span><span id="hud-m">CPU — · GPU —</span></div>
+<script>
+(function(){
+  var mode=(new URLSearchParams(location.search).get('mode')||'mission');
+  if(mode==='camera'){document.documentElement.classList.add('camera');document.body.classList.add('camera')}
+  var N=60,hist={cpu:[],gpu:[]},cur={},lastOk=0,STALE=6000;
+  var $=function(i){return document.getElementById(i)};
+  function num(x){return typeof x==='number'&&isFinite(x)}
+  function tween(el,key,to,suffix){
+    var from=cur[key];cur[key]=to;
+    if(!num(to)){el.textContent='UNKNOWN';el.className='v unk';return}
+    el.className='v';
+    if(!num(from)||matchMedia('(prefers-reduced-motion:reduce)').matches){el.innerHTML=Math.round(to)+'<small>'+suffix+'</small>';return}
+    var t0=performance.now();
+    (function f(t){var k=Math.min(1,(t-t0)/600),e=1-Math.pow(1-k,3);
+      el.innerHTML=Math.round(from+(to-from)*e)+'<small>'+suffix+'</small>';
+      if(k<1&&cur[key]===to)requestAnimationFrame(f)})(t0);
+  }
+  function spark(id,arr){
+    if(arr.length<2){$(id).setAttribute('d','');return}
+    var d=arr.map(function(v,i){return(i?'L':'M')+(i*120/(N-1)).toFixed(1)+' '+(32-v/100*30).toFixed(1)}).join('');
+    $(id).setAttribute('d',d);
+  }
+  function push(a,v){a.push(v);if(a.length>N)a.shift()}
+  function render(m){
+    tween($('cpu'),'cpu',m&&m.cpu,'%');
+    tween($('gpu'),'gpu',m&&m.gpu,'%');
+    tween($('temp'),'temp',m&&m.gpuTemp,'°C');
+    tween($('ram'),'ram',m&&m.ram,'%');
+    $('c-gpu').classList.toggle('alert',!!(m&&m.gpuAlert));
+    $('hud-m').textContent='CPU '+(m&&num(m.cpu)?Math.round(m.cpu)+'%':'—')+' · GPU '+(m&&num(m.gpu)?Math.round(m.gpu)+'%':'—');
+  }
+  function poll(){
+    var ctl=new AbortController(),to=setTimeout(function(){ctl.abort()},1500);
+    fetch('/metrics',{cache:'no-store',signal:ctl.signal}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(m){
+      clearTimeout(to);lastOk=Date.now();render(m);
+      if(num(m.cpu))push(hist.cpu,m.cpu);if(num(m.gpu))push(hist.gpu,m.gpu);
+      spark('p-cpu',hist.cpu);spark('p-gpu',hist.gpu);
+    }).catch(function(){clearTimeout(to)});
+  }
+  function tick(){
+    var age=lastOk?Date.now()-lastOk:Infinity,live=age<STALE;
+    if(!live&&lastOk)render(null);
+    $('dot').className='dot'+(live?' ok':'');
+    $('state').textContent=live?'TELEMETRY LIVE':'UNKNOWN';
+    $('age').textContent=lastOk?('updated '+Math.round(age/1000)+'s ago'):'—';
+  }
+  poll();setInterval(poll,2000);setInterval(tick,1000);tick();
+})();
+</script>
+</body>
+</html>
