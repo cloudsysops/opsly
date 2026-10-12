@@ -7,6 +7,7 @@ import { isSafeBranchName } from '../guards.js';
 import { compactPaneTail, redactSecrets } from '../redact.js';
 import { parsePorcelainZ } from '../recovery.js';
 import { createSession, getSession, listSessions } from '../index.js';
+import { saveSession } from '../store.js';
 
 let stateDir = '';
 
@@ -100,3 +101,30 @@ describe('store durability', () => {
   });
 });
 
+describe('review follow-ups', () => {
+  it('redacts a quoted secret even when truncation removed the closing quote', () => {
+    const cmd = `export password="${'S3CRETvalue'.repeat(30)}"`;
+    expect(redactSecrets(cmd.slice(0, 200))).not.toContain('S3CRET');
+    expect(redactSecrets("echo token='abc12345")).not.toContain('abc12345');
+  });
+
+  it('concurrent saveSession calls on one session never collide on the temp file', async () => {
+    const now = new Date().toISOString();
+    const meta = (n: number) => ({
+      sessionId: 'same',
+      name: 'x',
+      agentId: 'a',
+      workspace: '/tmp',
+      status: 'running' as const,
+      createdAt: now,
+      lastSeenAt: now,
+      tmuxSessionName: 'opsly-same',
+      lastCommand: `c${n}`,
+    });
+    const results = await Promise.allSettled(
+      Array.from({ length: 40 }, (_, i) => saveSession(meta(i))),
+    );
+    expect(results.filter((r) => r.status === 'rejected')).toHaveLength(0);
+    expect((await getSession('same'))?.sessionId).toBe('same');
+  });
+});

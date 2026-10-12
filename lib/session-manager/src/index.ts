@@ -123,7 +123,7 @@ export async function sendCommand(input: SendCommandInput): Promise<{ meta: Runt
   await tmuxSendKeys(meta.tmuxSessionName, input.command);
   const output = await tmuxCapturePane(meta.tmuxSessionName);
   const updated = await touch(meta, { status: 'running', lastCommand: redactSecrets(input.command) });
-  await appendSessionLog(input.sessionId, `command: ${input.command.slice(0, 200)}`);
+  await appendSessionLog(input.sessionId, `command: ${redactSecrets(input.command).slice(0, 200)}`);
   return { meta: updated, output };
 }
 

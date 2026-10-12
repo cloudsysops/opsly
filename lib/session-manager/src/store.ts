@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, readdir, rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -31,7 +32,7 @@ export async function saveSession(meta: RuntimeSessionMetadata): Promise<void> {
   const parsed = RuntimeSessionMetadataSchema.parse(meta);
   const target = sessionFilePath(dir, parsed.sessionId);
   // Write-then-rename so a crash mid-write never leaves a truncated session file.
-  const tmp = `${target}.${process.pid}.${Date.now()}.tmp`;
+  const tmp = `${target}.${randomUUID()}.tmp`;
   await writeFile(tmp, JSON.stringify(parsed, null, 2), 'utf8');
   await rename(tmp, target);
 }

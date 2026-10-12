@@ -95,10 +95,18 @@ describe.skipIf(!hasTmux())('session recovery against real tmux', () => {
     await sleep(600);
     expect(existsSync(marker)).toBe(false); // previous command was NOT replayed
 
-    // human approves explicitly
-    await tmuxKillSession(s.tmuxSessionName);
+    // a resume WITHOUT approval must not release the command or flip the status
+    const stillHeld = await resumeSession({ sessionId: s.sessionId });
+    expect(stillHeld.meta.status).toBe('waiting_approval');
+    expect(stillHeld.pendingCommand).toBe(`touch ${marker}`);
+    await sleep(400);
+    expect(existsSync(marker)).toBe(false);
+
+    // human approves through the normal flow: the rebuilt tmux session is STILL ALIVE
+    expect(await tmuxHasSession(s.tmuxSessionName)).toBe(true);
     const approved = await resumeSession({ sessionId: s.sessionId, approveRelaunch: true });
     expect(approved.pendingCommand).toBeUndefined();
+    expect(approved.meta.status).toBe('running');
     expect(await waitFor(() => existsSync(marker))).toBe(true);
   });
 

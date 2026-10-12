@@ -81,6 +81,26 @@ export async function resumeSession(input: ResumeSessionInput): Promise<ResumeSe
   const alive = await tmuxHasSession(meta.tmuxSessionName);
   if (alive) {
     const output = await tmuxCapturePane(meta.tmuxSessionName, 120);
+    if (meta.status === 'waiting_approval') {
+      // A previous rebuild held a command for approval; the rebuilt tmux session is still
+      // alive, so this is where the human's approval arrives.
+      const held = meta.lastCommand?.trim() ?? '';
+      const explicit = input.relaunchCommand?.trim() ?? '';
+      const approved =
+        explicit.length > 0
+          ? explicit
+          : input.approveRelaunch === true && held.length > 0 && !held.includes('***')
+            ? held
+            : '';
+      if (approved.length === 0) {
+        // Still unapproved: stay in waiting_approval, never flip to running.
+        return { meta, mode: 'reattach', output, pendingCommand: held || undefined };
+      }
+      await tmuxSendKeys(meta.tmuxSessionName, approved);
+      const running = await touch(meta, { status: 'running', lastCommand: redactSecrets(approved) });
+      await appendSessionLog(input.sessionId, 'resume relaunch approved (reattach)');
+      return { meta: running, mode: 'reattach', output };
+    }
     const updated = await touch(meta, { status: 'running' });
     await appendSessionLog(input.sessionId, 'resume reattach');
     return { meta: updated, mode: 'reattach', output };
