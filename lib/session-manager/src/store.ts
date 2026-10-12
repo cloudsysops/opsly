@@ -37,6 +37,21 @@ export async function saveSession(meta: RuntimeSessionMetadata): Promise<void> {
   await rename(tmp, target);
 }
 
+/**
+ * Session files written before redaction existed may hold plaintext credentials in
+ * `lastCommand`/`lastCheckpoint`. Scrub them at the load boundary so no reader (API listing,
+ * recovery snapshot, Mission Control) can return them; the next save persists the scrubbed form.
+ * A command that needed scrubbing now contains `***` and is therefore never replayable.
+ */
+function sanitizeLoaded(meta: RuntimeSessionMetadata): RuntimeSessionMetadata {
+  return {
+    ...meta,
+    lastCommand: meta.lastCommand === undefined ? undefined : redactSecrets(meta.lastCommand),
+    lastCheckpoint:
+      meta.lastCheckpoint === undefined ? undefined : redactSecrets(meta.lastCheckpoint),
+  };
+}
+
 const warnedCorrupt = new Set<string>();
 
 export class CorruptSessionError extends Error {
@@ -62,7 +77,7 @@ export async function loadSession(sessionId: string): Promise<RuntimeSessionMeta
     throw err;
   }
   try {
-    return RuntimeSessionMetadataSchema.parse(JSON.parse(raw) as unknown);
+    return sanitizeLoaded(RuntimeSessionMetadataSchema.parse(JSON.parse(raw) as unknown));
   } catch (err) {
     // Distinguish "missing" from "present but unreadable" so a damaged file is never
     // silently reported as a session that does not exist.

@@ -211,6 +211,8 @@ describe.skipIf(!hasTmux())('session recovery against real tmux', () => {
     await tmuxKillSession(s.tmuxSessionName);
     const held = await resumeSession({ sessionId: s.sessionId });
     expect(held.pendingCommand ?? '').not.toContain('hunter2hunter2');
+    // the recovery snapshot embeds the session metadata: it must be scrubbed too
+    expect(JSON.stringify(held.recovery)).not.toContain('hunter2hunter2');
     expect(await readFile(file, 'utf8')).not.toContain('hunter2hunter2');
 
     // even an approval cannot replay a command that had to be sanitised

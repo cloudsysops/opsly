@@ -143,9 +143,16 @@ async function resumeSessionLocked(input: ResumeSessionInput): Promise<ResumeSes
           pendingCommand: held.shown || undefined,
         };
       }
-      // Claim the approval (leave waiting_approval) BEFORE sending anything.
+      // Claim the approval (leave waiting_approval) BEFORE sending anything, and put it back if
+      // the command cannot be delivered, so the held command is never silently lost.
       const running = await touch(meta, { status: 'running', lastCommand: redactSecrets(approved) });
-      await tmuxSendKeys(meta.tmuxSessionName, approved);
+      try {
+        await tmuxSendKeys(meta.tmuxSessionName, approved);
+      } catch (err) {
+        await touch(running, { status: 'waiting_approval', lastCommand: meta.lastCommand });
+        await appendSessionLog(input.sessionId, 'resume approval not delivered, restored waiting_approval');
+        throw err;
+      }
       await appendSessionLog(input.sessionId, 'resume relaunch approved (reattach)');
       return { meta: running, mode: 'reattach', output };
     }
@@ -195,11 +202,17 @@ async function resumeSessionLocked(input: ResumeSessionInput): Promise<ResumeSes
   const previous = describeHeldCommand(previousRaw);
   let pendingCommand: string | undefined;
 
+  const restoreIfNotDelivered = async (err: unknown): Promise<never> => {
+    await touch(updated, { status: meta.status, lastCommand: meta.lastCommand });
+    await appendSessionLog(input.sessionId, 'resume relaunch not delivered, state restored');
+    throw err;
+  };
+
   if (explicit.length > 0) {
     updated = await touch(updated, { lastCommand: redactSecrets(explicit) });
-    await tmuxSendKeys(meta.tmuxSessionName, explicit);
+    await tmuxSendKeys(meta.tmuxSessionName, explicit).catch(restoreIfNotDelivered);
   } else if (previousRaw.length > 0 && input.approveRelaunch === true && previous.replayable) {
-    await tmuxSendKeys(meta.tmuxSessionName, previousRaw);
+    await tmuxSendKeys(meta.tmuxSessionName, previousRaw).catch(restoreIfNotDelivered);
     await appendSessionLog(input.sessionId, 'resume relaunch approved');
   } else if (previousRaw.length > 0) {
     // The previous command may be a deploy, push or delete: never replay it unattended. One

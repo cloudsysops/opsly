@@ -216,3 +216,46 @@ describe('fourth review round', () => {
     expect(cp.lastCommand).toBe('git push');
   });
 });
+
+describe('sixth review round', () => {
+  it.each([
+    ['docker login -u bob -p hunter2hunter2', 'hunter2hunter2'],
+    ['docker login registry.example.com -u bob -p "hunter two"', 'hunter two'],
+    ['podman login -p hunter2hunter2 quay.io', 'hunter2hunter2'],
+  ])('redacts the short password flag of %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it.each([
+    'docker run -p 8080:80 nginx',
+    'docker compose up -d',
+    'kubectl port-forward -p 8080 svc/x',
+    'docker login registry.example.com -u bob',
+  ])('does not treat -p as a secret outside docker login: %s', (input) => {
+    expect(redactSecrets(input)).toBe(input);
+  });
+
+  it('never returns legacy plaintext credentials from getSession or listSessions', async () => {
+    const now = new Date().toISOString();
+    await writeFile(
+      path.join(stateDir, 'legacy.json'),
+      JSON.stringify({
+        sessionId: 'legacy',
+        name: 'x',
+        agentId: 'a',
+        workspace: '/tmp',
+        status: 'running',
+        createdAt: now,
+        lastSeenAt: now,
+        tmuxSessionName: 'opsly-legacy',
+        lastCommand: 'deploy --password hunter2hunter2',
+        lastCheckpoint: '$ export API_KEY=hunter2hunter2',
+      }),
+      'utf8',
+    );
+    expect(JSON.stringify(await getSession('legacy'))).not.toContain('hunter2hunter2');
+    expect(JSON.stringify(await listSessions())).not.toContain('hunter2hunter2');
+    // what was scrubbed is no longer replayable from state
+    expect((await getSession('legacy'))?.lastCommand).toContain('***');
+  });
+});

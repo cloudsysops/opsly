@@ -21,6 +21,12 @@ const REDACTION_RULES: Array<[RegExp, string]> = [
     /\b(set\s+(?:\S+\s+)?)([A-Za-z0-9_]*(?:token|password|passwd|secret|api[_-]?key)[A-Za-z0-9_]*)(\s+)(?!\*\*\*)("[^"]*(?:"|$)|'[^']*(?:'|$)|\S+)/gi,
     '$1$2$3***',
   ],
+  // `docker login -u bob -p secret`: `-p` is only a password for `login`; elsewhere it is a port
+  // or other option (`docker run -p 8080:80`), so the rule is command-aware.
+  [
+    /\b((?:docker|podman|nerdctl)\b[^\n|;&]*?\blogin\b[^\n|;&]*?\s-p)(\s+)(?!\*\*\*)("[^"]*(?:"|$)|'[^']*(?:'|$)|\S+)/gi,
+    '$1$2***',
+  ],
   // `--user alice:secret` / `-u alice:secret`
   [/(--user|-u)(\s+)([^\s:]+):(?!\*\*\*)(\S+)/g, '$1$2$3:***'],
   // Credentials embedded in a URL: scheme://user:secret@host
