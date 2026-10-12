@@ -255,8 +255,19 @@ describe('mission control chat', () => {
         stopped: 0, failed: 0, resumable: 0, stale: 0,
       },
       capabilities: {
-        mode: 'local-first', hasTmux: true, hasDocker: false, hasRedis: false,
-        detectedEditors: [], detectedAgents: [],
+        machine: {
+          os: 'macos',
+          cpuCores: 8,
+          ramGb: 16,
+          gpuAvailable: true,
+          topologyType: 'local-only',
+          dockerEngine: 'colima',
+          maxLocalWorkers: 2,
+          cloudRole: 'none',
+        },
+        capabilities: [],
+        detectedEditors: [],
+        detectedAgents: [],
       },
       dryRun: false,
     };
@@ -281,6 +292,40 @@ describe('mission control chat', () => {
       });
     });
 
+    it('does not treat a bare approval word as authorization to replay a command', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      for (const message of ['approve PR #123', 'this was approved', 'aprobar el despliegue']) {
+        const ctx = createContext({ message, session_id: 'sess-w' });
+        await handleMissionControlChat(ctx);
+        const payload = JSON.parse(ctx.res.body ?? '{}') as { action?: string };
+        expect(payload.action).not.toBe('approve-resume');
+      }
+      expect(mocks.resumeSession).not.toHaveBeenCalled();
+    });
+
+    it('passes an explicit relaunch_command through when approving', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      mocks.resumeSession.mockResolvedValue({
+        meta: { ...waitingSession, status: 'running' },
+        mode: 'reattach',
+      });
+      const ctx = createContext({
+        message: 'approve and relaunch',
+        session_id: 'sess-w',
+        relaunch_command: 'npm run build',
+      });
+      await handleMissionControlChat(ctx);
+      expect(mocks.resumeSession).toHaveBeenCalledWith({
+        sessionId: 'sess-w',
+        approveRelaunch: true,
+        relaunchCommand: 'npm run build',
+      });
+    });
+
     it('never approves "the latest session" when no session_id is given', async () => {
       mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
       mocks.listSessions.mockResolvedValue([waitingSession]);
@@ -298,7 +343,7 @@ describe('mission control chat', () => {
       mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
       mocks.listSessions.mockResolvedValue([{ ...waitingSession, status: 'running' }]);
       mocks.resumeSession.mockClear();
-      const ctx = createContext({ message: 'approve', session_id: 'sess-w' });
+      const ctx = createContext({ message: 'approve and resume', session_id: 'sess-w' });
       await handleMissionControlChat(ctx);
 
       const payload = JSON.parse(ctx.res.body ?? '{}') as { action?: string };

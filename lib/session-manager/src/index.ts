@@ -64,12 +64,24 @@ async function touch(meta: RuntimeSessionMetadata, patch: Partial<RuntimeSession
   return next;
 }
 
+function projectStatus(s: RuntimeSessionMetadata, tmuxAlive: boolean): RuntimeSessionStatus {
+  if (tmuxAlive) {
+    return s.status;
+  }
+  // A pending human decision outlives its tmux pane (e.g. after a host restart): keep it
+  // visible as waiting_approval so the operator can still approve and rebuild the session.
+  if (s.status === 'stopped' || s.status === 'waiting_approval') {
+    return s.status;
+  }
+  return 'resumable';
+}
+
 export async function listSessions(): Promise<RuntimeSessionMetadata[]> {
   const stored = await listStoredSessions();
   const live = new Set(await tmuxListSessions());
   return stored.map((s) => ({
     ...s,
-    status: live.has(s.tmuxSessionName) ? s.status : s.status === 'stopped' ? 'stopped' : 'resumable',
+    status: projectStatus(s, live.has(s.tmuxSessionName)),
   }));
 }
 

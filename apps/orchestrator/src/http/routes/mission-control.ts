@@ -17,6 +17,8 @@ import { collectRuntimeHealthSnapshot } from '../../runtime/runtime-health.js';
 type MissionControlChatRequest = {
   message?: string;
   session_id?: string;
+  /** Explicit command to run when approving; required when the held command had secrets redacted. */
+  relaunch_command?: string;
   tenant_slug?: string;
   initiative?: string;
   workspace?: string;
@@ -127,8 +129,12 @@ function parseChatIntent(message: string): {
   if (/(checkpoint|snapshot)/.test(lower)) {
     return { action: 'checkpoint', humanApprovalRequired: false };
   }
-  // Approving a held relaunch is an explicit operator action (this route is admin-gated).
-  if (/\b(approve|approved|aprueba|aprobar|apruebo)\b/.test(lower)) {
+  // Approving a held relaunch replays a command that may deploy, push or delete, so a bare
+  // approval word is not enough ("approve PR #123"): the message must also ask to resume.
+  if (
+    /\b(approve|aprueba|aprobar|apruebo)\b/.test(lower) &&
+    /\b(resume|relaunch|reattach|rerun|re-run|reanuda|reanudar|relanza|relanzar)\b/.test(lower)
+  ) {
     return { action: 'approve-resume', humanApprovalRequired: false };
   }
   if (/(resume|reattach)/.test(lower)) {
@@ -284,9 +290,14 @@ export async function handleMissionControlChat(ctx: RouteContext): Promise<void>
       } satisfies MissionControlChatResponse);
       return;
     }
+    const explicitCommand =
+      typeof request.relaunch_command === 'string' && request.relaunch_command.trim().length > 0
+        ? request.relaunch_command.trim()
+        : undefined;
     const approved = await resumeSession({
       sessionId: requestedSession.sessionId,
       approveRelaunch: true,
+      relaunchCommand: explicitCommand,
     });
     jsonResponse(ctx.res, 200, {
       ok: true,
@@ -294,7 +305,7 @@ export async function handleMissionControlChat(ctx: RouteContext): Promise<void>
       summary: `Approved relaunch for session ${approved.meta.sessionId}.`,
       reply:
         approved.meta.status === 'waiting_approval'
-          ? 'The held command could not be replayed from state (its secrets were redacted); resend it explicitly as relaunch_command.'
+          ? 'The held command had secrets redacted and cannot be replayed from state. Resend this request with the command in the relaunch_command body field (API only: the admin chat UI does not send it yet), or run it manually in the tmux session.'
           : (approved.output ?? 'Approved command relaunched in the existing tmux pane.'),
       worker_recommendation: recommendationForSession(approved.meta),
       human_approval_required: approved.meta.status === 'waiting_approval',

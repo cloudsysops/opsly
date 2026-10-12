@@ -162,3 +162,21 @@ describe('second review round', () => {
     }
   });
 });
+
+describe('third review round', () => {
+  it('keeps waiting_approval visible when its tmux session is gone', async () => {
+    const created = await createSession({ name: 'held', agentId: 'a', workspace: '/tmp' });
+    const { getSession: get } = await import('../index.js');
+    const stored = await get(created.sessionId);
+    await saveSession({ ...stored!, status: 'waiting_approval' });
+    // dry-run lists no live tmux sessions, i.e. every pane is "gone"
+    const listed = (await listSessions()).find((s) => s.sessionId === created.sessionId);
+    expect(listed?.status).toBe('waiting_approval');
+  });
+
+  it('still projects other statuses to resumable when tmux is gone', async () => {
+    const created = await createSession({ name: 'run', agentId: 'a', workspace: '/tmp' });
+    const listed = (await listSessions()).find((s) => s.sessionId === created.sessionId);
+    expect(listed?.status).toBe('resumable');
+  });
+});
