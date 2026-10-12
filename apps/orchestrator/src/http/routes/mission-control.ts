@@ -262,15 +262,17 @@ export async function handleMissionControlChat(ctx: RouteContext): Promise<void>
     const result = await resumeSession({
       sessionId: selectedSession.sessionId,
     });
+    const awaitingApproval = result.pendingCommand !== undefined;
     jsonResponse(ctx.res, 200, {
       ok: true,
       action: 'resume-session',
       summary: `Resumed session ${result.meta.sessionId} in ${result.mode} mode.`,
-      reply:
-        result.output ??
-        `Session ${result.meta.sessionId} resumed. Continue from the existing tmux pane.`,
+      reply: awaitingApproval
+        ? `Session ${result.meta.sessionId} was rebuilt. Its previous command was NOT re-run; approve it to continue: ${result.pendingCommand}`
+        : (result.output ??
+          `Session ${result.meta.sessionId} resumed. Continue from the existing tmux pane.`),
       worker_recommendation: recommendationForSession(result.meta),
-      human_approval_required: false,
+      human_approval_required: awaitingApproval,
       session: compactSession(result.meta),
       recovery: result.recovery,
       capabilities: snapshot.capabilities,

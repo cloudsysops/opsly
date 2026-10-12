@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 
+import { assertSafeBranchName } from './guards.js';
+import { compactPaneTail, redactSecrets } from './redact.js';
+import { gitCheckpointState } from './recovery.js';
 import {
   appendSessionLog,
   listStoredSessions,
@@ -25,7 +28,9 @@ import type {
 } from './types.js';
 
 export * from './types.js';
-export { resolveStateDir } from './store.js';
+export { resolveStateDir, CorruptSessionError } from './store.js';
+export { redactSecrets } from './redact.js';
+export { isSafeBranchName } from './guards.js';
 export { resumeSession, type ResumeSessionInput, type ResumeSessionResult, type ResumeMode } from './resume.js';
 export {
   buildRecoverySnapshot,
@@ -73,6 +78,9 @@ export async function getSession(sessionId: string): Promise<RuntimeSessionMetad
 }
 
 export async function createSession(input: CreateSessionInput): Promise<RuntimeSessionMetadata> {
+  if (input.branch !== undefined && input.branch.trim().length > 0) {
+    assertSafeBranchName(input.branch);
+  }
   const sessionId = randomUUID();
   const tmuxName = input.tmuxSessionName?.trim()
     ? tmuxSessionName(input.tmuxSessionName.trim().replace(/^opsly-/, ''))
@@ -98,7 +106,7 @@ export async function createSession(input: CreateSessionInput): Promise<RuntimeS
   }
   const updated = await touch(meta, {
     status: running ? 'running' : 'failed',
-    lastCommand: input.initialCommand,
+    lastCommand: input.initialCommand ? redactSecrets(input.initialCommand) : undefined,
   });
   await appendSessionLog(sessionId, `session created agent=${input.agentId} job=${input.jobId ?? '-'}`);
   return updated;
@@ -114,7 +122,7 @@ export async function sendCommand(input: SendCommandInput): Promise<{ meta: Runt
   }
   await tmuxSendKeys(meta.tmuxSessionName, input.command);
   const output = await tmuxCapturePane(meta.tmuxSessionName);
-  const updated = await touch(meta, { status: 'running', lastCommand: input.command });
+  const updated = await touch(meta, { status: 'running', lastCommand: redactSecrets(input.command) });
   await appendSessionLog(input.sessionId, `command: ${input.command.slice(0, 200)}`);
   return { meta: updated, output };
 }
@@ -145,9 +153,12 @@ export async function checkpointSession(
     throw new Error(`Session not found: ${sessionId}`);
   }
   const output = await tmuxCapturePane(meta.tmuxSessionName, 80);
+  const git = await gitCheckpointState(meta.workspace);
   const updated = await touch(meta, {
     status: 'checkpointed',
-    lastCheckpoint: note ?? output.slice(-500),
+    // Pane text is untrusted: redact before it is persisted or returned by the API.
+    lastCheckpoint: compactPaneTail(note ?? output),
+    checkpointData: { capturedAt: nowIso(), ...git },
   });
   await appendSessionLog(sessionId, `checkpoint ${note ?? 'auto'}`);
   return updated;

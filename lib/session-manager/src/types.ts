@@ -37,6 +37,15 @@ export const RuntimeSessionMetadataSchema = z.object({
   lastSeenAt: z.string().datetime(),
   lastCommand: z.string().optional(),
   lastCheckpoint: z.string().optional(),
+  /** Structured, redacted state captured by checkpointSession. */
+  checkpointData: z
+    .object({
+      capturedAt: z.string().datetime(),
+      gitSha: z.string().optional(),
+      gitBranch: z.string().optional(),
+      dirtyFiles: z.array(z.string()),
+    })
+    .optional(),
   tmuxSessionName: z.string().min(1),
 });
 

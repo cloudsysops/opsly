@@ -1,3 +1,8 @@
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+import { isSafeBranchName } from './guards.js';
+import { redactSecrets } from './redact.js';
 import { appendSessionLog, loadSession, saveSession } from './store.js';
 import { buildRecoverySnapshot, type RecoverySnapshot } from './recovery.js';
 import {
@@ -11,7 +16,10 @@ import type { RuntimeSessionMetadata } from './types.js';
 
 export interface ResumeSessionInput {
   sessionId: string;
+  /** Explicit command to run after rebuild. Passing it is the caller's approval for that command. */
   relaunchCommand?: string;
+  /** Human approval to re-run the session's previous `lastCommand`. Off by default. */
+  approveRelaunch?: boolean;
   dryRun?: boolean;
 }
 
@@ -22,6 +30,8 @@ export interface ResumeSessionResult {
   mode: ResumeMode;
   recovery?: RecoverySnapshot;
   output?: string;
+  /** Previous command held back until a human approves it (status is `waiting_approval`). */
+  pendingCommand?: string;
 }
 
 function nowIso(): string {
@@ -38,9 +48,20 @@ async function touch(meta: RuntimeSessionMetadata, patch: Partial<RuntimeSession
   return next;
 }
 
-function branchCheckoutCommand(branch: string): string {
-  const safe = branch.replace(/"/g, '');
-  return `git checkout "${safe}"`;
+const execFileAsync = promisify(execFile);
+
+/** Runs git directly (no shell), so branch names can never be interpreted as commands. */
+async function checkoutBranch(workspace: string, branch: string): Promise<string | null> {
+  if (!isSafeBranchName(branch)) {
+    return `skipped checkout: unsafe branch name`;
+  }
+  try {
+    await execFileAsync('git', ['checkout', branch, '--'], { cwd: workspace, timeout: 15000 });
+    return null;
+  } catch (err) {
+    const stderr = (err as { stderr?: string }).stderr?.trim();
+    return `checkout failed: ${(stderr ?? 'unknown error').split('\n')[0]}`;
+  }
 }
 
 export async function resumeSession(input: ResumeSessionInput): Promise<ResumeSessionResult> {
@@ -90,19 +111,30 @@ export async function resumeSession(input: ResumeSessionInput): Promise<ResumeSe
 
   let updated = await touch(meta, { status: 'running' });
 
-  if (meta.branch && meta.branch.trim().length > 0) {
-    const checkout = branchCheckoutCommand(meta.branch);
-    await tmuxSendKeys(meta.tmuxSessionName, checkout);
-    updated = await touch(updated, { lastCommand: checkout });
+  if (meta.branch && meta.branch.trim().length > 0 && !isDryRun()) {
+    const problem = await checkoutBranch(meta.workspace, meta.branch);
+    if (problem) {
+      await appendSessionLog(input.sessionId, `resume ${problem}`);
+    }
   }
 
-  const relaunch =
-    input.relaunchCommand?.trim() ||
-    meta.lastCommand?.trim() ||
-    '';
-  if (relaunch.length > 0) {
-    await tmuxSendKeys(meta.tmuxSessionName, relaunch);
-    updated = await touch(updated, { lastCommand: relaunch });
+  const explicit = input.relaunchCommand?.trim() ?? '';
+  const previous = meta.lastCommand?.trim() ?? '';
+  let pendingCommand: string | undefined;
+
+  if (explicit.length > 0) {
+    await tmuxSendKeys(meta.tmuxSessionName, explicit);
+    updated = await touch(updated, { lastCommand: redactSecrets(explicit) });
+  } else if (previous.length > 0 && input.approveRelaunch === true && !previous.includes('***')) {
+    await tmuxSendKeys(meta.tmuxSessionName, previous);
+    await appendSessionLog(input.sessionId, 'resume relaunch approved');
+  } else if (previous.length > 0) {
+    // A stored command containing `***` had secrets redacted at write time and cannot be
+    // replayed from state; the caller must supply it explicitly via `relaunchCommand`.
+    // The previous command may be a deploy, push or delete: never replay it unattended.
+    pendingCommand = previous;
+    updated = await touch(updated, { status: 'waiting_approval' });
+    await appendSessionLog(input.sessionId, 'resume holding previous command for approval');
   }
 
   const output = await tmuxCapturePane(meta.tmuxSessionName, 80);
@@ -113,5 +145,6 @@ export async function resumeSession(input: ResumeSessionInput): Promise<ResumeSe
     mode: 'rebuild',
     recovery,
     output,
+    pendingCommand,
   };
 }

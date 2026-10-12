@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 
 import { listBranchEntries, resolveRepoRoot } from '@intcloudsysops/git-branch-orchestrator';
 
+import { redactSecrets } from './redact.js';
 import { appendSessionLog, loadSession, resolveStateDir } from './store.js';
 import { isDryRun, tmuxHasSession } from './tmux.js';
 import type { RuntimeSessionMetadata } from './types.js';
@@ -40,7 +41,7 @@ async function readLogsTail(sessionId: string, maxLines = 40): Promise<string | 
   try {
     const raw = await readFile(logPath, 'utf8');
     const lines = raw.trim().split('\n');
-    return lines.slice(-maxLines).join('\n');
+    return redactSecrets(lines.slice(-maxLines).join('\n'));
   } catch {
     return undefined;
   }
@@ -58,6 +59,39 @@ async function runGit(args: string[], cwd: string): Promise<{ stdout: string; st
   }
 }
 
+export function parsePorcelainZ(stdout: string): string[] {
+  const entries = stdout.split('\0').filter((e) => e.length > 0);
+  const files: string[] = [];
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    const code = entry.slice(0, 2);
+    files.push(entry.slice(3));
+    // Renames/copies are followed by an extra NUL-separated "original path" entry.
+    if (code.includes('R') || code.includes('C')) {
+      i++;
+    }
+  }
+  return files;
+}
+
+export async function gitCheckpointState(
+  workspace: string,
+): Promise<{ gitSha?: string; gitBranch?: string; dirtyFiles: string[] }> {
+  if (isDryRun()) {
+    return { dirtyFiles: [] };
+  }
+  const [sha, branch, porcelain] = await Promise.all([
+    runGit(['rev-parse', 'HEAD'], workspace),
+    runGit(['rev-parse', '--abbrev-ref', 'HEAD'], workspace),
+    runGit(['status', '--porcelain', '-z', '--untracked-files=all'], workspace),
+  ]);
+  return {
+    gitSha: sha.stdout.trim() || undefined,
+    gitBranch: branch.stdout.trim() || undefined,
+    dirtyFiles: parsePorcelainZ(porcelain.stdout),
+  };
+}
+
 async function gitSnapshot(
   workspace: string,
 ): Promise<{ status?: string; diffStat?: string; changedFiles: string[] }> {
@@ -69,15 +103,13 @@ async function gitSnapshot(
     };
   }
   try {
-    const [status, diffStat, nameOnly] = await Promise.all([
+    const [status, diffStat, porcelain] = await Promise.all([
       runGit(['status', '--short'], workspace),
       runGit(['diff', '--stat'], workspace),
-      runGit(['diff', '--name-only'], workspace),
+      runGit(['status', '--porcelain', '-z', '--untracked-files=all'], workspace),
     ]);
-    const changedFiles = nameOnly.stdout
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
+    // porcelain includes staged and untracked files, which `git diff --name-only` misses.
+    const changedFiles = parsePorcelainZ(porcelain.stdout);
     return {
       status: status.stdout.trim() || status.stderr.trim() || undefined,
       diffStat: diffStat.stdout.trim() || undefined,
