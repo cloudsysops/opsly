@@ -110,6 +110,7 @@ function parseChatIntent(message: string): {
   action:
     | 'continue'
     | 'resume'
+    | 'approve-resume'
     | 'checkpoint'
     | 'stop'
     | 'stale'
@@ -125,6 +126,10 @@ function parseChatIntent(message: string): {
   }
   if (/(checkpoint|snapshot)/.test(lower)) {
     return { action: 'checkpoint', humanApprovalRequired: false };
+  }
+  // Approving a held relaunch is an explicit operator action (this route is admin-gated).
+  if (/\b(approve|approved|aprueba|aprobar|apruebo)\b/.test(lower)) {
+    return { action: 'approve-resume', humanApprovalRequired: false };
   }
   if (/(resume|reattach)/.test(lower)) {
     return { action: 'resume', humanApprovalRequired: false };
@@ -252,6 +257,48 @@ export async function handleMissionControlChat(ctx: RouteContext): Promise<void>
       reply: 'Provide session_id to resume, checkpoint, or stop a tmux-backed session.',
       worker_recommendation: workerRecommendation,
       human_approval_required: intent.humanApprovalRequired,
+      capabilities: snapshot.capabilities,
+      session_summary: snapshot.sessionSummary,
+    } satisfies MissionControlChatResponse);
+    return;
+  }
+
+  if (intent.action === 'approve-resume') {
+    // Approval must name its session: never approve "whatever is latest".
+    const waiting = sessions.filter((session) => session.status === 'waiting_approval');
+    if (!requestedSession || requestedSession.status !== 'waiting_approval') {
+      jsonResponse(ctx.res, 200, {
+        ok: true,
+        action: 'approve-needs-session',
+        summary: `${waiting.length} session(s) waiting for approval.`,
+        reply:
+          waiting.length > 0
+            ? `Send the message again with session_id set to one of: ${waiting
+                .map((session) => `${session.sessionId} (${session.name})`)
+                .join(', ')}`
+            : 'No session is waiting for approval.',
+        worker_recommendation: workerRecommendation,
+        human_approval_required: waiting.length > 0,
+        capabilities: snapshot.capabilities,
+        session_summary: snapshot.sessionSummary,
+      } satisfies MissionControlChatResponse);
+      return;
+    }
+    const approved = await resumeSession({
+      sessionId: requestedSession.sessionId,
+      approveRelaunch: true,
+    });
+    jsonResponse(ctx.res, 200, {
+      ok: true,
+      action: 'approve-resume',
+      summary: `Approved relaunch for session ${approved.meta.sessionId}.`,
+      reply:
+        approved.meta.status === 'waiting_approval'
+          ? 'The held command could not be replayed from state (its secrets were redacted); resend it explicitly as relaunch_command.'
+          : (approved.output ?? 'Approved command relaunched in the existing tmux pane.'),
+      worker_recommendation: recommendationForSession(approved.meta),
+      human_approval_required: approved.meta.status === 'waiting_approval',
+      session: compactSession(approved.meta),
       capabilities: snapshot.capabilities,
       session_summary: snapshot.sessionSummary,
     } satisfies MissionControlChatResponse);

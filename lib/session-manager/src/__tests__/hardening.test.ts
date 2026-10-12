@@ -8,6 +8,9 @@ import { compactPaneTail, redactSecrets } from '../redact.js';
 import { parsePorcelainZ } from '../recovery.js';
 import { createSession, getSession, listSessions } from '../index.js';
 import { saveSession } from '../store.js';
+import { gitCheckpointState } from '../recovery.js';
+import { execFileSync } from 'node:child_process';
+import { writeFile as writeFileFs, mkdir as mkdirFs } from 'node:fs/promises';
 
 let stateDir = '';
 
@@ -126,5 +129,36 @@ describe('review follow-ups', () => {
     );
     expect(results.filter((r) => r.status === 'rejected')).toHaveLength(0);
     expect((await getSession('same'))?.sessionId).toBe('same');
+  });
+});
+
+describe('second review round', () => {
+  it('redacts secrets behind quoted JSON keys and escaped quotes', () => {
+    expect(redactSecrets('{"password":"correct horse"}')).not.toContain('correct horse');
+    expect(redactSecrets('{"api_key": "abcdef123456"}')).not.toContain('abcdef123456');
+    expect(redactSecrets('{"token":"ab\\"cdefghijkl"}')).not.toContain('cdefghijkl');
+    expect(redactSecrets("{'secret':'s3cr3tvalue'}")).not.toContain('s3cr3tvalue');
+  });
+
+  it('still leaves harmless JSON alone', () => {
+    expect(redactSecrets('{"name":"build","status":"ok"}')).toBe('{"name":"build","status":"ok"}');
+  });
+
+  it('bounds the checkpoint snapshot but keeps the real total', async () => {
+    delete process.env.OPSLY_RUNTIME_DRY_RUN;
+    const repo = await mkdtemp(path.join(tmpdir(), 'opsly-bounded-'));
+    try {
+      execFileSync('git', ['init', '-q', '-b', 'main'], { cwd: repo });
+      await mkdirFs(path.join(repo, 'gen'));
+      await Promise.all(
+        Array.from({ length: 450 }, (_, i) => writeFileFs(path.join(repo, 'gen', `f${i}.txt`), 'x')),
+      );
+      const state = await gitCheckpointState(repo);
+      expect(state.dirtyFiles).toHaveLength(200);
+      expect(state.dirtyTotal).toBe(450);
+      expect(state.dirtyTruncated).toBe(true);
+    } finally {
+      await rm(repo, { recursive: true, force: true });
+    }
   });
 });

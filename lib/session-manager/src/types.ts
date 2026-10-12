@@ -44,6 +44,9 @@ export const RuntimeSessionMetadataSchema = z.object({
       gitSha: z.string().optional(),
       gitBranch: z.string().optional(),
       dirtyFiles: z.array(z.string()),
+      /** Real number of dirty paths; `dirtyFiles` is a bounded sample when `dirtyTruncated`. */
+      dirtyTotal: z.number().int().nonnegative().optional(),
+      dirtyTruncated: z.boolean().optional(),
     })
     .optional(),
   tmuxSessionName: z.string().min(1),

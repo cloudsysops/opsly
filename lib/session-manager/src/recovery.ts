@@ -49,13 +49,26 @@ async function readLogsTail(sessionId: string, maxLines = 40): Promise<string | 
 
 const execFileAsync = promisify(execFile);
 
-async function runGit(args: string[], cwd: string): Promise<{ stdout: string; stderr: string }> {
+const GIT_MAX_BUFFER = 16 * 1024 * 1024;
+/** Persisted checkpoints keep a bounded sample of dirty paths plus the real total. */
+const MAX_DIRTY_FILES = 200;
+const MAX_CHANGED_FILES = 1000;
+
+async function runGit(
+  args: string[],
+  cwd: string,
+): Promise<{ stdout: string; stderr: string; truncated: boolean }> {
   try {
-    const { stdout, stderr } = await execFileAsync('git', args, { cwd });
-    return { stdout, stderr };
+    const { stdout, stderr } = await execFileAsync('git', args, { cwd, maxBuffer: GIT_MAX_BUFFER });
+    return { stdout, stderr, truncated: false };
   } catch (err) {
-    const e = err as { stdout?: string; stderr?: string };
-    return { stdout: e.stdout ?? '', stderr: e.stderr ?? '' };
+    const e = err as { stdout?: string; stderr?: string; code?: string };
+    return {
+      stdout: e.stdout ?? '',
+      stderr: e.stderr ?? '',
+      // Output beyond maxBuffer is cut off: callers must not treat it as a complete listing.
+      truncated: e.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER',
+    };
   }
 }
 
@@ -74,21 +87,28 @@ export function parsePorcelainZ(stdout: string): string[] {
   return files;
 }
 
-export async function gitCheckpointState(
-  workspace: string,
-): Promise<{ gitSha?: string; gitBranch?: string; dirtyFiles: string[] }> {
+export async function gitCheckpointState(workspace: string): Promise<{
+  gitSha?: string;
+  gitBranch?: string;
+  dirtyFiles: string[];
+  dirtyTotal: number;
+  dirtyTruncated: boolean;
+}> {
   if (isDryRun()) {
-    return { dirtyFiles: [] };
+    return { dirtyFiles: [], dirtyTotal: 0, dirtyTruncated: false };
   }
   const [sha, branch, porcelain] = await Promise.all([
     runGit(['rev-parse', 'HEAD'], workspace),
     runGit(['rev-parse', '--abbrev-ref', 'HEAD'], workspace),
     runGit(['status', '--porcelain', '-z', '--untracked-files=all'], workspace),
   ]);
+  const all = parsePorcelainZ(porcelain.stdout);
   return {
     gitSha: sha.stdout.trim() || undefined,
     gitBranch: branch.stdout.trim() || undefined,
-    dirtyFiles: parsePorcelainZ(porcelain.stdout),
+    dirtyFiles: all.slice(0, MAX_DIRTY_FILES),
+    dirtyTotal: all.length,
+    dirtyTruncated: porcelain.truncated || all.length > MAX_DIRTY_FILES,
   };
 }
 
@@ -109,7 +129,7 @@ async function gitSnapshot(
       runGit(['status', '--porcelain', '-z', '--untracked-files=all'], workspace),
     ]);
     // porcelain includes staged and untracked files, which `git diff --name-only` misses.
-    const changedFiles = parsePorcelainZ(porcelain.stdout);
+    const changedFiles = parsePorcelainZ(porcelain.stdout).slice(0, MAX_CHANGED_FILES);
     return {
       status: status.stdout.trim() || status.stderr.trim() || undefined,
       diffStat: diffStat.stdout.trim() || undefined,
