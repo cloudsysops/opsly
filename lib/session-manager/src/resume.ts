@@ -64,7 +64,45 @@ async function checkoutBranch(workspace: string, branch: string): Promise<string
   }
 }
 
-export async function resumeSession(input: ResumeSessionInput): Promise<ResumeSessionResult> {
+/**
+ * Resumes are serialised per session. Two overlapping approvals (a UI retry, a double submit)
+ * would otherwise both read the same `waiting_approval` metadata and both send the held
+ * command, running a deploy/push/delete twice. Inside the lock each call re-reads the state,
+ * so the second one sees `running` and only reattaches.
+ *
+ * This covers one orchestrator process; it is not a cross-host lock.
+ */
+const sessionLocks = new Map<string, Promise<unknown>>();
+
+async function withSessionLock<T>(sessionId: string, fn: () => Promise<T>): Promise<T> {
+  const previous = sessionLocks.get(sessionId) ?? Promise.resolve();
+  const run = previous.then(fn, fn);
+  const tail = run.catch(() => undefined);
+  sessionLocks.set(sessionId, tail);
+  try {
+    return await run;
+  } finally {
+    if (sessionLocks.get(sessionId) === tail) {
+      sessionLocks.delete(sessionId);
+    }
+  }
+}
+
+/**
+ * A held command is only replayable if it needs no sanitising. Metadata written before
+ * redaction existed may still hold plaintext credentials: those are never returned, persisted
+ * or replayed, and the operator must supply a replacement command explicitly.
+ */
+function describeHeldCommand(raw: string): { shown: string; replayable: boolean } {
+  const shown = redactSecrets(raw);
+  return { shown, replayable: raw.length > 0 && shown === raw && !raw.includes('***') };
+}
+
+export function resumeSession(input: ResumeSessionInput): Promise<ResumeSessionResult> {
+  return withSessionLock(input.sessionId, () => resumeSessionLocked(input));
+}
+
+async function resumeSessionLocked(input: ResumeSessionInput): Promise<ResumeSessionResult> {
   const meta = await loadSession(input.sessionId);
   if (!meta) {
     throw new Error(`Session not found: ${input.sessionId}`);
@@ -84,20 +122,30 @@ export async function resumeSession(input: ResumeSessionInput): Promise<ResumeSe
     if (meta.status === 'waiting_approval') {
       // A previous rebuild held a command for approval; the rebuilt tmux session is still
       // alive, so this is where the human's approval arrives.
-      const held = meta.lastCommand?.trim() ?? '';
+      const heldRaw = meta.lastCommand?.trim() ?? '';
+      const held = describeHeldCommand(heldRaw);
       const explicit = input.relaunchCommand?.trim() ?? '';
       const approved =
         explicit.length > 0
           ? explicit
-          : input.approveRelaunch === true && held.length > 0 && !held.includes('***')
-            ? held
+          : input.approveRelaunch === true && held.replayable
+            ? heldRaw
             : '';
       if (approved.length === 0) {
-        // Still unapproved: stay in waiting_approval, never flip to running.
-        return { meta, mode: 'reattach', output, pendingCommand: held || undefined };
+        // Still unapproved (or not replayable): stay in waiting_approval, never flip to running,
+        // and scrub any legacy plaintext from the stored metadata.
+        const scrubbed =
+          held.shown !== heldRaw ? await touch(meta, { lastCommand: held.shown }) : meta;
+        return {
+          meta: scrubbed,
+          mode: 'reattach',
+          output,
+          pendingCommand: held.shown || undefined,
+        };
       }
-      await tmuxSendKeys(meta.tmuxSessionName, approved);
+      // Claim the approval (leave waiting_approval) BEFORE sending anything.
       const running = await touch(meta, { status: 'running', lastCommand: redactSecrets(approved) });
+      await tmuxSendKeys(meta.tmuxSessionName, approved);
       await appendSessionLog(input.sessionId, 'resume relaunch approved (reattach)');
       return { meta: running, mode: 'reattach', output };
     }
@@ -143,21 +191,22 @@ export async function resumeSession(input: ResumeSessionInput): Promise<ResumeSe
   let updated = await touch(meta, { status: 'running' });
 
   const explicit = input.relaunchCommand?.trim() ?? '';
-  const previous = meta.lastCommand?.trim() ?? '';
+  const previousRaw = meta.lastCommand?.trim() ?? '';
+  const previous = describeHeldCommand(previousRaw);
   let pendingCommand: string | undefined;
 
   if (explicit.length > 0) {
-    await tmuxSendKeys(meta.tmuxSessionName, explicit);
     updated = await touch(updated, { lastCommand: redactSecrets(explicit) });
-  } else if (previous.length > 0 && input.approveRelaunch === true && !previous.includes('***')) {
-    await tmuxSendKeys(meta.tmuxSessionName, previous);
+    await tmuxSendKeys(meta.tmuxSessionName, explicit);
+  } else if (previousRaw.length > 0 && input.approveRelaunch === true && previous.replayable) {
+    await tmuxSendKeys(meta.tmuxSessionName, previousRaw);
     await appendSessionLog(input.sessionId, 'resume relaunch approved');
-  } else if (previous.length > 0) {
-    // A stored command containing `***` had secrets redacted at write time and cannot be
-    // replayed from state; the caller must supply it explicitly via `relaunchCommand`.
-    // The previous command may be a deploy, push or delete: never replay it unattended.
-    pendingCommand = previous;
-    updated = await touch(updated, { status: 'waiting_approval' });
+  } else if (previousRaw.length > 0) {
+    // The previous command may be a deploy, push or delete: never replay it unattended. One
+    // that had to be sanitised (stored redacted, or legacy plaintext) can never be replayed
+    // from state; the caller must supply a replacement via `relaunchCommand`.
+    pendingCommand = previous.shown;
+    updated = await touch(updated, { status: 'waiting_approval', lastCommand: previous.shown });
     await appendSessionLog(input.sessionId, 'resume holding previous command for approval');
   }
 

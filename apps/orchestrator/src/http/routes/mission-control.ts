@@ -326,9 +326,19 @@ export async function handleMissionControlChat(ctx: RouteContext): Promise<void>
   }
 
   if (intent.action === 'resume' && selectedSession) {
-    const result = await resumeSession({
-      sessionId: selectedSession.sessionId,
-    });
+    let result: Awaited<ReturnType<typeof resumeSession>>;
+    try {
+      result = await resumeSession({
+        sessionId: selectedSession.sessionId,
+      });
+    } catch (err) {
+      // A blocked recovery (e.g. branch checkout failed) is an expected outcome: answer 409
+      // instead of letting the rejection escape the async request handler.
+      errorResponse(ctx.res, 409, err instanceof Error ? err.message : String(err));
+      return;
+    }
+    // The resume changed the session counters: do not return the pre-resume summary.
+    const refreshed = await collectRuntimeHealthSnapshot().catch(() => snapshot);
     const awaitingApproval = result.pendingCommand !== undefined;
     jsonResponse(ctx.res, 200, {
       ok: true,
@@ -342,8 +352,8 @@ export async function handleMissionControlChat(ctx: RouteContext): Promise<void>
       human_approval_required: awaitingApproval,
       session: compactSession(result.meta),
       recovery: result.recovery,
-      capabilities: snapshot.capabilities,
-      session_summary: snapshot.sessionSummary,
+      capabilities: refreshed.capabilities,
+      session_summary: refreshed.sessionSummary,
     } satisfies MissionControlChatResponse);
     return;
   }

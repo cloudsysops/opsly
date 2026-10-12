@@ -180,6 +180,46 @@ describe.skipIf(!hasTmux())('session recovery against real tmux', () => {
     expect(after?.lastSeenAt).toBe(before?.lastSeenAt);
   });
 
+  it('executes an approved held command exactly once under overlapping approvals', async () => {
+    const out = path.join(base, 'runs.log');
+    const s = await start('true');
+    const file = path.join(base, 'state', `${s.sessionId}.json`);
+    const meta = JSON.parse(await readFile(file, 'utf8'));
+    meta.status = 'waiting_approval';
+    meta.lastCommand = `echo run >> ${out}`;
+    await writeFile(file, JSON.stringify(meta), 'utf8');
+
+    // a double submit / UI retry: both calls see the same waiting_approval metadata
+    await Promise.all([
+      resumeSession({ sessionId: s.sessionId, approveRelaunch: true }),
+      resumeSession({ sessionId: s.sessionId, approveRelaunch: true }),
+    ]);
+    await sleep(900);
+    const runs = (await readFile(out, 'utf8')).trim().split('\n');
+    expect(runs).toHaveLength(1);
+  });
+
+  it('never returns, persists or replays plaintext credentials from legacy session metadata', async () => {
+    const out = path.join(base, 'legacy.log');
+    const s = await start('true');
+    const file = path.join(base, 'state', `${s.sessionId}.json`);
+    const meta = JSON.parse(await readFile(file, 'utf8'));
+    // written by the old store, before redaction existed
+    meta.lastCommand = `echo leaked >> ${out} # --password hunter2hunter2`;
+    await writeFile(file, JSON.stringify(meta), 'utf8');
+
+    await tmuxKillSession(s.tmuxSessionName);
+    const held = await resumeSession({ sessionId: s.sessionId });
+    expect(held.pendingCommand ?? '').not.toContain('hunter2hunter2');
+    expect(await readFile(file, 'utf8')).not.toContain('hunter2hunter2');
+
+    // even an approval cannot replay a command that had to be sanitised
+    const approved = await resumeSession({ sessionId: s.sessionId, approveRelaunch: true });
+    expect(approved.pendingCommand ?? '').not.toContain('hunter2hunter2');
+    await sleep(600);
+    expect(existsSync(out)).toBe(false);
+  });
+
   it('stopped sessions stay stopped and are still readable', async () => {
     const s = await start('true');
     const stopped = await stopSession(s.sessionId);
