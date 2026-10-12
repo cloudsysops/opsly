@@ -5,6 +5,7 @@ import path from 'node:path';
 
 const tmux = vi.hoisted(() => ({
   sendKeys: vi.fn(),
+  capture: vi.fn(async () => ''),
   hasSession: vi.fn(async () => true),
   newSession: vi.fn(async () => undefined),
   killSession: vi.fn(async () => undefined),
@@ -14,7 +15,7 @@ const tmux = vi.hoisted(() => ({
 vi.mock('../tmux.js', () => ({
   isDryRun: () => false,
   tmuxHasSession: tmux.hasSession,
-  tmuxCapturePane: async () => '',
+  tmuxCapturePane: tmux.capture,
   tmuxNewSession: tmux.newSession,
   tmuxSendKeys: tmux.sendKeys,
   tmuxListSessions: async () => [],
@@ -24,7 +25,7 @@ vi.mock('../tmux.js', () => ({
 }));
 
 import { resumeSession } from '../resume.js';
-import { getSession } from '../index.js';
+import { checkpointSession, getSession } from '../index.js';
 import { saveSession } from '../store.js';
 
 let dir = '';
@@ -33,6 +34,7 @@ beforeEach(async () => {
   dir = await mkdtemp(path.join(tmpdir(), 'opsly-delivery-'));
   process.env.OPSLY_RUNTIME_STATE_DIR = dir;
   tmux.sendKeys.mockReset();
+  tmux.capture.mockReset().mockResolvedValue('');
   tmux.hasSession.mockReset().mockResolvedValue(true);
   tmux.newSession.mockClear();
   tmux.killSession.mockClear();
@@ -111,5 +113,28 @@ describe('rebuild relaunch delivery failure', () => {
     await resumeSession({ sessionId: 'dead', relaunchCommand: 'npm run build' });
     expect(tmux.newSession).toHaveBeenCalledTimes(2);
     expect(tmux.sendKeys).toHaveBeenLastCalledWith('opsly-dead', 'npm run build');
+  });
+});
+
+describe('checkpoint racing an approval', () => {
+  it('never lets a stale checkpoint resurrect waiting_approval, so the command runs exactly once', async () => {
+    await heldSession();
+    // pane capture is slow, so the checkpoint loads its state well before it would save
+    tmux.capture.mockImplementation(async () => {
+      await new Promise((r) => setTimeout(r, 150));
+      return '';
+    });
+    tmux.sendKeys.mockResolvedValue(undefined);
+
+    await Promise.all([
+      checkpointSession('held', 'snapshot'),
+      resumeSession({ sessionId: 'held', approveRelaunch: true }),
+    ]);
+    expect(tmux.sendKeys).toHaveBeenCalledTimes(1);
+
+    // a later approval must NOT see a resurrected waiting_approval and run it again
+    await resumeSession({ sessionId: 'held', approveRelaunch: true });
+    expect(tmux.sendKeys).toHaveBeenCalledTimes(1);
+    expect((await getSession('held'))?.status).not.toBe('waiting_approval');
   });
 });

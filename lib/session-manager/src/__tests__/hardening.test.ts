@@ -285,3 +285,18 @@ describe('seventh review round', () => {
     }
   });
 });
+
+describe('eighth review round', () => {
+  it.each([
+    ['Authorization: Digest username="bob", realm="opsly", response="supersecret"', 'supersecret'],
+    ['Authorization: AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20260101/x, Signature=abcdef0123456789', 'abcdef0123456789'],
+    ['curl -H "Authorization: Token correcthorsebattery" https://x.test', 'correcthorsebattery'],
+    ['{"authorization":"Bearer correcthorsebattery"}', 'correcthorsebattery'],
+  ])('redacts every component of the Authorization header in %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it('keeps the header name so the line is still recognisable', () => {
+    expect(redactSecrets('Authorization: Digest a="b", c="d"')).toBe('Authorization: ***');
+  });
+});

@@ -2,6 +2,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
 import { isSafeBranchName } from './guards.js';
+import { withSessionLock } from './lock.js';
 import { redactSecrets } from './redact.js';
 import { appendSessionLog, loadSession, saveSession } from './store.js';
 import { buildRecoverySnapshot, type RecoverySnapshot } from './recovery.js';
@@ -62,30 +63,6 @@ async function checkoutBranch(workspace: string, branch: string): Promise<string
   } catch (err) {
     const stderr = (err as { stderr?: string }).stderr?.trim();
     return `checkout failed: ${(stderr ?? 'unknown error').split('\n')[0]}`;
-  }
-}
-
-/**
- * Resumes are serialised per session. Two overlapping approvals (a UI retry, a double submit)
- * would otherwise both read the same `waiting_approval` metadata and both send the held
- * command, running a deploy/push/delete twice. Inside the lock each call re-reads the state,
- * so the second one sees `running` and only reattaches.
- *
- * This covers one orchestrator process; it is not a cross-host lock.
- */
-const sessionLocks = new Map<string, Promise<unknown>>();
-
-async function withSessionLock<T>(sessionId: string, fn: () => Promise<T>): Promise<T> {
-  const previous = sessionLocks.get(sessionId) ?? Promise.resolve();
-  const run = previous.then(fn, fn);
-  const tail = run.catch(() => undefined);
-  sessionLocks.set(sessionId, tail);
-  try {
-    return await run;
-  } finally {
-    if (sessionLocks.get(sessionId) === tail) {
-      sessionLocks.delete(sessionId);
-    }
   }
 }
 

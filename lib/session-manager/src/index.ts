@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 
 import { assertSafeBranchName } from './guards.js';
+import { withSessionLock } from './lock.js';
 import { compactPaneTail, redactSecrets } from './redact.js';
 import { gitCheckpointState } from './recovery.js';
 import {
@@ -124,7 +125,15 @@ export async function createSession(input: CreateSessionInput): Promise<RuntimeS
   return updated;
 }
 
-export async function sendCommand(input: SendCommandInput): Promise<{ meta: RuntimeSessionMetadata; output: string }> {
+export function sendCommand(
+  input: SendCommandInput,
+): Promise<{ meta: RuntimeSessionMetadata; output: string }> {
+  return withSessionLock(input.sessionId, () => sendCommandLocked(input));
+}
+
+async function sendCommandLocked(
+  input: SendCommandInput,
+): Promise<{ meta: RuntimeSessionMetadata; output: string }> {
   const meta = await loadSession(input.sessionId);
   if (!meta) {
     throw new Error(`Session not found: ${input.sessionId}`);
@@ -147,7 +156,11 @@ export async function captureLogs(sessionId: string, lines = 200): Promise<strin
   return tmuxCapturePane(meta.tmuxSessionName, lines);
 }
 
-export async function stopSession(sessionId: string): Promise<RuntimeSessionMetadata> {
+export function stopSession(sessionId: string): Promise<RuntimeSessionMetadata> {
+  return withSessionLock(sessionId, () => stopSessionLocked(sessionId));
+}
+
+async function stopSessionLocked(sessionId: string): Promise<RuntimeSessionMetadata> {
   const meta = await loadSession(sessionId);
   if (!meta) {
     throw new Error(`Session not found: ${sessionId}`);
@@ -156,9 +169,16 @@ export async function stopSession(sessionId: string): Promise<RuntimeSessionMeta
   return touch(meta, { status: 'stopped' });
 }
 
-export async function checkpointSession(
+export function checkpointSession(
   sessionId: string,
-  note?: string
+  note?: string,
+): Promise<RuntimeSessionMetadata> {
+  return withSessionLock(sessionId, () => checkpointSessionLocked(sessionId, note));
+}
+
+async function checkpointSessionLocked(
+  sessionId: string,
+  note?: string,
 ): Promise<RuntimeSessionMetadata> {
   const meta = await loadSession(sessionId);
   if (!meta) {

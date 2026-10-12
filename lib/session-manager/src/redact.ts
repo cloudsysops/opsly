@@ -6,12 +6,11 @@
 const REDACTION_RULES: Array<[RegExp, string]> = [
   // Authorization: Bearer xxx / Bearer xxx
   [/\b(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}/gi, '$1 ***'],
-  // Authorization with any scheme (Bearer, Basic, Token, ApiKey, Digest, ...): redact the scheme
-  // AND the credential, not just the first word after the colon.
-  [
-    /\b(authorization["']?\s*[=:]\s*)(?!\*\*\*)(?:[A-Za-z][A-Za-z0-9_-]*\s+)?("[^"]*(?:"|$)|'[^']*(?:'|$)|[^\s"']+)/gi,
-    '$1***',
-  ],
+  // Authorization with any scheme (Bearer, Basic, Token, ApiKey, Digest, AWS4-HMAC-SHA256 ...):
+  // redact the whole value to the end of the line. Multi-field schemes carry several credential
+  // components (`Digest username="...", response="..."`, `... Signature=...`), so stopping at the
+  // first token would leave the rest in place. Over-redacting trailing arguments is deliberate.
+  [/\b(authorization["']?\s*[=:]\s*)(?!\*\*\*)[^\n]*/gi, '$1***'],
   // key=value / key: value for common secret-like names
   [
     /\b([A-Za-z0-9_]*(?:token|password|passwd|secret|api[_-]?key|apikey|authorization)[A-Za-z0-9_]*)(["']?\s*[=:]\s*)(?!\*\*\*)("(?:[^"\\]|\\.)*(?:"|$)|'(?:[^'\\]|\\.)*(?:'|$)|[^\s"']+)/gi,
