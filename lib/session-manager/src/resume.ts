@@ -9,6 +9,7 @@ import {
   isDryRun,
   tmuxCapturePane,
   tmuxHasSession,
+  tmuxKillSession,
   tmuxNewSession,
   tmuxSendKeys,
 } from './tmux.js';
@@ -203,6 +204,10 @@ async function resumeSessionLocked(input: ResumeSessionInput): Promise<ResumeSes
   let pendingCommand: string | undefined;
 
   const restoreIfNotDelivered = async (err: unknown): Promise<never> => {
+    // This call created the pane. If it stayed alive, a retry would take the "alive" branch and
+    // mark the session running without ever delivering the command, so remove it: the retry then
+    // rebuilds again and the command is delivered.
+    await tmuxKillSession(meta.tmuxSessionName).catch(() => undefined);
     await touch(updated, { status: meta.status, lastCommand: meta.lastCommand });
     await appendSessionLog(input.sessionId, 'resume relaunch not delivered, state restored');
     throw err;

@@ -57,17 +57,21 @@ const MAX_CHANGED_FILES = 1000;
 async function runGit(
   args: string[],
   cwd: string,
-): Promise<{ stdout: string; stderr: string; truncated: boolean }> {
+): Promise<{ stdout: string; stderr: string; truncated: boolean; failed: boolean }> {
   try {
     const { stdout, stderr } = await execFileAsync('git', args, { cwd, maxBuffer: GIT_MAX_BUFFER });
-    return { stdout, stderr, truncated: false };
+    return { stdout, stderr, truncated: false, failed: false };
   } catch (err) {
-    const e = err as { stdout?: string; stderr?: string; code?: string };
+    const e = err as { stdout?: string; stderr?: string; code?: string | number };
+    const truncated = e.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER';
     return {
       stdout: e.stdout ?? '',
       stderr: e.stderr ?? '',
       // Output beyond maxBuffer is cut off: callers must not treat it as a complete listing.
-      truncated: e.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER',
+      truncated,
+      // Any other failure (not a repo, deleted workspace, no permission, git missing) means there
+      // is NO snapshot, which must never be reported as "clean".
+      failed: !truncated,
     };
   }
 }
@@ -88,24 +92,30 @@ export function parsePorcelainZ(stdout: string): string[] {
 }
 
 export async function gitCheckpointState(workspace: string): Promise<{
+  gitAvailable: boolean;
   gitSha?: string;
   gitBranch?: string;
   dirtyFiles: string[];
-  dirtyTotal: number;
+  dirtyTotal?: number;
   dirtyTruncated: boolean;
 }> {
   if (isDryRun()) {
-    return { dirtyFiles: [], dirtyTotal: 0, dirtyTruncated: false };
+    return { gitAvailable: true, dirtyFiles: [], dirtyTotal: 0, dirtyTruncated: false };
   }
   const [sha, branch, porcelain] = await Promise.all([
     runGit(['rev-parse', 'HEAD'], workspace),
     runGit(['rev-parse', '--abbrev-ref', 'HEAD'], workspace),
     runGit(['status', '--porcelain', '-z', '--untracked-files=all'], workspace),
   ]);
+  if (porcelain.failed) {
+    // No working-tree snapshot was obtained: say so instead of recording an empty, "clean" tree.
+    return { gitAvailable: false, dirtyFiles: [], dirtyTruncated: false };
+  }
   const all = parsePorcelainZ(porcelain.stdout);
   return {
-    gitSha: sha.stdout.trim() || undefined,
-    gitBranch: branch.stdout.trim() || undefined,
+    gitAvailable: true,
+    gitSha: sha.failed ? undefined : sha.stdout.trim() || undefined,
+    gitBranch: branch.failed ? undefined : branch.stdout.trim() || undefined,
     dirtyFiles: all.slice(0, MAX_DIRTY_FILES),
     dirtyTotal: all.length,
     dirtyTruncated: porcelain.truncated || all.length > MAX_DIRTY_FILES,

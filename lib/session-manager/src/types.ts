@@ -44,6 +44,8 @@ export const RuntimeSessionMetadataSchema = z.object({
       gitSha: z.string().optional(),
       gitBranch: z.string().optional(),
       dirtyFiles: z.array(z.string()),
+      /** False when git could not be queried (not a repo, workspace gone): no snapshot was taken. */
+      gitAvailable: z.boolean().optional(),
       /** Real number of dirty paths; `dirtyFiles` is a bounded sample when `dirtyTruncated`. */
       dirtyTotal: z.number().int().nonnegative().optional(),
       dirtyTruncated: z.boolean().optional(),

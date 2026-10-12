@@ -259,3 +259,29 @@ describe('sixth review round', () => {
     expect((await getSession('legacy'))?.lastCommand).toContain('***');
   });
 });
+
+describe('seventh review round', () => {
+  it.each([
+    ['Authorization: Token correcthorsebattery', 'correcthorsebattery'],
+    ['curl -H "Authorization: ApiKey correcthorsebattery" https://x.test', 'correcthorsebattery'],
+    ['Authorization: Digest username=bob', 'username=bob'],
+    ['Authorization: Basic YWxpY2U6c2VjcmV0', 'YWxpY2U6c2VjcmV0'],
+    ['Authorization: Bearer correcthorsebattery', 'correcthorsebattery'],
+    ['authorization=correcthorsebattery', 'correcthorsebattery'],
+  ])('redacts the full Authorization value in %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it('does not report a non-git workspace as a clean checkpoint', async () => {
+    delete process.env.OPSLY_RUNTIME_DRY_RUN;
+    const dir = await mkdtemp(path.join(tmpdir(), 'opsly-nogit-'));
+    try {
+      const state = await gitCheckpointState(dir);
+      expect(state.gitAvailable).toBe(false);
+      expect(state.dirtyTotal).toBeUndefined();
+      expect(state.dirtyFiles).toEqual([]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+});
