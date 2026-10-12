@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-11T19:51:26.237Z",
-  "current_scene": "Coding-Game",
+  "generated_at": "2026-10-12T00:33:52.416Z",
+  "current_scene": "Festival — AI Set",
   "canvas": {
     "base": "1920x1080",
     "output": "1920x1080",
@@ -160,6 +160,104 @@
         "size": [
           1920,
           1080
+        ]
+      }
+    ],
+    "Festival — AI Set": [
+      {
+        "source": "MIC_OPERATOR",
+        "enabled": true,
+        "kind": "wasapi_input_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "enabled": true,
+        "kind": "wasapi_process_output_capture",
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FESTIVAL Visuals",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/festival",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FACTORY Hacker Overlay",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/factory?visual=1",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          30,
+          -30
+        ]
+      },
+      {
+        "source": "CHAT Twitch opsafterdarktv",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "file:///C:/Users/opsly/OneDrive/Documents/ChatGPT/intcloudsysops/stream-overlay/chat.html",
+        "size": [
+          525,
+          570
+        ],
+        "pos": [
+          23,
+          470
+        ]
+      },
+      {
+        "source": "Alertas",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8765/alerts",
+        "size": [
+          1920,
+          1080
+        ],
+        "pos": [
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FACTORY Engine (audio)",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/factory?engine=1",
+        "size": [
+          240,
+          135
+        ],
+        "pos": [
+          -3000,
+          0
         ]
       }
     ],
@@ -368,6 +466,20 @@
           0,
           0
         ]
+      },
+      {
+        "source": "FACTORY Engine (audio)",
+        "enabled": true,
+        "kind": "browser_source",
+        "url": "http://127.0.0.1:8766/factory?engine=1",
+        "size": [
+          240,
+          135
+        ],
+        "pos": [
+          -3000,
+          0
+        ]
       }
     ],
     "Coding-Game": [
@@ -559,8 +671,8 @@
           0
         ],
         "size": [
-          1920,
-          1080
+          0,
+          0
         ]
       },
       {
@@ -642,8 +754,8 @@
           0
         ],
         "size": [
-          1920,
-          1080
+          0,
+          0
         ]
       }
     ],
@@ -878,90 +990,6 @@
         "pos": [
           1241,
           218
-        ]
-      },
-      {
-        "source": "FACTORY Engine (audio)",
-        "enabled": true,
-        "kind": "browser_source",
-        "url": "http://127.0.0.1:8766/factory?engine=1",
-        "size": [
-          240,
-          135
-        ],
-        "pos": [
-          -3000,
-          0
-        ]
-      }
-    ],
-    "Festival — AI Set": [
-      {
-        "source": "MIC_OPERATOR",
-        "enabled": true,
-        "kind": "wasapi_input_capture",
-        "pos": [
-          0,
-          0
-        ],
-        "size": [
-          0,
-          0
-        ]
-      },
-      {
-        "source": "DISCORD_REMOTE_MIC",
-        "enabled": true,
-        "kind": "wasapi_process_output_capture",
-        "pos": [
-          0,
-          0
-        ],
-        "size": [
-          0,
-          0
-        ]
-      },
-      {
-        "source": "FESTIVAL Visuals",
-        "enabled": true,
-        "kind": "browser_source",
-        "url": "http://127.0.0.1:8766/festival",
-        "size": [
-          1920,
-          1080
-        ],
-        "pos": [
-          0,
-          0
-        ]
-      },
-      {
-        "source": "CHAT Twitch opsafterdarktv",
-        "enabled": true,
-        "kind": "browser_source",
-        "url": "file:///C:/Users/opsly/OneDrive/Documents/ChatGPT/intcloudsysops/stream-overlay/chat.html",
-        "size": [
-          525,
-          570
-        ],
-        "pos": [
-          1373,
-          420
-        ]
-      },
-      {
-        "source": "Alertas",
-        "enabled": true,
-        "kind": "browser_source",
-        "url": "http://127.0.0.1:8765/alerts",
-        "size": [
-          1920,
-          1080
-        ],
-        "pos": [
-          0,
-          0
         ]
       },
       {
@@ -1661,8 +1689,8 @@
           0
         ],
         "size": [
-          1920,
-          1080
+          0,
+          0
         ]
       },
       {
@@ -1811,8 +1839,8 @@
           0
         ],
         "size": [
-          1920,
-          1080
+          0,
+          0
         ]
       }
     ],
