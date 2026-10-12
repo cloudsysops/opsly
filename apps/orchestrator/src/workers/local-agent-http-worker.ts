@@ -549,7 +549,8 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
                       error_code: adapterResult.success ? undefined : 'ADAPTER_EXECUTION_FAILED',
                     };
                   },
-                }
+                },
+                { executedPrompt: prompt_content }
               );
               if (runtimeResult.status === 'awaiting_approval') {
                 throw new UnrecoverableError('AgentTaskEnvelopeV1 requires approval before execution');

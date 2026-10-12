@@ -38,6 +38,7 @@ import {
   digestTaskContent,
   inferTaskType,
   resolveEffectiveWriteAllowed,
+  composeOwnershipHeader,
 } from '@intcloudsysops/agent-task-core';
 import {
   acquireTaskDispatchClaim,
@@ -688,23 +689,22 @@ let admission;
       job.payload.context = context;
       job.payload.agent_task = taskEnvelope;
 
-      const ownershipHeader = [
-        '[OPSLY DISPATCH OWNERSHIP — TRUSTED CONTROL METADATA]',
-        `claim_id=${dispatchClaimLease.claimId}`,
-        `task_id=${dispatchClaimLease.taskId}`,
-        `workstream=${dispatchClaimLease.workstream}`,
-        `conflict_key=${dispatchClaimRequest.conflictKey}`,
-        dispatchClaimRequest.semanticScope
-          ? `semantic_scope=${dispatchClaimRequest.semanticScope}`
-          : null,
-        dispatchClaimRequest.affectedPaths.length > 0
-          ? `affected_paths=${dispatchClaimRequest.affectedPaths.join(',')}`
-          : null,
-        'Do not start a parallel branch/worktree/task for this owned scope. Reuse the existing claim until terminal completion.',
-        '[/OPSLY DISPATCH OWNERSHIP]',
-      ]
-        .filter((line): line is string => typeof line === 'string')
-        .join('\n');
+      // Write-capable tasks: header carries only bound claim identity (no caller-supplied text),
+      // so the executed prompt stays a deterministic function of the digest-bound task body.
+      const ownershipHeader = composeOwnershipHeader(
+        {
+          claimId: dispatchClaimLease.claimId,
+          taskId: dispatchClaimLease.taskId,
+          workstream: dispatchClaimLease.workstream,
+          conflictKey: dispatchClaimRequest.conflictKey,
+        },
+        writeAllowed
+          ? {}
+          : {
+              semanticScope: dispatchClaimRequest.semanticScope,
+              affectedPaths: dispatchClaimRequest.affectedPaths,
+            }
+      );
       job.payload.prompt_content = `${ownershipHeader}\n\n${promptForWorker}`;
     }
 

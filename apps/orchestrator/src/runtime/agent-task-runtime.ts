@@ -3,6 +3,7 @@ import {
   evaluateAgentTaskPolicy,
   extractWriteApprovalContext,
   policyRequiresNonWriteApproval,
+  verifyExecutedPrompt,
   type EvaluatePolicyOptions,
   type WriteApprovalRejectReason,
 } from '@intcloudsysops/agent-task-core';
@@ -75,6 +76,11 @@ export type AgentTaskRuntimeExecuteOptions = {
    * Present so callers cannot confuse x-autonomy-approved with typed approval.
    */
   autonomyHeaderApproved?: boolean;
+  /**
+   * Exact prompt the adapter will execute. Required for write_allowed tasks: it must equal
+   * the digest-bound envelope.task (plus the trusted claim header) or execution fails closed.
+   */
+  executedPrompt?: string;
 };
 
 type ActiveExecution = {
@@ -143,6 +149,9 @@ async function requireTypedWriteApproval(
   if (!options.writeApproval) {
     return 'WRITE_APPROVAL_STORE_MISSING';
   }
+
+  const promptErr = verifyExecutedPrompt(envelope, executeOptions.executedPrompt);
+  if (promptErr) return promptErr;
 
   const ctx = extractWriteApprovalContext(envelope);
   if (ctx.error) return ctx.error;

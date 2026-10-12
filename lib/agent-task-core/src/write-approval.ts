@@ -112,6 +112,55 @@ export function assertWriteApprovalMatchesClaim(
   return null;
 }
 
+/**
+ * Trusted ownership header prepended to the executed prompt. Built ONLY from the
+ * server-acquired claim identity, all of which is bound by the write approval.
+ * Caller-controlled text (semantic scope, affected paths) is passed as `advisory`
+ * and must be omitted for write-capable tasks.
+ */
+export function composeOwnershipHeader(
+  claim: DispatchClaimIdentity,
+  advisory: { semanticScope?: string; affectedPaths?: readonly string[] } = {}
+): string {
+  return [
+    '[OPSLY DISPATCH OWNERSHIP \u2014 TRUSTED CONTROL METADATA]',
+    `claim_id=${claim.claimId}`,
+    `task_id=${claim.taskId}`,
+    `workstream=${claim.workstream}`,
+    claim.conflictKey ? `conflict_key=${claim.conflictKey}` : null,
+    advisory.semanticScope ? `semantic_scope=${advisory.semanticScope}` : null,
+    advisory.affectedPaths && advisory.affectedPaths.length > 0
+      ? `affected_paths=${advisory.affectedPaths.join(',')}`
+      : null,
+    'Do not start a parallel branch/worktree/task for this owned scope. Reuse the existing claim until terminal completion.',
+    '[/OPSLY DISPATCH OWNERSHIP]',
+  ]
+    .filter((line): line is string => line !== null)
+    .join('\n');
+}
+
+export function composeExecutablePrompt(task: string, claim: DispatchClaimIdentity | null): string {
+  return claim ? `${composeOwnershipHeader(claim)}\n\n${task}` : task;
+}
+
+/**
+ * The prompt the adapter will actually execute must be a deterministic function of the
+ * digest-bound task body and the bound claim identity. Anything else (extra header text,
+ * substituted body) fails closed so the one-shot approval cannot cover different instructions.
+ */
+export function verifyExecutedPrompt(
+  envelope: AgentTaskEnvelopeV1,
+  executedPrompt: string | undefined
+): WriteApprovalRejectReason | null {
+  if (envelope.constraints.write_allowed !== true) return null;
+  if (typeof executedPrompt !== 'string') return 'WRITE_APPROVAL_TASK_CONTENT_MISMATCH';
+  const meta = envelope.metadata ?? {};
+  const claim =
+    parseDispatchClaimIdentity(meta.dispatch_claim) ?? parseDispatchClaimIdentity(meta.dispatchClaim);
+  const expected = composeExecutablePrompt(envelope.task, claim);
+  return executedPrompt === expected ? null : 'WRITE_APPROVAL_TASK_CONTENT_MISMATCH';
+}
+
 export function parseDispatchClaimIdentity(raw: unknown): DispatchClaimIdentity | null {
   if (!raw || typeof raw !== 'object') return null;
   const o = raw as Record<string, unknown>;
