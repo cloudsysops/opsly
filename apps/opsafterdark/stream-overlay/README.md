@@ -93,8 +93,10 @@ Patrones techno, house, build-up y drop en `music/`; instructivo en [music/INSTR
 `post-stream-clips.ps1` (motor: `packages/stream-ops-kit/src/post-stream-clips.mjs`) corta borradores de clips cuando termina una grabación de OBS. **No publica nada ni toca cuentas de redes.**
 
 - **Cuándo corre:** la tarea de Windows `OpsAfterDark-PostStream-Clips` lo ejecuta cada 15 min (prioridad baja, una sola instancia). Procesa grabaciones de `D:\Content\Media\OBS\horizontal` terminadas (3 min sin escribirse) y de 10 min o más. Se niega a correr con OBS en directo, y también si OBS está abierto pero su websocket no responde (no se sabe si hay directo).
-- **Qué hace:** puntúa ventanas de 45 s por audio (pista Mezcla) + movimiento visual, descarta negro y silencio, elige hasta 6 separados por ≥ 3 min, y corta horizontal + vertical (fundidos, `loudnorm`). Un vertical con la mitad de juego en negro se mueve a `rejected/`.
+- **Qué hace:** puntúa ventanas de 45 s por audio (pista Mezcla) + movimiento visual, descarta negro, silencio y los tramos en modo espectador (jugador muerto, detectando la etiqueta SPECTATING con `spectate-template.json`), elige hasta 6 separados por ≥ 3 min, y corta horizontal + vertical (fundidos, `loudnorm`). Un vertical con la mitad de juego en negro se mueve a `rejected/`.
 - **Salida:** `D:\Content\PostStream\<fecha>_auto-<hora>\` con `clips/`, `reels/`, `rejected/`, `REPORT.md` y `metadata/candidates.json`. Añade los verticales buenos a `D:\Content\PostStream\publish-queue.json`: 1 por día a las 19:00 ET, `status: draft`, `requiresApproval: true`, `publishedAt: null`.
+- **Velocidad:** decodifica solo fotogramas clave (OBS genera 1 por segundo): ~9 min para 2 h de vídeo.
+- **Plantilla de espectador:** `spectate-template.json` es la máscara de la etiqueta en el layout de este canal (1920×1080). Si cambia el layout del juego u overlay, hay que regenerarla; sin ella no se detecta el espectador.
 - **Aviso `MIC_SILENT`:** se emite si la pista Micro está en silencio en la grabación.
 - **Estado:** `D:\Content\PostStream\.processed.json` evita reprocesar. Log: `D:\Content\PostStream\_auto-clips.log`.
 - **Uso manual:** `powershell -File post-stream-clips.ps1 [-Dry]` (`-Dry` solo analiza). Opciones del motor: `--file`, `--count`, `--no-obs-check`.

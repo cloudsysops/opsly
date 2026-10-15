@@ -6,6 +6,7 @@
 //
 //   node post-stream-clips.mjs --horizontal-dir D:\\...\\horizontal --vertical-dir D:\\...\\vertical --out D:\\Content\\PostStream
 //   opciones: --dry (solo analiza y lista) · --file <ruta .mkv horizontal> (forzar una) · --count N · --no-obs-check
+//             --spectate-template <json> (excluye tramos con el jugador muerto) · --debug-dump <json> (guarda las series por segundo)
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -51,7 +52,7 @@ function percentileRanks(values) {
 }
 
 // audioDb[s]: RMS dB por segundo; motion[s]: cambio visual por segundo; black[s]: 1 si el frame es negro.
-export function scoreWindows({ audioDb, motion, black }, opts = {}) {
+export function scoreWindows({ audioDb, motion, black, spectate = [] }, opts = {}) {
   const { clipSeconds: win, stepSeconds: step, edgeSeconds: edge } = { ...DEFAULTS, ...opts };
   const n = Math.min(audioDb.length, motion.length, black.length);
   const rows = [];
@@ -62,6 +63,7 @@ export function scoreWindows({ audioDb, motion, black }, opts = {}) {
       audio: mean(a),
       motion: mean(motion.slice(t, t + win)),
       black: black.slice(t, t + win).reduce((s, x) => s + x, 0),
+      spectate: spectate.slice(t, t + win).reduce((s, x) => s + x, 0),
     });
   }
   if (!rows.length) return [];
@@ -71,7 +73,7 @@ export function scoreWindows({ audioDb, motion, black }, opts = {}) {
   return rows.map((r, i) => ({
     ...r,
     score: 0.5 * pa[i] + 0.5 * pm[i],
-    excluded: r.black >= 3 ? 'black-frames' : r.audio < -60 ? 'silent' : r.motion < motionFloor ? 'low-motion' : null,
+    excluded: r.black >= 3 ? 'black-frames' : r.spectate >= 3 ? 'spectating' : r.audio < -60 ? 'silent' : r.motion < motionFloor ? 'low-motion' : null,
   }));
 }
 
@@ -123,22 +125,73 @@ function rmsPerSecond(file, audioIdx, tmpFile) {
   return out;
 }
 
-function motionAndBlack(file, duration) {
-  const W = 64, H = 36;
-  const r = run(FFMPEG, ['-v', 'error', '-hwaccel', 'auto', '-i', file, '-map', '0:v:0', '-vf', `fps=1,scale=${W}:${H},format=gray`, '-f', 'rawvideo', '-'], { binary: true });
-  if (r.status !== 0) throw new Error(`ffmpeg video fallo: ${r.stderr}`);
-  const buf = r.stdout, size = W * H, frames = Math.floor(buf.length / size);
-  const motion = [], black = [];
-  let prev = null;
-  for (let f = 0; f < frames; f++) {
-    const cur = buf.subarray(f * size, (f + 1) * size);
-    let sum = 0;
-    for (let i = 0; i < size; i++) sum += cur[i];
-    black.push(sum / size < 10 ? 1 : 0);
-    if (prev) { let d = 0; for (let i = 0; i < size; i++) d += Math.abs(cur[i] - prev[i]); motion.push(d / size); } else motion.push(0);
-    prev = cur;
+// ---------- deteccion del modo espectador (jugador muerto) ----------
+// El juego muestra la etiqueta SPECTATING siempre en el mismo sitio; se compara contra una mascara de esa etiqueta.
+// La plantilla es del layout del tenant (--spectate-template); sin plantilla no se detecta.
+
+export function loadSpectateTemplate(file) {
+  const j = readJson(file, null);
+  if (!j) return null;
+  const { width: w, height: h, rows, brightThreshold = 200 } = j;
+  const mask = new Uint8Array(w * h);
+  rows.forEach((r, y) => { for (let x = 0; x < w; x++) mask[y * w + x] = r[x] === '1' ? 1 : 0; });
+  const near = new Uint8Array(w * h); // mascara dilatada 1 px: tolera el suavizado del escalado
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!mask[y * w + x]) continue;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const yy = y + dy, xx = x + dx;
+      if (yy >= 0 && yy < h && xx >= 0 && xx < w) near[yy * w + xx] = 1;
+    }
   }
-  return { motion, black, frames, duration };
+  return { w, h, mask, near, bright: brightThreshold, maskPixels: mask.reduce((a, b) => a + b, 0), crop: j.crop };
+}
+
+// crop: bytes grises (w*h) de la zona de la etiqueta. recall = cuanta etiqueta aparece; extra = brillo fuera de ella.
+export function spectateScore(crop, t) {
+  let hit = 0, extra = 0, outside = 0;
+  for (let i = 0; i < t.w * t.h; i++) {
+    const bright = crop[i] > t.bright;
+    if (t.mask[i] && bright) hit++;
+    if (!t.near[i]) { outside++; if (bright) extra++; }
+  }
+  return { recall: hit / t.maskPixels, extra: extra / outside };
+}
+export const isSpectating = ({ recall, extra }) => recall >= 0.7 && extra < 0.25;
+
+// Una pasada de video que decodifica SOLO fotogramas clave (OBS: 1 por segundo) y devuelve por segundo:
+// movimiento visual, negro y (si hay plantilla) modo espectador.
+function motionAndBlack(file, duration, template) {
+  const W = 64, H = 36, FW = 130, CH = 25, FH = H + CH, size = FW * FH;
+  const vf = `showinfo,split[a][b];[a]scale=${W}:${H},pad=${FW}:${H}[m];[b]crop=${template?.crop?.w ?? 260}:${template?.crop?.h ?? 50}:${template?.crop?.x ?? 830}:${template?.crop?.y ?? 800},scale=${FW}:${CH}[c];[m][c]vstack,format=gray`;
+  const r = run(FFMPEG, ['-hide_banner', '-v', 'info', '-skip_frame', 'nokey', '-i', file, '-map', '0:v:0', '-fps_mode', 'passthrough', '-vf', vf, '-f', 'rawvideo', '-'], { binary: true });
+  if (r.status !== 0) throw new Error(`ffmpeg video fallo: ${String(r.stderr).slice(-500)}`);
+  const times = [...String(r.stderr).matchAll(/pts_time:([\d.]+)/g)].map((m) => Number(m[1]));
+  const buf = r.stdout, frames = Math.min(Math.floor(buf.length / size), times.length);
+  const n = Math.ceil(duration);
+  const motion = new Array(n).fill(0), black = new Array(n).fill(0), spectate = new Array(n).fill(0);
+  let prev = null, prevT = 0, f = 0;
+  for (let s = 0; s < n; s++) {
+    while (f < frames && times[f] <= s + 0.5) {
+      const cur = buf.subarray(f * size, (f + 1) * size);
+      let sum = 0, d = 0;
+      const small = new Uint8Array(W * H);
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const v = cur[y * FW + x]; small[y * W + x] = v; sum += v; }
+      const isBlack = sum / (W * H) < 10 ? 1 : 0;
+      if (prev) { for (let i = 0; i < W * H; i++) d += Math.abs(small[i] - prev[i]); }
+      const dt = Math.max(1, times[f] - prevT);
+      const lab = template ? isSpectating(spectateScore(cur.subarray(H * FW), template)) ? 1 : 0 : 0;
+      // se asigna al segundo mas cercano al fotograma
+      const sec = Math.min(n - 1, Math.max(0, Math.round(times[f])));
+      motion[sec] = prev ? d / (W * H) / dt : 0;
+      black[sec] = isBlack;
+      spectate[sec] = lab;
+      prev = small; prevT = times[f];
+      f++;
+    }
+  }
+  // relleno hacia delante de segundos sin fotograma clave
+  for (let s = 1; s < n; s++) if (motion[s] === 0 && black[s] === 0 && spectate[s] === 0 && motion[s - 1] !== 0) { motion[s] = motion[s - 1]; black[s] = black[s - 1]; spectate[s] = spectate[s - 1]; }
+  return { motion, black, spectate, frames, duration };
 }
 
 function micIsSilent(file, info) {
@@ -202,14 +255,15 @@ function listMkv(dir) {
   try { return fs.readdirSync(dir).filter((f) => /\.(mkv|mp4)$/i.test(f)).map((f) => path.join(dir, f)); } catch { return []; }
 }
 
-export function processRecording({ h, v, stamp }, { outRoot, opts, dry, log = console.log }) {
+export function processRecording({ h, v, stamp }, { outRoot, opts, dry, template = null, dumpFile = null, log = console.log }) {
   const info = probe(h);
   log(`[${stamp}] ${path.basename(h)} ${hms(info.duration)}`);
   const tmp = path.join(outRoot, `.tmp-${stamp}.txt`);
   fs.mkdirSync(outRoot, { recursive: true });
   const audioDb = rmsPerSecond(h, info.mixIdx, tmp);
-  const { motion, black } = motionAndBlack(h, info.duration);
-  const scored = scoreWindows({ audioDb, motion, black }, opts);
+  const { motion, black, spectate } = motionAndBlack(h, info.duration, template);
+  if (dumpFile) fs.writeFileSync(dumpFile, JSON.stringify({ audioDb, motion, black, spectate }));
+  const scored = scoreWindows({ audioDb, motion, black, spectate }, opts);
   const picked = pickWindows(scored, opts);
   const mic = micIsSilent(h, info);
   const warnings = [];
@@ -320,6 +374,9 @@ export async function main(argv) {
     if (st === 'unknown') { console.log('OBS esta abierto pero su websocket no responde: no se sabe si hay directo, no se procesa nada.'); return 0; }
   }
 
+  const templateFile = arg('--spectate-template');
+  const template = templateFile ? loadSpectateTemplate(templateFile) : null;
+  if (templateFile && !template) console.log(`AVISO: no se pudo leer la plantilla de espectador (${templateFile}); no se detectara.`);
   const stateFile = path.join(outRoot, '.processed.json');
   const state = readJson(stateFile, {});
   const hFiles = forced ? [forced] : listMkv(hDir);
@@ -336,7 +393,7 @@ export async function main(argv) {
     let dur;
     try { dur = probe(p.h).duration; } catch { continue; }
     if (dur < DEFAULTS.minDurationSeconds) { console.log(`[${p.stamp}] dura ${hms(dur)}, menos de 10 min: se omite.`); if (!dry) state[key] = { skipped: 'too-short', at: new Date().toISOString() }; continue; }
-    const res = processRecording(p, { outRoot, opts, dry });
+    const res = processRecording(p, { outRoot, opts, dry, template, dumpFile: arg('--debug-dump') });
     console.log(`[${p.stamp}] ${res.clips.length} candidatos -> ${res.outDir}${dry ? ' (dry-run)' : ''}`);
     for (const c of res.clips) console.log(`   #${c.id} ${c.startHms} score=${c.score} audio=${c.audioDb}dB motion=${c.motion} ${c.flags.join(',')}`);
     for (const w of res.warnings) console.log(`   AVISO ${w}`);

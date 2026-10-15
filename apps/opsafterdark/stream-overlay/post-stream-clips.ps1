@@ -17,6 +17,8 @@ try {
   # Prioridad baja para no molestar si se abre un juego u OBS.
   (Get-Process -Id $PID).PriorityClass = 'BelowNormal'
   $nodeArgs = @($script, '--horizontal-dir', 'D:\Content\Media\OBS\horizontal', '--vertical-dir', 'D:\Content\Media\OBS\vertical', '--out', 'D:\Content\PostStream')
+  $template = Join-Path $here 'spectate-template.json'
+  if (Test-Path $template) { $nodeArgs += @('--spectate-template', $template) }
   if ($Dry) { $nodeArgs += '--dry' }
   $log = 'D:\Content\PostStream\_auto-clips.log'
   New-Item -ItemType Directory -Force (Split-Path $log) | Out-Null

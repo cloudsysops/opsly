@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  stampOf, pairRecordings, isFinished, scoreWindows, pickWindows, isVerticalBlank, hms, renderReport, scheduleQueue, readJson, DEFAULTS,
+  stampOf, pairRecordings, isFinished, scoreWindows, pickWindows, isVerticalBlank, hms, renderReport, scheduleQueue, readJson, loadSpectateTemplate, spectateScore, isSpectating, DEFAULTS,
 } from '../post-stream-clips.mjs';
 
 test('pairs horizontal and vertical recordings by OBS timestamp', () => {
@@ -88,6 +88,32 @@ test('queue continues after the last scheduled day and never schedules in the pa
   const r = { stamp: 's', warnings: [], clips: [{ id: '01', startHms: '00:10:00', score: 1, horizontal: 'h', vertical: 'v', flags: [] }] };
   assert.equal(scheduleQueue(existing, r, { todayIso: '2026-10-15' }).entries[0].scheduledAt, '2026-10-21T19:00');
   assert.equal(scheduleQueue([{ scheduledAt: '2026-10-01T19:00' }], r, { todayIso: '2026-10-15' }).entries[0].scheduledAt, '2026-10-16T19:00');
+});
+
+const TEMPLATE = new URL('../../../../apps/opsafterdark/stream-overlay/spectate-template.json', import.meta.url);
+
+test('spectate detector: the real label matches, bright backgrounds and shifted labels do not', async () => {
+  const { fileURLToPath } = await import('node:url');
+  const t = loadSpectateTemplate(fileURLToPath(TEMPLATE));
+  assert.ok(t && t.maskPixels > 300);
+  const size = t.w * t.h;
+  const label = new Uint8Array(size).fill(40);
+  for (let i = 0; i < size; i++) if (t.mask[i]) label[i] = 255;
+  assert.equal(isSpectating(spectateScore(label, t)), true, 'etiqueta real');
+  assert.equal(isSpectating(spectateScore(new Uint8Array(size).fill(255), t)), false, 'fondo brillante (nieve/cielo)');
+  assert.equal(isSpectating(spectateScore(new Uint8Array(size).fill(10), t)), false, 'fondo oscuro');
+  const shifted = new Uint8Array(size).fill(40);
+  for (let y = 0; y < t.h; y++) for (let x = 0; x < t.w; x++) if (t.mask[y * t.w + x]) shifted[y * t.w + Math.min(t.w - 1, x + 6)] = 255;
+  assert.equal(isSpectating(spectateScore(shifted, t)), false, 'texto desplazado');
+});
+
+test('windows while spectating are excluded and never picked', () => {
+  const s = synthetic(1200, [600, 700]);
+  s.spectate = Array.from({ length: 1200 }, (_, i) => (i >= 600 && i < 700 ? 1 : 0));
+  const picked = pickWindows(scoreWindows(s), { count: 3 });
+  assert.ok(picked.every((w) => w.t + DEFAULTS.clipSeconds <= 600 + 2 || w.t >= 700 - 2), JSON.stringify(picked.map((w) => w.t)));
+  const win = scoreWindows(s).find((w) => w.t === 620);
+  assert.equal(win.excluded, 'spectating');
 });
 
 test('readJson tolerates a PowerShell BOM and missing files', async () => {
