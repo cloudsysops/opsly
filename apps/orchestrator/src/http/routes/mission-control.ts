@@ -17,6 +17,8 @@ import { collectRuntimeHealthSnapshot } from '../../runtime/runtime-health.js';
 type MissionControlChatRequest = {
   message?: string;
   session_id?: string;
+  /** Explicit command to run when approving; required when the held command had secrets redacted. */
+  relaunch_command?: string;
   tenant_slug?: string;
   initiative?: string;
   workspace?: string;
@@ -110,6 +112,7 @@ function parseChatIntent(message: string): {
   action:
     | 'continue'
     | 'resume'
+    | 'approve-resume'
     | 'checkpoint'
     | 'stop'
     | 'stale'
@@ -125,6 +128,14 @@ function parseChatIntent(message: string): {
   }
   if (/(checkpoint|snapshot)/.test(lower)) {
     return { action: 'checkpoint', humanApprovalRequired: false };
+  }
+  // Approving a held relaunch replays a command that may deploy, push or delete, so a bare
+  // approval word is not enough ("approve PR #123"): the message must also ask to resume.
+  if (
+    /\b(approve|aprueba|aprobar|apruebo)\b/.test(lower) &&
+    /\b(resume|relaunch|reattach|rerun|re-run|reanuda|reanudar|relanza|relanzar)\b/.test(lower)
+  ) {
+    return { action: 'approve-resume', humanApprovalRequired: false };
   }
   if (/(resume|reattach)/.test(lower)) {
     return { action: 'resume', humanApprovalRequired: false };
@@ -258,23 +269,91 @@ export async function handleMissionControlChat(ctx: RouteContext): Promise<void>
     return;
   }
 
+  if (intent.action === 'approve-resume') {
+    // Approval must name its session: never approve "whatever is latest".
+    const waiting = sessions.filter((session) => session.status === 'waiting_approval');
+    if (!requestedSession || requestedSession.status !== 'waiting_approval') {
+      jsonResponse(ctx.res, 200, {
+        ok: true,
+        action: 'approve-needs-session',
+        summary: `${waiting.length} session(s) waiting for approval.`,
+        reply:
+          waiting.length > 0
+            ? `Send the message again with session_id set to one of: ${waiting
+                .map((session) => `${session.sessionId} (${session.name})`)
+                .join(', ')}`
+            : 'No session is waiting for approval.',
+        worker_recommendation: workerRecommendation,
+        human_approval_required: waiting.length > 0,
+        capabilities: snapshot.capabilities,
+        session_summary: snapshot.sessionSummary,
+      } satisfies MissionControlChatResponse);
+      return;
+    }
+    const explicitCommand =
+      typeof request.relaunch_command === 'string' && request.relaunch_command.trim().length > 0
+        ? request.relaunch_command.trim()
+        : undefined;
+    let approved: Awaited<ReturnType<typeof resumeSession>>;
+    try {
+      approved = await resumeSession({
+        sessionId: requestedSession.sessionId,
+        approveRelaunch: true,
+        relaunchCommand: explicitCommand,
+      });
+    } catch (err) {
+      // e.g. branch checkout failed: nothing was relaunched, say so instead of a bare 500.
+      errorResponse(ctx.res, 409, err instanceof Error ? err.message : String(err));
+      return;
+    }
+    // The mutation changed the session counters: do not return the pre-approval summary.
+    const refreshed = await collectRuntimeHealthSnapshot().catch(() => snapshot);
+    jsonResponse(ctx.res, 200, {
+      ok: true,
+      action: 'approve-resume',
+      summary: `Approved relaunch for session ${approved.meta.sessionId}.`,
+      reply:
+        approved.meta.status === 'waiting_approval'
+          ? 'The held command had secrets redacted and cannot be replayed from state. Resend this request with the command in the relaunch_command body field (API only: the admin chat UI does not send it yet), or run it manually in the tmux session.'
+          : (approved.output ?? 'Approved command relaunched in the existing tmux pane.'),
+      worker_recommendation: recommendationForSession(approved.meta),
+      human_approval_required: approved.meta.status === 'waiting_approval',
+      session: compactSession(approved.meta),
+      capabilities: refreshed.capabilities,
+      session_summary: refreshed.sessionSummary,
+    } satisfies MissionControlChatResponse);
+    return;
+  }
+
   if (intent.action === 'resume' && selectedSession) {
-    const result = await resumeSession({
-      sessionId: selectedSession.sessionId,
-    });
+    let result: Awaited<ReturnType<typeof resumeSession>>;
+    try {
+      result = await resumeSession({
+        sessionId: selectedSession.sessionId,
+      });
+    } catch (err) {
+      // A blocked recovery (e.g. branch checkout failed) is an expected outcome: answer 409
+      // instead of letting the rejection escape the async request handler.
+      errorResponse(ctx.res, 409, err instanceof Error ? err.message : String(err));
+      return;
+    }
+    // The resume changed the session counters: do not return the pre-resume summary.
+    const refreshed = await collectRuntimeHealthSnapshot().catch(() => snapshot);
+    const awaitingApproval = result.pendingCommand !== undefined;
     jsonResponse(ctx.res, 200, {
       ok: true,
       action: 'resume-session',
       summary: `Resumed session ${result.meta.sessionId} in ${result.mode} mode.`,
-      reply:
-        result.output ??
-        `Session ${result.meta.sessionId} resumed. Continue from the existing tmux pane.`,
+      reply: awaitingApproval
+        ? `Session ${result.meta.sessionId} was rebuilt. Its previous command was NOT re-run; approve it to continue: ${result.pendingCommand}`
+        : (result.output ??
+          `Session ${result.meta.sessionId} resumed. Continue from the existing tmux pane.`),
       worker_recommendation: recommendationForSession(result.meta),
-      human_approval_required: false,
+      human_approval_required: awaitingApproval,
       session: compactSession(result.meta),
       recovery: result.recovery,
-      capabilities: snapshot.capabilities,
-      session_summary: snapshot.sessionSummary,
+      capabilities: refreshed.capabilities,
+      session_summary: refreshed.sessionSummary,
     } satisfies MissionControlChatResponse);
     return;
   }

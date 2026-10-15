@@ -155,8 +155,9 @@ export async function handleRuntimeSessionResume(ctx: RouteContext): Promise<voi
         ? record.relaunch_command
         : undefined;
   const dryRun = record.dryRun === true || process.env.OPSLY_RUNTIME_DRY_RUN === 'true';
+  const approveRelaunch = record.approveRelaunch === true || record.approve_relaunch === true;
   try {
-    const result = await resumeSession({ sessionId, relaunchCommand, dryRun });
+    const result = await resumeSession({ sessionId, relaunchCommand, approveRelaunch, dryRun });
     jsonResponse(ctx.res, 200, { ok: true, ...result });
   } catch (err) {
     errorResponse(ctx.res, 400, err instanceof Error ? err.message : String(err));

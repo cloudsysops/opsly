@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 
 import { listBranchEntries, resolveRepoRoot } from '@intcloudsysops/git-branch-orchestrator';
 
+import { redactSecrets } from './redact.js';
 import { appendSessionLog, loadSession, resolveStateDir } from './store.js';
 import { isDryRun, tmuxHasSession } from './tmux.js';
 import type { RuntimeSessionMetadata } from './types.js';
@@ -40,7 +41,7 @@ async function readLogsTail(sessionId: string, maxLines = 40): Promise<string | 
   try {
     const raw = await readFile(logPath, 'utf8');
     const lines = raw.trim().split('\n');
-    return lines.slice(-maxLines).join('\n');
+    return redactSecrets(lines.slice(-maxLines).join('\n'));
   } catch {
     return undefined;
   }
@@ -48,14 +49,90 @@ async function readLogsTail(sessionId: string, maxLines = 40): Promise<string | 
 
 const execFileAsync = promisify(execFile);
 
-async function runGit(args: string[], cwd: string): Promise<{ stdout: string; stderr: string }> {
+const GIT_MAX_BUFFER = 16 * 1024 * 1024;
+/**
+ * Git runs while the per-session lock is held (checkpoint), so a stalled filesystem or git process
+ * would block every later send/stop/resume/approval for that session. A timeout is reported as
+ * "no snapshot" (`gitAvailable: false`), never as a clean tree.
+ */
+function gitTimeoutMs(): number {
+  const fromEnv = Number(process.env.OPSLY_GIT_TIMEOUT_MS);
+  return Number.isFinite(fromEnv) && fromEnv > 0 ? fromEnv : 10_000;
+}
+/** Persisted checkpoints keep a bounded sample of dirty paths plus the real total. */
+const MAX_DIRTY_FILES = 200;
+const MAX_CHANGED_FILES = 1000;
+
+async function runGit(
+  args: string[],
+  cwd: string,
+): Promise<{ stdout: string; stderr: string; truncated: boolean; failed: boolean }> {
   try {
-    const { stdout, stderr } = await execFileAsync('git', args, { cwd });
-    return { stdout, stderr };
+    const { stdout, stderr } = await execFileAsync('git', args, {
+      cwd,
+      maxBuffer: GIT_MAX_BUFFER,
+      timeout: gitTimeoutMs(),
+    });
+    return { stdout, stderr, truncated: false, failed: false };
   } catch (err) {
-    const e = err as { stdout?: string; stderr?: string };
-    return { stdout: e.stdout ?? '', stderr: e.stderr ?? '' };
+    const e = err as { stdout?: string; stderr?: string; code?: string | number };
+    const truncated = e.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER';
+    return {
+      stdout: e.stdout ?? '',
+      stderr: e.stderr ?? '',
+      // Output beyond maxBuffer is cut off: callers must not treat it as a complete listing.
+      truncated,
+      // Any other failure (not a repo, deleted workspace, no permission, git missing) means there
+      // is NO snapshot, which must never be reported as "clean".
+      failed: !truncated,
+    };
   }
+}
+
+export function parsePorcelainZ(stdout: string): string[] {
+  const entries = stdout.split('\0').filter((e) => e.length > 0);
+  const files: string[] = [];
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    const code = entry.slice(0, 2);
+    files.push(entry.slice(3));
+    // Renames/copies are followed by an extra NUL-separated "original path" entry.
+    if (code.includes('R') || code.includes('C')) {
+      i++;
+    }
+  }
+  return files;
+}
+
+export async function gitCheckpointState(workspace: string): Promise<{
+  gitAvailable: boolean;
+  gitSha?: string;
+  gitBranch?: string;
+  dirtyFiles: string[];
+  dirtyTotal?: number;
+  dirtyTruncated: boolean;
+}> {
+  if (isDryRun()) {
+    return { gitAvailable: true, dirtyFiles: [], dirtyTotal: 0, dirtyTruncated: false };
+  }
+  const [sha, branch, porcelain] = await Promise.all([
+    runGit(['rev-parse', 'HEAD'], workspace),
+    runGit(['rev-parse', '--abbrev-ref', 'HEAD'], workspace),
+    runGit(['status', '--porcelain', '-z', '--untracked-files=all'], workspace),
+  ]);
+  if (porcelain.failed) {
+    // No working-tree snapshot was obtained: say so instead of recording an empty, "clean" tree.
+    return { gitAvailable: false, dirtyFiles: [], dirtyTruncated: false };
+  }
+  const all = parsePorcelainZ(porcelain.stdout);
+  return {
+    gitAvailable: true,
+    gitSha: sha.failed ? undefined : sha.stdout.trim() || undefined,
+    gitBranch: branch.failed ? undefined : branch.stdout.trim() || undefined,
+    dirtyFiles: all.slice(0, MAX_DIRTY_FILES),
+    dirtyTotal: all.length,
+    dirtyTruncated: porcelain.truncated || all.length > MAX_DIRTY_FILES,
+  };
 }
 
 async function gitSnapshot(
@@ -69,15 +146,13 @@ async function gitSnapshot(
     };
   }
   try {
-    const [status, diffStat, nameOnly] = await Promise.all([
+    const [status, diffStat, porcelain] = await Promise.all([
       runGit(['status', '--short'], workspace),
       runGit(['diff', '--stat'], workspace),
-      runGit(['diff', '--name-only'], workspace),
+      runGit(['status', '--porcelain', '-z', '--untracked-files=all'], workspace),
     ]);
-    const changedFiles = nameOnly.stdout
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
+    // porcelain includes staged and untracked files, which `git diff --name-only` misses.
+    const changedFiles = parsePorcelainZ(porcelain.stdout).slice(0, MAX_CHANGED_FILES);
     return {
       status: status.stdout.trim() || status.stderr.trim() || undefined,
       diffStat: diffStat.stdout.trim() || undefined,

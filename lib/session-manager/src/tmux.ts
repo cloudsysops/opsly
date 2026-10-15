@@ -65,7 +65,7 @@ export async function tmuxCapturePane(name: string, lines = 200): Promise<string
   }
   const { stdout } = await execFileAsync(
     'tmux',
-    ['capture-pane', '-t', name, '-p', '-S', `-${lines}`],
+    ['capture-pane', '-t', name, '-p', '-J', '-S', `-${lines}`],
     { timeout: 10000, maxBuffer: 2 * 1024 * 1024 }
   );
   return stdout;

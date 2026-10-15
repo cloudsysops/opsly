@@ -37,6 +37,20 @@ export const RuntimeSessionMetadataSchema = z.object({
   lastSeenAt: z.string().datetime(),
   lastCommand: z.string().optional(),
   lastCheckpoint: z.string().optional(),
+  /** Structured, redacted state captured by checkpointSession. */
+  checkpointData: z
+    .object({
+      capturedAt: z.string().datetime(),
+      gitSha: z.string().optional(),
+      gitBranch: z.string().optional(),
+      dirtyFiles: z.array(z.string()),
+      /** False when git could not be queried (not a repo, workspace gone): no snapshot was taken. */
+      gitAvailable: z.boolean().optional(),
+      /** Real number of dirty paths; `dirtyFiles` is a bounded sample when `dirtyTruncated`. */
+      dirtyTotal: z.number().int().nonnegative().optional(),
+      dirtyTruncated: z.boolean().optional(),
+    })
+    .optional(),
   tmuxSessionName: z.string().min(1),
 });
 

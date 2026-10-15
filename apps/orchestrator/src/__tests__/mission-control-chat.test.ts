@@ -234,6 +234,222 @@ describe('mission control chat', () => {
     expect(mocks.resumeSession).toHaveBeenCalledTimes(1);
   });
 
+  describe('approve-resume', () => {
+    const waitingSession = {
+      sessionId: 'sess-w',
+      name: 'held',
+      agentId: 'codex',
+      workspace: '/tmp/ws',
+      status: 'waiting_approval',
+      createdAt: '2026-05-16T00:00:00.000Z',
+      lastSeenAt: '2026-05-16T00:00:00.000Z',
+      tmuxSessionName: 'tmux-sess-w',
+    };
+    const emptySnapshot = {
+      timestamp: '2026-05-16T00:00:00.000Z',
+      nodes: [],
+      queues: [],
+      sessionCount: 1,
+      sessionSummary: {
+        total: 1, created: 0, running: 0, checkpointed: 0, waitingApproval: 1,
+        stopped: 0, failed: 0, resumable: 0, stale: 0,
+      },
+      capabilities: {
+        machine: {
+          os: 'macos',
+          cpuCores: 8,
+          ramGb: 16,
+          gpuAvailable: true,
+          topologyType: 'local-only',
+          dockerEngine: 'colima',
+          maxLocalWorkers: 2,
+          cloudRole: 'none',
+        },
+        capabilities: [],
+        detectedEditors: [],
+        detectedAgents: [],
+      },
+      dryRun: false,
+    };
+
+    it('approves the held relaunch only for an explicitly named waiting session', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      mocks.resumeSession.mockResolvedValue({
+        meta: { ...waitingSession, status: 'running' },
+        mode: 'reattach',
+        output: 'relaunched',
+      });
+      const ctx = createContext({ message: 'approve and resume', session_id: 'sess-w' });
+      await handleMissionControlChat(ctx);
+
+      const payload = JSON.parse(ctx.res.body ?? '{}') as { action?: string };
+      expect(payload.action).toBe('approve-resume');
+      expect(mocks.resumeSession).toHaveBeenCalledWith({
+        sessionId: 'sess-w',
+        approveRelaunch: true,
+      });
+    });
+
+    it('does not treat a bare approval word as authorization to replay a command', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      for (const message of ['approve PR #123', 'this was approved', 'aprobar el despliegue']) {
+        const ctx = createContext({ message, session_id: 'sess-w' });
+        await handleMissionControlChat(ctx);
+        const payload = JSON.parse(ctx.res.body ?? '{}') as { action?: string };
+        expect(payload.action).not.toBe('approve-resume');
+      }
+      expect(mocks.resumeSession).not.toHaveBeenCalled();
+    });
+
+    it('passes an explicit relaunch_command through when approving', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      mocks.resumeSession.mockResolvedValue({
+        meta: { ...waitingSession, status: 'running' },
+        mode: 'reattach',
+      });
+      const ctx = createContext({
+        message: 'approve and relaunch',
+        session_id: 'sess-w',
+        relaunch_command: 'npm run build',
+      });
+      await handleMissionControlChat(ctx);
+      expect(mocks.resumeSession).toHaveBeenCalledWith({
+        sessionId: 'sess-w',
+        approveRelaunch: true,
+        relaunchCommand: 'npm run build',
+      });
+    });
+
+    it('returns a refreshed session summary after approving, not the stale one', async () => {
+      const stale = { ...emptySnapshot, sessionSummary: { ...emptySnapshot.sessionSummary, waitingApproval: 1, running: 0 } };
+      const fresh = { ...emptySnapshot, sessionSummary: { ...emptySnapshot.sessionSummary, waitingApproval: 0, running: 1 } };
+      mocks.collectRuntimeHealthSnapshot.mockReset();
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValueOnce(stale).mockResolvedValueOnce(fresh);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      mocks.resumeSession.mockResolvedValue({
+        meta: { ...waitingSession, status: 'running' },
+        mode: 'reattach',
+      });
+      const ctx = createContext({ message: 'approve and resume', session_id: 'sess-w' });
+      await handleMissionControlChat(ctx);
+      const payload = JSON.parse(ctx.res.body ?? '{}') as {
+        session_summary?: { waitingApproval: number; running: number };
+      };
+      expect(payload.session_summary?.waitingApproval).toBe(0);
+      expect(payload.session_summary?.running).toBe(1);
+    });
+
+    it('reports a blocked recovery (checkout failed) instead of a bare error', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockReset();
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      mocks.resumeSession.mockRejectedValue(new Error('Recovery blocked, checkout failed: pathspec'));
+      const ctx = createContext({ message: 'approve and resume', session_id: 'sess-w' });
+      await handleMissionControlChat(ctx);
+      expect(ctx.res.statusCode).toBe(409);
+      expect(ctx.res.body).toContain('Recovery blocked');
+    });
+
+    it('never approves "the latest session" when no session_id is given', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
+      mocks.listSessions.mockResolvedValue([waitingSession]);
+      mocks.resumeSession.mockClear();
+      const ctx = createContext({ message: 'approve and resume' });
+      await handleMissionControlChat(ctx);
+
+      const payload = JSON.parse(ctx.res.body ?? '{}') as { action?: string; reply?: string };
+      expect(payload.action).toBe('approve-needs-session');
+      expect(payload.reply).toContain('sess-w');
+      expect(mocks.resumeSession).not.toHaveBeenCalled();
+    });
+
+    it('refuses to approve a session that is not waiting for approval', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(emptySnapshot);
+      mocks.listSessions.mockResolvedValue([{ ...waitingSession, status: 'running' }]);
+      mocks.resumeSession.mockClear();
+      const ctx = createContext({ message: 'approve and resume', session_id: 'sess-w' });
+      await handleMissionControlChat(ctx);
+
+      const payload = JSON.parse(ctx.res.body ?? '{}') as { action?: string };
+      expect(payload.action).toBe('approve-needs-session');
+      expect(mocks.resumeSession).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('regular resume path', () => {
+    const resumable = {
+      sessionId: 'sess-r',
+      name: 'dead',
+      agentId: 'codex',
+      workspace: '/tmp/ws',
+      status: 'resumable',
+      createdAt: '2026-05-16T00:00:00.000Z',
+      lastSeenAt: '2026-05-16T00:00:00.000Z',
+      tmuxSessionName: 'tmux-sess-r',
+    };
+    const snap = (waiting: number, resumableCount: number) => ({
+      timestamp: '2026-05-16T00:00:00.000Z',
+      nodes: [],
+      queues: [],
+      sessionCount: 1,
+      sessionSummary: {
+        total: 1, created: 0, running: 0, checkpointed: 0, waitingApproval: waiting,
+        stopped: 0, failed: 0, resumable: resumableCount, stale: 0,
+      },
+      capabilities: {
+        machine: {
+          os: 'macos', cpuCores: 8, ramGb: 16, gpuAvailable: true, topologyType: 'local-only',
+          dockerEngine: 'colima', maxLocalWorkers: 2, cloudRole: 'none',
+        },
+        capabilities: [],
+        detectedEditors: [],
+        detectedAgents: [],
+      },
+      dryRun: false,
+    });
+
+    it('answers 409 instead of letting a blocked recovery escape as a rejection', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockReset();
+      mocks.collectRuntimeHealthSnapshot.mockResolvedValue(snap(0, 1));
+      mocks.listSessions.mockResolvedValue([resumable]);
+      mocks.resumeSession.mockReset();
+      mocks.resumeSession.mockRejectedValue(new Error('Recovery blocked, checkout failed: pathspec'));
+      const ctx = createContext({ message: 'resume tmux session', session_id: 'sess-r' });
+      await expect(handleMissionControlChat(ctx)).resolves.toBeUndefined();
+      expect(ctx.res.statusCode).toBe(409);
+      expect(ctx.res.body).toContain('Recovery blocked');
+    });
+
+    it('returns a refreshed summary when a resume moves a session to waiting_approval', async () => {
+      mocks.collectRuntimeHealthSnapshot.mockReset();
+      mocks.collectRuntimeHealthSnapshot
+        .mockResolvedValueOnce(snap(0, 1))
+        .mockResolvedValueOnce(snap(1, 0));
+      mocks.listSessions.mockResolvedValue([resumable]);
+      mocks.resumeSession.mockReset();
+      mocks.resumeSession.mockResolvedValue({
+        meta: { ...resumable, status: 'waiting_approval' },
+        mode: 'rebuild',
+        pendingCommand: 'npm run deploy',
+      });
+      const ctx = createContext({ message: 'resume tmux session', session_id: 'sess-r' });
+      await handleMissionControlChat(ctx);
+      const payload = JSON.parse(ctx.res.body ?? '{}') as {
+        session_summary?: { waitingApproval: number; resumable: number };
+      };
+      expect(payload.session_summary?.waitingApproval).toBe(1);
+      expect(payload.session_summary?.resumable).toBe(0);
+    });
+  });
+
   it('builds a sequential popping subagent plan for PR analysis', async () => {
     mocks.collectRuntimeHealthSnapshot.mockResolvedValue({
       timestamp: '2026-05-16T00:00:00.000Z',

@@ -1,6 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 
+import { assertSafeBranchName } from './guards.js';
+import { withSessionLock } from './lock.js';
+import { compactPaneTail, redactSecrets } from './redact.js';
+import { gitCheckpointState } from './recovery.js';
 import {
   appendSessionLog,
   listStoredSessions,
@@ -25,7 +29,9 @@ import type {
 } from './types.js';
 
 export * from './types.js';
-export { resolveStateDir } from './store.js';
+export { resolveStateDir, CorruptSessionError } from './store.js';
+export { redactSecrets } from './redact.js';
+export { isSafeBranchName } from './guards.js';
 export { resumeSession, type ResumeSessionInput, type ResumeSessionResult, type ResumeMode } from './resume.js';
 export {
   buildRecoverySnapshot,
@@ -59,12 +65,24 @@ async function touch(meta: RuntimeSessionMetadata, patch: Partial<RuntimeSession
   return next;
 }
 
+function projectStatus(s: RuntimeSessionMetadata, tmuxAlive: boolean): RuntimeSessionStatus {
+  if (tmuxAlive) {
+    return s.status;
+  }
+  // A pending human decision outlives its tmux pane (e.g. after a host restart): keep it
+  // visible as waiting_approval so the operator can still approve and rebuild the session.
+  if (s.status === 'stopped' || s.status === 'waiting_approval') {
+    return s.status;
+  }
+  return 'resumable';
+}
+
 export async function listSessions(): Promise<RuntimeSessionMetadata[]> {
   const stored = await listStoredSessions();
   const live = new Set(await tmuxListSessions());
   return stored.map((s) => ({
     ...s,
-    status: live.has(s.tmuxSessionName) ? s.status : s.status === 'stopped' ? 'stopped' : 'resumable',
+    status: projectStatus(s, live.has(s.tmuxSessionName)),
   }));
 }
 
@@ -73,6 +91,9 @@ export async function getSession(sessionId: string): Promise<RuntimeSessionMetad
 }
 
 export async function createSession(input: CreateSessionInput): Promise<RuntimeSessionMetadata> {
+  if (input.branch !== undefined && input.branch.trim().length > 0) {
+    assertSafeBranchName(input.branch);
+  }
   const sessionId = randomUUID();
   const tmuxName = input.tmuxSessionName?.trim()
     ? tmuxSessionName(input.tmuxSessionName.trim().replace(/^opsly-/, ''))
@@ -98,13 +119,21 @@ export async function createSession(input: CreateSessionInput): Promise<RuntimeS
   }
   const updated = await touch(meta, {
     status: running ? 'running' : 'failed',
-    lastCommand: input.initialCommand,
+    lastCommand: input.initialCommand ? redactSecrets(input.initialCommand) : undefined,
   });
   await appendSessionLog(sessionId, `session created agent=${input.agentId} job=${input.jobId ?? '-'}`);
   return updated;
 }
 
-export async function sendCommand(input: SendCommandInput): Promise<{ meta: RuntimeSessionMetadata; output: string }> {
+export function sendCommand(
+  input: SendCommandInput,
+): Promise<{ meta: RuntimeSessionMetadata; output: string }> {
+  return withSessionLock(input.sessionId, () => sendCommandLocked(input));
+}
+
+async function sendCommandLocked(
+  input: SendCommandInput,
+): Promise<{ meta: RuntimeSessionMetadata; output: string }> {
   const meta = await loadSession(input.sessionId);
   if (!meta) {
     throw new Error(`Session not found: ${input.sessionId}`);
@@ -114,8 +143,8 @@ export async function sendCommand(input: SendCommandInput): Promise<{ meta: Runt
   }
   await tmuxSendKeys(meta.tmuxSessionName, input.command);
   const output = await tmuxCapturePane(meta.tmuxSessionName);
-  const updated = await touch(meta, { status: 'running', lastCommand: input.command });
-  await appendSessionLog(input.sessionId, `command: ${input.command.slice(0, 200)}`);
+  const updated = await touch(meta, { status: 'running', lastCommand: redactSecrets(input.command) });
+  await appendSessionLog(input.sessionId, `command: ${redactSecrets(input.command).slice(0, 200)}`);
   return { meta: updated, output };
 }
 
@@ -127,7 +156,11 @@ export async function captureLogs(sessionId: string, lines = 200): Promise<strin
   return tmuxCapturePane(meta.tmuxSessionName, lines);
 }
 
-export async function stopSession(sessionId: string): Promise<RuntimeSessionMetadata> {
+export function stopSession(sessionId: string): Promise<RuntimeSessionMetadata> {
+  return withSessionLock(sessionId, () => stopSessionLocked(sessionId));
+}
+
+async function stopSessionLocked(sessionId: string): Promise<RuntimeSessionMetadata> {
   const meta = await loadSession(sessionId);
   if (!meta) {
     throw new Error(`Session not found: ${sessionId}`);
@@ -136,18 +169,29 @@ export async function stopSession(sessionId: string): Promise<RuntimeSessionMeta
   return touch(meta, { status: 'stopped' });
 }
 
-export async function checkpointSession(
+export function checkpointSession(
   sessionId: string,
-  note?: string
+  note?: string,
+): Promise<RuntimeSessionMetadata> {
+  return withSessionLock(sessionId, () => checkpointSessionLocked(sessionId, note));
+}
+
+async function checkpointSessionLocked(
+  sessionId: string,
+  note?: string,
 ): Promise<RuntimeSessionMetadata> {
   const meta = await loadSession(sessionId);
   if (!meta) {
     throw new Error(`Session not found: ${sessionId}`);
   }
   const output = await tmuxCapturePane(meta.tmuxSessionName, 80);
+  const git = await gitCheckpointState(meta.workspace);
   const updated = await touch(meta, {
-    status: 'checkpointed',
-    lastCheckpoint: note ?? output.slice(-500),
+    // A held command is a pending human decision: checkpointing must not erase it.
+    status: meta.status === 'waiting_approval' ? 'waiting_approval' : 'checkpointed',
+    // Pane text is untrusted: redact before it is persisted or returned by the API.
+    lastCheckpoint: compactPaneTail(note ?? output),
+    checkpointData: { capturedAt: nowIso(), ...git },
   });
   await appendSessionLog(sessionId, `checkpoint ${note ?? 'auto'}`);
   return updated;

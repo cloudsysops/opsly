@@ -1,0 +1,346 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+
+import { isSafeBranchName } from '../guards.js';
+import { compactPaneTail, redactSecrets } from '../redact.js';
+import { parsePorcelainZ } from '../recovery.js';
+import { checkpointSession, createSession, getSession, listSessions } from '../index.js';
+import { saveSession } from '../store.js';
+import { gitCheckpointState } from '../recovery.js';
+import { execFileSync } from 'node:child_process';
+import { chmod } from 'node:fs/promises';
+import { writeFile as writeFileFs, mkdir as mkdirFs } from 'node:fs/promises';
+
+let stateDir = '';
+
+beforeEach(async () => {
+  stateDir = await mkdtemp(path.join(tmpdir(), 'opsly-hardening-'));
+  process.env.OPSLY_RUNTIME_STATE_DIR = stateDir;
+  process.env.OPSLY_RUNTIME_DRY_RUN = 'true';
+});
+
+afterEach(async () => {
+  await rm(stateDir, { recursive: true, force: true });
+  delete process.env.OPSLY_RUNTIME_STATE_DIR;
+  delete process.env.OPSLY_RUNTIME_DRY_RUN;
+});
+
+describe('redactSecrets', () => {
+  it.each([
+    ['Authorization: Bearer sk-live-ABC123SECRET', 'ABC123SECRET'],
+    ['curl -H "Authorization: Bearer abcdefgh12345678"', 'abcdefgh12345678'],
+    ['export API_KEY=hunter2hunter2', 'hunter2hunter2'],
+    ['password: "correct horse"', 'correct horse'],
+    ['token=ghp_abcdefghijklmnopqrstuvwxyz0123', 'ghp_abcdefghijklmnopqrstuvwxyz0123'],
+    ['AWS AKIAIOSFODNN7EXAMPLE', 'AKIAIOSFODNN7EXAMPLE'],
+    ['jwt eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.abcdefghijk', 'eyJhbGciOiJIUzI1NiJ9'],
+  ])('removes secret from %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it('leaves ordinary text untouched', () => {
+    expect(redactSecrets('npm run build && git status')).toBe('npm run build && git status');
+  });
+
+  it('compactPaneTail drops trailing blank lines and bounds length', () => {
+    const out = compactPaneTail(`${'x'.repeat(900)}\nDONE\n\n\n\n`, 100);
+    expect(out.endsWith('DONE')).toBe(true);
+    expect(out.length).toBeLessThanOrEqual(100);
+  });
+});
+
+describe('isSafeBranchName', () => {
+  it.each(['main', 'feat/session-recovery', 'fix/a.b_c-1', 'release/1.2.3'])('accepts %s', (b) => {
+    expect(isSafeBranchName(b)).toBe(true);
+  });
+  it.each([
+    'x$(touch /tmp/p)',
+    'x`id`',
+    'a b',
+    '-D',
+    'a;rm -rf ~',
+    'a"b',
+    "a'b",
+    'a..b',
+    'a/',
+    'x.lock',
+    '',
+  ])('rejects %j', (b) => {
+    expect(isSafeBranchName(b)).toBe(false);
+  });
+
+  it('createSession rejects an unsafe branch before touching tmux or disk', async () => {
+    await expect(
+      createSession({ name: 'x', agentId: 'a', workspace: '/tmp', branch: 'x$(id)' }),
+    ).rejects.toThrow(/Unsafe branch/);
+    expect(await listSessions()).toHaveLength(0);
+  });
+});
+
+describe('parsePorcelainZ', () => {
+  it('includes untracked and staged files and handles renames', () => {
+    const out = parsePorcelainZ(' M a.ts\0?? new file.txt\0A  b.ts\0R  new.ts\0old.ts\0');
+    expect(out).toEqual(['a.ts', 'new file.txt', 'b.ts', 'new.ts']);
+  });
+});
+
+describe('store durability', () => {
+  it('a corrupt session file is skipped in listings and surfaced by getSession', async () => {
+    const good = await createSession({ name: 'ok', agentId: 'a', workspace: '/tmp' });
+    await writeFile(path.join(stateDir, 'broken.json'), '{"sessionId":"', 'utf8');
+    const all = await listSessions();
+    expect(all.map((s) => s.sessionId)).toEqual([good.sessionId]);
+    await expect(getSession('broken')).rejects.toThrow(/corrupt/i);
+    expect(await getSession('does-not-exist')).toBeNull();
+  });
+
+  it('writes atomically (no leftover temp files, valid JSON)', async () => {
+    const s = await createSession({ name: 'ok', agentId: 'a', workspace: '/tmp' });
+    const { readdir } = await import('node:fs/promises');
+    const files = (await readdir(stateDir)).filter((f) => f !== 'logs');
+    expect(files).toEqual([`${s.sessionId}.json`]);
+    JSON.parse(await readFile(path.join(stateDir, files[0]), 'utf8'));
+  });
+});
+
+describe('review follow-ups', () => {
+  it('redacts a quoted secret even when truncation removed the closing quote', () => {
+    const cmd = `export password="${'S3CRETvalue'.repeat(30)}"`;
+    expect(redactSecrets(cmd.slice(0, 200))).not.toContain('S3CRET');
+    expect(redactSecrets("echo token='abc12345")).not.toContain('abc12345');
+  });
+
+  it('concurrent saveSession calls on one session never collide on the temp file', async () => {
+    const now = new Date().toISOString();
+    const meta = (n: number) => ({
+      sessionId: 'same',
+      name: 'x',
+      agentId: 'a',
+      workspace: '/tmp',
+      status: 'running' as const,
+      createdAt: now,
+      lastSeenAt: now,
+      tmuxSessionName: 'opsly-same',
+      lastCommand: `c${n}`,
+    });
+    const results = await Promise.allSettled(
+      Array.from({ length: 40 }, (_, i) => saveSession(meta(i))),
+    );
+    expect(results.filter((r) => r.status === 'rejected')).toHaveLength(0);
+    expect((await getSession('same'))?.sessionId).toBe('same');
+  });
+});
+
+describe('second review round', () => {
+  it('redacts secrets behind quoted JSON keys and escaped quotes', () => {
+    expect(redactSecrets('{"password":"correct horse"}')).not.toContain('correct horse');
+    expect(redactSecrets('{"api_key": "abcdef123456"}')).not.toContain('abcdef123456');
+    expect(redactSecrets('{"token":"ab\\"cdefghijkl"}')).not.toContain('cdefghijkl');
+    expect(redactSecrets("{'secret':'s3cr3tvalue'}")).not.toContain('s3cr3tvalue');
+  });
+
+  it('still leaves harmless JSON alone', () => {
+    expect(redactSecrets('{"name":"build","status":"ok"}')).toBe('{"name":"build","status":"ok"}');
+  });
+
+  it('bounds the checkpoint snapshot but keeps the real total', async () => {
+    delete process.env.OPSLY_RUNTIME_DRY_RUN;
+    const repo = await mkdtemp(path.join(tmpdir(), 'opsly-bounded-'));
+    try {
+      execFileSync('git', ['init', '-q', '-b', 'main'], { cwd: repo });
+      await mkdirFs(path.join(repo, 'gen'));
+      await Promise.all(
+        Array.from({ length: 450 }, (_, i) => writeFileFs(path.join(repo, 'gen', `f${i}.txt`), 'x')),
+      );
+      const state = await gitCheckpointState(repo);
+      expect(state.dirtyFiles).toHaveLength(200);
+      expect(state.dirtyTotal).toBe(450);
+      expect(state.dirtyTruncated).toBe(true);
+    } finally {
+      await rm(repo, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('third review round', () => {
+  it('keeps waiting_approval visible when its tmux session is gone', async () => {
+    const created = await createSession({ name: 'held', agentId: 'a', workspace: '/tmp' });
+    const { getSession: get } = await import('../index.js');
+    const stored = await get(created.sessionId);
+    await saveSession({ ...stored!, status: 'waiting_approval' });
+    // dry-run lists no live tmux sessions, i.e. every pane is "gone"
+    const listed = (await listSessions()).find((s) => s.sessionId === created.sessionId);
+    expect(listed?.status).toBe('waiting_approval');
+  });
+
+  it('still projects other statuses to resumable when tmux is gone', async () => {
+    const created = await createSession({ name: 'run', agentId: 'a', workspace: '/tmp' });
+    const listed = (await listSessions()).find((s) => s.sessionId === created.sessionId);
+    expect(listed?.status).toBe('resumable');
+  });
+});
+
+describe('fourth review round', () => {
+  it.each([
+    ['docker login --password correcthorsebattery', 'correcthorsebattery'],
+    ['doppler configure set token dp.st.correcthorsebattery', 'correcthorsebattery'],
+    ['npm config set _authToken correcthorsebattery', 'correcthorsebattery'],
+    ['curl --user alice:correcthorsebattery https://x.test', 'correcthorsebattery'],
+    ['curl -u alice:correcthorsebattery https://x.test', 'correcthorsebattery'],
+    ['git clone https://bob:correcthorsebattery@github.com/x/y', 'correcthorsebattery'],
+    ['tool --api-key "correct horse battery"', 'correct horse battery'],
+    ['tool --client-secret correcthorsebattery --verbose', 'correcthorsebattery'],
+  ])('redacts space-separated credentials in %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it.each([
+    'npm run build -- --watch --token-count 5',
+    'git clone https://github.com/x/y',
+    'git set-url origin https://github.com/x/y',
+    'docker login registry.example.com',
+    'ls -u',
+    'echo done',
+  ])('leaves ordinary command %j unchanged', (input) => {
+    expect(redactSecrets(input)).toBe(input);
+  });
+
+  it('keeps waiting_approval across a checkpoint', async () => {
+    const created = await createSession({ name: 'held', agentId: 'a', workspace: '/tmp' });
+    const stored = await getSession(created.sessionId);
+    await saveSession({ ...stored!, status: 'waiting_approval', lastCommand: 'git push' });
+    const cp = await checkpointSession(created.sessionId, 'note');
+    expect(cp.status).toBe('waiting_approval');
+    expect(cp.lastCheckpoint).toBe('note');
+    expect(cp.lastCommand).toBe('git push');
+  });
+});
+
+describe('sixth review round', () => {
+  it.each([
+    ['docker login -u bob -p hunter2hunter2', 'hunter2hunter2'],
+    ['docker login registry.example.com -u bob -p "hunter two"', 'hunter two'],
+    ['podman login -p hunter2hunter2 quay.io', 'hunter2hunter2'],
+  ])('redacts the short password flag of %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it.each([
+    'docker run -p 8080:80 nginx',
+    'docker compose up -d',
+    'kubectl port-forward -p 8080 svc/x',
+    'docker login registry.example.com -u bob',
+  ])('does not treat -p as a secret outside docker login: %s', (input) => {
+    expect(redactSecrets(input)).toBe(input);
+  });
+
+  it('never returns legacy plaintext credentials from getSession or listSessions', async () => {
+    const now = new Date().toISOString();
+    await writeFile(
+      path.join(stateDir, 'legacy.json'),
+      JSON.stringify({
+        sessionId: 'legacy',
+        name: 'x',
+        agentId: 'a',
+        workspace: '/tmp',
+        status: 'running',
+        createdAt: now,
+        lastSeenAt: now,
+        tmuxSessionName: 'opsly-legacy',
+        lastCommand: 'deploy --password hunter2hunter2',
+        lastCheckpoint: '$ export API_KEY=hunter2hunter2',
+      }),
+      'utf8',
+    );
+    expect(JSON.stringify(await getSession('legacy'))).not.toContain('hunter2hunter2');
+    expect(JSON.stringify(await listSessions())).not.toContain('hunter2hunter2');
+    // what was scrubbed is no longer replayable from state
+    expect((await getSession('legacy'))?.lastCommand).toContain('***');
+  });
+});
+
+describe('seventh review round', () => {
+  it.each([
+    ['Authorization: Token correcthorsebattery', 'correcthorsebattery'],
+    ['curl -H "Authorization: ApiKey correcthorsebattery" https://x.test', 'correcthorsebattery'],
+    ['Authorization: Digest username=bob', 'username=bob'],
+    ['Authorization: Basic YWxpY2U6c2VjcmV0', 'YWxpY2U6c2VjcmV0'],
+    ['Authorization: Bearer correcthorsebattery', 'correcthorsebattery'],
+    ['authorization=correcthorsebattery', 'correcthorsebattery'],
+  ])('redacts the full Authorization value in %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it('does not report a non-git workspace as a clean checkpoint', async () => {
+    delete process.env.OPSLY_RUNTIME_DRY_RUN;
+    const dir = await mkdtemp(path.join(tmpdir(), 'opsly-nogit-'));
+    try {
+      const state = await gitCheckpointState(dir);
+      expect(state.gitAvailable).toBe(false);
+      expect(state.dirtyTotal).toBeUndefined();
+      expect(state.dirtyFiles).toEqual([]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('eighth review round', () => {
+  it.each([
+    ['Authorization: Digest username="bob", realm="opsly", response="supersecret"', 'supersecret'],
+    ['Authorization: AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20260101/x, Signature=abcdef0123456789', 'abcdef0123456789'],
+    ['curl -H "Authorization: Token correcthorsebattery" https://x.test', 'correcthorsebattery'],
+    ['{"authorization":"Bearer correcthorsebattery"}', 'correcthorsebattery'],
+  ])('redacts every component of the Authorization header in %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it('keeps the header name so the line is still recognisable', () => {
+    expect(redactSecrets('Authorization: Digest a="b", c="d"')).toBe('Authorization: ***');
+  });
+});
+
+describe('ninth review round', () => {
+  it.each([
+    ['REDIS_URL=redis://:correcthorsebattery@redis:6379/0', 'correcthorsebattery'],
+    ['redis://default:correcthorsebattery@redis:6379', 'correcthorsebattery'],
+    ['git clone https://bob:correcthorsebattery@github.com/x/y', 'correcthorsebattery'],
+    ['amqp://:correcthorsebattery@rabbit:5672/vhost', 'correcthorsebattery'],
+  ])('redacts the password in the connection URL %s', (input, secret) => {
+    expect(redactSecrets(input)).not.toContain(secret);
+  });
+
+  it.each([
+    'redis://redis:6379/0',
+    'https://github.com/x/y',
+    'http://localhost:3000/api/health',
+    'postgres://db.internal:5432/app',
+  ])('leaves a URL without credentials unchanged: %s', (input) => {
+    expect(redactSecrets(input)).toBe(input);
+  });
+
+  it('a stalled git cannot hang the snapshot: it times out and reports no snapshot', async () => {
+    delete process.env.OPSLY_RUNTIME_DRY_RUN;
+    const bin = await mkdtemp(path.join(tmpdir(), 'opsly-fakegit-'));
+    const work = await mkdtemp(path.join(tmpdir(), 'opsly-work-'));
+    const oldPath = process.env.PATH;
+    try {
+      await writeFile(path.join(bin, 'git'), '#!/bin/sh\nexec sleep 30\n', 'utf8');
+      await chmod(path.join(bin, 'git'), 0o755);
+      process.env.PATH = `${bin}:${oldPath ?? ''}`;
+      process.env.OPSLY_GIT_TIMEOUT_MS = '300';
+      const started = Date.now();
+      const state = await gitCheckpointState(work);
+      expect(Date.now() - started).toBeLessThan(5000);
+      expect(state.gitAvailable).toBe(false);
+      expect(state.dirtyTotal).toBeUndefined();
+    } finally {
+      process.env.PATH = oldPath;
+      delete process.env.OPSLY_GIT_TIMEOUT_MS;
+      await rm(bin, { recursive: true, force: true });
+      await rm(work, { recursive: true, force: true });
+    }
+  });
+});
