@@ -24,14 +24,22 @@ os.environ.setdefault("OPSLY_AI_DJ_AGENT_URL", "http://localhost:5013")
 
 class TestAuthentication(unittest.TestCase):
     def test_formula_protocolo(self):
-        # Firma del reto de obs-websocket v5:
-        #   secret = base64( sha256(password + salt) + challenge )
+        # Firma del reto de obs-websocket v5 (spec real, 3 pasos):
+        #   1. secret = sha256(password + salt)
+        #   2. base64_secret = base64(secret)
+        #   3. auth = base64( sha256(base64_secret + challenge) )
+        # (version anterior de este test validaba contra los mismos bytes
+        # crudos que la implementacion rota concatenaba -- self-referential,
+        # nunca detecto que faltaba el paso 2 hasta que el servidor real de
+        # OBS rechazo la conexion con "Authentication failed".)
         import base64
         import hashlib
 
         password, salt, challenge = "supersecret", "s3cr3t-salt", "foo"
+        secret = hashlib.sha256((password + salt).encode()).digest()
+        base64_secret = base64.b64encode(secret).decode("ascii")
         expected = base64.b64encode(
-            hashlib.sha256((password + salt).encode()).digest() + challenge.encode()
+            hashlib.sha256((base64_secret + challenge).encode()).digest()
         ).decode("ascii")
         self.assertEqual(authentication(password, salt, challenge), expected)
         # distintos salts -> distintos secrets
