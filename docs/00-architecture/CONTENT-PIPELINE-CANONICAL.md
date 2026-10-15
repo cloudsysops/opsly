@@ -114,6 +114,13 @@ credentials (Doppler), scheduling, audit trail.
 `ContentVideoWorker` stays the MoneyPrinterTurbo job runner for event/kids
 drafts. It is **not** the gameplay watcher and **not** a second orchestrator.
 
+## Editing style / variety layer
+
+Editorial cut structure (which of 8 styles, hook type, zoom pattern, text layout, variety-vs-last-5-clips
+check) is governed by [CLIP-EDITING-STYLE-GUIDE.md](CLIP-EDITING-STYLE-GUIDE.md), bilingual (EN/ES). It
+sits between `extractClip`/`verticalReframe`/`captionBurn` and this approval model below — it adds no
+stage, worker, or queue, and does not change anything in this section.
+
 ## Approval model
 
 1. Pipeline stops at `ready_for_review` / `human_review`.
@@ -220,6 +227,7 @@ Do **not** start Remotion, Auto-clipper, Whisper, or Dragon overlay.
 
 ## Enlaces relacionados
 
+- [[CLIP-EDITING-STYLE-GUIDE]] (variedad de estructura de edición, bilingüe)
 - [[00-architecture/CONTENT-STUDIO-ARCHITECTURE|CONTENT-STUDIO-ARCHITECTURE]] (historical Phase 2 events)
 - [[00-architecture/CONTENT-PRODUCTION-MVP|CONTENT-PRODUCTION-MVP]] (historical brand bible)
 - [[04-infrastructure/PC-GAMER-WORKER|PC-GAMER-WORKER]]
