@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthRecoveryHandler } from '@/components/auth/auth-recovery-handler';
 import { buildRecoveryRedirectTo, isRecoveryLink } from '@/lib/auth-recovery';
-import { createClient } from '@/lib/supabase/client';
+import { createRequiredAuthClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [recoveryMode, setRecoveryMode] = useState(false);
 
   useEffect(() => {
-    const supabase = createClient();
+    const supabase = createRequiredAuthClient();
     void supabase.auth
       .getSession()
       .then(({ data }) => {
@@ -62,7 +62,7 @@ export default function LoginPage() {
     setError(null);
     setResetSent(false);
     try {
-      const supabase = createClient();
+      const supabase = createRequiredAuthClient();
       const origin =
         typeof window !== 'undefined' ? window.location.origin : 'https://admin.op-sly.com';
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
@@ -85,7 +85,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const supabase = createClient();
+      const supabase = createRequiredAuthClient();
       const { error: signErr } = await supabase.auth.signInWithPassword({
         email,
         password,

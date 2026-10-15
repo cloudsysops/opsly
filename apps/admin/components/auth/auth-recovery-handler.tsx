@@ -4,14 +4,14 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { isSuperAdminUser } from '@/lib/super-admin';
-import { createClient } from '@/lib/supabase/client';
+import { createRequiredAuthClient } from '@/lib/supabase/client';
 
 export function AuthRecoveryHandler(): React.ReactElement {
   const router = useRouter();
   const [message, setMessage] = useState('Validando enlace de recuperación…');
 
   useEffect(() => {
-    const supabase = createClient();
+    const supabase = createRequiredAuthClient();
 
     const finishOrReject = (
       user: import('@supabase/supabase-js').User | null | undefined

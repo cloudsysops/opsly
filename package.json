@@ -221,7 +221,8 @@
     "test:creator-local-bridge": "node --test scripts/ops/__tests__/creator-local-bridge.test.mjs",
     "opsly:local-openclaw-service": "OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 OPSLY_CLI_AGENT=openclaw PORT=5012 tsx scripts/cli-agent-service.ts",
     "opsly:agent-handoff": "node scripts/ops/interactive-agent-handoff.mjs",
-    "test:agent-handoff": "node --test scripts/ops/__tests__/interactive-agent-handoff.test.mjs"
+    "test:agent-handoff": "node --test scripts/ops/__tests__/interactive-agent-handoff.test.mjs",
+    "mission-control:live:preview": "bash scripts/ops/mission-control-live-preview.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
