@@ -3,13 +3,27 @@ import type {
   ContentFormat,
   DragonCyberMode,
   HighlightScoreBreakdown,
+  SessionWindowCaptureTier,
 } from './types.js';
+import { SESSION_WINDOW_TIER_BASE_SCORE } from './session-window-discovery.js';
 
 export const MIN_PRIMARY_SCORE = 35;
 export const MAX_PRIMARY_CANDIDATES = 5;
 
 function clampScore(value: number): number {
   return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+/**
+ * session-window candidates carry no audio/vision reaction signal — their
+ * only input is which capture device recorded them. Reuse the same
+ * tier-ranking the discovery step used (so a tier bump in one place moves
+ * both the pre-score and the scorer consistently), nudged slightly below
+ * audio_peak/nvidia_highlight confidence since no activity signal backs it.
+ */
+function sessionWindowReaction(captureTier: SessionWindowCaptureTier | undefined): number {
+  const base = captureTier ? SESSION_WINDOW_TIER_BASE_SCORE[captureTier] : 50;
+  return clampScore(base - 6);
 }
 
 function durationEntertainment(durationSec: number): number {
@@ -21,7 +35,13 @@ function durationEntertainment(durationSec: number): number {
 
 export function scoreGameplayCandidate(clip: ClipCandidate): ClipCandidate {
   const reaction =
-    clip.category === 'nvidia_highlight' ? 86 : clip.category === 'audio_peak' ? 74 : 48;
+    clip.category === 'nvidia_highlight'
+      ? 86
+      : clip.category === 'audio_peak'
+        ? 74
+        : clip.captureTier
+          ? sessionWindowReaction(clip.captureTier)
+          : 48;
   const hook = clip.hook.trim().length >= 8 ? 70 : 42;
   const clarity = clip.duration >= 4 ? 68 : 36;
   const visual = 50;

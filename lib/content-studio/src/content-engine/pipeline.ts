@@ -3,6 +3,7 @@ import path from 'node:path';
 import { createProjectEnvelope, saveProjectEnvelope, writeAssetFromSource, addProjectRenderJob, setProjectApproval, setProjectMetadata } from './storage.js';
 import { discoverClips } from './clip-discovery.js';
 import { discoverClipsFromAudioPeaks } from './audio-peak-discovery.js';
+import { discoverSessionWindowCandidates } from './session-window-discovery.js';
 import { evaluateRightsGate, scoreOriginalContribution } from './rights.js';
 import { transcribeMedia, ownedFixtureTranscript, writeSidecarTranscript } from './transcribe.js';
 import {
@@ -31,6 +32,9 @@ import type {
   ContentProvenance,
   ContentScene,
   GameplayCaptureSource,
+  HighlightDetectionStrategy,
+  SessionWindowCaptureTier,
+  SessionWindowTag,
 } from './types.js';
 
 function ownedProvenance(tenantId: string): ContentProvenance {
@@ -194,6 +198,53 @@ export async function discoverProjectClipsFromAudio(
   return next;
 }
 
+/**
+ * Alternate highlight.detect path for footage with no reliable audio-peak
+ * signal (e.g. airsoft/POV gameplay). Same capability, same envelope shape,
+ * same downstream stages as discoverProjectClipsFromAudio — only the
+ * discovery heuristic differs. See session-window-discovery.ts.
+ */
+export async function discoverProjectClipsFromSessionWindows(
+  envelope: ContentProjectEnvelope,
+  options: {
+    captureTier: SessionWindowCaptureTier;
+    qualityScore?: number;
+    windowSec?: number;
+    category?: string;
+    tags?: SessionWindowTag[];
+  },
+  baseDir = process.cwd()
+): Promise<ContentProjectEnvelope> {
+  const sourceAsset = envelope.assets[0];
+  if (!sourceAsset) {
+    throw new Error('No source asset for session-window discovery');
+  }
+  const durationSec = Number(sourceAsset.metadata.duration ?? 0);
+  if (!(durationSec > 0)) {
+    throw new Error('SESSION_WINDOW_DISCOVERY_FAILED: source asset has no known duration');
+  }
+  const clipCandidates = discoverSessionWindowCandidates(
+    [
+      {
+        sourceVideo: sourceAsset.path,
+        durationSec,
+        captureTier: options.captureTier,
+        qualityScore: options.qualityScore,
+        category: options.category,
+        tags: options.tags,
+      },
+    ],
+    { windowSec: options.windowSec, limit: 5 }
+  );
+  const next = {
+    ...envelope,
+    clipCandidates,
+    project: { ...envelope.project, status: 'edit' as const, updatedAt: new Date().toISOString() },
+  };
+  await saveProjectEnvelope(next, baseDir);
+  return next;
+}
+
 export async function ingestPrecutHighlight(options: {
   tenantId: string;
   filePath: string;
@@ -250,8 +301,29 @@ export async function prepareGameplaySession(options: {
   title?: string;
   minScore?: number;
   maxPrimary?: number;
+  /**
+   * highlight.detect strategy. Defaults to 'audio-peak' (silencedetect),
+   * the original canonical path. Use 'session-window' for POV gameplay
+   * (e.g. airsoft) where there is no reliable audio-peak cue — see
+   * session-window-discovery.ts and CONTENT-PIPELINE-CANONICAL.md.
+   */
+  detectionStrategy?: HighlightDetectionStrategy;
+  /** Required when detectionStrategy is 'session-window'. */
+  sessionWindow?: {
+    captureTier: SessionWindowCaptureTier;
+    qualityScore?: number;
+    windowSec?: number;
+    category?: string;
+    tags?: SessionWindowTag[];
+  };
 }): Promise<ContentProjectEnvelope> {
   const baseDir = options.baseDir ?? process.cwd();
+  const detectionStrategy: HighlightDetectionStrategy = options.detectionStrategy ?? 'audio-peak';
+  if (detectionStrategy === 'session-window' && !options.sessionWindow) {
+    throw new Error(
+      'SESSION_WINDOW_CONFIG_MISSING: detectionStrategy "session-window" requires a sessionWindow { captureTier } config'
+    );
+  }
   const sourceFile = path.resolve(options.filePath);
   if (!fs.existsSync(sourceFile)) {
     throw new Error(`GAMEPLAY_SOURCE_MISSING: ${sourceFile}`);
@@ -278,10 +350,14 @@ export async function prepareGameplaySession(options: {
       duration: probe.duration,
       captureSource: options.captureSource ?? 'synthetic',
       processingStatus: 'discovering',
+      detectionStrategy,
     },
   };
   await saveProjectEnvelope(envelope, baseDir);
-  envelope = await discoverProjectClipsFromAudio(envelope, baseDir);
+  envelope =
+    detectionStrategy === 'session-window'
+      ? await discoverProjectClipsFromSessionWindows(envelope, options.sessionWindow!, baseDir)
+      : await discoverProjectClipsFromAudio(envelope, baseDir);
   const selected = selectPrimaryCandidates(envelope.clipCandidates ?? [], {
     minScore: options.minScore,
     maxPrimary: options.maxPrimary,

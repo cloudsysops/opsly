@@ -371,7 +371,66 @@ export interface ClipCandidate {
   scoreBreakdown?: HighlightScoreBreakdown;
   recommendedFormats?: ContentFormat[];
   dragonMode?: DragonCyberMode;
+  /**
+   * Human-readable note on what the window actually is, e.g. for
+   * session-window candidates: "POV segment (<tag>) — activity window
+   * only; eliminations unverified". Optional for other discovery
+   * strategies that use `hook` as their only label.
+   */
+  description?: string;
+  /**
+   * Explicit, always-false-until-proven flag so no discovery strategy can
+   * silently claim a verified elimination/kill happened. Audio-peak and
+   * transcript discovery never set this; session-window discovery always
+   * sets it to false (see docs/00-architecture/CONTENT-PIPELINE-CANONICAL.md).
+   */
+  confirmedElimination?: boolean;
+  /** Set only by session-window discovery; the source capture tier used to seed this candidate's score. */
+  captureTier?: SessionWindowCaptureTier;
 }
+
+/**
+ * Source-capture-quality tier for footage with no reliable audio-peak signal
+ * (e.g. airsoft/POV gameplay, where gunfire is ambient rather than a
+ * discrete cue). Mirrors the ad-hoc PC-gamer script's capture-device
+ * ranking: the big 4K60 match recording scores highest, then action-cam
+ * (GoPro-style) footage, then phone footage.
+ */
+export const sessionWindowCaptureTierValues = ['match_4k60', 'action_cam', 'iphone'] as const;
+export type SessionWindowCaptureTier = (typeof sessionWindowCaptureTierValues)[number];
+
+/**
+ * Chronological narrative-beat labels for dense session windows within one
+ * source video. Not a claim about what happened in the window — purely a
+ * position-in-session label (see session-window-discovery.ts).
+ */
+export const sessionWindowTagValues = [
+  'hook',
+  'open',
+  'push',
+  'contact',
+  'cqb',
+  'mid',
+  'midA',
+  'midB',
+  'reload_move',
+  'pressure',
+  'close',
+  'full',
+] as const;
+export type SessionWindowTag = (typeof sessionWindowTagValues)[number];
+
+/**
+ * Alternate highlight.detect strategies. `audio-peak` (default) is the
+ * canonical silencedetect-based path in audio-peak-discovery.ts. `session-window`
+ * is the canonical POV-gameplay path in session-window-discovery.ts, for
+ * footage where gunfire/engine noise etc. is ambient and never has a
+ * discrete audio peak to key off of. Both flow through the same
+ * highlight.score / clip.extract / vertical.reframe / captions / rights /
+ * qa / approval / publish stages — see CONTENT-PIPELINE-CANONICAL.md.
+ */
+export const highlightDetectionStrategyValues = ['audio-peak', 'session-window'] as const;
+export type HighlightDetectionStrategy = (typeof highlightDetectionStrategyValues)[number];
 
 export const gameplayCaptureSourceValues = [
   'obs',
@@ -392,6 +451,13 @@ export interface GameplaySessionMeta {
   duration: number;
   captureSource: GameplayCaptureSource;
   processingStatus: string;
+  /**
+   * Which highlight.detect strategy produced this session's clipCandidates.
+   * Defaults to 'audio-peak' (set by prepareGameplaySession) when omitted,
+   * so existing sessions/fixtures created before this field existed still
+   * read back as the historical default.
+   */
+  detectionStrategy?: HighlightDetectionStrategy;
 }
 
 export const contentPublishJobStatusValues = [
