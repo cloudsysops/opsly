@@ -1,0 +1,34 @@
+[Unit]
+Description=Mission Control Live local preview for OBS (dev server on 127.0.0.1:4001)
+After=network.target
+# Supabase public config is fetched from Doppler at start; a slow CLI should not
+# abort the unit before it ever reaches `next dev`.
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+WorkingDirectory=/home/opsly/opsly
+Environment=PATH=/home/opsly/.local/bin:/home/opsly/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+# Never touch git from a supervised unit: a dirty worktree would break checkout
+# and take the unit down. The branch is managed manually, not by this unit.
+Environment=MISSION_CONTROL_LIVE_SKIP_SYNC=1
+Environment=MISSION_CONTROL_PREVIEW_PORT=4001
+# Local-only: without this the board redirects the OBS browser source to /login
+# (307). `next dev` runs with NODE_ENV=development, and isAdminPublicDemoEnabled()
+# refuses to enable itself in production, so this cannot weaken prod.
+Environment=NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true
+Environment=HOME=/home/opsly
+ExecStart=/home/opsly/opsly/scripts/ops/mission-control-live-preview.sh
+# Always, not on-failure: `npx next dev` runs the real server as a child, so
+# killing next-server makes npx exit 0 and on-failure would leave us down.
+# A deliberate `systemctl stop` still wins over Restart=always.
+Restart=always
+RestartSec=10
+KillSignal=SIGTERM
+TimeoutStopSec=30
+StandardOutput=append:/home/opsly/.local/state/opsly/mission-control-preview.log
+StandardError=append:/home/opsly/.local/state/opsly/mission-control-preview.log
+
+[Install]
+WantedBy=default.target
