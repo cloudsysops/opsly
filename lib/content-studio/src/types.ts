@@ -383,3 +383,36 @@ export interface YouTubePublishResult {
   url: string;
   uploaded_at: string;
 }
+
+// ─── TikTok Publishing ────────────────────────────────────────────────────────
+//
+// Uploads an already-rendered local video file to TikTok via the Content
+// Posting API (Direct Post, FILE_UPLOAD source). Does not render video itself
+// — see rendering/episode-render-plan.ts for that. Requires an access token
+// from Doppler (never hardcoded).
+
+export type TikTokPrivacyLevel =
+  | 'PUBLIC_TO_EVERYONE'
+  | 'MUTUAL_FOLLOW_FRIENDS'
+  | 'FOLLOWER_OF_CREATOR'
+  | 'SELF_ONLY';
+
+export interface TikTokCredentials {
+  access_token: string;
+}
+
+export interface TikTokPublishRequest {
+  /** Absolute path to an already-rendered local video file (mp4). */
+  file_path: string;
+  title: string;
+  privacy_level: TikTokPrivacyLevel;
+  disable_duplicate_check?: boolean;
+  disable_comment?: boolean;
+  disable_stitch?: boolean;
+  disable_duet?: boolean;
+}
+
+export interface TikTokPublishResult {
+  publish_id: string;
+  status: 'PROCESSING_UPLOAD';
+}
