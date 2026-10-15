@@ -62,6 +62,38 @@ function listField(value) {
   return trimmed.split(',').map((v) => v.trim()).filter(Boolean);
 }
 
+function typedWriteEnabled() {
+  return process.env.OPSLY_GITHUB_AGENT_TYPED_WRITE === 'true';
+}
+
+function readPreMintedWriteApprovalId() {
+  const approvalId = String(process.env.OPSLY_GITHUB_AGENT_WRITE_APPROVAL_ID || '').trim();
+  if (!approvalId) {
+    throw new Error(
+      'OPSLY_GITHUB_AGENT_WRITE_APPROVAL_ID is required for typed write (pre-minted AgentTaskWriteApprovalV1)'
+    );
+  }
+  return approvalId;
+}
+
+function readTypedWriteBinding() {
+  const repository = String(
+    process.env.OPSLY_GITHUB_AGENT_WRITE_REPOSITORY || process.env.GITHUB_REPOSITORY || ''
+  ).trim();
+  const prNumber = Number(process.env.OPSLY_GITHUB_AGENT_WRITE_PR_NUMBER || '');
+  const prBranch = String(process.env.OPSLY_GITHUB_AGENT_WRITE_PR_BRANCH || '').trim();
+  const prHeadSha = String(process.env.OPSLY_GITHUB_AGENT_WRITE_PR_HEAD_SHA || '').trim().toLowerCase();
+  if (!repository) throw new Error('OPSLY_GITHUB_AGENT_WRITE_REPOSITORY (or GITHUB_REPOSITORY) is required for typed write');
+  if (!Number.isInteger(prNumber) || prNumber < 1) {
+    throw new Error('OPSLY_GITHUB_AGENT_WRITE_PR_NUMBER must be a positive integer for typed write');
+  }
+  if (!prBranch) throw new Error('OPSLY_GITHUB_AGENT_WRITE_PR_BRANCH is required for typed write');
+  if (!/^[a-f0-9]{40}$/.test(prHeadSha)) {
+    throw new Error('OPSLY_GITHUB_AGENT_WRITE_PR_HEAD_SHA must be an exact 40-char git SHA');
+  }
+  return { repository, pr_number: prNumber, pr_branch: prBranch, pr_head_sha: prHeadSha };
+}
+
 function assertSafe(meta) {
   for (const key of [
     'id',
@@ -96,11 +128,21 @@ function assertSafe(meta) {
   if (Number(meta.estimated_cost_usd) !== 0) {
     throw new Error('estimated_cost_usd must be exactly 0');
   }
-  if (meta.requires_pr === true) {
+  const typedWrite = typedWriteEnabled();
+  if (meta.requires_pr === true && !typedWrite) {
     throw new Error('requires_pr=true is not eligible for autonomous GitHub dispatch yet');
   }
-  if (meta.requires_approval === true) {
+  if (meta.requires_approval === true && !typedWrite) {
     throw new Error('requires_approval=true is not eligible for autonomous GitHub dispatch');
+  }
+  if (typedWrite) {
+    if (meta.requires_pr !== true || meta.requires_approval !== true) {
+      throw new Error(
+        'OPSLY_GITHUB_AGENT_TYPED_WRITE=true requires workpack requires_pr=true and requires_approval=true'
+      );
+    }
+    readTypedWriteBinding();
+    readPreMintedWriteApprovalId();
   }
   if (meta.production_deploy === true) {
     throw new Error('production_deploy=true is forbidden in GitHub Agent Queue');
@@ -162,13 +204,21 @@ if (!body) throw new Error('workpack body must not be empty');
 
 const sha = process.env.GITHUB_SHA || crypto.createHash('sha256').update(content).digest('hex').slice(0, 12);
 const requestId = `ghq-${safeIdSegment(meta.id)}-${sha.slice(0, 12)}`;
+const typedWrite = typedWriteEnabled();
+const writeBinding = typedWrite ? readTypedWriteBinding() : null;
+const writeApprovalId = typedWrite ? readPreMintedWriteApprovalId() : null;
+// DispatchClaimV1.claimId === requestId (server acquire). Pre-minted approval must use the same ids.
+const writeClaimId = requestId;
+// Digest of the exact workpack body that becomes prompt_body / AgentTaskEnvelopeV1.task.
+const taskContentSha256 = crypto.createHash('sha256').update(body, 'utf8').digest('hex');
 
 const payload = {
   tenant_slug: 'local',
   request_id: requestId,
   idempotency_key: requestId,
   agent: String(meta.agent),
-  agent_role: 'review',
+  // Read-only default remains review; typed write uses executor without weakening the default path.
+  agent_role: typedWrite ? 'executor' : 'review',
   max_steps: Number(meta.max_steps || 6),
   goal: String(meta.title || meta.id),
   prompt_body: body,
@@ -190,9 +240,25 @@ const payload = {
     environment: meta.environment,
     cost_class: meta.cost_class,
     estimated_cost_usd: Number(meta.estimated_cost_usd),
-    requires_pr: false,
+    requires_pr: typedWrite ? true : false,
     production_deploy: false,
-    paid_infra_required: false
+    paid_infra_required: false,
+    ...(typedWrite && writeBinding && writeApprovalId
+      ? {
+          // Propagate operator/admin pre-minted approval only — never mint here.
+          work_id: String(meta.id),
+          claim_id: writeClaimId,
+          repository: writeBinding.repository,
+          pr_number: writeBinding.pr_number,
+          pr_branch: writeBinding.pr_branch,
+          pr_head_sha: writeBinding.pr_head_sha,
+          task_content_sha256: taskContentSha256,
+          write_approval_ref: {
+            schema_version: 'AgentTaskWriteApprovalV1',
+            approval_id: writeApprovalId,
+          },
+        }
+      : {}),
   }
 };
 

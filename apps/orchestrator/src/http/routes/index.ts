@@ -27,6 +27,7 @@ export {
   handleLocalQueueHealth,
   handleLocalPromptSubmit,
 } from './local.js';
+export { handleAgentTaskWriteApproval } from './write-approval.js';
 export { handleExternalAgentsRegistry } from './external-agents.js';
 export {
   handleValidationMetrics,

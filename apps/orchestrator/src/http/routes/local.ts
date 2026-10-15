@@ -31,7 +31,15 @@ import {
 import { buildExternalAgentFleetSnapshot } from './external-agents.js';
 import { jsonResponse, errorResponse } from '../router.js';
 import { agentTaskEnvelopeV1Schema } from '@intcloudsysops/types/agent-task';
-import { buildAgentTaskEnvelope, inferTaskType } from '@intcloudsysops/agent-task-core';
+import {
+  AGENT_TASK_WRITE_APPROVAL_VERSION,
+  agentTaskWriteApprovalRefSchema,
+  buildAgentTaskEnvelope,
+  digestTaskContent,
+  inferTaskType,
+  resolveEffectiveWriteAllowed,
+  composeOwnershipHeader,
+} from '@intcloudsysops/agent-task-core';
 import {
   acquireTaskDispatchClaim,
   dispatchClaimRequestFromContext,
@@ -306,7 +314,8 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     return;
   }
 
-  const agentRole = (typeof b.agent_role === 'string' ? b.agent_role : 'executor').trim();
+  const hasExplicitAgentRole = typeof b.agent_role === 'string' && b.agent_role.trim().length > 0;
+  const agentRole = (hasExplicitAgentRole ? String(b.agent_role) : 'executor').trim();
   const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
   const maxSteps = typeof b.max_steps === 'number' && Number.isFinite(b.max_steps) ? Math.floor(b.max_steps) : 10;
   const context =
@@ -362,16 +371,21 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
             : undefined
   );
   const requiresPr = context.requires_pr === true;
-  const inferredWriteAllowed =
-    requiresPr ||
-    roleHint.includes('build') ||
-    roleHint.includes('implement') ||
-    roleHint.includes('debug');
-  const writeAllowed = taskEnvelopeResult?.success
-    ? taskEnvelopeResult.data.constraints.write_allowed === true
-    : inferredWriteAllowed;
+  // agent_role is routing/capability metadata, never write authorization. Write intent comes from
+  // requires_pr or an explicit write_allowed on the caller's AgentTaskEnvelopeV1 (OR'd in below).
+  const inferredWriteAllowed = requiresPr;
+  // Caller may strengthen write_allowed; never downgrade server-inferred write intent.
+  const envelopeWriteAllowed =
+    taskEnvelopeResult?.success === true &&
+    taskEnvelopeResult.data.constraints.write_allowed === true;
+  const writeAllowed = resolveEffectiveWriteAllowed({
+    inferredWriteAllowed,
+    envelopeWriteAllowed,
+  });
 
-  const taskEnvelope = taskEnvelopeResult?.success
+  const taskContentSha256 = digestTaskContent(promptForWorker);
+
+  let taskEnvelope = taskEnvelopeResult?.success
     ? taskEnvelopeResult.data
     : buildAgentTaskEnvelope({
         task: promptForWorker,
@@ -394,6 +408,7 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
           agent_role: agentRole,
           goal,
           requires_pr: requiresPr,
+          task_content_sha256: taskContentSha256,
           ...context,
         },
       });
@@ -406,6 +421,25 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     );
     return;
   }
+
+  // Preserve server-inferred write intent even if caller supplied write_allowed=false.
+  if (writeAllowed && taskEnvelope.constraints.write_allowed !== true) {
+    taskEnvelope = {
+      ...taskEnvelope,
+      constraints: { ...taskEnvelope.constraints, write_allowed: true },
+    };
+  }
+
+  // Stamp authoritative task digest (recomputed from the executed prompt).
+  taskEnvelope = {
+    ...taskEnvelope,
+    metadata: {
+      ...(typeof taskEnvelope.metadata === 'object' && taskEnvelope.metadata !== null
+        ? (taskEnvelope.metadata as Record<string, unknown>)
+        : {}),
+      task_content_sha256: taskContentSha256,
+    },
+  };
 
   if (
     taskEnvelope.tenant_slug !== tenantSlug ||
@@ -591,23 +625,82 @@ let admission;
         dispatch_claim_expires_at: dispatchClaimLease.expiresAt,
       };
 
-      const ownershipHeader = [
-        '[OPSLY DISPATCH OWNERSHIP — TRUSTED CONTROL METADATA]',
-        `claim_id=${dispatchClaimLease.claimId}`,
-        `task_id=${dispatchClaimLease.taskId}`,
-        `workstream=${dispatchClaimLease.workstream}`,
-        `conflict_key=${dispatchClaimRequest.conflictKey}`,
-        dispatchClaimRequest.semanticScope
-          ? `semantic_scope=${dispatchClaimRequest.semanticScope}`
-          : null,
-        dispatchClaimRequest.affectedPaths.length > 0
-          ? `affected_paths=${dispatchClaimRequest.affectedPaths.join(',')}`
-          : null,
-        'Do not start a parallel branch/worktree/task for this owned scope. Reuse the existing claim until terminal completion.',
-        '[/OPSLY DISPATCH OWNERSHIP]',
-      ]
-        .filter((line): line is string => typeof line === 'string')
-        .join('\n');
+      // Bind server-acquired claim into AgentTask metadata for typed write approval.
+      // claimId === requestId (acquireTaskDispatchClaim). Never auto-mint approvals here.
+      const prevMeta =
+        typeof taskEnvelope.metadata === 'object' && taskEnvelope.metadata !== null
+          ? { ...(taskEnvelope.metadata as Record<string, unknown>) }
+          : {};
+      const writeApprovalRefRaw = context.write_approval_ref ?? prevMeta.write_approval_ref;
+      let writeApprovalRef: { schema_version: typeof AGENT_TASK_WRITE_APPROVAL_VERSION; approval_id: string } | undefined;
+      if (writeApprovalRefRaw !== undefined && writeApprovalRefRaw !== null) {
+        const parsedRef = agentTaskWriteApprovalRefSchema.safeParse(writeApprovalRefRaw);
+        if (!parsedRef.success) {
+          await releaseTaskDispatchClaim(dispatchClaimLease).catch(() => undefined);
+          errorResponse(ctx.res, 400, 'WRITE_APPROVAL_REF_MISSING');
+          return;
+        }
+        writeApprovalRef = parsedRef.data;
+      }
+      // Never mint here — typed approvals are operator/admin pre-minted only.
+      // Runtime fail-closes write_allowed=true without a valid consumable ref.
+
+      taskEnvelope = {
+        ...taskEnvelope,
+        ...(writeAllowed
+          ? { constraints: { ...taskEnvelope.constraints, write_allowed: true as const } }
+          : {}),
+        metadata: {
+          ...prevMeta,
+          claim_id: dispatchClaimLease.claimId,
+          work_id:
+            typeof prevMeta.work_id === 'string' && prevMeta.work_id.trim()
+              ? prevMeta.work_id
+              : typeof context.work_id === 'string' && context.work_id.trim()
+                ? context.work_id.trim()
+                : dispatchClaimLease.taskId,
+          workstream: dispatchClaimLease.workstream,
+          conflict_key:
+            typeof prevMeta.conflict_key === 'string' && prevMeta.conflict_key.trim()
+              ? prevMeta.conflict_key
+              : dispatchClaimRequest.conflictKey,
+          repository: context.repository ?? context.github_repository ?? prevMeta.repository,
+          pr_number: context.pr_number ?? prevMeta.pr_number,
+          pr_branch: context.pr_branch ?? prevMeta.pr_branch,
+          pr_head_sha: context.pr_head_sha ?? prevMeta.pr_head_sha,
+          dispatch_claim: {
+            version: dispatchClaimLease.version,
+            claimId: dispatchClaimLease.claimId,
+            claim_id: dispatchClaimLease.claimId,
+            taskId: dispatchClaimLease.taskId,
+            task_id: dispatchClaimLease.taskId,
+            workstream: dispatchClaimLease.workstream,
+            conflictKey: dispatchClaimRequest.conflictKey,
+            conflict_key: dispatchClaimRequest.conflictKey,
+          },
+          ...(writeApprovalRef ? { write_approval_ref: writeApprovalRef } : {}),
+        },
+      };
+
+      job.payload.context = context;
+      job.payload.agent_task = taskEnvelope;
+
+      // Write-capable tasks: header carries only bound claim identity (no caller-supplied text),
+      // so the executed prompt stays a deterministic function of the digest-bound task body.
+      const ownershipHeader = composeOwnershipHeader(
+        {
+          claimId: dispatchClaimLease.claimId,
+          taskId: dispatchClaimLease.taskId,
+          workstream: dispatchClaimLease.workstream,
+          conflictKey: dispatchClaimRequest.conflictKey,
+        },
+        writeAllowed
+          ? {}
+          : {
+              semanticScope: dispatchClaimRequest.semanticScope,
+              affectedPaths: dispatchClaimRequest.affectedPaths,
+            }
+      );
       job.payload.prompt_content = `${ownershipHeader}\n\n${promptForWorker}`;
     }
 
