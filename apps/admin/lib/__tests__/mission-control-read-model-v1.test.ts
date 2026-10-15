@@ -69,6 +69,58 @@ test('composes real runtime, compute, team and queue signals', () => {
   assert.equal(snapshot.blockers.length, 0);
 });
 
+test('surfaces streaming status for a fresh compute-worker heartbeat', () => {
+  const snapshot = buildMissionControlSnapshotV1({
+    now: '2026-09-13T16:00:00.000Z',
+    compute: {
+      workers: [
+        {
+          workerId: 'pc-gamer-openclaw-01',
+          hostname: 'pc-gamer',
+          status: 'ONLINE',
+          activeJobs: 0,
+          lastHeartbeat: '2026-09-13T15:59:58.000Z',
+          streaming: {
+            live: true,
+            platforms: ['twitch', 'tiktok'],
+            uptimeSec: 1800,
+            sceneName: null,
+          },
+        },
+      ],
+    },
+  });
+
+  const node = snapshot.machines.find((m) => m.node_id === 'pc-gamer-openclaw-01');
+  assert.ok(node);
+  assert.deepEqual(node?.streaming, {
+    live: true,
+    platforms: ['twitch', 'tiktok'],
+    uptime_sec: 1800,
+    scene_name: null,
+  });
+});
+
+test('omits streaming when the compute-worker reported none (OBS not configured)', () => {
+  const snapshot = buildMissionControlSnapshotV1({
+    now: '2026-09-13T16:00:00.000Z',
+    compute: {
+      workers: [
+        {
+          workerId: 'home-gpu-01',
+          hostname: 'desktop-smdqcia',
+          status: 'ONLINE',
+          activeJobs: 0,
+          lastHeartbeat: '2026-09-13T15:59:58.000Z',
+        },
+      ],
+    },
+  });
+
+  const node = snapshot.machines.find((m) => m.node_id === 'home-gpu-01');
+  assert.equal(node?.streaming, null);
+});
+
 test('does not invent online state when runtime source is missing', () => {
   const snapshot = buildMissionControlSnapshotV1({
     now: '2026-09-13T16:00:00.000Z',

@@ -16,6 +16,16 @@ export type MissionControlSourceV1 = {
 
 export type MissionControlNodeStateV1 = 'ONLINE' | 'DEGRADED' | 'OFFLINE' | 'UNKNOWN';
 
+// Sourced from the same PC-gamer worker heartbeat (OBS WebSocket, READ-only,
+// execution-plane-only). Never carries streaming credentials. See
+// docs/00-architecture/MISSION-CONTROL-KIT.md "Streaming status (PC-gamer)".
+export type MissionControlStreamingStatusV1 = {
+  live: boolean;
+  platforms: string[];
+  uptime_sec: number | null;
+  scene_name: string | null;
+};
+
 export type MissionControlNodeV1 = {
   node_id: string;
   hostname: string;
@@ -30,6 +40,7 @@ export type MissionControlNodeV1 = {
   last_heartbeat: string | null;
   runtime: string | null;
   model: string | null;
+  streaming: MissionControlStreamingStatusV1 | null;
 };
 
 export type MissionControlQueueV1 = {
@@ -149,6 +160,12 @@ export type ComputeWorkersInputV1 = {
     gpuVendor?: string;
     gpuModel?: string;
     vramGb?: number;
+    streaming?: {
+      live: boolean;
+      platforms: string[];
+      uptimeSec: number | null;
+      sceneName: string | null;
+    };
   }>;
   queues?: Record<string, { waiting: number; active: number; failed: number }>;
 };
@@ -300,6 +317,7 @@ export function buildMissionControlSnapshotV1(
       last_heartbeat: input.runtime?.timestamp ?? null,
       runtime: null,
       model: null,
+      streaming: null,
     });
   }
 
@@ -323,6 +341,14 @@ export function buildMissionControlSnapshotV1(
       last_heartbeat: worker.lastHeartbeat,
       runtime: null,
       model: null,
+      streaming: worker.streaming
+        ? {
+            live: worker.streaming.live,
+            platforms: worker.streaming.platforms,
+            uptime_sec: worker.streaming.uptimeSec,
+            scene_name: worker.streaming.sceneName,
+          }
+        : null,
     });
   }
 

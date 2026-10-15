@@ -5,6 +5,14 @@ import useSWR from 'swr';
 
 import { getBaseUrl } from '@/lib/api-client';
 
+type ComputeWorkerStreamingRow = {
+  live: boolean;
+  platforms: string[];
+  uptimeSec: number | null;
+  sceneName: string | null;
+  updatedAt: string;
+};
+
 type ComputeWorkerRow = {
   workerId: string;
   hostname: string;
@@ -15,7 +23,37 @@ type ComputeWorkerRow = {
   activeJobs: number;
   lastHeartbeat: string | null;
   capabilities: string[];
+  streaming?: ComputeWorkerStreamingRow;
 };
+
+function formatUptime(uptimeSec: number | null): string {
+  if (typeof uptimeSec !== 'number' || uptimeSec < 0) return '';
+  const hours = Math.floor(uptimeSec / 3600);
+  const minutes = Math.floor((uptimeSec % 3600) / 60);
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
+function StreamingBadge({ streaming }: { streaming: ComputeWorkerStreamingRow }) {
+  const label = streaming.live ? 'LIVE' : 'OFFLINE';
+  const tone = streaming.live
+    ? 'bg-red-500/20 text-red-300 border-red-500/30'
+    : 'bg-zinc-800 text-zinc-400 border-zinc-700';
+  const uptime = formatUptime(streaming.uptimeSec);
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+      <span className={`rounded-full border px-2 py-0.5 font-semibold ${tone}`}>{label}</span>
+      {streaming.platforms.length > 0 ? (
+        <span className="text-zinc-400">{streaming.platforms.join(', ')}</span>
+      ) : null}
+      {streaming.live && uptime ? <span className="text-zinc-500">up {uptime}</span> : null}
+      {streaming.sceneName ? (
+        <span className="text-zinc-500">scene: {streaming.sceneName}</span>
+      ) : null}
+    </div>
+  );
+}
 
 type ComputeWorkersPayload = {
   rule?: string;
@@ -73,6 +111,7 @@ export function ComputeWorkersPanel() {
               ? ` · ${worker.capabilities.slice(0, 4).join(', ')}`
               : ''}
           </p>
+          {worker.streaming ? <StreamingBadge streaming={worker.streaming} /> : null}
         </article>
       ))}
     </section>
