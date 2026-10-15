@@ -87,6 +87,19 @@ describe('compute-worker-router', () => {
     assert.match(assignment.note, /wait|offline/i);
   });
 
+  it('routes agent.local.opencode by capability and queues when Gamer workers are offline', () => {
+    const registry = freshRegistry();
+    assert.ok(registry.jobTypes['agent.local.opencode']);
+    assert.deepEqual(registry.jobTypes['agent.local.opencode'].requires, [
+      'agent.local.opencode',
+    ]);
+    const assignment = assignJob(registry, 'agent.local.opencode', {}, now);
+    assert.equal(assignment.ok, true);
+    assert.equal(assignment.action, 'enqueue');
+    assert.equal(assignment.jobStatus, 'QUEUED');
+    assert.equal(assignment.workerStatus, 'OFFLINE');
+  });
+
   it('selects an online GPU worker for content.render.video', () => {
     const selected = selectWorkers(
       freshRegistry(),

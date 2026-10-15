@@ -17,12 +17,17 @@ import {
 import { getAgentServiceRegistry, type AgentService } from '../../lib/agent/agent-service-registry.js';
 import {
   isLocalAgentKind,
+  isGamerPlaneLocalAgentKind,
+  canQueueForDeferredRuntime,
+  canQueueGamerPlaneDeferred,
   jobTypeForLocalAgent,
   normalizeLocalAgentKind,
   parsePromptFrontmatter,
   externalCliLabelForOpslyLocalAgent,
   isConfigurableLocalBridgeKey,
 } from '../../lib/local-worker-utils.js';
+
+export { canQueueForDeferredRuntime, canQueueGamerPlaneDeferred } from '../../lib/local-worker-utils.js';
 import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
 import {
   getExternalAgentRegistry,
@@ -75,10 +80,6 @@ function recordRecentLocalJob(job: LocalRecentJob): void {
   }
 }
 
-export function canQueueForDeferredRuntime(blocker: string | null | undefined): boolean {
-  return blocker === 'runtime_unknown' || blocker === 'runtime_unreachable';
-}
-
 export async function resolveLocalPromptAgentKind(
   b: Record<string, unknown>,
   promptForFrontmatter: string
@@ -122,6 +123,22 @@ export async function resolveLocalPromptAgentKind(
     return routed.opslyJobType;
   }
 
+  // Fail-closed: Gamer-reserved kinds never silently switch to Mac-eligible agents.
+  if (isGamerPlaneLocalAgentKind(routed.opslyJobType)) {
+    if (canQueueGamerPlaneDeferred(preferred?.dispatch_blocker)) {
+      console.warn(
+        `[LocalPromptSubmit] Gamer plane unavailable for ${routed.worker.workerId} ` +
+          `(blocker=${preferred?.dispatch_blocker ?? 'unknown'}); ` +
+          `queueing ${routed.opslyJobType} fail-closed (no Mac fallback)`
+      );
+      return normalizeLocalAgentKind(routed.opslyJobType);
+    }
+    const blocker = preferred?.dispatch_blocker ?? 'preferred_runtime_unknown';
+    throw new Error(
+      `NO_DISPATCH_ELIGIBLE_AGENT: preferred=${routed.worker.workerId} blocker=${blocker} fail_closed=gamer_plane`
+    );
+  }
+
   let deferredKind: string | null =
     canQueueForDeferredRuntime(preferred?.dispatch_blocker)
       ? routed.opslyJobType
@@ -132,6 +149,10 @@ export async function resolveLocalPromptAgentKind(
   for (const fallbackWorkerId of routed.worker.entry.fallback_agents ?? []) {
     const fallbackEntry = registry.workers[fallbackWorkerId];
     if (!fallbackEntry?.enabled) continue;
+    if (isGamerPlaneLocalAgentKind(fallbackEntry.opsly_job_type)) {
+      // Never promote an alternate path that re-enters Gamer-reserved kinds via Mac.
+      continue;
+    }
     const row = byJobType.get(fallbackEntry.opsly_job_type);
     if (row?.dispatch_eligible) {
       return normalizeLocalAgentKind(fallbackEntry.opsly_job_type);

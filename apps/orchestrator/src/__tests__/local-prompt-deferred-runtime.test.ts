@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { canQueueForDeferredRuntime } from '../http/routes/local.js';
+import {
+  canQueueForDeferredRuntime,
+  canQueueGamerPlaneDeferred,
+} from '../lib/local-worker-utils.js';
 
 describe('deferred local-agent queue admission', () => {
   it('allows queueing when a distributed runtime is temporarily unknown or unreachable', () => {
@@ -12,5 +15,13 @@ describe('deferred local-agent queue admission', () => {
     expect(canQueueForDeferredRuntime('registry_disabled')).toBe(false);
     expect(canQueueForDeferredRuntime('unsupported_adapter')).toBe(false);
     expect(canQueueForDeferredRuntime(null)).toBe(false);
+  });
+
+  it('Gamer plane treats unhealthy OpenCode as queueable (fail-closed, no Mac fallback)', () => {
+    expect(canQueueGamerPlaneDeferred('runtime_unhealthy')).toBe(true);
+    expect(canQueueGamerPlaneDeferred('runtime_unreachable')).toBe(true);
+    expect(canQueueGamerPlaneDeferred('runtime_unknown')).toBe(true);
+    expect(canQueueGamerPlaneDeferred('registry_disabled')).toBe(false);
+    expect(canQueueGamerPlaneDeferred(null)).toBe(false);
   });
 });

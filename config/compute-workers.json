@@ -80,6 +80,13 @@
       "jobName": "ollama",
       "requires": ["gpu.nvidia"],
       "minVramGb": 0
+    },
+    "agent.local.opencode": {
+      "queue": "local-agents",
+      "jobName": "local_opencode",
+      "requires": ["agent.local.opencode"],
+      "minVramGb": 0,
+      "notes": "BullMQ local_opencode is claimed by Gamer plane only; Mac allowlist excludes it. Route by capability, not hostname."
     }
   },
   "workers": [
@@ -98,7 +105,8 @@
         "embedding",
         "ffmpeg",
         "gpu.telemetry",
-        "nvidia.capture"
+        "nvidia.capture",
+        "agent.local.opencode"
       ],
       "gpuVendor": "nvidia",
       "gpuModel": "RTX 5070 Ti",
@@ -126,7 +134,8 @@
         "embedding",
         "ffmpeg",
         "gpu.telemetry",
-        "nvidia.capture"
+        "nvidia.capture",
+        "agent.local.opencode"
       ],
       "gpuVendor": "nvidia",
       "gpuModel": "RTX 3060",

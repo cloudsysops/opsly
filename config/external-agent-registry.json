@@ -77,10 +77,7 @@
       "local": true,
       "open_source": true,
       "priority": 10,
-      "fallback_agents": [
-        "aider-cli",
-        "goose-cli"
-      ],
+      "fallback_agents": [],
       "enabled": true
     },
     "codex-cli": {

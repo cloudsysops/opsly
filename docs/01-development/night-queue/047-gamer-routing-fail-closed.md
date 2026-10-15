@@ -1,6 +1,6 @@
 ---
 id: gamer-routing-fail-closed-047
-status: pending
+status: done
 priority: P1
 agent: local_codex
 owner: platform
@@ -20,6 +20,7 @@ estimated_minutes: 30
 resource_class: medium
 node_types: mac
 architecture_patterns: local-agents, compute routing, fail-closed
+completed_via: "feat/gamer-routing-fail-closed-047 — Mac allowlist + empty opencode fallbacks + deferred queue fail-closed"
 ---
 
 # PC Gamer Routing Fail-Closed

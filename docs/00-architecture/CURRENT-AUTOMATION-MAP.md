@@ -89,6 +89,14 @@ Important routing invariant:
 
 `local_opencode` must not silently fall back from the Gamer to the Mac.
 
+Contracts (capability, not hostname):
+
+- Mac default allowlist = `MAC_DEFAULT_LOCAL_AGENT_KINDS` (excludes `local_opencode`)
+- Gamer plane claims `OPSLY_LOCAL_AGENT_KINDS=local_opencode`
+- `config/external-agent-registry.json` → `opencode.fallback_agents: []` (fail-closed)
+- `config/compute-workers.json` → job `agent.local.opencode` requires capability `agent.local.opencode`
+- Unavailable Gamer → BullMQ `QUEUED` / `NO_DISPATCH_ELIGIBLE_AGENT`, never Mac aider/goose
+
 ## GitHub Agent Queue
 
 Target path:

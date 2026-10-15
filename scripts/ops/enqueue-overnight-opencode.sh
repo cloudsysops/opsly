@@ -84,7 +84,7 @@ if [[ "$FORCE" != "true" ]]; then
 fi
 
 if ! ./scripts/ops/check-pc-gamer-online.sh >/dev/null 2>&1; then
-  echo "[enqueue-opencode] aviso: pc-gamer offline ahora mismo — el job queda en cola hasta que un worker local-agents lo tome" >&2
+  echo "[enqueue-opencode] aviso: Gamer plane offline — job queda QUEUED fail-closed (local_opencode); Mac no lo reclama" >&2
 fi
 
 BODY="$(PROMPT="$PROMPT" GOAL="$GOAL" AGENT="$AGENT" node -e '
