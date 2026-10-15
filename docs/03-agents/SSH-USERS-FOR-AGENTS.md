@@ -63,11 +63,22 @@ Detalle y endurecimiento: [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md).
 
 ---
 
+## PC gamer — media / edición de video
+
+Host canónico de edición GPU: MagicDNS **`smdqcia-pc`** (usuario SSH **`opsly`**, shell WSL).
+Cuando el Mac ingesta la action cam y sincroniza, los agentes en el PC trabajan bajo **`~/opsly-media`**.
+
+Playbook canónico (ingesta Mac → sync → edición PC): [`docs/runbooks/OPSLY-SHARED-MEDIA.md`](../runbooks/OPSLY-SHARED-MEDIA.md).  
+Script: `scripts/ops/sync-media-to-pc-gamer.sh` (correr desde el Mac).
+
+---
+
 ## Referencias
 
 - [`TAILSCALE-NOMENCLATURA.md`](TAILSCALE-NOMENCLATURA.md) — MagicDNS, `~/.ssh/config` plantilla
 - [`WORKER-SETUP-MAC2011.md`](WORKER-SETUP-MAC2011.md) — Fase SSH en el worker
 - [`SESSION-GIT-SYNC.md`](SESSION-GIT-SYNC.md) — `git pull` en cada host
+- [`OPSLY-SHARED-MEDIA.md`](../runbooks/OPSLY-SHARED-MEDIA.md) — shared media Mac ↔ PC gamer
 
 ---
 
