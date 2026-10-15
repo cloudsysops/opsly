@@ -35,6 +35,7 @@ const binding = {
   pr_branch: 'feat/example-write',
   pr_head_sha: SHA,
   task_content_sha256: TASK_CONTENT_SHA256,
+  selected_agent: 'mock_agent',
   write_allowed: true as const,
 };
 
@@ -548,7 +549,7 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
     expect(adapter.execute).not.toHaveBeenCalled();
   });
 
-  it('21. mint route uses trusted approved_by, not caller body', async () => {
+  it('21. mint route uses write-approver credential and trusted approved_by', async () => {
     const { Readable } = await import('node:stream');
     const store = new InMemoryWriteApprovalStore();
     const body = JSON.stringify({
@@ -557,10 +558,16 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
       approved_by: 'definitely-not-trusted-human',
     });
     const req = Readable.from([body]) as IncomingMessage;
-    req.headers = { authorization: 'Bearer test-token' };
+    req.headers = { authorization: 'Bearer write-approver-secret' };
     let responseBody = '';
+    let statusCode = 200;
     const res = {
-      statusCode: 200,
+      get statusCode() {
+        return statusCode;
+      },
+      set statusCode(v: number) {
+        statusCode = v;
+      },
       setHeader() {
         return undefined;
       },
@@ -569,7 +576,8 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
       },
     } as unknown as ServerResponse;
 
-    vi.stubEnv('PLATFORM_ADMIN_TOKEN', 'test-token');
+    vi.stubEnv('PLATFORM_ADMIN_TOKEN', 'dispatcher-token');
+    vi.stubEnv('OPSLY_WRITE_APPROVER_TOKEN', 'write-approver-secret');
     try {
       await handleAgentTaskWriteApproval({ req, res }, store);
       const parsed = JSON.parse(responseBody) as {
@@ -578,10 +586,132 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
         audit: { approved_by: string; auth_principal: string; requested_by?: string };
       };
       expect(parsed.success).toBe(true);
-      expect(parsed.approval.approved_by).toBe('platform-admin');
-      expect(parsed.audit.approved_by).toBe('platform-admin');
-      expect(parsed.audit.auth_principal).toBe('platform-admin');
+      expect(parsed.approval.approved_by).toBe('write-approver');
+      expect(parsed.audit.approved_by).toBe('write-approver');
+      expect(parsed.audit.auth_principal).toBe('write-approver');
       expect(parsed.audit.requested_by).toBe('definitely-not-trusted-human');
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it('21b. PLATFORM_ADMIN_TOKEN alone cannot mint write approvals', async () => {
+    const { Readable } = await import('node:stream');
+    const store = new InMemoryWriteApprovalStore();
+    const body = JSON.stringify({ action: 'mint', ...binding });
+    const req = Readable.from([body]) as IncomingMessage;
+    req.headers = { authorization: 'Bearer dispatcher-token' };
+    let responseBody = '';
+    let statusCode = 200;
+    const res = {
+      get statusCode() {
+        return statusCode;
+      },
+      set statusCode(v: number) {
+        statusCode = v;
+      },
+      setHeader() {
+        return undefined;
+      },
+      end(payload: string) {
+        responseBody = payload;
+      },
+    } as unknown as ServerResponse;
+
+    vi.stubEnv('PLATFORM_ADMIN_TOKEN', 'dispatcher-token');
+    vi.stubEnv('OPSLY_WRITE_APPROVER_TOKEN', 'write-approver-secret');
+    try {
+      await handleAgentTaskWriteApproval({ req, res }, store);
+      expect(statusCode).toBe(401);
+      const parsed = JSON.parse(responseBody) as { success: boolean; error: string };
+      expect(parsed.success).toBe(false);
+      expect(parsed.error).toBe('unauthorized');
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it('21c. identical OPSLY_WRITE_APPROVER_TOKEN and PLATFORM_ADMIN_TOKEN is rejected', async () => {
+    const { Readable } = await import('node:stream');
+    const store = new InMemoryWriteApprovalStore();
+    const body = JSON.stringify({ action: 'mint', ...binding });
+    const req = Readable.from([body]) as IncomingMessage;
+    req.headers = { authorization: 'Bearer same-secret' };
+    let statusCode = 200;
+    const res = {
+      get statusCode() {
+        return statusCode;
+      },
+      set statusCode(v: number) {
+        statusCode = v;
+      },
+      setHeader() {
+        return undefined;
+      },
+      end() {
+        return undefined;
+      },
+    } as unknown as ServerResponse;
+
+    vi.stubEnv('PLATFORM_ADMIN_TOKEN', 'same-secret');
+    vi.stubEnv('OPSLY_WRITE_APPROVER_TOKEN', 'same-secret');
+    try {
+      await handleAgentTaskWriteApproval({ req, res }, store);
+      expect(statusCode).toBe(401);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it('21d. Redis store failure on consume returns retryable 503', async () => {
+    const { Readable } = await import('node:stream');
+    const failingStore: WriteApprovalConsumer & {
+      mint: InMemoryWriteApprovalStore['mint'];
+      consume: WriteApprovalConsumer['consume'];
+    } = {
+      mint: async () => ({ ok: false, error: 'WRITE_APPROVAL_MINT_FAILED' }),
+      consume: async () => ({ ok: false, error: 'WRITE_APPROVAL_STORE_UNAVAILABLE' }),
+    };
+    const body = JSON.stringify({
+      action: 'consume',
+      approval_id: 'apr-1',
+      ...binding,
+    });
+    const req = Readable.from([body]) as IncomingMessage;
+    req.headers = { authorization: 'Bearer write-approver-secret' };
+    let responseBody = '';
+    let statusCode = 200;
+    const res = {
+      get statusCode() {
+        return statusCode;
+      },
+      set statusCode(v: number) {
+        statusCode = v;
+      },
+      setHeader() {
+        return undefined;
+      },
+      end(payload: string) {
+        responseBody = payload;
+      },
+    } as unknown as ServerResponse;
+
+    vi.stubEnv('PLATFORM_ADMIN_TOKEN', 'dispatcher-token');
+    vi.stubEnv('OPSLY_WRITE_APPROVER_TOKEN', 'write-approver-secret');
+    try {
+      await handleAgentTaskWriteApproval(
+        { req, res },
+        failingStore as unknown as InMemoryWriteApprovalStore
+      );
+      expect(statusCode).toBe(503);
+      const parsed = JSON.parse(responseBody) as {
+        success: boolean;
+        error: string;
+        retryable?: boolean;
+      };
+      expect(parsed.success).toBe(false);
+      expect(parsed.error).toBe('WRITE_APPROVAL_STORE_UNAVAILABLE');
+      expect(parsed.retryable).toBe(true);
     } finally {
       vi.unstubAllEnvs();
     }
@@ -658,6 +788,34 @@ describe('AgentTaskWriteApprovalV1 runtime gate', () => {
         envelopeWriteAllowed: false,
       })
     ).toBe(false);
+  });
+
+  it('25. wrong selected_agent cannot reuse minted approval', async () => {
+    const store = new InMemoryWriteApprovalStore();
+    const minted = await store.mint({ ...binding, approved_by: 'write-approver' });
+    expect(minted.ok).toBe(true);
+    if (!minted.ok) return;
+    const adapter: AgentTaskAdapter = {
+      id: 'other_agent',
+      execute: vi.fn(async () => ({ success: true })),
+    };
+    const runtime = new CanonicalPromptRuntime({ writeApproval: store });
+    const result = await runtime.execute(
+      {
+        ...writeEnvelope({
+          write_approval_ref: {
+            schema_version: 'AgentTaskWriteApprovalV1',
+            approval_id: minted.approval.approval_id,
+          },
+        }),
+        selected_agent: 'other_agent',
+        requested_agent: 'other_agent',
+      },
+      adapter
+    );
+    expect(result.status).toBe('awaiting_approval');
+    expect(result.error_code).toBe('WRITE_APPROVAL_BINDING_MISMATCH');
+    expect(adapter.execute).not.toHaveBeenCalled();
   });
 
   describe('executed prompt is bound to the approved content (P1 digest gap)', () => {

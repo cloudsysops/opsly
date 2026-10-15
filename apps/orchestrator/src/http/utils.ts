@@ -56,6 +56,24 @@ export function verifyPlatformAdminToken(req: IncomingMessage): boolean {
   return bearer.length > 0 && bearer === expected;
 }
 
+/**
+ * Distinct human/approver credential for minting AgentTaskWriteApprovalV1.
+ * Must be configured and must NOT equal PLATFORM_ADMIN_TOKEN (dispatcher token).
+ */
+export function verifyWriteApproverToken(req: IncomingMessage): boolean {
+  const expected = process.env.OPSLY_WRITE_APPROVER_TOKEN?.trim() ?? '';
+  const platformAdmin = process.env.PLATFORM_ADMIN_TOKEN?.trim() ?? '';
+  if (expected.length === 0) {
+    return false;
+  }
+  // Misconfiguration: same secret as autonomous dispatchers → fail closed for mint.
+  if (platformAdmin.length > 0 && expected === platformAdmin) {
+    return false;
+  }
+  const bearer = extractPlatformAdminBearerToken(req);
+  return bearer.length > 0 && bearer === expected;
+}
+
 export function assertTenantSlugOrThrow(tenantSlug: string): void {
   if (!TENANT_SLUG_REGEX.test(tenantSlug)) {
     throw new Error(`invalid tenant_slug: ${tenantSlug}`);

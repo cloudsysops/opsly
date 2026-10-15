@@ -2,6 +2,7 @@ export { Router, jsonResponse, errorResponse, type RouteContext, type RouteHandl
 export {
   parseBody,
   verifyPlatformAdminToken,
+  verifyWriteApproverToken,
   assertTenantSlugOrThrow,
   hasExplicitAutonomyApproval,
   enrichAutonomyMetadata,

@@ -30,6 +30,7 @@ export type WriteApprovalRejectReason =
   | 'WRITE_APPROVAL_WRITE_ALLOWED_MISMATCH'
   | 'WRITE_APPROVAL_HEADER_NOT_SUFFICIENT'
   | 'WRITE_APPROVAL_STORE_MISSING'
+  | 'WRITE_APPROVAL_STORE_UNAVAILABLE'
   | 'WRITE_APPROVAL_CLAIM_MISMATCH'
   | 'WRITE_APPROVAL_TTL_EXCEEDED'
   | 'WRITE_APPROVAL_TASK_CONTENT_MISMATCH';
@@ -70,6 +71,7 @@ export function writeApprovalBindingFingerprint(binding: AgentTaskWriteApprovalB
     pr_number: normalized.pr_number,
     repository: normalized.repository,
     request_id: normalized.request_id,
+    selected_agent: normalized.selected_agent,
     task_content_sha256: normalized.task_content_sha256.toLowerCase(),
     work_id: normalized.work_id,
     workstream: normalized.workstream,
@@ -243,6 +245,9 @@ export function extractWriteApprovalContext(envelope: AgentTaskEnvelopeV1): {
     };
   }
 
+  const selectedAgent =
+    typeof envelope.selected_agent === 'string' ? envelope.selected_agent.trim() : '';
+
   const bindingResult = agentTaskWriteApprovalBindingSchema.safeParse({
     work_id: meta.work_id,
     request_id: envelope.request_id,
@@ -254,6 +259,7 @@ export function extractWriteApprovalContext(envelope: AgentTaskEnvelopeV1): {
     pr_branch: meta.pr_branch,
     pr_head_sha: meta.pr_head_sha,
     task_content_sha256: executedDigest,
+    selected_agent: selectedAgent,
     write_allowed: true,
   });
 

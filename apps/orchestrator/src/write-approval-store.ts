@@ -22,7 +22,11 @@ export type WriteApprovalMintInput = AgentTaskWriteApprovalBinding & {
 
 export type WriteApprovalMintResult =
   | { ok: true; approval: AgentTaskWriteApprovalV1 }
-  | { ok: false; error: WriteApprovalRejectReason | 'WRITE_APPROVAL_MINT_FAILED'; message?: string };
+  | {
+      ok: false;
+      error: WriteApprovalRejectReason | 'WRITE_APPROVAL_MINT_FAILED';
+      message?: string;
+    };
 
 export type WriteApprovalConsumeInput = {
   approval_id: string;
@@ -101,6 +105,7 @@ function buildApproval(input: WriteApprovalMintInput): AgentTaskWriteApprovalV1 
     pr_branch: input.pr_branch,
     pr_head_sha: input.pr_head_sha.toLowerCase(),
     task_content_sha256: input.task_content_sha256.toLowerCase(),
+    selected_agent: input.selected_agent,
     write_allowed: true,
   };
   return parseAgentTaskWriteApproval({
@@ -178,49 +183,59 @@ export class WriteApprovalStore implements WriteApprovalStorePort {
     if (options?.signal?.aborted) {
       throw Object.assign(new Error('aborted'), { name: 'AbortError' });
     }
-    const binding: AgentTaskWriteApprovalBinding = {
-      ...input.binding,
-      pr_head_sha: input.binding.pr_head_sha.toLowerCase(),
-      write_allowed: true,
-    };
-    const fingerprint = writeApprovalBindingFingerprint(binding);
-    const nowIso = new Date().toISOString();
-    const raw = await this.redis.eval(
-      CONSUME_LUA,
-      1,
-      approvalKey(input.approval_id),
-      nowIso,
-      fingerprint
-    );
-
-    if (!Array.isArray(raw) || raw.length === 0) {
-      return { ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' };
-    }
-    const code = String(raw[0]);
-    if (code === 'missing' || code === 'corrupt') {
-      return { ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' };
-    }
-    if (code === 'consumed') {
-      return { ok: false, error: 'WRITE_APPROVAL_ALREADY_CONSUMED' };
-    }
-    if (code === 'expired') {
-      return { ok: false, error: 'WRITE_APPROVAL_EXPIRED' };
-    }
-    if (code === 'mismatch') {
-      return { ok: false, error: 'WRITE_APPROVAL_BINDING_MISMATCH' };
-    }
-    if (code !== 'ok' || typeof raw[1] !== 'string') {
-      return { ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' };
-    }
-
-    let parsed: unknown;
     try {
-      parsed = JSON.parse(raw[1]);
-    } catch {
-      return { ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' };
+      const binding: AgentTaskWriteApprovalBinding = {
+        ...input.binding,
+        pr_head_sha: input.binding.pr_head_sha.toLowerCase(),
+        write_allowed: true,
+      };
+      const fingerprint = writeApprovalBindingFingerprint(binding);
+      const nowIso = new Date().toISOString();
+      const raw = await this.redis.eval(
+        CONSUME_LUA,
+        1,
+        approvalKey(input.approval_id),
+        nowIso,
+        fingerprint
+      );
+
+      if (!Array.isArray(raw) || raw.length === 0) {
+        return { ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' };
+      }
+      const code = String(raw[0]);
+      if (code === 'missing' || code === 'corrupt') {
+        return { ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' };
+      }
+      if (code === 'consumed') {
+        return { ok: false, error: 'WRITE_APPROVAL_ALREADY_CONSUMED' };
+      }
+      if (code === 'expired') {
+        return { ok: false, error: 'WRITE_APPROVAL_EXPIRED' };
+      }
+      if (code === 'mismatch') {
+        return { ok: false, error: 'WRITE_APPROVAL_BINDING_MISMATCH' };
+      }
+      if (code !== 'ok' || typeof raw[1] !== 'string') {
+        return { ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' };
+      }
+
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(raw[1]);
+      } catch {
+        return { ok: false, error: 'WRITE_APPROVAL_NOT_FOUND' };
+      }
+      const approval = parseAgentTaskWriteApproval(parsed);
+      return { ok: true, approval };
+    } catch (err) {
+      if (err && typeof err === 'object' && 'name' in err && (err as { name: string }).name === 'AbortError') {
+        throw err;
+      }
+      return {
+        ok: false,
+        error: 'WRITE_APPROVAL_STORE_UNAVAILABLE',
+      };
     }
-    const approval = parseAgentTaskWriteApproval(parsed);
-    return { ok: true, approval };
   }
 }
 
@@ -241,10 +256,21 @@ function mapMintError(
   if (code === 'WRITE_APPROVAL_EXPIRED') {
     return { ok: false, error: 'WRITE_APPROVAL_EXPIRED' };
   }
+  // Zod / binding validation failures stay as mint failed; Redis/network → unavailable.
+  const msg = err instanceof Error ? err.message : String(err);
+  const looksLikeInfra =
+    /ECONNREFUSED|ETIMEDOUT|ENOTFOUND|Redis|READONLY|LOADING|OOM|connection/i.test(msg);
+  if (looksLikeInfra) {
+    return {
+      ok: false,
+      error: 'WRITE_APPROVAL_STORE_UNAVAILABLE',
+      message: msg,
+    };
+  }
   return {
     ok: false,
     error: 'WRITE_APPROVAL_MINT_FAILED',
-    message: err instanceof Error ? err.message : String(err),
+    message: msg,
   };
 }
 

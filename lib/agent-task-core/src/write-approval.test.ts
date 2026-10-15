@@ -27,6 +27,7 @@ const baseBinding = {
   pr_branch: 'feat/example',
   pr_head_sha: SHA,
   task_content_sha256: TASK_DIGEST,
+  selected_agent: 'local_opencode',
   write_allowed: true as const,
 };
 
@@ -82,6 +83,7 @@ describe('AgentTaskWriteApprovalV1 helpers', () => {
     expect(ctx.ref?.approval_id).toBe('apr-1');
     expect(ctx.binding?.pr_head_sha).toBe(SHA);
     expect(ctx.binding?.task_content_sha256).toBe(TASK_DIGEST);
+    expect(ctx.binding?.selected_agent).toBe('local_opencode');
   });
 
   it('rejects metadata digest that does not match envelope.task', () => {

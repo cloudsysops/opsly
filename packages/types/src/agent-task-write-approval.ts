@@ -35,6 +35,11 @@ export const agentTaskWriteApprovalBindingSchema = z.object({
   pr_head_sha: exactGitShaSchema,
   /** Digest of the exact task/workpack body approved for execution. */
   task_content_sha256: taskContentSha256Schema,
+  /**
+   * Runtime that may execute under this approval (AgentTaskEnvelopeV1.selected_agent).
+   * Prevents replaying an approval onto a more privileged local adapter.
+   */
+  selected_agent: boundText(120),
   write_allowed: z.literal(true),
 });
 

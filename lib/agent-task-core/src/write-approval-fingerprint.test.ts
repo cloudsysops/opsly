@@ -15,6 +15,7 @@ const base = {
   pr_branch: 'feat/example',
   pr_head_sha: 'e43e2bc8f57d5ea2002e3de82d5a5c4d78ffc824',
   task_content_sha256: 'a'.repeat(64),
+  selected_agent: 'local_opencode',
   write_allowed: true as const,
 };
 
@@ -72,6 +73,15 @@ describe('writeApprovalBindingFingerprint injectivity', () => {
     const right = writeApprovalBindingFingerprint({
       ...base,
       task_content_sha256: 'b'.repeat(64),
+    });
+    expect(left).not.toBe(right);
+  });
+
+  it('changes when selected_agent differs', () => {
+    const left = writeApprovalBindingFingerprint(base);
+    const right = writeApprovalBindingFingerprint({
+      ...base,
+      selected_agent: 'local_hermes',
     });
     expect(left).not.toBe(right);
   });
