@@ -27,6 +27,7 @@
     "stream-ops-hardware-trend": "./src/hardware-trend.mjs",
     "stream-ops-content-policy-check": "./src/content-policy-check.mjs",
     "stream-ops-tech-content-log": "./src/tech-content-log.mjs",
-    "stream-ops-post-stream-analyze": "./src/post-stream-analyze.mjs"
+    "stream-ops-post-stream-analyze": "./src/post-stream-analyze.mjs",
+    "stream-ops-post-stream-clips": "./src/post-stream-clips.mjs"
   }
 }

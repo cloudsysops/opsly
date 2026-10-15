@@ -88,6 +88,20 @@ Patrones techno, house, build-up y drop en `music/`; instructivo en [music/INSTR
 
 `run.ps1 test-ndi` verifica que el DJ NDI de la escena "Streaming" queda dentro del marco 640×360 (x 1820, y 860) con 1920×1080, 1280×720, 2560×1440, 1920×1200 y 3840×2160. Mide un render real en una escena temporal que borra al terminar. Se niega a correr con el stream en vivo.
 
+## Clips automáticos tras el directo
+
+`post-stream-clips.ps1` (motor: `packages/stream-ops-kit/src/post-stream-clips.mjs`) corta borradores de clips cuando termina una grabación de OBS. **No publica nada ni toca cuentas de redes.**
+
+- **Cuándo corre:** la tarea de Windows `OpsAfterDark-PostStream-Clips` lo ejecuta cada 15 min (prioridad baja, una sola instancia). Procesa grabaciones de `D:\Content\Media\OBS\horizontal` terminadas (3 min sin escribirse) y de 10 min o más. Se niega a correr con OBS en directo, y también si OBS está abierto pero su websocket no responde (no se sabe si hay directo).
+- **Qué hace:** puntúa ventanas de 45 s por audio (pista Mezcla) + movimiento visual, descarta negro y silencio, elige hasta 6 separados por ≥ 3 min, y corta horizontal + vertical (fundidos, `loudnorm`). Un vertical con la mitad de juego en negro se mueve a `rejected/`.
+- **Salida:** `D:\Content\PostStream\<fecha>_auto-<hora>\` con `clips/`, `reels/`, `rejected/`, `REPORT.md` y `metadata/candidates.json`. Añade los verticales buenos a `D:\Content\PostStream\publish-queue.json`: 1 por día a las 19:00 ET, `status: draft`, `requiresApproval: true`, `publishedAt: null`.
+- **Aviso `MIC_SILENT`:** se emite si la pista Micro está en silencio en la grabación.
+- **Estado:** `D:\Content\PostStream\.processed.json` evita reprocesar. Log: `D:\Content\PostStream\_auto-clips.log`.
+- **Uso manual:** `powershell -File post-stream-clips.ps1 [-Dry]` (`-Dry` solo analiza). Opciones del motor: `--file`, `--count`, `--no-obs-check`.
+- **Límites:** la selección no entiende el contenido (puede elegir menús o momentos flojos) y no revisa privacidad (nombres de archivo o commits visibles en el panel). Un humano debe revisar cada pieza antes de publicarla; la subida automática a TikTok/YouTube/Instagram aún no existe (requiere credenciales de API y decidir la política de aprobación).
+- **Dependencia:** la tarea ejecuta el script desde este worktree vía `\\wsl.localhost\Ubuntu\...`; si la ruta cambia, hay que volver a registrarla.
+- **Quitarla:** `Unregister-ScheduledTask -TaskName OpsAfterDark-PostStream-Clips -Confirm:$false`.
+
 ## Archivos
 
 **En esta carpeta (config/datos de este tenant):** `stream.config.json` (rutas OBS,
