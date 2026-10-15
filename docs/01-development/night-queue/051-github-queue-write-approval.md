@@ -1,6 +1,6 @@
 ---
 id: github-queue-write-approval-051
-status: pending
+status: done
 priority: P2
 agent: local_claude
 owner: platform
@@ -40,7 +40,18 @@ Hard boundary satisfied — read-only GitHub → Gamer E2E is green:
 | model | `ollama/qwen3.5:latest` |
 | PR #1709 | OPEN (not merged); head `e43e2bc8f57d5ea2002e3de82d5a5c4d78ffc824` |
 
-Previous status: `held` → now `pending` (night-queue ready-to-implement).
+Previous status: `held` → `pending` → **`done`** via PR **#1710** (squash merge `802f2ef1d` on `main`, 2026-10-15).
+
+### Runtime activation (human)
+
+| Secret / flag | Notes |
+| --- | --- |
+| `OPSLY_WRITE_APPROVER_TOKEN` | **Required for mint.** Must be distinct from `PLATFORM_ADMIN_TOKEN`. |
+| `PLATFORM_ADMIN_TOKEN` | Dispatch / consume ops only — **cannot mint**. |
+| `OPSLY_GITHUB_AGENT_TYPED_WRITE=true` | Submitter propagates pre-minted approval only. |
+| `OPSLY_GITHUB_AGENT_WRITE_APPROVAL_ID` | Pre-minted `approval_id` (never auto-minted by submitter). |
+
+Binding also includes `task_content_sha256` + `selected_agent` (exact prompt + runtime).
 
 ## Context
 
@@ -80,15 +91,16 @@ A write-capable task must prove all of the following:
 | Confusing claim with approval | DispatchClaimV1 remains independent; approval binding must match server-acquired `claimId`/`taskId`/`workstream` before consume |
 | Write approval skips other gates | Typed approval satisfies only write; network/browser/infra still `require_approval` |
 | Dry-run burns one-shot approval | `dry_run` returns before consume |
-| Caller-controlled `approved_by` | Mint sets `approved_by=platform-admin` from verified token principal |
+| Caller-controlled `approved_by` | Mint requires `OPSLY_WRITE_APPROVER_TOKEN`; sets `approved_by=write-approver` (caller label → audit `requested_by` only) |
 | Unbounded TTL | Caller `expires_at` rejected above 24h max |
 | Sandbox Approval Gate confusion | Separate namespace/API; not reused |
 | Global `autoApproveSensitive` | Forced off when `write_allowed=true` |
 
 ## Canonical API
 
-`POST /api/local/agent-task-write-approval` with `action: mint | consume` (Bearer `PLATFORM_ADMIN_TOKEN`).
-Mint sets `approved_by=platform-admin` from the token principal (caller `approved_by` is audit `requested_by` only).
+`POST /api/local/agent-task-write-approval` with `action: mint | consume`.
+- **Mint:** Bearer `OPSLY_WRITE_APPROVER_TOKEN` (must ≠ `PLATFORM_ADMIN_TOKEN`); `approved_by=write-approver`.
+- **Consume (HTTP ops):** write-approver **or** platform-admin. Runtime consume uses the Redis store under the task AbortController.
 
 Envelope carries `metadata.write_approval_ref = { schema_version, approval_id }` plus binding fields; runtime consumes under the task AbortController after dry-run / non-write gates.
 
