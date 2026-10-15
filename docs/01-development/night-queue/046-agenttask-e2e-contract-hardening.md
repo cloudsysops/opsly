@@ -1,17 +1,20 @@
 ---
 id: agenttask-e2e-contract-hardening-046
-status: held
+status: pending
 priority: P1
 agent: local_opencode
 owner: platform
 environment: local
 cost_class: free
 estimated_cost_usd: 0
+workstream: agenttask-e2e-contract-hardening
+conflict_key: agenttask-e2e-contract-hardening
 requires_pr: true
 requires_approval: false
 paid_infra_required: false
 production_deploy: false
-blocked_by: github-queue-write-approval-051
+unblocked_by: github-queue-write-approval-051
+unblocked_via: "PR #1710 merged 802f2ef1d"
 autonomy: supervised
 estimated_minutes: 35
 resource_class: medium

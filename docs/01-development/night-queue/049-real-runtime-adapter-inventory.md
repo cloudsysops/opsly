@@ -1,17 +1,20 @@
 ---
 id: real-runtime-adapter-inventory-049
-status: held
+status: pending
 priority: P2
 agent: local_claude
 owner: platform
 environment: local
 cost_class: free_with_quota
 estimated_cost_usd: 0
+workstream: real-runtime-adapter-inventory
+conflict_key: real-runtime-adapter-inventory
 requires_pr: true
 requires_approval: false
 paid_infra_required: false
 production_deploy: false
-blocked_by: github-queue-write-approval-051
+unblocked_by: github-queue-write-approval-051
+unblocked_via: "PR #1710 merged 802f2ef1d"
 autonomy: supervised
 estimated_minutes: 30
 resource_class: small

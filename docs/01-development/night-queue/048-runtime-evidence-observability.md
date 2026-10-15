@@ -1,17 +1,20 @@
 ---
 id: runtime-evidence-observability-048
-status: held
+status: pending
 priority: P1
 agent: local_opencode
 owner: platform
 environment: local
 cost_class: free
 estimated_cost_usd: 0
+workstream: runtime-evidence-observability
+conflict_key: runtime-evidence-observability
 requires_pr: true
 requires_approval: false
 paid_infra_required: false
 production_deploy: false
-blocked_by: github-queue-write-approval-051
+unblocked_by: github-queue-write-approval-051
+unblocked_via: "PR #1710 merged 802f2ef1d"
 autonomy: supervised
 estimated_minutes: 45
 resource_class: medium
