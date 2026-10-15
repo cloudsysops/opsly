@@ -9,6 +9,8 @@ tags:
 
 # ADR-024 Ollama Local Worker Deployment Runbook
 
+> ⚠️ **RETIRADO (2026-10-03):** el worker Mac 2011 `opsly-worker` (`opslyquantum@100.80.41.29`) ya no existe. El nodo worker/GPU vigente es **`smdqcia-pc`** (`smdqcia-pc.taile4fe40.ts.net`, WSL2 + RTX 3060 + Ollama) — ver `infra/nodes-registry.json`. Este documento se conserva como histórico.
+
 ## Overview
 
 This document describes the deployment and operational procedures for ADR-024: using Ollama running on a local Mac (2011, IP: 100.80.41.29) as the primary LLM provider with cloud fallback.

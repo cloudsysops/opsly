@@ -9,6 +9,8 @@ tags:
 
 # Primeros agentes OpenClaw en el worker Mac 2011
 
+> ⚠️ **RETIRADO (2026-10-03):** el worker Mac 2011 `opsly-worker` (`opslyquantum@100.80.41.29`) ya no existe. El nodo worker/GPU vigente es **`smdqcia-pc`** (`smdqcia-pc.taile4fe40.ts.net`, WSL2 + RTX 3060 + Ollama) — ver `infra/nodes-registry.json`. Este documento se conserva como histórico.
+
 Guía corta para dejar **consumiendo la cola `openclaw`** al orchestrator en el hardware Ubuntu del Mac 2011. Detalle amplio: [`WORKER-SETUP-MAC2011.md`](WORKER-SETUP-MAC2011.md), [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md), [`ORCHESTRATOR.md`](ORCHESTRATOR.md).
 
 ## Qué significa «agente» aquí

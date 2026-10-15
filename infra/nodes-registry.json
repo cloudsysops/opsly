@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated_at": "2026-09-17T00:00:00Z",
+  "updated_at": "2026-10-03T00:00:00Z",
   "description": "Inventario operativo de nodos (acceso SSH/Tailscale). NO es el registry de workers: el ruteo por capacidad vive en config/compute-workers.json.",
   "nodes": [
     {
@@ -10,14 +10,6 @@
       "role": "control",
       "status": "active",
       "notes": "Mac principal / Cursor"
-    },
-    {
-      "name": "opsly-worker",
-      "host": "100.80.41.29",
-      "user": "opslyquantum",
-      "role": "worker",
-      "status": "active",
-      "notes": "Mac 2011 Ubuntu por Tailscale"
     },
     {
       "name": "vps-dragon",

@@ -9,6 +9,8 @@ tags:
 
 # SSH desde el VPS hacia otros nodos (workers)
 
+> ⚠️ **RETIRADO (2026-10-03):** el worker Mac 2011 `opsly-worker` (`opslyquantum@100.80.41.29`) ya no existe. El nodo worker/GPU vigente es **`smdqcia-pc`** (`smdqcia-pc.taile4fe40.ts.net`, WSL2 + RTX 3060 + Ollama) — ver `infra/nodes-registry.json`. Este documento se conserva como histórico.
+
 > **Objetivo:** que el usuario del VPS (p. ej. `vps-dragon`) pueda abrir sesiones SSH **sin contraseña** hacia workers (Mac 2011, laptops, etc.) usando **clave pública**, solo por **Tailscale** (`100.64.0.0/10` o nombres MagicDNS).  
 > **No sustituye** el acceso humano desde `opsly-admin`: sigue siendo válido `ssh opsly-worker` desde la Mac principal. Esto documenta el caso **VPS → nodo** para scripts, healthchecks o despliegues.
 
