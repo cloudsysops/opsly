@@ -1,6 +1,6 @@
 ---
 id: agenttask-e2e-contract-hardening-046
-status: pending
+status: done
 priority: P1
 agent: local_opencode
 owner: platform

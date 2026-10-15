@@ -146,3 +146,74 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).not.toMatch(/sk-[A-Za-z0-9]/);
   });
 });
+
+/**
+ * Workpack 046 — AgentTask E2E contract hardening.
+ * Source/contract assertions only; no second orchestrator and no runtime spawn.
+ */
+describe('AgentTask E2E contract hardening (046)', () => {
+  it('1. governed GitHub workpacks cannot bypass /api/local/prompt-submit', () => {
+    expect(source).toContain('Submitting ${meta.id} -> ${orchestratorUrl}/api/local/prompt-submit');
+    expect(source).toMatch(
+      /await request\(`\$\{orchestratorUrl\}\/api\/local\/prompt-submit`/
+    );
+    expect(source).not.toMatch(/\/api\/local\/prompt-submit\/bypass/);
+    expect(source).not.toMatch(/enqueueLocalAgentJob/);
+    expect(source).not.toMatch(/enqueueJob\(/);
+  });
+
+  it('2. submitter payload is shaped so the server builds AgentTaskEnvelopeV1', () => {
+    // Body becomes the envelope task; submitter must not mint a parallel envelope.
+    expect(source).toContain('AgentTaskEnvelopeV1.task');
+    expect(source).toContain('prompt_body: body');
+    expect(source).toContain('agent: String(meta.agent)');
+    expect(source).toContain('tenant_slug: \'local\'');
+    expect(source).not.toMatch(/agent_task:\s*\{/);
+    expect(source).not.toContain("schema_version: 'AgentTaskEnvelopeV1'");
+  });
+
+  it('3. idempotency and request IDs are the same BullMQ-safe identity', () => {
+    expect(source).toContain('const requestId = `ghq-${safeIdSegment(meta.id)}-${sha.slice(0, 12)}`');
+    expect(source).toContain('request_id: requestId');
+    expect(source).toContain('idempotency_key: requestId');
+    expect(source).toContain('const writeClaimId = requestId');
+  });
+
+  it('4. paid / prod / approval-required workpacks fail closed without typed write', () => {
+    expect(source).toContain('production_deploy=true is forbidden');
+    expect(source).toContain('paid_infra_required=true is forbidden');
+    expect(source).toContain('requires_approval=true is not eligible');
+    expect(source).toContain('requires_pr=true is not eligible for autonomous GitHub dispatch yet');
+    expect(source).toContain('estimated_cost_usd must be exactly 0');
+    expect(source).toContain("['free','free_with_quota']");
+  });
+
+  it('5. terminal job states are surfaced to the submitter via /api/job-status', () => {
+    expect(source).toContain('/api/job-status/');
+    expect(source).toContain("['completed','done','success']");
+    expect(source).toContain("['failed','error','cancelled']");
+    expect(source).toContain('job ended in terminal state:');
+    expect(source).toContain('job did not reach a terminal state within');
+    expect(source).toContain('status.body.returnvalue ?? status.body.result ?? status.body.output');
+    expect(source).toContain('JOIN_EXISTING_NONTERMINAL');
+    expect(source).toContain('PREPARED_ONLY: orchestrator did not enqueue the task');
+  });
+
+  it('6. no BullMQ client or process spawn bypass exists in the submitter', () => {
+    expect(source).not.toMatch(/from ['\"]bullmq['\"]/);
+    expect(source).not.toMatch(/require\(['\"]bullmq['\"]\)/);
+    expect(source).not.toMatch(/new Queue\(/);
+    expect(source).not.toMatch(/spawn\(/);
+    expect(source).not.toMatch(/spawnSync\(/);
+    expect(source).not.toMatch(/execFile\(/);
+    expect(source).not.toMatch(/child_process/);
+  });
+
+  it('7. canonical path stays a single orchestrator HTTP contract', () => {
+    expect(source).toContain('OPSLY_ORCHESTRATOR_URL is required');
+    expect(source).toContain("source: 'github-agent-queue'");
+    expect(source).toContain("dispatch_contract_version: 'dispatch-claim-v1'");
+    expect(source).not.toContain('second orchestrator');
+    expect(source).not.toMatch(/startOrchestratorHealthServer/);
+  });
+});
