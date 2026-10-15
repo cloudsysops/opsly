@@ -171,7 +171,8 @@ powershell.exe -NoProfile -Command "Test-Path 'C:\Program Files\obs-studio\obs-p
 | Validación MIDI en vivo | Setup → MIDI en Serato | carga el mapping y probar `deck.*`/`mixer.crossfader` con música; `status all` debe dar `midi:ok` |
 | ✔ Control OBS del PC: prep listo | PC OBS websocket `:4455` ya `server_enabled` + password; regla firewall tailnet TCP 4455 `remoteip=100.64.0.0/10`; tarea `opsly-obs` (lanzador interactivo); agente del Mac apuntado a `ws://100.117.5.102:4455` | queda: **abrir OBS en el escritorio del PC** (SSH/headless no inicializa: session 0 o sin log; fue OK el 16/09) y luego `status all` → `stream:off` |
 | E2E orquestador → `local_ai_dj` | contrato validado (POST `/execute` en `:5013` con el envelope del worker) | full queue-path (BullMQ+Redis + `OPSLY_LOCAL_AGENT_KINDS=local_ai_dj` + approval) en ventana sin tocar la granja en ejecución |
-| Instalar NDI ambos lados | Mac: NDI Runtime+.pkg y obs-ndi; PC: NDI runtime + `obs-ndi.dll` | confirmado: **no instalado en ninguno**; instaladores con GUI/admin en el escritorio |
+| Instalar NDI Mac (parcial) | `scripts/ops/setup-mac-ndi.sh` | NDI Tools + DistroAV instalados sin sudo (2026-09-29); el paso que falta -- NDI SDK, que trae `libndi.dylib` -- necesita `sudo installer` interactivo con la contrasena de `dragon`, no se pudo automatizar por SSH. DistroAV carga hoy en modo UI-only (`ERR-404 NDI library not found`) hasta que ese paso se corra manualmente. |
+| Instalar NDI PC | NDI runtime + `obs-ndi.dll`/DistroAV en Windows | pendiente, mismo bloqueo potencial de admin GUI |
 | Fijar `ndi_name` real de la fuente NDI | `basic/scenes/Untitled.json` (PC) | hoy queda `{{NDI_NAME}}` hasta existir el sender Mac |
 
 ## Relacionado
