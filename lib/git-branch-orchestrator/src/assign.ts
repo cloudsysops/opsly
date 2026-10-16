@@ -154,6 +154,10 @@ export async function assignWorkerToBranch(
       dispatch_claim_id: input.dispatch_claim?.claim_id ?? entry.dispatch_claim_id,
       dispatch_task_id: input.dispatch_claim?.task_id ?? entry.dispatch_task_id,
       workstream: input.dispatch_claim?.workstream ?? entry.workstream,
+      cleanup_owner: entry.cleanup_owner ?? workerId,
+      cleanup_state: 'ACTIVE',
+      cleanup_blocker: undefined,
+      cleanup_updated_at: new Date().toISOString(),
     })) ?? entry;
   }
 
@@ -189,6 +193,9 @@ export async function assignWorkerToBranch(
       await updateBranchEntry(input.tenant_slug, entry.id, {
         status: 'pr_open',
         pr_url: prUrl ?? undefined,
+        cleanup_state: 'PR_OPEN',
+        cleanup_blocker: undefined,
+        cleanup_updated_at: new Date().toISOString(),
       });
       entry = (await getBranchByName(input.tenant_slug, entry.branch_name)) ?? entry;
     }

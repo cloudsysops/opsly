@@ -71,6 +71,18 @@ describe('session-manager dry-run', () => {
     expect(created.tmuxSessionName).toBe('opsly-task-job_42-build');
   });
 
+  it('rejects branch-backed sessions without explicit tenant ownership context', async () => {
+    await expect(
+      createSession({
+        name: 'branch-bound',
+        agentId: 'opencode',
+        jobId: 'job-42',
+        workspace: '/tmp/opsly',
+        branch: 'agent/opencode/job-42/test',
+      }),
+    ).rejects.toThrow('tenantSlug is required');
+  });
+
   it('stopSession marks stopped', async () => {
     const created = await createSession({
       name: 'stop',
@@ -86,7 +98,6 @@ describe('session-manager dry-run', () => {
       name: 'resume',
       agentId: 'opencode',
       workspace: '/tmp/opsly',
-      branch: 'feat/test',
     });
     const result = await resumeSession({
       sessionId: created.sessionId,

@@ -1,6 +1,15 @@
 import { z } from 'zod';
 
 export const BranchRiskLevelSchema = z.enum(['low', 'medium', 'high']);
+export const BranchCleanupStateSchema = z.enum([
+  'ACTIVE',
+  'PR_OPEN',
+  'MERGED_PENDING_CLEANUP',
+  'SUPERSEDED_PENDING_CLEANUP',
+  'PRESERVE_UNMERGED',
+  'CLEANED',
+  'CLEANUP_BLOCKED',
+]);
 export const BranchStatusSchema = z.enum([
   'planned',
   'active',
@@ -57,6 +66,12 @@ export const BranchRegistryEntrySchema = z.object({
   dispatch_task_id: z.string().min(1).optional(),
   workstream: z.string().min(1).optional(),
   pr_url: z.string().optional(),
+  pr_number: z.number().int().positive().optional(),
+  worktree_path: z.string().min(1).optional(),
+  cleanup_owner: z.string().min(1).optional(),
+  cleanup_state: BranchCleanupStateSchema.default('ACTIVE'),
+  cleanup_blocker: z.string().optional(),
+  cleanup_updated_at: z.string().optional(),
   test_status: z.enum(['unknown', 'pending', 'passed', 'failed']).optional(),
   files_touched: z.array(z.string()).optional(),
   created_at: z.string(),
@@ -78,6 +93,7 @@ export const BranchPlanSchema = z.object({
   created_at: z.string(),
 });
 
+export type BranchCleanupState = z.infer<typeof BranchCleanupStateSchema>;
 export type GitBranchPolicy = z.infer<typeof GitBranchPolicySchema>;
 export type BranchRegistryEntry = z.infer<typeof BranchRegistryEntrySchema>;
 export type BranchPlan = z.infer<typeof BranchPlanSchema>;

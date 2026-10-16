@@ -2,6 +2,7 @@ export type {
   BranchPlan,
   BranchPlanTask,
   BranchRegistryEntry,
+  BranchCleanupState,
   GitBranchPolicy,
   MergeAdvisorReport,
 } from './types.js';
@@ -9,6 +10,7 @@ export type {
 export {
   GitBranchPolicySchema,
   BranchRegistryEntrySchema,
+  BranchCleanupStateSchema,
   BranchPlanSchema,
 } from './types.js';
 
@@ -72,3 +74,12 @@ export {
   type ChatOpsDispatchResult,
   type ChatOpsAction,
 } from './chatops-dispatch.js';
+
+
+export {
+  classifyBranchCleanup,
+  cleanupStateIsTerminal,
+  cleanupStateRequiresPreservation,
+  type BranchCleanupEvidence,
+  type BranchCleanupDecision,
+} from './cleanup.js';
