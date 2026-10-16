@@ -343,6 +343,9 @@ jobs:
             scripts/ops/__tests__/pr-reconciliation-dispatch-plan.test.mjs \
             scripts/ops/__tests__/pr-reconciliation-flow.test.mjs
 
+      - name: Machine claim contract tests
+        run: node --test scripts/ops/__tests__/machine-claim.test.mjs
+
       - name: Golden runtime topology contracts
         run: |
           node --test \
