@@ -205,3 +205,17 @@ __pycache__/
 runtime/sessions/
 runtime/agent-sessions/
 runtime/state/
+
+# OBS / streaming configs — NUNCA versionar (contienen stream keys y contrasenas)
+service.json
+**/obs-studio/basic/service.json
+**/obs-studio/basic/global.ini
+**/obs-studio/basic/profiles/
+**/obs-studio/basic/scenes/
+**/.obs/
+obs-studio/
+
+# OpenClaw local state (dreaming) — se regenera en la raiz del repo.
+# El validador de estructura no consulta .gitignore, por eso vive en runtime/tmp/.
+/DREAMS.md
+/memory/
