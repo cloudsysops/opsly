@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
   agentForLocalJobType,
+  canQueueForDeferredRuntime,
+  canQueueGamerPlaneDeferred,
+  GAMER_PLANE_LOCAL_AGENT_KINDS,
+  isGamerPlaneLocalAgentKind,
   jobTypeForLocalAgent,
+  MAC_DEFAULT_LOCAL_AGENT_KINDS,
   normalizeLocalAgentKind,
   parseLocalAgentKindAllowlist,
   parsePromptFrontmatter,
@@ -68,5 +73,26 @@ describe('local-worker-utils', () => {
       'local_opencode',
     ]);
     expect(parseLocalAgentKindAllowlist('bogus')).toContain('local_cursor');
+  });
+
+  it('Mac default allowlist never claims Gamer-plane local_opencode', () => {
+    expect(GAMER_PLANE_LOCAL_AGENT_KINDS).toEqual(['local_opencode']);
+    expect(isGamerPlaneLocalAgentKind('local_opencode')).toBe(true);
+    expect(isGamerPlaneLocalAgentKind('local_cursor')).toBe(false);
+    expect(MAC_DEFAULT_LOCAL_AGENT_KINDS).not.toContain('local_opencode');
+    expect(MAC_DEFAULT_LOCAL_AGENT_KINDS).not.toContain('local_openclaw');
+    expect(parseLocalAgentKindAllowlist(MAC_DEFAULT_LOCAL_AGENT_KINDS.join(','))).not.toContain(
+      'local_opencode'
+    );
+  });
+
+  it('Gamer-plane deferred admission is fail-closed (queue unhealthy; never Mac fallback path)', () => {
+    expect(canQueueForDeferredRuntime('runtime_unknown')).toBe(true);
+    expect(canQueueForDeferredRuntime('runtime_unreachable')).toBe(true);
+    expect(canQueueForDeferredRuntime('runtime_unhealthy')).toBe(false);
+    expect(canQueueGamerPlaneDeferred('runtime_unhealthy')).toBe(true);
+    expect(canQueueGamerPlaneDeferred('runtime_unreachable')).toBe(true);
+    expect(canQueueGamerPlaneDeferred('registry_disabled')).toBe(false);
+    expect(canQueueGamerPlaneDeferred(null)).toBe(false);
   });
 });

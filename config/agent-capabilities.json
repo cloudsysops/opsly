@@ -122,7 +122,12 @@
   },
   "recommended_distribution": {
     "vps-dragon": ["orchestrator", "api", "llm_gateway", "mcp", "tenant_stacks", "deployer_guarded"],
-    "opsly-admin": ["cursor", "claude", "codex", "opencode", "copilot", "hermes", "aider", "goose", "playwright"],
+    "opsly-admin": ["cursor", "claude", "codex", "copilot", "hermes", "aider", "goose", "playwright"],
+    "pc-gamer-plane": ["opencode", "ollama", "gpu_jobs"],
     "opsly-worker": ["decepticon", "playwright", "aider", "test_runner", "ollama", "build_runner"]
+  },
+  "gamer_plane_reserved": {
+    "opsly_job_types": ["local_opencode"],
+    "rule": "Mac must not claim; unavailable Gamer → queue/block, never silent Mac fallback. Capability: agent.local.opencode in config/compute-workers.json."
   }
 }

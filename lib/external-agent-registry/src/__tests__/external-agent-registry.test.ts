@@ -20,6 +20,7 @@ describe('external-agent-registry', () => {
     expect(registry.version).toBe(1);
     expect(registry.workers['claude-code']?.command).toBe('claude');
     expect(registry.workers['opencode']?.opsly_job_type).toBe('local_opencode');
+    expect(registry.workers['opencode']?.fallback_agents).toEqual([]);
   });
 
   it('registers OpenClaw but keeps it disabled until physical acceptance', async () => {

@@ -7,6 +7,9 @@ const read = (path) => readFileSync(path, 'utf8');
 test('Mac worker never claims local_opencode; Gamer is its canonical worker', () => {
   const mac = read('scripts/ops/start-mac-local-agents-worker.sh');
   const gamer = read('scripts/ops/pc-gamer-opencode-plane.sh');
+  const registry = JSON.parse(read('config/external-agent-registry.json'));
+  const compute = JSON.parse(read('config/compute-workers.json'));
+  const caps = JSON.parse(read('config/agent-capabilities.json'));
 
   const macKinds = mac.match(/OPSLY_LOCAL_AGENT_KINDS="\$\{OPSLY_LOCAL_AGENT_KINDS:-([^}]+)\}"/);
   assert.ok(macKinds, 'Mac default local-agent kinds must be explicit');
@@ -14,6 +17,23 @@ test('Mac worker never claims local_opencode; Gamer is its canonical worker', ()
 
   assert.match(gamer, /OPSLY_LOCAL_AGENT_KINDS=local_opencode/);
   assert.match(gamer, /local-agents/);
+
+  // Fail-closed: OpenCode must not list Mac-eligible agent fallbacks.
+  assert.deepEqual(registry.workers.opencode.fallback_agents, []);
+  assert.equal(registry.workers.opencode.opsly_job_type, 'local_opencode');
+
+  // Capability registry (not hostname) owns local_opencode placement.
+  assert.ok(compute.jobTypes['agent.local.opencode']);
+  assert.deepEqual(compute.jobTypes['agent.local.opencode'].requires, ['agent.local.opencode']);
+  for (const worker of compute.workers) {
+    assert.ok(
+      worker.capabilities.includes('agent.local.opencode'),
+      `${worker.workerId} must advertise agent.local.opencode`
+    );
+  }
+  assert.ok(!caps.recommended_distribution['opsly-admin'].includes('opencode'));
+  assert.ok(caps.recommended_distribution['pc-gamer-plane'].includes('opencode'));
+  assert.deepEqual(caps.gamer_plane_reserved.opsly_job_types, ['local_opencode']);
 });
 
 test('real CLI runtimes remain ephemeral and persistent launchers stay disabled', () => {

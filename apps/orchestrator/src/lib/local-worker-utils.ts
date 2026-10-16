@@ -389,8 +389,49 @@ export const LOCAL_AGENT_KINDS: readonly LocalAgentKind[] = [
 ];
 
 /**
+ * Local agent kinds owned by the PC Gamer plane.
+ * Source of truth is role/capability (`agent.local.opencode`), not hostname.
+ * Mac workers must never claim these by default.
+ */
+export const GAMER_PLANE_LOCAL_AGENT_KINDS: readonly LocalAgentKind[] = ['local_opencode'];
+
+/**
+ * Default OPSLY_LOCAL_AGENT_KINDS for the Mac local-agents worker.
+ * Mirrors `scripts/ops/start-mac-local-agents-worker.sh` (keeps OpenClaw held).
+ */
+export const MAC_DEFAULT_LOCAL_AGENT_KINDS: readonly LocalAgentKind[] = [
+  'local_cursor',
+  'local_claude',
+  'local_copilot',
+  'local_codex',
+  'local_openai',
+  'local_hermes',
+  'local_decepticon',
+  'local_aider',
+  'local_goose',
+  'local_playwright',
+];
+
+export function isGamerPlaneLocalAgentKind(kind: string): boolean {
+  return (GAMER_PLANE_LOCAL_AGENT_KINDS as readonly string[]).includes(kind);
+}
+
+/** Generic deferred admission: unknown/unreachable runtimes may stay queued. */
+export function canQueueForDeferredRuntime(blocker: string | null | undefined): boolean {
+  return blocker === 'runtime_unknown' || blocker === 'runtime_unreachable';
+}
+
+/**
+ * Gamer-plane OpenCode: unavailable → queue (or hard-block), never Mac/agent fallback.
+ * Treat temporary UNHEALTHY like unreachable so the job stays on local_opencode.
+ */
+export function canQueueGamerPlaneDeferred(blocker: string | null | undefined): boolean {
+  return canQueueForDeferredRuntime(blocker) || blocker === 'runtime_unhealthy';
+}
+
+/**
  * Restrict which local_* job names a host consumes.
- * Empty / unset = all kinds (historic). Mac should set `local_cursor`;
+ * Empty / unset = all kinds (historic). Mac should set `MAC_DEFAULT_LOCAL_AGENT_KINDS`;
  * PC-gamer OpenCode should set `local_opencode` so they do not steal each other.
  */
 export function parseLocalAgentKindAllowlist(

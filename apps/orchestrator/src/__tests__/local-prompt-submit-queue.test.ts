@@ -268,7 +268,7 @@ describe('local prompt-submit → local-agents queue', () => {
     }
   });
 
-  it('agent:null falls back to the next live registered runtime when preferred is unhealthy', async () => {
+  it('agent:null keeps local_opencode fail-closed when Gamer preferred is unhealthy (no Mac aider fallback)', async () => {
     const previousOpenCodeUrl = process.env.OPSLY_OPENCODE_AGENT_URL;
     const previousAiderUrl = process.env.OPSLY_AIDER_AGENT_URL;
     process.env.OPSLY_OPENCODE_AGENT_URL = 'http://127.0.0.1:5004';
@@ -294,9 +294,9 @@ describe('local prompt-submit → local-agents queue', () => {
       );
 
       expect(status).toBe(202);
-      expect(JSON.parse(raw).job_type).toBe('local_aider');
+      expect(JSON.parse(raw).job_type).toBe('local_opencode');
       const queued = enqueueLocalAgentJob.mock.calls[0]![0] as { type: string };
-      expect(queued.type).toBe('local_aider');
+      expect(queued.type).toBe('local_opencode');
     } finally {
       fetchSpy.mockRestore();
       if (previousOpenCodeUrl === undefined) delete process.env.OPSLY_OPENCODE_AGENT_URL;
