@@ -4,7 +4,7 @@ import {
   normalizeChangeDetectionEvent,
   normalizeMedusaProduct,
   shouldCreateDealOpportunity,
-} from '../src/index';
+} from '../src/index.js';
 
 describe('normalizeMedusaProduct', () => {
   it('normalizes price, inventory and discount', () => {
