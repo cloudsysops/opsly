@@ -14,41 +14,46 @@ tags:
 Acceso SSH al nodo **`smdqcia-pc`** (host Windows `DESKTOP-SMDQCIA` + WSL2 Ubuntu, usuario `opsly`)
 usando **Tailscale + MagicDNS**, con causes raíz y comandos de verificación documentados.
 
-## Resumen de estado (2026-09-22)
+## Resumen de estado (2026-10-05, reconciliado)
 
-- ✅ **Acceso directo por tailnet FUNCIONA.** `ssh opsly@smdqcia-pc.<suffix>.ts.net` (puerto 22)
-  responde con `hostname` = `DESKTOP-SMDQCIA`.
-- ✅ `sshd` de WSL escucha en `0.0.0.0:22` y `[::]:22` (OpenSSH de Windows **no** está instalado; el SSH vive en WSL).
-- ✅ Causa raíz de semanas de "CERRADO": **portproxy residual de Windows** ocupando el 22 (resuelto, ver abajo).
-- ✅ Firewall Windows activo: 3 perfiles `Enabled=True`, `DefaultInboundAction=Block`, con reglas allow explícitas.
-- ✅ Llave para **iPhone** creada y autorizada (ver sección iPhone; **referir por ruta, no pegar llaves**).
-- ⚠️ Node fantasma `desktop-smdqcia` (Linux) aún visible en la tailnet (cosmético; retirar en admin).
+- ✅ **Dueño de `:22` = Windows OpenSSH** (servicio `sshd`), no `ssh.socket` de WSL.
+- ✅ Shell por defecto: `DefaultShell=C:\Opsly\bin\opsly-agent-shell.exe` → `wsl.exe -e bash` (WSL; executable, not `.cmd`).
+- ✅ Windows PowerShell desde Mac: `ssh opsly@smdqcia-pc "powershell.exe -NoProfile -Command '...'"`
+- ✅ Firewall inbound TCP/22 **scoped a Tailscale CGNAT** `100.64.0.0/10` (regla `Opsly-SSH-Tailscale-22`).
+- ✅ Reparación idempotente (Admin): `scripts/ops/ensure-smdqcia-agent-access.ps1` — **no** hacer `portproxy reset` global; solo borra proxies en `:22`.
+- ✅ Plantilla Mac: `cboteros/opsly-bootstrap` → `ssh/config.mac` + `mac-apply-ssh-config.sh`
+- ⚠️ WSL `ssh.socket` / `ssh` deben quedar **stopped+disabled** para no pelear el bind.
+- ⚠️ `smdqcia-wsl` / `100.115.197.109` es phantom en inventario — **no** usarlo como destino canónico de agentes.
+- ⚠️ No usar el nodo Tailscale legacy `pc-gamer` (`DESKTOP-P06TD4R`) para `home-gpu-01`.
+- ⚠️ Tras cambiar el host key de OpenSSH, en el Mac: `ssh-keygen -R smdqcia-pc`.
 
 ## Arquitectura
 
 ```text
             Tailscale (100.64.0.0/10) solo
                   │
-  Mac (opsly-quantum) ──────► smdqcia-pc:<22>  SSH directo (recomendado)
-       ssh -p 2222 ─────────► smdqcia-pc:<2222> túnel inverso (fallback)
+  Mac (opsly-quantum) ──────► smdqcia-pc:<22>  Windows OpenSSH (recomendado)
+       ssh -p 2222 ─────────► smdqcia-pc:<2222> túnel inverso (fallback legacy)
                                   │
-                          Windows Firewall (Block + allow 22 Tailscale / WSL)
+                          Firewall: allow TCP/22 RemoteAddress=100.64.0.0/10
                                   │
-                           WSL2 Ubuntu sshd :22 (eth0 = IP tailscale espejada)
+                          DefaultShell → opsly-agent-shell.cmd → wsl.exe -e bash
+                                  │
+                          WSL2 Ubuntu (repo ~/opsly, worker home-gpu-01)
+                          WSL ssh.socket: DISABLED (no bind :22)
 ```
 
 - `.wslconfig` del host: `networkingMode=mirrored` + `dnsTunneling=true`.
-  Gracias a mirrored, el `eth0` de WSL (100.117.5.102) es la misma IP tailnet del nodo, y las
-  rutas tailnet directas se ven desde dentro de WSL.
-- `tailscaled` **dentro** de WSL está deshabilitado; la app Tailscale de Windows gestiona el nodo único `smdqcia-pc`.
+- Tailscale de **Windows** publica el nodo canónico `smdqcia-pc`. Tailscale dentro de WSL es opcional y **no** es inventario canónico.
 
-| Nodo / dato               | Valor                                |
-| ------------------------- | ------------------------------------ |
-| Windows host              | `DESKTOP-SMDQCIA`                    |
-| IP tailnet                | `100.117.5.102`                      |
-| MagicDNS                  | `smdqcia-pc.<suffix>.ts.net`         |
-| Usuario (Windows + WSL)   | `opsly`                              |
-| `sshd`                    | WSL, `0.0.0.0:22` + `[::]:22`        |
+| Nodo / dato               | Valor                                         |
+| ------------------------- | --------------------------------------------- |
+| Windows host              | `DESKTOP-SMDQCIA`                             |
+| MagicDNS (canónico)       | `smdqcia-pc` / `smdqcia-pc.<suffix>.ts.net`   |
+| IP tailnet                | dinámico (`tailscale ip -4`); no hardcodear   |
+| Usuario (Windows + WSL)   | `opsly`                                       |
+| `sshd` dueño de `:22`     | **Windows** OpenSSH                           |
+| Shell default             | WSL vía `opsly-agent-shell.cmd`               |
 
 El suffix sale de `tailscale dns status` (línea `suffix = …`), p. ej. `taile4fe40.ts.net`.
 
@@ -61,9 +66,9 @@ Los tanteos reportaban "CERRADO" porque el puerto no respondía:
    (error en logs: `Address already in use`).
 2. Por eso además `systemctl start ssh.socket` fallaba "activo" sin listener y el sshd nunca arrancaba bien.
 
-**Fix (ya aplicado):** se eliminó ese portproxy (`netsh interface portproxy delete v4tov4 listenport=22 …`),
-quedó el portproxy vacío y sin listener 22 en Windows. **Regla:** si vuelve el síntoma
-"listener 22 en Windows / ssh.socket no puede bindear", revisar primero `netsh interface portproxy show all`.
+**Fix (canónico):** `ensure-smdqcia-agent-access.ps1` borra **solo** reglas `listenport=22` (nunca `portproxy reset` global).
+**Regla:** si vuelve el síntoma "listener 22 raro / bind conflict", revisar `netsh interface portproxy show all`
+y volver a correr el ensure script.
 
 ### Los "CERRADO" anteriores eran FALSOS
 
@@ -71,39 +76,41 @@ Desde el Mac se probó con `timeout 5 bash -c "</dev/tcp/..."` — **`timeout` n
 así que el comando fallaba antes de probar el puerto. Usar siempre `nc` o SSH real:
 
 ```bash
-nc -vz 100.117.5.102 22                    # succeeded
-nc -vz -6 fd7a:115c:a1e0::43a:568 22       # succeeded (IPv6 tailnet)
-ssh -o BatchMode=yes -o ConnectTimeout=10 opsly@smdqcia-pc.<suffix>.ts.net "hostname"  # DESKTOP-SMDQCIA
+nc -vz smdqcia-pc 22
+ssh -o BatchMode=yes -o ConnectTimeout=10 opsly@smdqcia-pc "hostname; uname -s"
 ```
 
-## Restablecer sshd tras un WSL shutdown / reboot
+## Restablecer SSH tras reboot / WSL shutdown
 
-`wsl --shutdown` o un reboot deja el `ssh.socket` sin arrancar. Como `sudo` interactivo **no** está
-disponible, el restablecimiento canónico (desde el host Windows, no requiere UAC si WSL está elevado):
+**No** arrancar `ssh.socket` de WSL — pelearía el puerto con Windows OpenSSH.
+
+Desde PowerShell **Admin** en el PC:
+
+```powershell
+# Preferido: reparación completa idempotente
+powershell -ExecutionPolicy Bypass -File $env:USERPROFILE\opsly\scripts\ops\ensure-smdqcia-agent-access.ps1
+
+# Mínimo: solo servicio Windows
+Restart-Service sshd -Force
+Get-Service sshd   # Running
+```
+
+Verificar desde el Mac (MagicDNS, no IP fija):
 
 ```bash
-powershell.exe wsl -u root -e bash -lc 'systemctl start ssh.socket'
+nc -vz smdqcia-pc 22
+ssh -o BatchMode=yes -o ConnectTimeout=10 opsly@smdqcia-pc 'uname -s; echo WSL_OK'
 ```
 
-Verificar dentro de WSL:
+## Firewall Windows (estado 2026-10-05)
 
-```bash
-systemctl is-active ssh.socket   # active
-ss -tlnp | grep ':22 '           # sshd en 0.0.0.0:22 y [::]:22
-```
+Los 3 perfiles están `Enabled=True` con `DefaultInboundAction=Block`. Canónico:
 
-## Firewall Windows (estado 2026-09-22)
+| Regla                     | Parámetros                                                         |
+| ------------------------- | ------------------------------------------------------------------ |
+| `Opsly-SSH-Tailscale-22`  | Inbound / Allow / TCP 22 / **RemoteAddress=`100.64.0.0/10`**     |
 
-Los 3 perfiles están `Enabled=True` con `DefaultInboundAction=Block`. Se mantienen **dos** reglas allow
-("dejala" según operador):
-
-| Regla                        | Parámetros                                                        |
-| ---------------------------- | ----------------------------------------------------------------- |
-| `OpenSSH-Tailscale-22`       | Inbound / Allow / TCP 22 / Profile Any                            |
-| Hyper-V `WSL-In-TCP-22`      | Inbound / Allow / 22 con `VMCreatorId` `{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}` |
-
-La interfaz Tailscale está en perfil **Private**, Ethernet en **Public**. No abrir 22 al público (regla de
-PC-gamer): SSH **solo** por tailnet.
+No abrir TCP/22 a `Any`/LAN/público. `ensure-smdqcia-agent-access.ps1` re-scopea reglas legacy OpenSSH/WSL a CGNAT Tailscale.
 
 ## Camino recomendado: SSH directo por tailnet (puerto 22)
 
@@ -111,8 +118,8 @@ El acceso **directo** (`smdqcia-pc:22`, llaves del Mac u otras autorizadas) est�
 principal. Es el puerto estándar, no depende de un servicio de túnel ni de que el Mac esté encendido.
 
 ```bash
-ssh opsly@smdqcia-pc.<suffix>.ts.net        # usa llaves en ~/.ssh
-ssh -o ConnectTimeout=10 opsly@100.117.5.102
+ssh opsly@smdqcia-pc                            # MagicDNS; llaves en ~/.ssh
+ssh -o ConnectTimeout=10 opsly@smdqcia-pc
 ```
 
 ### Túnel inverso 2222 (fallback / legacy)

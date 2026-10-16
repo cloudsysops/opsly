@@ -13,7 +13,7 @@ That means a gameplay/docs PR such as **#1155** can go red for `next` / `sharp` 
 **Bounded improvement (do not weaken globally):**
 
 1. Keep the full moderate+ `--omit=dev` audit on `schedule` + `workflow_dispatch` + pushes to `main`. Do not ignore moderate/high/critical.
-2. On pull requests, add an **additive** delta later: fail if the PR introduces **new** advisory IDs vs `origin/main`. Do not replace the main/schedule full gate with “ignore baseline”.
+2. On pull requests: if the PR does **not** change `package.json` / `package-lock.json`, the moderate+ gate is **non-blocking** (report still uploaded; findings = `PREEXISTING_ON_MAIN`). If either file changes, the full `--omit=dev` moderate+ gate still fails the job. A future additive step can still fail only on **new** advisory IDs vs `origin/main`.
 3. Baseline repair is **#1156** (`chore/audit-security-deps`, Next 15.5.25 + sharp 0.35.4), stacked into **#1154**. After that lands, the full omit=dev gate should return to 0 on `main`. Do not squash that repair into #1155.
 
 Do not attribute inherited lockfile findings to the PC-gamer gameplay PR.

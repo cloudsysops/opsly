@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-10-05
 type: agent-doc
 tags:
   - opsly/agents
@@ -11,26 +11,31 @@ tags:
 
 Documento **canónico** para que agentes (Cursor, Claude, automatismos) y personas no mezclen usuarios entre máquinas Opsly.
 
-**Principio:** el **usuario de tu Mac** (p. ej. `cboteros`) es solo local. Los **usuarios remotos** son distintos por host; un comando `ssh` debe usar explícitamente el usuario de la tabla siguiente.
+**Principio:** el **usuario de tu Mac** (p. ej. `dragon` / `cboteros`) es solo local. Los **usuarios remotos** son distintos por host; un comando `ssh` debe usar explícitamente el usuario de la tabla siguiente.
 
 ---
 
 ## Tabla rápida
 
-| Destino                                   | Usuario SSH                                  | IP / nombre Tailscale                           | Uso típico                                                                       |
-| ----------------------------------------- | -------------------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------- |
-| **VPS** (control plane, `/opt/opsly`)     | **`vps-dragon`**                             | `100.120.151.91` (Tailscale)                    | Docker plataforma, Traefik, API, Redis, deploy                                   |
-| **Worker Ubuntu** (Mac 2011, datos plane) | **`opslyquantum`**                           | `100.80.41.29` o `opsly-worker.<suffix>.ts.net` | Ollama, orchestrator `worker-enabled`, repo `~/opsly`, Decepticon/RTK en usuario |
-| **Mac principal** (desarrollo)            | **`cboteros`** (ejemplo; el tuyo puede otro) | `opsly-admin` / `100.89.38.3`                   | Cursor, clon del repo; **no** es el usuario del worker                           |
+| Destino | Usuario SSH | IP / nombre Tailscale | Uso típico |
+| ------- | ----------- | --------------------- | ---------- |
+| **VPS** (control plane, `/opt/opsly`) | **`vps-dragon`** | `100.120.151.91` / `vps-dragon` | Docker plataforma, Traefik, API, Redis, deploy |
+| **PC gamer / home-gpu-01** (WSL + Windows) | **`opsly`** | MagicDNS **`smdqcia-pc`** (IP actual vía Tailscale) | Repo `~/opsly`, worker GPU, OBS. Shell default = **WSL** vía Windows OpenSSH `:22`. Windows: `powershell.exe` remoto |
+| **Worker Ubuntu** (Mac 2011, legacy) | **`opslyquantum`** | `100.80.41.29` / `opsly-worker` | Orchestrator legacy; ver PR retire Mac2011 |
+| **Mac principal** (desarrollo) | **`dragon`** (opsly-quantum) | `100.89.38.3` / `opsly-quantum` | Cursor en Mac; **no** es el usuario del PC gamer |
 
-Comandos de referencia:
+**No usar** el nodo MagicDNS `smdqcia-wsl` / `100.115.197.109` como destino de recuperación: en `infra/nodes-registry.json` está marcado como phantom/legacy. Camino canónico = solo **`smdqcia-pc`**. Si `:22` cae, reparar con `ensure-smdqcia-agent-access.ps1` (Admin), no inventar un segundo host.
+
+Comandos de referencia (desde el Mac):
 
 ```bash
+ssh opsly@smdqcia-pc 'cd ~/opsly && git status -sb'          # WSL (DefaultShell)
+ssh opsly@smdqcia-pc "powershell.exe -NoProfile -Command 'Write-Output WIN_OK'"
 ssh vps-dragon@100.120.151.91
-ssh opslyquantum@100.80.41.29
-# Con MagicDNS (sustituir suffix):
-# ssh opslyquantum@opsly-worker.<suffix>.ts.net
 ```
+
+Plantilla SSH Mac: `cboteros/opsly-bootstrap` → `ssh/config.mac` + `scripts/mac-apply-ssh-config.sh`.  
+Reparación en el PC (Admin): `scripts/ops/ensure-smdqcia-agent-access.ps1`.
 
 ---
 

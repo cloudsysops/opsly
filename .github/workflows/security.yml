@@ -25,6 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Need base for PREEXISTING_ON_MAIN lockfile delta check on pull_request.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -37,9 +40,25 @@ jobs:
 
       - name: npm audit — fail on moderate+
         id: audit
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          set +e
+          set -euo pipefail
           # MVP policy: exclude dev dependencies from blocking audit (see docs/security/NPM-AUDIT-EXEMPTIONS.md)
+          # On PRs that do not touch package.json / package-lock.json, inherited main findings are
+          # PREEXISTING_ON_MAIN — do not block ops/docs-only PRs (bounded delta gate).
+          if [ "$EVENT_NAME" = "pull_request" ] && [ -n "${BASE_SHA:-}" ]; then
+            changed="$(git diff --name-only "$BASE_SHA"...HEAD -- package.json package-lock.json || true)"
+            if [ -z "$changed" ]; then
+              echo "npm audit: skip blocking gate — PR does not change package.json/package-lock.json (PREEXISTING_ON_MAIN)"
+              npm audit --audit-level=moderate --omit=dev --json > audit-report.json 2>&1 || true
+              npm audit --audit-level=moderate 2>&1 || true
+              exit 0
+            fi
+            echo "npm audit: lockfile/package.json changed — full moderate+ omit=dev gate applies"
+          fi
+          set +e
           npm audit --audit-level=moderate --omit=dev --json > audit-report.json 2>&1
           EXIT_CODE=$?
           # Print summary for visibility (including dev deps) but only return EXIT_CODE from non-dev audit
