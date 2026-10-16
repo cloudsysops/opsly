@@ -37,5 +37,20 @@
     "candidateCount": 15,
     "minGapSeconds": 90
   },
-  "clipsDir": "clips"
+  "clipsDir": "clips",
+  "verticalSync": {
+    "canvas": "Aitum Vertical",
+    "map": {
+      "Battlefield 6": "V_GAMING",
+      "Battlefield 6 — Zoom": "V_GAMING",
+      "Gaming": "V_GAMING",
+      "Gaming + Vibe Coding": "V_GAMING",
+      "Streaming-Gaming": "V_GAMING",
+      "OAD_FACTORY_FOCUS": "V_FACTORY_FOCUS",
+      "AI Factory — Hacker": "V_FACTORY_FOCUS",
+      "Festival — AI Set": "V_FACTORY_FOCUS",
+      "CODING_4": "V_CODING",
+      "Coding-Game": "V_CODING"
+    }
+  }
 }

@@ -84,9 +84,10 @@ Pendiente: NO VERIFICADO qué escenas contienen cada fuente ni cuáles están ac
 | `vibe-live.mjs` (8766) | `SetCurrentProgramScene`, inicio/parada de sets, grabación | Sí, en código |
 | `scene-watch.mjs` | Cambia la escena de programa según si Battlefield 6 está abierto | Sí, en código |
 | Scripts CLI de `stream-ops-kit` y del prototipo (`stream-ctl`, `configure-*`, `rescale-canvas`, `obs-snapshot`, `auto-start`, etc.) | Bajo demanda, por operador | Solo por nombre; NO auditados |
+| `vertical-sync.mjs` (tarea `OpsAfterDark-Vertical-Sync`, `stream-ops-kit`) | Solo la escena **vertical** del canvas Aitum, siguiendo la escena de programa horizontal según `verticalSync.map` | Sí, en código y probado sin directo |
 | Herramientas de sesión de Claude Code | Escenas/fuentes temporales con `STUDIO-PREVIEW-*`, siempre borradas | Registro en esta sesión |
 
-Dos procesos permanentes escriben a OBS sin coordinación. Ver pendiente.
+Dos procesos permanentes (`vibe-live.mjs`, `scene-watch.mjs`) escriben a OBS sin coordinación; `vertical-sync` se añadió (2026-10-15) como tercero, pero pertenece al runtime canónico (`stream-ops-kit`), solo escribe la escena vertical y no compite con los otros por la escena horizontal. Ver pendiente.
 
 ## Duplicaciones encontradas
 

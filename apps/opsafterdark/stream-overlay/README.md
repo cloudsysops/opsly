@@ -104,6 +104,21 @@ Patrones techno, house, build-up y drop en `music/`; instructivo en [music/INSTR
 - **Dependencia:** la tarea ejecuta el script desde este worktree vía `\\wsl.localhost\Ubuntu\...`; si la ruta cambia, hay que volver a registrarla.
 - **Quitarla:** `Unregister-ScheduledTask -TaskName OpsAfterDark-PostStream-Clips -Confirm:$false`.
 
+## Escena vertical sincronizada con la horizontal
+
+`vertical-sync.ps1` (motor: `packages/stream-ops-kit/src/vertical-sync.mjs`) mantiene la escena del canvas vertical (Aitum Stream Suite, canvas `Aitum Vertical`) alineada con la escena de programa horizontal. Sin esto, si el horizontal pasa a una escena sin juego (p. ej. AI Factory) y el vertical se queda en `V_GAMING` (Game Capture vacío), la mitad de juego del reel sale en **negro**.
+
+- **Qué escribe en OBS:** solo la escena **vertical** (petición `switch_scene` del vendor `aitum-stream-suite`). No toca la escena horizontal, el audio ni las salidas. Las escenas horizontales sin entrada en el mapa no cambian nada, y no cambia a una escena que no exista en el vertical.
+- **Mapa:** `stream.config.json` → `verticalSync.map` (escena horizontal → escena vertical). Hoy: escenas de juego → `V_GAMING`; AI Factory/Festival → `V_FACTORY_FOCUS`; `CODING_4`/`Coding-Game` → `V_CODING` (muestra la ventana `VIBE.Ubuntu`, igual que el horizontal; quítalas del mapa si no quieres verla en vertical).
+- **Cómo corre:** tarea de Windows `OpsAfterDark-Vertical-Sync` (al iniciar sesión, una sola instancia, reinicio automático). Escucha eventos de escena y se reconecta cada 10 s si OBS se cierra. Log: `D:\Content\PostStream\_vertical-sync.log`.
+- **Uso manual:** `powershell -File vertical-sync.ps1 [-Once] [-Dry]` (`-Dry` solo muestra lo que haría).
+- **Límite:** el plugin no expone la escena actual por evento; el script la consulta antes de cambiar y confirma después (el cambio es asíncrono).
+- **Quitarla:** `Unregister-ScheduledTask -TaskName OpsAfterDark-Vertical-Sync -Confirm:$false`.
+
+## Micro en la grabación
+
+`stream.config.json` → `audioTracks.MIC_OPERATOR` declara las pistas del micro (`[1, 2, 3]`; la 3 es "Micro" en la grabación). Si OBS no coincide, `stream-ops-fix-vod-audio` lo corrige (se niega a correr en directo). `MIC_SILENT` en el informe de clips avisa si la pista 3 sale en silencio; si además el micro físico entrega silencio fuera de OBS, el problema es del dispositivo (mute del auricular o del brazo), no de la configuración.
+
 ## Archivos
 
 **En esta carpeta (config/datos de este tenant):** `stream.config.json` (rutas OBS,

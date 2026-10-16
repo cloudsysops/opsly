@@ -23,7 +23,8 @@ try {
   $log = 'D:\Content\PostStream\_auto-clips.log'
   New-Item -ItemType Directory -Force (Split-Path $log) | Out-Null
   "== $(Get-Date -Format s) ==" | Add-Content $log
-  & node @nodeArgs 2>&1 | ForEach-Object { "$_" } | Tee-Object -FilePath $log -Append
+  [Console]::OutputEncoding = [System.Text.Encoding]::UTF8  # node escribe UTF-8
+  & node @nodeArgs 2>&1 | ForEach-Object { "$_"; "$_" | Out-File -FilePath $log -Append -Encoding utf8 }
   $code = $LASTEXITCODE
 } finally { $mutex.ReleaseMutex() }
 exit $code
