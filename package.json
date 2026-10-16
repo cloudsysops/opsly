@@ -217,7 +217,7 @@
     "pc-gamer:opencode:up": "bash scripts/ops/pc-gamer-opencode-plane.sh --up",
     "pc-gamer:opencode:autostart": "bash scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart",
     "test:pc-gamer-opencode": "node --test scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs",
-"creator:bridge": "node scripts/ops/creator-local-bridge.mjs",
+    "creator:bridge": "node scripts/ops/creator-local-bridge.mjs",
     "test:creator-local-bridge": "node --test scripts/ops/__tests__/creator-local-bridge.test.mjs",
     "opsly:local-openclaw-service": "OPENCLAW_CONFIG_READONLY=1 OPENCLAW_OFFLINE=1 OPSLY_CLI_AGENT=openclaw PORT=5012 tsx scripts/cli-agent-service.ts",
     "opsly:agent-handoff": "node scripts/ops/interactive-agent-handoff.mjs",
@@ -244,7 +244,7 @@
     "fast-xml-builder": "1.2.0",
     "hono": "4.13.7",
     "husky": "^9.1.7",
-    "ip-address": "10.4.0",
+    "ip-address": "10.7.2",
     "js-yaml": "^4.1.1",
     "lint-staged": "^15.5.2",
     "nodemon": "^3.1.14",
@@ -297,15 +297,15 @@
     },
     "brace-expansion": "1.1.18",
     "d3-color": "^3.1.0",
-    "fast-uri": "3.1.7",
+    "fast-uri": "3.1.8",
     "fast-xml-builder": "1.2.0",
     "fast-xml-parser": {
       "fast-xml-builder": "1.2.0"
     },
     "hono": "4.13.7",
-    "ip-address": "10.4.0",
+    "ip-address": "10.7.2",
     "express-rate-limit": {
-      "ip-address": "10.4.0"
+      "ip-address": "10.7.2"
     },
     "@tootallnate/once": "^3.0.1",
     "langsmith": "0.7.1",
