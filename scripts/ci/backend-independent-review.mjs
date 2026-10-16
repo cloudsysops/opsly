@@ -30,6 +30,7 @@
 
 import { evaluateIndependentReview } from './check-independent-review.mjs';
 import { buildFileAwareReviewContext } from './backend-review-context.mjs';
+import { classifyVerdict } from './review-verdict.mjs';
 
 const REPO = process.env.OPSLY_GITHUB_REPO ?? 'cloudsysops/opsly';
 const POST_TOKEN =
@@ -283,13 +284,11 @@ async function reviewWithLocalWorker({ pr, diff, failingChecks }) {
   throw new Error(`Open-source reviewer local job timed out after ${REVIEW_POLL_SECONDS}s: ${jobId}`);
 }
 
+// A verdict is an approval unless it carries a P0 finding. `invalid` verdicts (anything
+// that does not follow the output contract) never reach this point: main() refuses to
+// post them, so an off-topic model answer can no longer become an APPROVE + success status.
 function isClean(verdict) {
-  const text = verdict.trim();
-  if (text === CLEAN_PHRASE) return true;
-  // El prompt define solo P0 como bloqueante: P1/P2 son recomendaciones
-  // no bloqueantes. Un veredicto sin hallazgos P0 es un approve con
-  // recomendaciones, no una solicitud de cambios.
-  return !/(?:^|\n)\s*P0[:\s](?![A-Za-z0-9])/m.test(text);
+  return classifyVerdict(verdict, CLEAN_PHRASE) !== 'blocking';
 }
 
 async function submitReview(pr, verdict, modelUsed, workerId, token) {
@@ -390,6 +389,15 @@ async function main() {
 
     const { verdict, modelUsed, workerId } = reviewResult;
     console.log(`#${pr.number} veredicto (${modelUsed}):\n${verdict}\n`);
+
+    if (classifyVerdict(verdict, CLEAN_PHRASE) === 'invalid') {
+      // Fail closed: do not post a review or flip the status for an answer that is not a review.
+      console.error(
+        `#${pr.number} el veredicto no sigue el formato requerido (frase limpia o lista P0/P1/P2); no se postea review.`
+      );
+      process.exitCode = 1;
+      continue;
+    }
 
     if (args.dryRun) {
       console.log(`#${pr.number} [dry-run] no se postea nada.`);
