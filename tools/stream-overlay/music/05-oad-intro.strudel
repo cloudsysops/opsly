@@ -1,0 +1,22 @@
+// ═══════════════════════════════════════════════════════════════
+//  05 · OAD INTRO  ·  100 BPM  ·  Mi menor (E minor)
+//  "Iniciando Stream": nocturno, pulso de terminal, crece despacio.
+//  Sonidos: SOLO sintetizadores incorporados (sine, triangle, square, pink).
+// ═══════════════════════════════════════════════════════════════
+//  Ctrl+Enter = aplicar · Ctrl+. = parar · _$: silencia una capa
+// ═══════════════════════════════════════════════════════════════
+setcps(100/60/4)
+
+// PAD NOCTURNO: Em → C → G → D, muy lento, mucha sala
+$: note("<[e3,g3,b3] [c3,e3,g3] [g2,b2,d3] [d3,f#3,a3]>").s("triangle")
+  .attack(.6).release(1.5).lpf(900).room(.85).gain(.25)
+
+// CURSOR PARPADEANTE: blip agudo como un ">_" en la terminal
+$: note("~ e5 ~ ~ ~ b4 ~ ~").s("square").decay(.05).sustain(0)
+  .lpf(3000).delay(.4).delaytime(.375).delayfeedback(.45).gain(.18)
+
+// LATIDO: bombo suave a negras (actívalo cuando arranque la cuenta atrás)
+_$: note("e1*4").s("sine").penv(24).pdec(.08).decay(.35).sustain(0).gain(.9)
+
+// AIRE: ruido rosa que respira
+$: s("pink").hpf(sine.range(800, 4000).slow(16)).sustain(1).gain(.06).room(.6)

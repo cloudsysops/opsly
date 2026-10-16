@@ -1,0 +1,23 @@
+// ═══════════════════════════════════════════════════════════════
+//  07 · OAD VIBE CODING  ·  86 BPM  ·  La menor (A minor)
+//  Para escenas Coding / CODING_4: lo-fi, concentrado, no distrae.
+//  Sonidos: SOLO sintetizadores incorporados.
+// ═══════════════════════════════════════════════════════════════
+setcps(86/60/4)
+
+// BOMBO lo-fi relajado
+$: note("a0 ~ ~ a0 ~ ~ a0 ~").s("sine").penv(18).pdec(.1).decay(.4).sustain(0).gain(.8)
+
+// CAJA suave (ruido rosa filtrado)
+$: s("~ pink ~ pink").decay(.14).sustain(0).bpf(1200).room(.3).gain(.35)
+
+// TECLADO: acordes de séptima tipo Rhodes (Am7 → Fmaj7 → Cmaj7 → G6)
+$: note("<[a3,c4,e4,g4] [f3,a3,c4,e4] [c3,e3,g3,b3] [g3,b3,d4,e4]>").s("triangle")
+  .attack(.02).decay(.6).sustain(.2).release(.6).lpf(1400).room(.5).gain(.28)
+
+// MELODÍA: notas sueltas como teclas pulsadas al programar
+$: note("<e5 ~ c5 ~> <~ a4 ~ g4>").s("sine").decay(.25).sustain(0)
+  .delay(.35).delaytime(.25).delayfeedback(.35).gain(.16)
+
+// VINILO: crepitar de fondo
+$: s("crackle*4").gain(.08)

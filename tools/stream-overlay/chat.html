@@ -1,0 +1,54 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Chat OpsAfterDark</title>
+<style>
+:root{--size:36px}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden;font-family:"Segoe UI","Inter",Arial,sans-serif}
+#feed{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:8px}
+.msg{font-size:var(--size);line-height:1.22;font-weight:600;color:#fff;background:rgba(6,14,24,.72);border-left:6px solid var(--c,#47d7ff);border-radius:10px;padding:8px 14px;word-break:break-word;text-shadow:1px 1px 2px #000;animation:in .25s ease-out;transition:opacity .8s}
+.msg.old{opacity:0}
+.u{font-weight:800;margin-right:.45em;color:var(--c,#47d7ff)}
+.msg img{height:1.35em;vertical-align:middle;margin:0 .05em}
+@keyframes in{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+</style></head><body><div id="feed"></div>
+<script>
+const q=new URLSearchParams(location.search);
+const CHANNEL=(q.get('channel')||'opsafterdarktv').toLowerCase().replace(/[^a-z0-9_]/g,'');
+const MAX=+q.get('max')||6, LIFE=(+q.get('life')||45)*1000;
+if(q.get('size'))document.documentElement.style.setProperty('--size',q.get('size')+'px');
+const HIDE_USERS=new Set(['nightbot','streamelements','streamlabs','moobot','fossabot']);
+const feed=document.getElementById('feed');
+function add(name,color,text,emotes){
+  if(HIDE_USERS.has(name.toLowerCase())||text.startsWith('!'))return;
+  const d=document.createElement('div');d.className='msg';
+  if(/^#[0-9a-f]{6}$/i.test(color))d.style.setProperty('--c',color);
+  const u=document.createElement('span');u.className='u';u.textContent=name;d.appendChild(u);
+  // emotes: "id:start-end,start-end/id2:..." (indices en caracteres Unicode)
+  const chars=Array.from(text),spans=[];
+  (emotes||'').split('/').filter(Boolean).forEach(e=>{const[id,r]=e.split(':');if(!/^[\w]+$/.test(id)||!r)return;r.split(',').forEach(p=>{const[a,b]=p.split('-').map(Number);if(a>=0&&b>=a)spans.push({a,b,id})})});
+  spans.sort((x,y)=>x.a-y.a);let i=0,buf='';
+  const flush=()=>{if(buf){d.appendChild(document.createTextNode(buf));buf=''}};
+  for(const s of spans){if(s.a<i)continue;buf+=chars.slice(i,s.a).join('');flush();
+    const img=document.createElement('img');img.src='https://static-cdn.jtvnw.net/emoticons/v2/'+s.id+'/default/dark/2.0';img.alt='';d.appendChild(img);i=s.b+1}
+  buf+=chars.slice(i).join('');flush();
+  feed.appendChild(d);
+  while(feed.children.length>MAX)feed.firstChild.remove();
+  setTimeout(()=>d.classList.add('old'),LIFE);setTimeout(()=>d.remove(),LIFE+900);
+}
+function parse(line){
+  let tags={},rest=line;
+  if(rest[0]==='@'){const i=rest.indexOf(' ');rest.slice(1,i).split(';').forEach(t=>{const k=t.indexOf('=');tags[t.slice(0,k)]=t.slice(k+1)});rest=rest.slice(i+1)}
+  const m=rest.match(/^:([^!]+)![^ ]+ PRIVMSG #[^ ]+ :(.*)$/);
+  if(m)add(tags['display-name']||m[1],tags.color,m[2].replace(/^\u0001ACTION (.*)\u0001$/,'$1'),tags.emotes);
+}
+let ws,retry=1000;
+function connect(){
+  ws=new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+  ws.onopen=()=>{retry=1000;ws.send('CAP REQ :twitch.tv/tags');ws.send('NICK justinfan'+Math.floor(10000+Math.random()*89999));ws.send('JOIN #'+CHANNEL)};
+  ws.onmessage=e=>String(e.data).split('\r\n').filter(Boolean).forEach(l=>{if(l.startsWith('PING'))ws.send('PONG :tmi.twitch.tv');else parse(l)});
+  ws.onclose=()=>setTimeout(connect,retry=Math.min(retry*2,15000));
+}
+if(q.get('demo')){
+  const demo=[['Weedmen_23','#47d7ff','buena esa, sigue asi'],['CapitanLeviXIV','#ff7a59','que arma es esa??'],['xllchacallx','#7dff7a','GG, a por la victoria'],['Nueva_Viewer','#e0aaff','hola desde Mexico!']];
+  demo.forEach((m,i)=>setTimeout(()=>add(...m),300+i*700));
+} else connect();
+</script></body></html>

@@ -1,0 +1,4061 @@
+{
+  "generated": "2026-10-08T03:57:15.943Z",
+  "note": "Foto sanitizada de OBS (sin claves, sin titulos de ventanas). Generada por Claude Code.",
+  "obs": {
+    "obsVersion": "32.2.2",
+    "websocket": "5.7.4"
+  },
+  "video": {
+    "base": "2560x1440",
+    "output": "1920x1080",
+    "fps": "60/1"
+  },
+  "sceneCollection": "OpsAfterDark-DualRec-TEST",
+  "profile": "OpsAfterDark-DualRec-TEST",
+  "mainScenes": {
+    "Iniciando Stream": [
+      {
+        "source": "Pantalla Inicio",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Fondo Inicio",
+        "kind": "color_source_v3",
+        "enabled": false,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Texto Inicio",
+        "kind": "text_gdiplus_v3",
+        "enabled": false,
+        "pos": [
+          1280,
+          720
+        ],
+        "size": [
+          914,
+          240
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2700,
+          0
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Vuelvo en un momento": [
+      {
+        "source": "Pantalla BRB",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Fondo BRB",
+        "kind": "color_source_v3",
+        "enabled": false,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Texto BRB",
+        "kind": "text_gdiplus_v3",
+        "enabled": false,
+        "pos": [
+          1280,
+          720
+        ],
+        "size": [
+          1028,
+          100
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2700,
+          0
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "LG Desktop": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "kind": "monitor_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "SCALE_INNER 2560x1440",
+        "crop": [
+          320,
+          320,
+          180,
+          180
+        ]
+      }
+    ],
+    "Gaming": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "kind": "game_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "SCALE_INNER 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          1900,
+          980
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "STRETCH 636x436",
+        "crop": [
+          960,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Reloj",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          300,
+          70
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "kind": "text_gdiplus_v3",
+        "enabled": true,
+        "pos": [
+          30,
+          1330
+        ],
+        "size": [
+          292,
+          60
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          460,
+          90
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2661,
+          -82
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2007,
+          1051
+        ],
+        "size": [
+          500,
+          320
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Window Capture 2",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Battlefield 6": [
+      {
+        "source": "FACTORY Hacker Overlay",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          -4000,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "kind": "game_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          1900,
+          970
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          920,
+          0,
+          520,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Reloj",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          300,
+          70
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "kind": "text_gdiplus_v3",
+        "enabled": true,
+        "pos": [
+          30,
+          1330
+        ],
+        "size": [
+          292,
+          60
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2007,
+          1051
+        ],
+        "size": [
+          500,
+          320
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          460,
+          90
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2595,
+          190
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Gaming + Vibe Coding": [
+      {
+        "source": "FACTORY Hacker Overlay",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          -4000,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "kind": "game_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          1900,
+          970
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          920,
+          0,
+          520,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Reloj",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          300,
+          70
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "kind": "text_gdiplus_v3",
+        "enabled": true,
+        "pos": [
+          30,
+          1330
+        ],
+        "size": [
+          292,
+          60
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2007,
+          1051
+        ],
+        "size": [
+          500,
+          320
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          460,
+          90
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2595,
+          190
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "VIBE · Claude",
+        "kind": "window_capture",
+        "enabled": false,
+        "pos": [
+          1720,
+          40
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "SCALE_INNER 800x520",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Vibe Coding Glass",
+        "kind": "browser_source",
+        "enabled": false,
+        "pos": [
+          1720,
+          570
+        ],
+        "size": [
+          792,
+          462
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHAT Twitch opsafterdarktv",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          230
+        ],
+        "size": [
+          700,
+          760
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Vibe LIVE",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          1730,
+          30
+        ],
+        "size": [
+          1000,
+          860
+        ],
+        "bounds": "SCALE_INNER 800x688",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "AI Factory — Hacker": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "kind": "game_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FACTORY Hacker Overlay",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          1900,
+          970
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          920,
+          0,
+          520,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Reloj",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          300,
+          70
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "kind": "text_gdiplus_v3",
+        "enabled": true,
+        "pos": [
+          30,
+          1330
+        ],
+        "size": [
+          292,
+          60
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2007,
+          1051
+        ],
+        "size": [
+          500,
+          320
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          460,
+          90
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2595,
+          190
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHAT Twitch opsafterdarktv",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          230
+        ],
+        "size": [
+          700,
+          760
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "METER DDJ-SX2 (no sale al aire)",
+        "kind": "wasapi_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Festival — AI Set": [
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FESTIVAL Visuals",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "FACTORY Hacker Overlay",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          -4000,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHAT Twitch opsafterdarktv",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          1830,
+          560
+        ],
+        "size": [
+          700,
+          760
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Battlefield 6 — Zoom": [
+      {
+        "source": "FACTORY Hacker Overlay",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          -4000,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "kind": "game_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "kind": "game_capture",
+        "enabled": true,
+        "pos": [
+          1680,
+          40
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "STRETCH 840x472",
+        "crop": [
+          640,
+          640,
+          360,
+          360
+        ]
+      },
+      {
+        "source": "Display Capture",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          1900,
+          970
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          920,
+          0,
+          520,
+          0
+        ]
+      },
+      {
+        "source": "Display Capture LG",
+        "kind": "monitor_capture",
+        "enabled": false,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Reloj",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          300,
+          70
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "kind": "text_gdiplus_v3",
+        "enabled": true,
+        "pos": [
+          30,
+          1330
+        ],
+        "size": [
+          292,
+          60
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2007,
+          1051
+        ],
+        "size": [
+          500,
+          320
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          460,
+          90
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2595,
+          190
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "bounds": "NONE 1x1",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "GAME_AUDIO",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHAT Twitch opsafterdarktv",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          230
+        ],
+        "size": [
+          700,
+          760
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Streaming-Gaming": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "kind": "game_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "DJ NDI (Mac)",
+        "kind": "ndi_source",
+        "enabled": false,
+        "pos": [
+          1820,
+          860
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "SCALE_INNER 640x360",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Overlay Streaming",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2954,
+          42
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Overlay PC — Live",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          1993,
+          252
+        ],
+        "size": [
+          500,
+          320
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Window Capture 2",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Coding-Game": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Game Capture",
+        "kind": "game_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "SCALE_INNER 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Window Capture",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          1525,
+          1105
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "SCALE_INNER 1295x603",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MISSION_CONTROL_DEV_PANEL",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          1824,
+          -54
+        ],
+        "size": [
+          403,
+          648
+        ],
+        "bounds": "SCALE_INNER 668x1248",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Reloj",
+        "kind": "browser_source",
+        "enabled": false,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          300,
+          70
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "kind": "text_gdiplus_v3",
+        "enabled": true,
+        "pos": [
+          30,
+          1330
+        ],
+        "size": [
+          326,
+          67
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Vibe Coding Glass",
+        "kind": "browser_source",
+        "enabled": false,
+        "pos": [
+          2954,
+          394
+        ],
+        "size": [
+          893,
+          521
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          460,
+          90
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Vibe Coding Glass",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2658,
+          814
+        ],
+        "size": [
+          796,
+          464
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Group",
+        "kind": "scene",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Window Capture 2",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "CODING_4": [
+      {
+        "source": "VIBE.Ubuntu",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          36,
+          110
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "VIBE · Claude",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          723,
+          717
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "SCALE_INNER 681x659",
+        "crop": [
+          295,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "VIBE · Cursor",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          1659,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "SCALE_INNER 885x712",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "VIBE · ChatGPT",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          16,
+          768
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "SCALE_INNER 675x672",
+        "crop": [
+          335,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "VIBE · Terminal",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          1642,
+          734
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "SCALE_INNER 902x690",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "HUD OpsAfterDark",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          30,
+          20
+        ],
+        "size": [
+          460,
+          90
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Alertas",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Fondo BRB",
+        "kind": "color_source_v3",
+        "enabled": false,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "SCALE_INNER 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MISSION_CONTROL_DEV_PANEL",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          691,
+          0
+        ],
+        "size": [
+          403,
+          648
+        ],
+        "bounds": "SCALE_INNER 864x661",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Music-Claude",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Window Capture 2 2",
+        "kind": "window_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "OAD_FACTORY_FOCUS": [
+      {
+        "source": "DISCORD_REMOTE_MIC",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MIC_OPERATOR",
+        "kind": "wasapi_input_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "MISSION_CONTROL_DEV_FULL",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "SCALE_INNER 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Marca OpsAfterDark",
+        "kind": "text_gdiplus_v3",
+        "enabled": true,
+        "pos": [
+          30,
+          1330
+        ],
+        "size": [
+          292,
+          60
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "CHATGPT_VOICE",
+        "kind": "wasapi_process_output_capture",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "Terminando Stream": [
+      {
+        "source": "Pantalla Fin",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Fondo Fin",
+        "kind": "color_source_v3",
+        "enabled": false,
+        "pos": [
+          0,
+          0
+        ],
+        "size": [
+          2560,
+          1440
+        ],
+        "bounds": "STRETCH 2560x1440",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Texto Fin",
+        "kind": "text_gdiplus_v3",
+        "enabled": false,
+        "pos": [
+          1280,
+          720
+        ],
+        "size": [
+          1238,
+          178
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "Strudel Música",
+        "kind": "browser_source",
+        "enabled": true,
+        "pos": [
+          2700,
+          0
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "bounds": "NONE 0x0",
+        "crop": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "verticalCanvas": {
+    "uuid": "296c30be-fb5e-4e62-9b55-45f3223a4f6b",
+    "name": "Aitum Vertical",
+    "size": "1080x1920",
+    "scenes": {
+      "V_FACTORY_FOCUS": [
+        {
+          "source": "MISSION_CONTROL_DEV_FULL",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            2560,
+            1440
+          ],
+          "bounds": "SCALE_OUTER 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "DISCORD_REMOTE_MIC",
+          "kind": "wasapi_process_output_capture",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            0,
+            0
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "HUD OpsAfterDark",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            460,
+            90
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Marca OpsAfterDark",
+          "kind": "text_gdiplus_v3",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            292,
+            60
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "V_CODING": [
+        {
+          "source": "VIBE.Ubuntu",
+          "kind": "window_capture",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            0,
+            0
+          ],
+          "bounds": "SCALE_OUTER 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "MISSION_CONTROL_DEV_PANEL",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            896,
+            1440
+          ],
+          "bounds": "SCALE_INNER 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "HUD OpsAfterDark",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            460,
+            90
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Marca OpsAfterDark",
+          "kind": "text_gdiplus_v3",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            292,
+            60
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "V_GAMING": [
+        {
+          "source": "V_BG_OAD",
+          "kind": "color_source_v3",
+          "enabled": true,
+          "pos": [
+            0,
+            0
+          ],
+          "size": [
+            1080,
+            1920
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Game Capture",
+          "kind": "game_capture",
+          "enabled": true,
+          "pos": [
+            0,
+            100
+          ],
+          "size": [
+            2560,
+            1440
+          ],
+          "bounds": "SCALE_INNER 1080x608",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Game Capture",
+          "kind": "game_capture",
+          "enabled": true,
+          "pos": [
+            0,
+            725
+          ],
+          "size": [
+            2560,
+            1440
+          ],
+          "bounds": "SCALE_OUTER 1080x520",
+          "crop": [
+            520,
+            520,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "GAME_AUDIO",
+          "kind": "wasapi_process_output_capture",
+          "enabled": true,
+          "pos": [
+            0,
+            0
+          ],
+          "size": [
+            0,
+            0
+          ],
+          "bounds": "NONE 1x1",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "MIC_OPERATOR",
+          "kind": "wasapi_input_capture",
+          "enabled": true,
+          "pos": [
+            0,
+            0
+          ],
+          "size": [
+            0,
+            0
+          ],
+          "bounds": "NONE 1x1",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Overlay PC — Live",
+          "kind": "browser_source",
+          "enabled": false,
+          "pos": [
+            700,
+            1500
+          ],
+          "size": [
+            500,
+            320
+          ],
+          "bounds": "SCALE_INNER 360x230",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "HUD OpsAfterDark",
+          "kind": "browser_source",
+          "enabled": false,
+          "pos": [
+            540,
+            1795
+          ],
+          "size": [
+            529,
+            104
+          ],
+          "bounds": "NONE 1x1",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Marca OpsAfterDark",
+          "kind": "text_gdiplus_v3",
+          "enabled": true,
+          "pos": [
+            40,
+            30
+          ],
+          "size": [
+            292,
+            60
+          ],
+          "bounds": "NONE 1x1",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "CHAT Twitch opsafterdarktv",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            20,
+            725
+          ],
+          "size": [
+            700,
+            760
+          ],
+          "bounds": "SCALE_INNER 470x510",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Vibe LIVE V",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            0,
+            1300
+          ],
+          "size": [
+            1080,
+            600
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Alertas",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            0,
+            0
+          ],
+          "size": [
+            2560,
+            1440
+          ],
+          "bounds": "SCALE_INNER 1080x1920",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "Vertical TikTok": [
+        {
+          "source": "Game Capture",
+          "kind": "game_capture",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            2560,
+            1440
+          ],
+          "bounds": "SCALE_OUTER 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "GAME_AUDIO",
+          "kind": "wasapi_process_output_capture",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            0,
+            0
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "DISCORD_REMOTE_MIC",
+          "kind": "wasapi_process_output_capture",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            0,
+            0
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "HUD OpsAfterDark",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            460,
+            90
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Marca OpsAfterDark",
+          "kind": "text_gdiplus_v3",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            292,
+            60
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Overlay PC — Live",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            500,
+            320
+          ],
+          "bounds": "SCALE_INNER 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Alertas",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            2560,
+            1440
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "Vertical Scene": [
+        {
+          "source": "Game Capture",
+          "kind": "game_capture",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            2560,
+            1440
+          ],
+          "bounds": "SCALE_OUTER 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "GAME_AUDIO",
+          "kind": "wasapi_process_output_capture",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            0,
+            0
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "DISCORD_REMOTE_MIC",
+          "kind": "wasapi_process_output_capture",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            0,
+            0
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "HUD OpsAfterDark",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            460,
+            90
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Marca OpsAfterDark",
+          "kind": "text_gdiplus_v3",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            292,
+            60
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Overlay PC — Live",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            500,
+            320
+          ],
+          "bounds": "SCALE_INNER 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "source": "Alertas",
+          "kind": "browser_source",
+          "enabled": true,
+          "pos": [
+            540,
+            960
+          ],
+          "size": [
+            2560,
+            1440
+          ],
+          "bounds": "NONE 0x0",
+          "crop": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "inputs": [
+    {
+      "name": "MIC_OPERATOR",
+      "kind": "wasapi_input_capture",
+      "audioTracks": [
+        1,
+        2
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": -11.2
+    },
+    {
+      "name": "Display Capture",
+      "kind": "monitor_capture"
+    },
+    {
+      "name": "Game Capture",
+      "kind": "game_capture",
+      "audioTracks": [],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "Window Capture",
+      "kind": "window_capture",
+      "audioTracks": [],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "DJ NDI (Mac)",
+      "kind": "ndi_source"
+    },
+    {
+      "name": "Display Capture LG",
+      "kind": "monitor_capture"
+    },
+    {
+      "name": "Fondo Inicio",
+      "kind": "color_source_v3"
+    },
+    {
+      "name": "Fondo Fin",
+      "kind": "color_source_v3"
+    },
+    {
+      "name": "Reloj",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "[externa omitida]",
+        "width": 300,
+        "height": 70,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Fondo BRB",
+      "kind": "color_source_v3"
+    },
+    {
+      "name": "Marca OpsAfterDark",
+      "kind": "text_gdiplus_v3"
+    },
+    {
+      "name": "Texto Inicio",
+      "kind": "text_gdiplus_v3"
+    },
+    {
+      "name": "Texto Fin",
+      "kind": "text_gdiplus_v3"
+    },
+    {
+      "name": "Texto BRB",
+      "kind": "text_gdiplus_v3"
+    },
+    {
+      "name": "Overlay PC — Live",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8765/",
+        "width": 500,
+        "height": 320,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Vibe Coding Glass",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8765/summary",
+        "width": 1200,
+        "height": 700,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Pantalla Inicio",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8765/starting",
+        "width": 2560,
+        "height": 1440,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Pantalla BRB",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8765/brb",
+        "width": 2560,
+        "height": 1440,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Pantalla Fin",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8765/ending",
+        "width": 2560,
+        "height": 1440,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "HUD OpsAfterDark",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8765/hud",
+        "width": 460,
+        "height": 90,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Overlay Streaming",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8765/stream",
+        "width": 2560,
+        "height": 1440,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Alertas",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8765/alerts",
+        "width": 2560,
+        "height": 1440,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Strudel Música",
+      "kind": "browser_source",
+      "audioTracks": [
+        1
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": -18,
+      "browser": {
+        "url": "[externa omitida]",
+        "width": 1280,
+        "height": 720,
+        "rerouteAudio": true
+      }
+    },
+    {
+      "name": "GAME_AUDIO",
+      "kind": "wasapi_process_output_capture",
+      "audioTracks": [
+        1,
+        2
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "CHATGPT_VOICE",
+      "kind": "wasapi_process_output_capture",
+      "audioTracks": [
+        1,
+        2
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "MISSION_CONTROL_DEV_PANEL",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:4001/mission-control/live?mode=dev",
+        "width": 896,
+        "height": 1440,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "MISSION_CONTROL_DEV_FULL",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:4001/mission-control/live?mode=dev",
+        "width": 2560,
+        "height": 1440,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "DISCORD_REMOTE_MIC",
+      "kind": "wasapi_process_output_capture",
+      "audioTracks": [
+        1,
+        2
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "VIBE · Claude",
+      "kind": "window_capture",
+      "audioTracks": [],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "VIBE · Cursor",
+      "kind": "window_capture",
+      "audioTracks": [],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "VIBE · ChatGPT",
+      "kind": "window_capture",
+      "audioTracks": [],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "VIBE · Terminal",
+      "kind": "window_capture",
+      "audioTracks": [],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "Window Capture 2",
+      "kind": "window_capture",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "VIBE.Ubuntu",
+      "kind": "window_capture",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "Music-Claude",
+      "kind": "wasapi_process_output_capture",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": -5
+    },
+    {
+      "name": "Window Capture 2 2",
+      "kind": "window_capture",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "V_BG_OAD",
+      "kind": "color_source_v3"
+    },
+    {
+      "name": "CHAT Twitch opsafterdarktv",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "file:///C:/Users/opsly/OneDrive/Documents/ChatGPT/intcloudsysops/stream-overlay/chat.html",
+        "width": 700,
+        "height": 760,
+        "fps": 30,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Vibe LIVE",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8766/",
+        "width": 1000,
+        "height": 860,
+        "fps": 30,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "FACTORY Hacker Overlay",
+      "kind": "browser_source",
+      "audioTracks": [
+        1
+      ],
+      "monitor": "MONITOR_AND_OUTPUT",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8766/factory",
+        "width": 2560,
+        "height": 1440,
+        "fps": 30,
+        "rerouteAudio": true
+      }
+    },
+    {
+      "name": "METER DDJ-SX2 (no sale al aire)",
+      "kind": "wasapi_output_capture",
+      "audioTracks": [],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0
+    },
+    {
+      "name": "FESTIVAL Visuals",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8766/festival",
+        "width": 1920,
+        "height": 1080,
+        "fps": 30,
+        "rerouteAudio": false
+      }
+    },
+    {
+      "name": "Vibe LIVE V",
+      "kind": "browser_source",
+      "audioTracks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "monitor": "NONE",
+      "muted": false,
+      "volumeDb": 0,
+      "browser": {
+        "url": "http://127.0.0.1:8766/",
+        "width": 1080,
+        "height": 600,
+        "fps": 30,
+        "rerouteAudio": false
+      }
+    }
+  ],
+  "audioMonitoring": {
+    "device": "Speakers (Realtek(R) Audio)"
+  },
+  "encoding": {
+    "streamEncoder": "nvenc",
+    "advEncoder": "obs_nvenc_h264_tex",
+    "vbitrate": "8000",
+    "nvencPreset": "p5",
+    "streamEncoderSettings": {
+      "rate_control": "CBR",
+      "bitrate": 6000,
+      "keyint_sec": 2,
+      "preset2": "p5",
+      "tune": "hq",
+      "multipass": "qres",
+      "profile": "high",
+      "bf": 2,
+      "lookahead": false,
+      "psycho_aq": true
+    }
+  }
+}

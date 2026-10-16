@@ -1,0 +1,37 @@
+{
+  "techno": {
+    "file": "01-techno-oscuro.strudel",
+    "name": "TECHNO OSCURO",
+    "detail": "130 BPM · La menor"
+  },
+  "house": {
+    "file": "02-house-suave.strudel",
+    "name": "HOUSE SUAVE",
+    "detail": "122 BPM · Re menor"
+  },
+  "buildup": {
+    "file": "03-build-up.strudel",
+    "name": "BUILD-UP",
+    "detail": "130 BPM · tensión"
+  },
+  "drop": {
+    "file": "04-drop.strudel",
+    "name": "DROP",
+    "detail": "130 BPM · máxima energía"
+  },
+  "intro": {
+    "file": "05-oad-intro.strudel",
+    "name": "OAD INTRO",
+    "detail": "100 BPM · Mi menor"
+  },
+  "gameplay": {
+    "file": "06-oad-gameplay.strudel",
+    "name": "OAD GAMEPLAY",
+    "detail": "140 BPM · Re menor"
+  },
+  "vibecoding": {
+    "file": "07-oad-vibecoding.strudel",
+    "name": "OAD VIBE CODING",
+    "detail": "86 BPM · La menor"
+  }
+}

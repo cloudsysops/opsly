@@ -1,0 +1,21 @@
+{
+  "name": "opsafterdark-video-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio",
+    "render:intro": "remotion render Intro out/intro.mp4",
+    "render:clip": "remotion render ClipVertical out/clip.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4",
+    "react": "^19",
+    "react-dom": "^19",
+    "remotion": "^4"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "typescript": "^5"
+  }
+}
