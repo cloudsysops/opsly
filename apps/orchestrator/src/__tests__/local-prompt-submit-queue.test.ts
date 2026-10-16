@@ -569,6 +569,98 @@ describe('local prompt-submit → local-agents queue', () => {
     expect(jobArg.payload.agent_task?.constraints.network_allowed).toBe(false);
     expect(jobArg.payload.agent_task?.constraints.browser_allowed).toBe(false);
   });
+
+  it('github-agent-queue payload becomes AgentTaskEnvelopeV1 with preserved request/idempotency ids (046)', async () => {
+    const requestId = 'ghq-agenttask-e2e-contract-hardening-046-3a9c8294663b';
+    const promptBody =
+      'Prove GitHub workpacks land as AgentTaskEnvelopeV1 without a second orchestrator.';
+
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: requestId,
+        idempotency_key: requestId,
+        agent: 'local_opencode',
+        agent_role: 'review',
+        max_steps: 6,
+        goal: 'agenttask-e2e-contract-hardening-046',
+        prompt_body: promptBody,
+        context: {
+          source: 'github-agent-queue',
+          workpack_id: 'agenttask-e2e-contract-hardening-046',
+          workpack_file: 'docs/01-development/night-queue/046-agenttask-e2e-contract-hardening.md',
+          dispatch_contract_version: 'dispatch-claim-v1',
+          workstream: 'agenttask-e2e-contract-hardening',
+          conflict_key: 'agenttask-e2e-contract-hardening',
+          semantic_scope: 'agenttask-e2e-contract-hardening',
+          affected_paths: [
+            'apps/orchestrator/src/__tests__/github-agent-queue-submit-contract.test.ts',
+          ],
+          depends_on: [],
+          estimated_cost_usd: 0,
+          requires_pr: false,
+          production_deploy: false,
+          paid_infra_required: false,
+        },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(202);
+    const parsed = JSON.parse(raw) as {
+      request_id?: string;
+      job_type?: string;
+      success?: boolean;
+    };
+    expect(parsed.success).toBe(true);
+    expect(parsed.request_id).toBe(requestId);
+    expect(parsed.job_type).toBe('local_opencode');
+
+    expect(enqueueLocalAgentJob).toHaveBeenCalledTimes(1);
+    expect(enqueueJob).not.toHaveBeenCalled();
+
+    const queued = enqueueLocalAgentJob.mock.calls[0]![0] as {
+      type: string;
+      request_id?: string;
+      idempotency_key?: string;
+      tenant_slug: string;
+      payload: {
+        prompt_content: string;
+        agent_task?: {
+          schema_version: string;
+          request_id: string;
+          tenant_slug: string;
+          selected_agent: string;
+          task: string;
+          execution_mode: string;
+          constraints: { write_allowed: boolean };
+        };
+        context?: { source?: string; workpack_id?: string };
+      };
+    };
+
+    expect(queued.type).toBe('local_opencode');
+    expect(queued.request_id).toBe(requestId);
+    expect(queued.idempotency_key).toBe(requestId);
+    expect(queued.tenant_slug).toBe('local');
+    expect(queued.payload.context?.source).toBe('github-agent-queue');
+    expect(queued.payload.context?.workpack_id).toBe(
+      'agenttask-e2e-contract-hardening-046'
+    );
+    expect(queued.payload.agent_task?.schema_version).toBe('AgentTaskEnvelopeV1');
+    expect(queued.payload.agent_task?.request_id).toBe(requestId);
+    expect(queued.payload.agent_task?.tenant_slug).toBe('local');
+    expect(queued.payload.agent_task?.selected_agent).toBe('local_opencode');
+    expect(queued.payload.agent_task?.execution_mode).toBe('enqueue');
+    expect(queued.payload.agent_task?.constraints.write_allowed).toBe(false);
+    expect(queued.payload.prompt_content).toContain(promptBody);
+    expect(queued.payload.agent_task?.task).toContain(promptBody);
+  });
   it('uses frontmatter agent from prompt_content', async () => {
     const { status, raw } = await postJson(
       port,

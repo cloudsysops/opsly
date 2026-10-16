@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   allowLegacyLocalAgentPayload,
@@ -6,6 +8,11 @@ import {
   sanitizeLocalAgentError,
   shouldWaitForAcceptedResponse,
 } from '../workers/local-agent-http-worker.js';
+
+const workerSource = readFileSync(
+  path.join(__dirname, '../workers/local-agent-http-worker.ts'),
+  'utf8'
+);
 
 describe('localAgentExecuteHeaders', () => {
   it('sends only content-type when no token is set', () => {
@@ -91,5 +98,20 @@ describe('allowLegacyLocalAgentPayload', () => {
   it('requires an explicit transition override', () => {
     expect(allowLegacyLocalAgentPayload({ OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD: 'true' })).toBe(true);
     expect(allowLegacyLocalAgentPayload({ OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD: '1' })).toBe(false);
+  });
+
+  it('worker rejects missing AgentTaskEnvelopeV1 unless break-glass is exact true (046)', () => {
+    expect(workerSource).toContain(
+      'AGENT_TASK_REQUIRED: local agent execution requires AgentTaskEnvelopeV1'
+    );
+    expect(workerSource).toContain(
+      'payload.agent_task === undefined && !allowLegacyLocalAgentPayload()'
+    );
+    expect(workerSource).toContain(
+      "env.OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD === 'true'"
+    );
+    expect(workerSource).not.toMatch(
+      /OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD\s*===\s*['\"]1['\"]/
+    );
   });
 });
