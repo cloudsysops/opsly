@@ -1,30 +1,30 @@
-// Adaptador Make.com: dispara un webhook con el clip aprobado.
-// Make (no Twitch) es quien publica a TikTok / Instagram cuando el escenario tiene
-// esas cuentas conectadas en la UI de Make.
-//
-// Limitacion: Make cloud no lee D:\… — el payload incluye rutas locales + metadatos.
-// El escenario Make debe obtener el video por URL publica (Drive/CDN) o modulo de
-// fichero que configures. Cuando el webhook responde 2xx la plataforma queda como
-// 'handed-off' (entregado a Make), NO como 'published': Make no confirma la publicacion.
+// Adaptador Make.com: sube el vertical a Drive (URL publica) y dispara el webhook.
+// Make publica a TikTok / Instagram cuando el escenario tiene esas cuentas conectadas.
+// No envia rutas D:\ ni /mnt/... al webhook externo.
 import fs from 'node:fs';
 import { toLocalPath } from './publisher-util.mjs';
+import { driveStageReady, stageVideoToDrive, DRIVE_STAGE_REQUIRED } from './drive-stage.mjs';
 
-export const MAKE_REQUIRED_ENV = ['MAKE_OPSAFTERDARK_WEBHOOK_URL'];
+export const MAKE_REQUIRED_ENV = ['MAKE_OPSAFTERDARK_WEBHOOK_URL', ...DRIVE_STAGE_REQUIRED];
 
 /**
- * @param {{ env?: NodeJS.ProcessEnv, fetchImpl?: typeof fetch, toLocalPathFn?: typeof toLocalPath }} [opts]
+ * @param {{ env?: NodeJS.ProcessEnv, fetchImpl?: typeof fetch, toLocalPathFn?: typeof toLocalPath, stageFn?: typeof stageVideoToDrive }} [opts]
  */
 export function createMakeSocialAdapter({
   env = process.env,
   fetchImpl = globalThis.fetch,
   toLocalPathFn = toLocalPath,
+  stageFn = stageVideoToDrive,
   platform = 'make',
 } = {}) {
   return {
     name: platform,
     ready() {
-      const miss = MAKE_REQUIRED_ENV.filter((n) => !String(env[n] ?? '').trim());
-      return miss.length ? { ok: false, missing: miss } : { ok: true };
+      const miss = [];
+      if (!String(env.MAKE_OPSAFTERDARK_WEBHOOK_URL ?? '').trim()) miss.push('MAKE_OPSAFTERDARK_WEBHOOK_URL');
+      const drive = driveStageReady(env);
+      if (!drive.ok) miss.push(...drive.missing);
+      return miss.length ? { ok: false, missing: [...new Set(miss)] } : { ok: true };
     },
     async publish(entry) {
       const webhook = String(env.MAKE_OPSAFTERDARK_WEBHOOK_URL).trim();
@@ -32,7 +32,15 @@ export function createMakeSocialAdapter({
       const verticalPath = toLocalPathFn(entry.vertical);
       if (!fs.existsSync(verticalPath)) throw new Error(`vertical missing: ${verticalPath}`);
       const st = fs.statSync(verticalPath);
+      const baseName = `${entry.id || 'clip'}_${platform}.mp4`;
 
+      const staged = await stageFn({
+        filePath: verticalPath,
+        fileName: baseName,
+        env,
+      });
+
+      // Payload seguro: sin rutas locales. Solo URL publica + metadatos.
       const payload = {
         source: 'opsafterdark-poststream',
         event: 'publish_clip',
@@ -44,19 +52,14 @@ export function createMakeSocialAdapter({
         timezone: entry.timezone ?? 'America/New_York',
         privacy: env.YOUTUBE_OPSAFTERDARK_PRIVACY || 'private',
         vertical: {
-          path: verticalPath,
-          path_posix: verticalPath.replace(/^([A-Za-z]):\\/, (_, d) => `/mnt/${d.toLowerCase()}/`).replace(/\\/g, '/'),
+          public_url: staged.publicUrl,
+          drive_file_id: staged.fileId,
+          web_view_link: staged.webViewLink,
           bytes: st.size,
-          name: verticalPath.split(/[/\\]/).pop(),
+          name: baseName,
         },
-        horizontal: entry.horizontal
-          ? {
-              path: toLocalPathFn(entry.horizontal),
-            }
-          : null,
         platforms: entry.platforms ?? [],
-        note:
-          'Video is local to the stream PC. Make scenario must fetch via a public URL you configure (Drive/CDN) or a file module. Twitch connected accounts are NOT used here.',
+        note: 'Video staged on Google Drive (anyone-with-link). Twitch connected accounts are NOT used.',
       };
 
       const res = await fetchImpl(webhook, {
@@ -81,10 +84,9 @@ export function createMakeSocialAdapter({
         parsed = null;
       }
       return {
-        // Not a network publish — publisher must store delivered_to_make, not published.
         state: 'delivered_to_make',
         id: parsed?.executionId || parsed?.id || `make-${entry.id}-${platform}`,
-        url: parsed?.url ?? null,
+        url: staged.publicUrl,
         note: 'delivered_to_make',
         privacy: payload.privacy,
       };

@@ -38,7 +38,7 @@ try {
   # La subida corre en WSL (tsx + lib/content-studio). Rutas de Windows -> /mnt/<unidad>/...
   $wslRepo = '/home/opsly/opsly-wt-stream-ops-kit'
   $wslQueue = '/mnt/d/Content/PostStream/publish-queue.json'
-  $secrets = 'YOUTUBE_CLIENT_ID,YOUTUBE_CLIENT_SECRET,YOUTUBE_OPSAFTERDARK_REFRESH_TOKEN,YOUTUBE_OPSAFTERDARK_PRIVACY,MAKE_OPSAFTERDARK_WEBHOOK_URL'
+  $secrets = 'YOUTUBE_CLIENT_ID,YOUTUBE_CLIENT_SECRET,YOUTUBE_OPSAFTERDARK_REFRESH_TOKEN,YOUTUBE_OPSAFTERDARK_PRIVACY,MAKE_OPSAFTERDARK_WEBHOOK_URL,GOOGLE_SERVICE_ACCOUNT_JSON,OPSLY_DRIVE_ROOT_FOLDER_ID,MAKE_OPSAFTERDARK_DRIVE_FOLDER_ID'
   # $Dry is a [switch]; use another name (PS vars are case-insensitive).
   $dryArg = if ($Dry.IsPresent) { '--dry' } else { '' }
   $cmd = "cd $wslRepo && doppler run -p ops-intcloudsysops -c prd --only-secrets $secrets -- node_modules/.bin/tsx packages/stream-ops-kit/src/publisher.mjs --queue $wslQueue --adapters packages/stream-ops-kit/src/opsafterdark-adapters.mjs --no-obs-check $dryArg"

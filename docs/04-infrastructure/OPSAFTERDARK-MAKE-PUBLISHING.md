@@ -70,3 +70,15 @@ Live → post-stream-clips → draft en publish-queue.json
 
 - Staging automático del `.mp4` a URL firmada (Drive/R2) para que Make suba sin paso manual.
 - Conectar cuentas TikTok + Instagram Business en Make (solo tú en la UI).
+
+## Staging del video (punto 2)
+
+Antes del webhook, el adaptador sube el vertical a Google Drive
+(carpeta `OpsAfterDark-PostStream` bajo `OPSLY_DRIVE_ROOT_FOLDER_ID`,
+service account `GOOGLE_SERVICE_ACCOUNT_JSON`), lo comparte *anyone with link*
+y envía solo `vertical.public_url` + `drive_file_id` a Make.
+
+**No** se envían rutas `D:\` ni `/mnt/...`.
+
+Limitación: archivos muy grandes pueden chocar con la página intermedia de
+Drive (`uc?export=download`). Si Make falla al bajar, sube a un CDN o reduce tamaño.
