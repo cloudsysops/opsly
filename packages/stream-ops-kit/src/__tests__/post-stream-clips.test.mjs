@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  stampOf, pairRecordings, isFinished, scoreWindows, pickWindows, isVerticalBlank, hms, renderReport, scheduleQueue, readJson, loadSpectateTemplate, spectateScore, isSpectating, DEFAULTS, stampToSeconds, PAIR_TOLERANCE_SECONDS,
+  stampOf, pairRecordings, isFinished, scoreWindows, pickWindows, isVerticalBlank, hms, renderReport, scheduleQueue, readJson, loadSpectateTemplate, spectateScore, isSpectating, DEFAULTS, stampToSeconds, PAIR_TOLERANCE_SECONDS, parseFreezeSeconds, FROZEN_MAX_SHARE,
 } from '../post-stream-clips.mjs';
 
 test('pairs horizontal and vertical recordings by OBS timestamp', () => {
@@ -36,6 +36,15 @@ test('stampToSeconds parses OBS stamps and rejects anything else', () => {
   assert.equal(stampToSeconds('2026-10-16_20-00-51') - stampToSeconds('2026-10-16_19-57-41'), 190);
   assert.equal(stampToSeconds('nope'), null);
   assert.equal(stampToSeconds(null), null);
+});
+
+test('freezedetect output is turned into frozen seconds, including a freeze that lasts until the end', () => {
+  const closed = '[freezedetect @ 0x1] lavfi.freezedetect.freeze_start: 2.5\n[freezedetect @ 0x1] lavfi.freezedetect.freeze_duration: 10\n[freezedetect @ 0x1] lavfi.freezedetect.freeze_end: 12.5\n';
+  assert.equal(parseFreezeSeconds(closed, 45), 10);
+  const open = '[freezedetect @ 0x1] lavfi.freezedetect.freeze_start: 0\n';
+  assert.equal(parseFreezeSeconds(open, 45), 45);
+  assert.equal(parseFreezeSeconds('nada que ver', 45), 0);
+  assert.equal(FROZEN_MAX_SHARE, 0.3);
 });
 
 test('a file is finished only after it has been quiet long enough', () => {
@@ -129,6 +138,17 @@ test('spectate detector: the real label matches, bright backgrounds and shifted 
   const shifted = new Uint8Array(size).fill(40);
   for (let y = 0; y < t.h; y++) for (let x = 0; x < t.w; x++) if (t.mask[y * t.w + x]) shifted[y * t.w + Math.min(t.w - 1, x + 6)] = 255;
   assert.equal(isSpectating(spectateScore(shifted, t)), false, 'texto desplazado');
+});
+
+test('frozen stretches (zero motion) are never picked even if the audio is loud', () => {
+  const s = synthetic(1200, [600, 700]); // zona ruidosa y con movimiento
+  for (let i = 300; i < 420; i++) s.motion[i] = 0; // imagen congelada con audio fuerte
+  for (let i = 300; i < 420; i++) s.audioDb[i] = -10;
+  const scored = scoreWindows(s);
+  assert.equal(scored.find((w) => w.t === 330).excluded, 'frozen');
+  const picked = pickWindows(scored, { count: 6 });
+  assert.ok(picked.length > 0);
+  assert.ok(picked.every((w) => w.still < 0.3 * DEFAULTS.clipSeconds), 'ninguna ventana elegida tiene mas del 30 % de segundos quietos');
 });
 
 test('windows while spectating are excluded and never picked', () => {

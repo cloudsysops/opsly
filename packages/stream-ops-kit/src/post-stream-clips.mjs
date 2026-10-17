@@ -76,6 +76,9 @@ function percentileRanks(values) {
   });
 }
 
+const STILL_MOTION = 0.5; // diferencia media entre fotogramas clave por debajo de la cual la imagen se considera quieta
+const STILL_SHARE = 0.3; // una ventana con mas del 30 % de segundos quietos se descarta como congelada
+
 // audioDb[s]: RMS dB por segundo; motion[s]: cambio visual por segundo; black[s]: 1 si el frame es negro.
 export function scoreWindows({ audioDb, motion, black, spectate = [] }, opts = {}) {
   const { clipSeconds: win, stepSeconds: step, edgeSeconds: edge } = { ...DEFAULTS, ...opts };
@@ -89,6 +92,7 @@ export function scoreWindows({ audioDb, motion, black, spectate = [] }, opts = {
       motion: mean(motion.slice(t, t + win)),
       black: black.slice(t, t + win).reduce((s, x) => s + x, 0),
       spectate: spectate.slice(t, t + win).reduce((s, x) => s + x, 0),
+      still: motion.slice(t, t + win).filter((m) => m < STILL_MOTION).length,
     });
   }
   if (!rows.length) return [];
@@ -98,7 +102,7 @@ export function scoreWindows({ audioDb, motion, black, spectate = [] }, opts = {
   return rows.map((r, i) => ({
     ...r,
     score: 0.5 * pa[i] + 0.5 * pm[i],
-    excluded: r.black >= 3 ? 'black-frames' : r.spectate >= 3 ? 'spectating' : r.audio < -60 ? 'silent' : r.motion < motionFloor ? 'low-motion' : null,
+    excluded: r.still >= STILL_SHARE * win ? 'frozen' : r.black >= 3 ? 'black-frames' : r.spectate >= 3 ? 'spectating' : r.audio < -60 ? 'silent' : r.motion < motionFloor ? 'low-motion' : null,
   }));
 }
 
@@ -117,6 +121,17 @@ export function isVerticalBlank(yavgSamples, { threshold = 45, share = 0.6 } = {
   if (!yavgSamples.length) return true;
   return yavgSamples.filter((y) => y < threshold).length / yavgSamples.length >= share;
 }
+
+// Segundos congelados que reporta ffmpeg freezedetect (stderr). Una congelacion abierta hasta el final del clip cuenta hasta `totalSeconds`.
+export function parseFreezeSeconds(stderr, totalSeconds = 0) {
+  const starts = [...String(stderr).matchAll(/freeze_start:\s*([\d.]+)/g)].map((m) => Number(m[1]));
+  const durations = [...String(stderr).matchAll(/freeze_duration:\s*([\d.]+)/g)].map((m) => Number(m[1]));
+  let total = durations.reduce((a, b) => a + b, 0);
+  if (starts.length > durations.length && totalSeconds) total += Math.max(0, totalSeconds - starts[starts.length - 1]);
+  return Math.round(total * 10) / 10;
+}
+
+export const FROZEN_MAX_SHARE = 0.3; // un clip con mas del 30 % congelado se rechaza
 
 export const hms = (s) => [Math.floor(s / 3600), Math.floor((s % 3600) / 60), Math.floor(s % 60)].map((x) => String(x).padStart(2, '0')).join(':');
 
@@ -193,7 +208,7 @@ function motionAndBlack(file, duration, template) {
   const times = [...String(r.stderr).matchAll(/pts_time:([\d.]+)/g)].map((m) => Number(m[1]));
   const buf = r.stdout, frames = Math.min(Math.floor(buf.length / size), times.length);
   const n = Math.ceil(duration);
-  const motion = new Array(n).fill(0), black = new Array(n).fill(0), spectate = new Array(n).fill(0);
+  const motion = new Array(n).fill(0), black = new Array(n).fill(0), spectate = new Array(n).fill(0), seen = new Array(n).fill(false);
   let prev = null, prevT = 0, f = 0;
   for (let s = 0; s < n; s++) {
     while (f < frames && times[f] <= s + 0.5) {
@@ -210,12 +225,14 @@ function motionAndBlack(file, duration, template) {
       motion[sec] = prev ? d / (W * H) / dt : 0;
       black[sec] = isBlack;
       spectate[sec] = lab;
+      seen[sec] = true;
       prev = small; prevT = times[f];
       f++;
     }
   }
-  // relleno hacia delante de segundos sin fotograma clave
-  for (let s = 1; s < n; s++) if (motion[s] === 0 && black[s] === 0 && spectate[s] === 0 && motion[s - 1] !== 0) { motion[s] = motion[s - 1]; black[s] = black[s - 1]; spectate[s] = spectate[s - 1]; }
+  // Relleno hacia delante SOLO de segundos sin fotograma clave. Un movimiento 0 medido (imagen congelada) es un dato real:
+  // antes se confundia con "sin dato" y se sustituia por el ultimo movimiento, lo que hacia pasar por buenas ventanas congeladas.
+  for (let s = 1; s < n; s++) if (!seen[s]) { motion[s] = motion[s - 1]; black[s] = black[s - 1]; spectate[s] = spectate[s - 1]; }
   return { motion, black, spectate, frames, duration };
 }
 
@@ -243,6 +260,11 @@ function cutClip({ src, out, start, seconds, audioIdx }) {
     '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', out,
   ]);
   return r.status === 0 && fs.existsSync(out);
+}
+
+function frozenSeconds(file, totalSeconds) {
+  const r = run(FFMPEG, ['-hide_banner', '-i', file, '-map', '0:v:0', '-vf', 'freezedetect=n=-55dB:d=1.5', '-an', '-f', 'null', '-']);
+  return parseFreezeSeconds(r.stderr || '', totalSeconds);
 }
 
 function verticalYavg(file) {
@@ -306,16 +328,26 @@ export function processRecording({ h, v, stamp, offsetSeconds = 0 }, { outRoot, 
     if (!dry) {
       for (const d of ['clips', 'reels', 'metadata', 'rejected']) fs.mkdirSync(path.join(outDir, d), { recursive: true });
       const hOut = path.join(outDir, 'clips', `${base}_H.mp4`);
-      if (cutClip({ src: h, out: hOut, start: w.t, seconds: clip.seconds, audioIdx: info.mixIdx })) clip.horizontal = hOut; else clip.flags.push('H_CUT_FAILED');
+      if (cutClip({ src: h, out: hOut, start: w.t, seconds: clip.seconds, audioIdx: info.mixIdx })) {
+        const frozen = frozenSeconds(hOut, clip.seconds);
+        if (frozen / clip.seconds > FROZEN_MAX_SHARE) {
+          fs.renameSync(hOut, path.join(outDir, 'rejected', `REJECTED_${base}_H_frozen-${Math.round(frozen)}s.mp4`));
+          clip.flags.push(`FROZEN_REJECTED:${Math.round(frozen)}s`);
+        } else clip.horizontal = hOut;
+      } else clip.flags.push('H_CUT_FAILED');
       const vStart = w.t - offsetSeconds; // el vertical empezo offsetSeconds despues del horizontal
       if (v && (vStart < 0 || vStart + clip.seconds > vDuration)) clip.flags.push('VERTICAL_NOT_COVERED');
       else if (v) {
         const vOut = path.join(outDir, 'reels', `${base}_V.mp4`);
         if (cutClip({ src: v, out: vOut, start: vStart, seconds: clip.seconds, audioIdx: info.mixIdx })) {
+          const vFrozen = frozenSeconds(vOut, clip.seconds);
           if (isVerticalBlank(verticalYavg(vOut))) {
             const rej = path.join(outDir, 'rejected', `REJECTED_${base}_V_top-half-black.mp4`);
             fs.renameSync(vOut, rej);
             clip.flags.push('VERTICAL_BLANK_REJECTED');
+          } else if (vFrozen / clip.seconds > FROZEN_MAX_SHARE) {
+            fs.renameSync(vOut, path.join(outDir, 'rejected', `REJECTED_${base}_V_frozen-${Math.round(vFrozen)}s.mp4`));
+            clip.flags.push(`FROZEN_REJECTED:${Math.round(vFrozen)}s`);
           } else clip.vertical = vOut;
         } else clip.flags.push('V_CUT_FAILED');
       }
