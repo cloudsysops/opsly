@@ -96,11 +96,11 @@ export async function runPublisher({ queueFile, adapters = {}, nowMs = Date.now(
     anyAttempt = true;
     try {
       const r = await adapter.publish(entry);
-      entry.platformStatus[platform] = { state: 'published', id: r.id, url: r.url ?? null, note: r.note ?? null, privacy: r.privacy ?? null, at: new Date().toISOString() };
+      entry.platformStatus[platform] = { state: 'published', id: r.id, url: r.url ?? null, note: r.note ?? null, privacy: r.privacy ?? null, at: new Date(nowMs).toISOString() };
       results[platform] = 'published';
       log(`${entry.id} · ${platform}: publicado ${r.url ?? r.id}.`);
     } catch (err) {
-      entry.platformStatus[platform] = { state: 'error', error: redact(err.message), at: new Date().toISOString() };
+      entry.platformStatus[platform] = { state: 'error', error: redact(err.message), at: new Date(nowMs).toISOString() };
       results[platform] = 'error';
       log(`${entry.id} · ${platform}: ERROR ${redact(err.message)}`);
     }
@@ -110,7 +110,7 @@ export async function runPublisher({ queueFile, adapters = {}, nowMs = Date.now(
   if (dry) return { action: 'dry', id: entry.id, results };
   if (anyAttempt) entry.attempts = (entry.attempts ?? 0) + 1;
   const states = (entry.platforms ?? []).map((p) => entry.platformStatus[p]?.state);
-  if (states.every((s) => s === 'published' || s === 'skipped') && states.includes('published')) { entry.status = 'published'; entry.publishedAt = new Date().toISOString(); }
+  if (states.every((s) => s === 'published' || s === 'skipped') && states.includes('published')) { entry.status = 'published'; entry.publishedAt = new Date(nowMs).toISOString(); }
   else if (states.includes('published') || states.includes('error')) entry.status = (entry.attempts ?? 0) >= policy.maxAttempts ? 'failed' : 'partial';
   writeQueue(queueFile, queue);
   return { action: 'ran', id: entry.id, status: entry.status, results };
