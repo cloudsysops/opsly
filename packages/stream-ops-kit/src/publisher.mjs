@@ -159,6 +159,13 @@ export async function main(argv) {
     return 0;
   }
 
+  // Limpieza de clips en Drive con mas de 48 h (los enlaces publicos no deben quedar abiertos). No bloquea la publicacion.
+  try {
+    const { sweepDriveStaging } = await import('./drive-stage.mjs');
+    const sw = await sweepDriveStaging({ dry: has('--dry') });
+    if (sw.deleted.length || sw.errors.length) log(`Drive: ${has('--dry') ? '[dry] borraria' : 'borrados'} ${sw.deleted.length}/${sw.checked} clip(s) caducados${sw.errors.length ? `; errores: ${redact(sw.errors.join(' | '))}` : ''}.`);
+  } catch (e) { log(`Drive: limpieza omitida (${redact(e.message)}).`); }
+
   const killSwitch = process.env.OAD_PUBLISH_DISABLED === '1' || fs.existsSync(path.join(path.dirname(queueFile), 'PUBLISH_DISABLED'));
   if (!has('--no-obs-check') && !killSwitch) {
     const st = await obsState();

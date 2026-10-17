@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { driveStageReady, stageVideoToDrive } from '../drive-stage.mjs';
+import { driveStageReady, stageVideoToDrive, sweepDriveStaging } from '../drive-stage.mjs';
 
 describe('drive-stage', () => {
   it('ready checks required env', () => {
@@ -52,5 +52,37 @@ describe('drive-stage', () => {
     assert.equal(r.fileId, 'file1');
     assert.equal(r.publicUrl, 'https://drive.google.com/uc?export=download&id=file1');
     assert.ok(calls.some((c) => c[0] === 'perm' && c[1].type === 'anyone'));
+  });
+});
+
+describe('sweepDriveStaging', () => {
+  const env = { GOOGLE_SERVICE_ACCOUNT_JSON: '{"type":"service_account"}', OPSLY_DRIVE_ROOT_FOLDER_ID: 'root1', MAKE_OPSAFTERDARK_DRIVE_FOLDER_ID: 'fold1' };
+  const mk = (files) => { const calls = []; return { calls, drive: { files: {
+    list: async (req) => { calls.push(['list', req.q]); return { data: { files } }; },
+    delete: async (req) => { calls.push(['delete', req.fileId]); },
+  } } }; };
+  it('deletes only expired files from the staging folder using a 48h cutoff', async () => {
+    const { drive, calls } = mk([{ id: 'old1' }, { id: 'old2' }]);
+    const nowMs = Date.parse('2026-10-20T12:00:00Z');
+    const r = await sweepDriveStaging({ env, drive, nowMs });
+    assert.deepEqual(r.deleted, ['old1', 'old2']);
+    const q = calls.find((c) => c[0] === 'list')[1];
+    assert.match(q, /'fold1' in parents/);
+    assert.match(q, /createdTime < '2026-10-18T12:00:00.000Z'/);
+    assert.deepEqual(calls.filter((c) => c[0] === 'delete').map((c) => c[1]), ['old1', 'old2']);
+  });
+  it('dry run deletes nothing and a failed delete is reported without throwing', async () => {
+    const a = mk([{ id: 'x' }]);
+    const r = await sweepDriveStaging({ env, drive: a.drive, dry: true });
+    assert.deepEqual(r.deleted, ['x']);
+    assert.ok(!a.calls.some((c) => c[0] === 'delete'));
+    const b = { files: { list: async () => ({ data: { files: [{ id: 'y' }] } }), delete: async () => { throw new Error('403 nope'); } } };
+    const r2 = await sweepDriveStaging({ env, drive: b });
+    assert.equal(r2.deleted.length, 0);
+    assert.equal(r2.errors.length, 1);
+  });
+  it('skips when Drive is not configured', async () => {
+    const r = await sweepDriveStaging({ env: {} });
+    assert.ok(r.skipped);
   });
 });

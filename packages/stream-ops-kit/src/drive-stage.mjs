@@ -100,3 +100,45 @@ export async function stageVideoToDrive({ filePath, fileName, env = process.env,
     folderId,
   };
 }
+
+export const DRIVE_STAGE_TTL_HOURS = 48;
+
+function driveClient(env) {
+  const auth = new google.auth.GoogleAuth({ credentials: loadCredentials(env), scopes: ['https://www.googleapis.com/auth/drive'] });
+  return google.drive({ version: 'v3', auth });
+}
+
+/**
+ * Borra de la carpeta de staging los clips con mas de `ttlHours` horas. Solo toca esa carpeta
+ * (nunca la crea) y solo archivos creados por la cuenta de servicio; los enlaces publicos dejan de funcionar.
+ * @returns {Promise<{ checked: number, deleted: string[], errors: string[] }>}
+ */
+export async function sweepDriveStaging({ env = process.env, drive, nowMs = Date.now(), ttlHours = DRIVE_STAGE_TTL_HOURS, dry = false } = {}) {
+  const ready = driveStageReady(env);
+  if (!ready.ok) return { checked: 0, deleted: [], errors: [], skipped: `faltan ${ready.missing.join(', ')}` };
+  const api = drive ?? driveClient(env);
+  const rootId = String(env.OPSLY_DRIVE_ROOT_FOLDER_ID).trim();
+  const explicit = String(env.MAKE_OPSAFTERDARK_DRIVE_FOLDER_ID ?? '').trim();
+  let folderId = explicit;
+  if (!folderId) {
+    const found = await api.files.list({
+      q: `name='${FOLDER_NAME}' and '${rootId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields: 'files(id)', pageSize: 5, supportsAllDrives: true, includeItemsFromAllDrives: true,
+    });
+    folderId = found.data.files?.[0]?.id;
+  }
+  if (!folderId) return { checked: 0, deleted: [], errors: [] };
+  const cutoff = new Date(nowMs - ttlHours * 3600_000).toISOString();
+  const list = await api.files.list({
+    q: `'${folderId}' in parents and trashed=false and mimeType!='application/vnd.google-apps.folder' and createdTime < '${cutoff}'`,
+    fields: 'files(id,name,createdTime)', pageSize: 100, supportsAllDrives: true, includeItemsFromAllDrives: true,
+  });
+  const files = list.data.files ?? [];
+  const deleted = []; const errors = [];
+  for (const f of files) {
+    if (dry) { deleted.push(f.id); continue; }
+    try { await api.files.delete({ fileId: f.id, supportsAllDrives: true }); deleted.push(f.id); }
+    catch (e) { errors.push(`${f.id}: ${String(e.message).slice(0, 120)}`); }
+  }
+  return { checked: files.length, deleted, errors };
+}
