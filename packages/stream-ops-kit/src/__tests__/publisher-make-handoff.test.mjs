@@ -6,7 +6,7 @@ import path from 'node:path';
 import { runPublisher } from '../publisher.mjs';
 
 describe('publisher Make handoff', () => {
-  it('records delivered_to_make and keeps entry partial (not published)', async () => {
+  it('records delivered_to_make, marks entry delivered (not published, not re-selected)', async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'oad-pub-'));
     const video = path.join(dir, 'v.mp4');
     fs.writeFileSync(video, Buffer.alloc(8));
@@ -40,11 +40,14 @@ describe('publisher Make handoff', () => {
 
     const res = await runPublisher({ queueFile, adapters, nowMs, exists: () => true, log: () => {} });
     assert.equal(res.action, 'ran');
-    assert.equal(res.status, 'partial');
+    assert.equal(res.status, 'delivered');
     const q = JSON.parse(fs.readFileSync(queueFile, 'utf8'));
-    assert.equal(q[0].status, 'partial');
+    assert.equal(q[0].status, 'delivered');
     assert.equal(q[0].platformStatus.tiktok.state, 'delivered_to_make');
     assert.equal(q[0].platformStatus.instagram_reels.state, 'delivered_to_make');
     assert.equal(q[0].publishedAt, undefined);
+    assert.ok(q[0].deliveredAt);
+    const again = await runPublisher({ queueFile, adapters, nowMs: nowMs + 3600_000, exists: () => true, log: () => {} });
+    assert.notEqual(again.action, 'ran', 'una entrega a Make no se reintenta ni bloquea la cola');
   });
 });

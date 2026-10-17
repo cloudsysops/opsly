@@ -26,7 +26,7 @@ export const isDue = (entry, nowMs) => dueAt(entry) <= nowMs;
 
 export function publishedToday(queue, nowMs, tz) {
   const today = dayKey(nowMs, tz);
-  return queue.filter((e) => { const t = e.publishedAt || e.handedOffAt; return t && dayKey(Date.parse(t), tz) === today; }).length;
+  return queue.filter((e) => { const t = e.publishedAt || e.deliveredAt; return t && dayKey(Date.parse(t), tz) === today; }).length;
 }
 
 // Motivos por los que un borrador NO se puede aprobar solo.
@@ -118,6 +118,10 @@ export async function runPublisher({ queueFile, adapters = {}, nowMs = Date.now(
   if (states.every(terminalOk) && states.includes('published') && !states.includes('delivered_to_make')) {
     entry.status = 'published';
     entry.publishedAt = new Date(nowMs).toISOString();
+  } else if (states.every(terminalOk) && states.includes('delivered_to_make')) {
+    // Todo entregado a Make: no es "published" (Make no confirma), pero tampoco "partial": no debe reseleccionarse.
+    entry.status = 'delivered';
+    entry.deliveredAt = new Date(nowMs).toISOString();
   } else if (states.includes('published') || states.includes('delivered_to_make') || states.includes('error')) {
     entry.status = (entry.attempts ?? 0) >= policy.maxAttempts ? 'failed' : 'partial';
   }
