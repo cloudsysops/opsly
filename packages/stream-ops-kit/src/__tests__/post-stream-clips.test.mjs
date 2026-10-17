@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  stampOf, pairRecordings, isFinished, scoreWindows, pickWindows, isVerticalBlank, hms, renderReport, scheduleQueue, readJson, loadSpectateTemplate, spectateScore, isSpectating, DEFAULTS,
+  stampOf, pairRecordings, isFinished, scoreWindows, pickWindows, isVerticalBlank, hms, renderReport, scheduleQueue, readJson, loadSpectateTemplate, spectateScore, isSpectating, DEFAULTS, stampToSeconds, PAIR_TOLERANCE_SECONDS,
 } from '../post-stream-clips.mjs';
 
 test('pairs horizontal and vertical recordings by OBS timestamp', () => {
@@ -12,6 +12,30 @@ test('pairs horizontal and vertical recordings by OBS timestamp', () => {
   assert.equal(p[1].v, v[0]);
   assert.equal(stampOf(h[0]), '2026-10-11_17-49-34');
   assert.equal(stampOf('random.mkv'), null);
+});
+
+test('pairs a vertical that started a few minutes later and reports the offset', () => {
+  const h = ['D:\\o\\h\\2026-10-16_19-57-41_OpsAfterDark_H1920x1080.mkv'];
+  const v = ['D:\\o\\v\\2026-10-16_20-00-51_OpsAfterDark_V1080x1920.mkv'];
+  const [p] = pairRecordings(h, v);
+  assert.equal(p.v, v[0]);
+  assert.equal(p.offsetSeconds, 190);
+});
+
+test('does not pair verticals that are too far away, earlier than the horizontal, or already used', () => {
+  const h = ['x/2026-10-16_19-57-41_H.mkv', 'x/2026-10-16_19-58-00_H.mkv'];
+  assert.equal(pairRecordings(h, ['y/2026-10-16_20-30-00_V.mkv'])[0].v, null, 'mas de 10 min despues');
+  assert.equal(pairRecordings(h, ['y/2026-10-16_19-50-00_V.mkv'])[0].v, null, 'empezo antes que el horizontal');
+  const two = pairRecordings(h, ['y/2026-10-16_20-00-51_V.mkv']);
+  assert.equal(two[0].v, 'y/2026-10-16_20-00-51_V.mkv');
+  assert.equal(two[1].v, null, 'una vertical no se reutiliza');
+  assert.equal(PAIR_TOLERANCE_SECONDS, 600);
+});
+
+test('stampToSeconds parses OBS stamps and rejects anything else', () => {
+  assert.equal(stampToSeconds('2026-10-16_20-00-51') - stampToSeconds('2026-10-16_19-57-41'), 190);
+  assert.equal(stampToSeconds('nope'), null);
+  assert.equal(stampToSeconds(null), null);
 });
 
 test('a file is finished only after it has been quiet long enough', () => {

@@ -31,10 +31,35 @@ const STAMP = /^(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})_/;
 const leaf = (file) => String(file).split(/[\\/]/).pop();
 export const stampOf = (file) => leaf(file).match(STAMP)?.[1] ?? null;
 
-// Empareja cada horizontal con su vertical por el sello de fecha/hora del nombre de OBS.
-export function pairRecordings(horizontals, verticals) {
-  const byStamp = new Map(verticals.map((v) => [stampOf(v), v]));
-  return horizontals.map((h) => ({ h, v: byStamp.get(stampOf(h)) ?? null, stamp: stampOf(h) }));
+// Segundos desde la epoca de un sello de OBS ("2026-10-16_19-57-41"). Solo importan las diferencias.
+export function stampToSeconds(stamp) {
+  const m = stamp?.match(/^(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})$/);
+  return m ? Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]) / 1000 : null;
+}
+
+export const PAIR_TOLERANCE_SECONDS = 600;
+
+// Empareja cada horizontal con la grabacion vertical que EMPEZO despues (hasta 10 min) mas cercana, sin reutilizar verticales.
+// offsetSeconds = cuanto mas tarde empezo el vertical: el instante t del horizontal es t - offsetSeconds en el vertical.
+// (Antes se exigia el mismo segundo de inicio y una vertical que arrancaba 3 min despues quedaba sin emparejar.)
+export function pairRecordings(horizontals, verticals, { tolerance = PAIR_TOLERANCE_SECONDS } = {}) {
+  const used = new Set();
+  return horizontals.map((h) => {
+    const stamp = stampOf(h);
+    const t0 = stampToSeconds(stamp);
+    let best = null;
+    if (t0 !== null) {
+      for (const v of verticals) {
+        if (used.has(v)) continue;
+        const dv = stampToSeconds(stampOf(v));
+        if (dv === null) continue;
+        const offset = dv - t0;
+        if (offset >= 0 && offset <= tolerance && (!best || offset < best.offset)) best = { v, offset };
+      }
+    }
+    if (best) used.add(best.v);
+    return { h, v: best?.v ?? null, stamp, offsetSeconds: best?.offset ?? 0 };
+  });
 }
 
 export function isFinished(stat, nowMs, quietMs = DEFAULTS.quietMs) {
@@ -255,7 +280,7 @@ function listMkv(dir) {
   try { return fs.readdirSync(dir).filter((f) => /\.(mkv|mp4)$/i.test(f)).map((f) => path.join(dir, f)); } catch { return []; }
 }
 
-export function processRecording({ h, v, stamp }, { outRoot, opts, dry, template = null, dumpFile = null, log = console.log }) {
+export function processRecording({ h, v, stamp, offsetSeconds = 0 }, { outRoot, opts, dry, template = null, dumpFile = null, log = console.log }) {
   const info = probe(h);
   log(`[${stamp}] ${path.basename(h)} ${hms(info.duration)}`);
   const tmp = path.join(outRoot, `.tmp-${stamp}.txt`);
@@ -266,6 +291,8 @@ export function processRecording({ h, v, stamp }, { outRoot, opts, dry, template
   const scored = scoreWindows({ audioDb, motion, black, spectate }, opts);
   const picked = pickWindows(scored, opts);
   const mic = micIsSilent(h, info);
+  let vDuration = 0;
+  if (v) { try { vDuration = probe(v).duration; } catch { vDuration = 0; } }
   const warnings = [];
   if (mic.silent) warnings.push('MIC_SILENT: la pista de micro esta en silencio; los clips no llevan voz.');
   if (!v) warnings.push('NO_VERTICAL: no hay grabacion vertical emparejada; solo se generan horizontales.');
@@ -280,9 +307,11 @@ export function processRecording({ h, v, stamp }, { outRoot, opts, dry, template
       for (const d of ['clips', 'reels', 'metadata', 'rejected']) fs.mkdirSync(path.join(outDir, d), { recursive: true });
       const hOut = path.join(outDir, 'clips', `${base}_H.mp4`);
       if (cutClip({ src: h, out: hOut, start: w.t, seconds: clip.seconds, audioIdx: info.mixIdx })) clip.horizontal = hOut; else clip.flags.push('H_CUT_FAILED');
-      if (v) {
+      const vStart = w.t - offsetSeconds; // el vertical empezo offsetSeconds despues del horizontal
+      if (v && (vStart < 0 || vStart + clip.seconds > vDuration)) clip.flags.push('VERTICAL_NOT_COVERED');
+      else if (v) {
         const vOut = path.join(outDir, 'reels', `${base}_V.mp4`);
-        if (cutClip({ src: v, out: vOut, start: w.t, seconds: clip.seconds, audioIdx: info.mixIdx })) {
+        if (cutClip({ src: v, out: vOut, start: vStart, seconds: clip.seconds, audioIdx: info.mixIdx })) {
           if (isVerticalBlank(verticalYavg(vOut))) {
             const rej = path.join(outDir, 'rejected', `REJECTED_${base}_V_top-half-black.mp4`);
             fs.renameSync(vOut, rej);
