@@ -1,0 +1,4 @@
+{"t":"2026-09-30T14:58:08.732Z","title":"Encontramos una maquina duplicada en produccion, en vivo","why":"Descubrimos que el PC del stream ya estaba registrado como worker GPU (home-gpu-01/pc-gamer) del cluster de Opsly, sin que lo supieramos al empezar a construir el tenant nuevo","format":"largo"}
+{"t":"2026-09-30T14:58:08.764Z","title":"Construimos un vertical SaaS multi-tenant en vivo","why":"De cero a PR abierto (#1681): blueprint, launch contract, motor compartido, primer tenant","format":"largo"}
+{"t":"2026-09-30T14:58:08.793Z","title":"La regla que casi nos hace duplicar infraestructura","why":"AGENTS.md prohibe crear un segundo worker registry/orquestador - caso real de gobernanza de agentes de IA","format":"corto"}
+{"t":"2026-09-30T14:58:08.822Z","title":"GPU real en pantalla, en vivo, sin inventar nada","why":"collectNvidiaTelemetry() devolviendo la RTX 3060 real del equipo, unificando el motor del stream con el telemetry existente","format":"corto"}

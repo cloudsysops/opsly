@@ -50,6 +50,13 @@
       "label": "Turismo de salud y viajes — Colombia",
       "reference_tenant": null,
       "package_doc": "docs/blueprints/HEALTH-TRAVEL-COLOMBIA.md"
+    },
+    {
+      "id": "gaming-streamer",
+      "file": "gaming-streamer.json",
+      "label": "Gaming / live streaming creator",
+      "reference_tenant": "opsafterdark",
+      "reference_launch": "clients/opsafterdark.launch.json"
     }
   ],
   "commands": {

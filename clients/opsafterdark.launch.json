@@ -1,0 +1,55 @@
+{
+  "vertical_blueprint_id": "gaming-streamer",
+  "tenant_slug": "opsafterdark",
+  "business_name": "OpsAfterDark",
+  "industry": "gaming & live streaming content creator",
+  "country": "CO",
+  "timezone": "America/Bogota",
+  "domain": "opsafterdark.op-sly.com",
+  "primary_email": "TODO@opsafterdark.example",
+  "offer_type": "sponsorship_inquiry",
+  "lead_sources": ["twitch", "youtube", "instagram", "referral"],
+  "crm_provider": "twenty",
+  "crm_pipeline_name": "Pipeline de patrocinios y colaboraciones",
+  "landing_routes": ["/", "/stream-schedule", "/highlights", "/sponsors", "/contact"],
+  "brand_basic": {
+    "tone": "energético, cercano, gamer"
+  },
+  "form_fields": ["name", "email", "platform", "audience_size", "message"],
+  "cta_text": "Propón una colaboración o patrocinio",
+  "fallback_behavior": "Persist lead in Supabase; sync Twenty when OPSAFTERDARK_TWENTY_ENABLED.",
+  "n8n_workflows": [
+    "lead-capture",
+    "hot-lead-alert",
+    "follow-up-reminder",
+    "daily-pipeline-digest"
+  ],
+  "supabase_records": [
+    "platform.tenants",
+    "opsafterdark_sponsors",
+    "opsafterdark_stream_sessions"
+  ],
+  "health_checks": [
+    "GET /api/admin/mission-control/incubation?slug=opsafterdark"
+  ],
+  "manual_steps": [
+    "Confirmar email real de contacto y dominio antes de correr bootstrap-tenant.sh --execute.",
+    "Este es el primer tenant del vertical gaming-streamer — revisar apps/opsafterdark/stream-overlay/README.md antes de dar de alta CRM/Doppler.",
+    "El servidor de overlays de OBS corre local (127.0.0.1:8765); no requiere DNS/hosting público para operar el stream."
+  ],
+  "next_commands": [
+    "npm run client:plan -- --tenant-slug opsafterdark",
+    "./scripts/provisioning/bootstrap-tenant.sh --launch clients/opsafterdark.launch.json --dry-run"
+  ],
+  "approval_boundary": "approval-first",
+  "extraction_ready": false,
+  "extraction_notes": "Primer tenant del vertical gaming-streamer (config/vertical-blueprints/gaming-streamer.json). Producto = herramientas de automatización de OBS/stream en apps/opsafterdark. Pensado como plantilla reusable para futuros streamers/tenants.",
+  "modules": [
+    "obs-scene-automation",
+    "performance-overlay",
+    "stream-schedule",
+    "highlight-clips",
+    "sponsor-pipeline"
+  ],
+  "pattern_ids": ["stream-ops-stack", "obs-automation-stack"]
+}

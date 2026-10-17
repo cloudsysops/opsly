@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# oad — thin launcher for src/oad.mjs.
+#
+# obs-connection.mjs reads OBS's own obs-websocket config.json by its native
+# Windows path (stream.config.json's "obsConfigPath"), so oad.mjs must run
+# under Windows node.exe, not WSL node — even when invoked from a WSL shell
+# (the documented phone -> SSH -> tmux path lands in WSL). This wrapper is
+# the only place that deals with that; oad.mjs itself stays OS-agnostic.
+#
+# Override points (only needed if the defaults don't match this host):
+#   OAD_NODE_EXE      path to Windows node.exe      (default: "/mnt/c/Program Files/nodejs/node.exe")
+#   OAD_TENANT_DIR    tenant data dir, WSL-side path (default: <repo>/apps/opsafterdark/stream-overlay)
+set -euo pipefail
+
+BIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$BIN_DIR/../../.." && pwd)"
+
+NODE_EXE="${OAD_NODE_EXE:-/mnt/c/Program Files/nodejs/node.exe}"
+TENANT_DIR="${OAD_TENANT_DIR:-$REPO_ROOT/apps/opsafterdark/stream-overlay}"
+OAD_SCRIPT="$BIN_DIR/../src/oad.mjs"
+
+if [[ ! -x "$NODE_EXE" ]]; then
+  echo "OAD_ERROR=NODE_EXE_NOT_FOUND: $NODE_EXE (set OAD_NODE_EXE)" >&2
+  exit 4
+fi
+if ! command -v wslpath >/dev/null 2>&1; then
+  echo "OAD_ERROR=WSLPATH_NOT_FOUND: this launcher requires WSL (wslpath missing)" >&2
+  exit 4
+fi
+
+export STREAM_KIT_DATA_DIR
+STREAM_KIT_DATA_DIR="$(wslpath -w "$TENANT_DIR")"
+export WSLENV="STREAM_KIT_DATA_DIR${WSLENV:+:$WSLENV}"
+
+WIN_SCRIPT="$(wslpath -w "$OAD_SCRIPT")"
+
+exec "$NODE_EXE" "$WIN_SCRIPT" "$@"

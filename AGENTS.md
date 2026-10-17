@@ -461,6 +461,7 @@ node scripts/load-skills.js show opsly-api
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
 | Panini Lab (incubator demo)                   | `apps/panini-lab` — colección conversacional de stickers; prod `https://panini.op-sly.com`; runbook `docs/runbooks/PANINI-LAB-GOLIVE.md`         |
 | AI-DJ agente local (Mac)                      | `apps/ai-dj` — servicio HTTP `:5013` (Serato/MIDI/OBS websocket), job `local_ai_dj`; runbook `docs/runbooks/STREAMING-GAMER-DJ-NDI.md` |
+| OpsAfterDark stream tenant (gaming-streamer)  | `apps/opsafterdark` — primer tenant del vertical `gaming-streamer` (`config/vertical-blueprints/gaming-streamer.json`); config/branding del tenant, motor genérico compartido en `packages/stream-ops-kit` (sin nombres de escena ni branding hardcodeado — se lee de `stream.config.json` por tenant) |
 
 ## 🚀 Peskids (Tenant Project, Phase 2 Implementation Ready)
 

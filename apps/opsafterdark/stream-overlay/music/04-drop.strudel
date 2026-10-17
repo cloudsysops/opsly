@@ -1,0 +1,37 @@
+// ═══════════════════════════════════════════════════════════════
+//  04 · DROP  ·  130 BPM  ·  La menor
+//  La explosión tras el build-up: bombo pesado, sub-bajo y un gancho melódico.
+//  Sonidos: SOLO sintetizadores incorporados de Strudel
+//  (sine, sawtooth, square, white, pink). Cero samples de terceros.
+// ═══════════════════════════════════════════════════════════════
+//  CÓMO USARLO EN VIVO
+//   · Ctrl+Enter = aplicar   ·  Ctrl+. = parar todo
+//   · _$:  silencia una capa; quita el _ para activarla
+//   · Tip: tras 16-32 compases, vuelve a 01-techno-oscuro para "respirar".
+// ═══════════════════════════════════════════════════════════════
+
+setcps(130/60/4)   // ← mismos BPM que el build-up
+
+// BOMBO PESADO: más caída de tono y más cola que en el techno base
+$: note("c1*4").s("sine").penv(40).pdec(.08).decay(.32).sustain(0).gain(1.2)
+
+// SUB-BAJO al contratiempo, con la nota moviéndose (A → A → C → G)
+$: note("<a1 a1 c2 g1>").s("sine").struct("[~ x]*4")
+  .decay(.22).sustain(.2).lpf(180).gain(1)
+
+// BAJO SIERRA en corcheas para dar agresividad
+$: note("a1*8").s("sawtooth").lpf(sine.range(300, 1400).slow(4)).lpq(10)
+  .decay(.1).sustain(0).gain(.55)
+
+// CLAP fuerte en 2 y 4
+$: s("~ pink ~ pink").decay(.14).sustain(0).bpf(1500).room(.3).gain(.8)
+
+// HI-HATS: abiertos en el contratiempo + cerrados constantes
+$: s("[~ white]*4").decay(.1).sustain(0).hpf(7000).gain(.5)
+$: s("white*16").decay(.02).sustain(0).hpf(9000).gain(.26)
+
+// GANCHO (LEAD): onda cuadrada con eco. Esta es la "melodía" del drop.
+// EN VIVO: cambia las notas del <...> para inventar tu propio gancho.
+$: note("<[a4 ~ c5 a4 ~ e5 ~ d5] [a4 ~ c5 a4 ~ g5 ~ e5]>").s("square")
+  .lpf(2600).decay(.14).sustain(.25)
+  .delay(.3).delaytime(.1154).delayfeedback(.4).room(.3).gain(.32)

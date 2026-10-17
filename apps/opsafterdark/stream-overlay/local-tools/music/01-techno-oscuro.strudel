@@ -1,0 +1,43 @@
+// ═══════════════════════════════════════════════════════════════
+//  01 · TECHNO OSCURO  ·  130 BPM  ·  La menor (A minor)
+//  Sonidos: SOLO sintetizadores incorporados de Strudel
+//  (sine, sawtooth, white, pink). Cero samples de terceros.
+// ═══════════════════════════════════════════════════════════════
+//  CÓMO USARLO EN VIVO
+//   · Ctrl+Enter  = aplicar cambios (entra en el próximo ciclo)
+//   · Ctrl+.      = parar todo
+//   · Para SILENCIAR una capa, pon _ delante de "$:"  →  _$:
+//   · Para volver a activarla, quita el _
+// ═══════════════════════════════════════════════════════════════
+
+setcps(130/60/4)   // ← VELOCIDAD: cambia 130 por los BPM que quieras (125-140)
+
+// BOMBO: seno con caída rápida de tono = "thump" de techno. 4 golpes por compás.
+$: note("c1*4").s("sine")
+  .penv(36).pdec(.07)        // caída de tono (más = más "click")
+  .decay(.28).sustain(0)     // largo del golpe (sube .28 para más cola)
+  .gain(1.1)
+
+// HI-HAT ABIERTO en el contratiempo (el "tss" entre bombos)
+$: s("[~ white]*4").decay(.09).sustain(0).hpf(7500).gain(.45)
+
+// HI-HAT CERRADO en semicorcheas, muy suave: da movimiento
+$: s("white*16").decay(.02).sustain(0).hpf(9000).gain(.22)
+
+// CLAP en los tiempos 2 y 4, con un poco de sala
+$: s("~ pink ~ pink").decay(.12).sustain(0).bpf(1600).room(.35).gain(.6)
+
+// BAJO RODANTE: dientes de sierra en corcheas; el filtro sube y baja lento.
+// EN VIVO: cambia el rango (200, 900) → más alto = más agresivo.
+$: note("a1*8").s("sawtooth")
+  .lpf(sine.range(200, 900).slow(8)).lpq(8)
+  .decay(.12).sustain(0).gain(.7)
+
+// ACORDES OSCUROS (Am → F): pad lento con sala grande.
+// EN VIVO: prueba <[a3,c4,e4] [g3,b3,d4]> para un aire más tenso.
+$: note("<[a3,c4,e4] [f3,a3,c4]>").s("sawtooth")
+  .lpf(650).attack(.15).release(.8).room(.7).gain(.22)
+  .slow(2)
+
+// EFECTO DE SUSPENSO: ruido rosa que respira cada 8 compases
+_$: s("pink").hpf(sine.range(500, 5000).slow(8)).sustain(1).gain(.12).room(.5)

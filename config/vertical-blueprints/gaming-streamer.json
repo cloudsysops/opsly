@@ -1,0 +1,21 @@
+{
+  "vertical_blueprint_id": "gaming-streamer",
+  "industry": "gaming & live streaming content creator",
+  "offer_type": "sponsorship_inquiry",
+  "form_fields": ["name", "email", "platform", "audience_size", "message"],
+  "cta_text": "Propón una colaboración o patrocinio",
+  "landing_routes": ["/", "/stream-schedule", "/highlights", "/sponsors", "/contact"],
+  "crm_pipeline_name": "Pipeline de patrocinios y colaboraciones",
+  "brand_basic": {
+    "tone": "energético, cercano, gamer"
+  },
+  "modules": [
+    "obs-scene-automation",
+    "performance-overlay",
+    "stream-schedule",
+    "highlight-clips",
+    "sponsor-pipeline"
+  ],
+  "reference_tenant": "opsafterdark",
+  "pattern_ids": ["stream-ops-stack", "obs-automation-stack"]
+}
