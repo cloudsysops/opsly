@@ -1,11 +1,15 @@
-// Modulo de adaptadores para `publisher.mjs --adapters`. Une el YouTubePublisher de lib/content-studio (TypeScript)
-// con la cola de OpsAfterDark. Debe ejecutarse con tsx, p. ej.:
-//   doppler run -p ops-intcloudsysops -c prd --only-secrets YOUTUBE_CLIENT_ID,YOUTUBE_CLIENT_SECRET,YOUTUBE_OPSAFTERDARK_REFRESH_TOKEN,YOUTUBE_OPSAFTERDARK_PRIVACY -- \
-//     node_modules/.bin/tsx packages/stream-ops-kit/src/publisher.mjs --queue <publish-queue.json> --adapters packages/stream-ops-kit/src/opsafterdark-adapters.mjs
-// Solo hay adaptador de YouTube: TikTok e Instagram quedan como "sin adaptador" (se omiten) hasta tener credenciales.
+// Modulo de adaptadores para `publisher.mjs --adapters`.
+// - YouTube Shorts: YouTubePublisher (lib/content-studio) + token OpsAfterDark
+// - TikTok / Instagram Reels: Make.com webhook (cuentas conectadas en Make UI)
 import { YouTubePublisher } from '../../../lib/content-studio/src/index.js';
 import { createYouTubeShortsAdapter } from './youtube-bridge.mjs';
+import {
+  createTikTokMakeAdapter,
+  createInstagramReelsMakeAdapter,
+} from './make-bridge.mjs';
 
 export default {
   youtube_shorts: createYouTubeShortsAdapter({ env: process.env, YouTubePublisher }),
+  tiktok: createTikTokMakeAdapter({ env: process.env }),
+  instagram_reels: createInstagramReelsMakeAdapter({ env: process.env }),
 };
