@@ -3,17 +3,46 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { driveStageReady, stageVideoToDrive, sweepDriveStaging } from '../drive-stage.mjs';
+import {
+  assertStagingRootWritable,
+  driveStageReady,
+  stageVideoToDrive,
+  sweepDriveStaging,
+} from '../drive-stage.mjs';
 
 describe('drive-stage', () => {
-  it('ready checks required env', () => {
+  it('ready accepts SA or user OAuth plus root folder', () => {
     assert.equal(driveStageReady({}).ok, false);
     assert.equal(
       driveStageReady({
         GOOGLE_SERVICE_ACCOUNT_JSON: '{}',
         OPSLY_DRIVE_ROOT_FOLDER_ID: 'x',
       }).ok,
-      true
+      true,
+    );
+    assert.equal(
+      driveStageReady({
+        GOOGLE_USER_CREDENTIALS_JSON: '{"client_id":"a","client_secret":"b","refresh_token":"c"}',
+        OPSLY_DRIVE_ROOT_FOLDER_ID: 'x',
+      }).ok,
+      true,
+    );
+    assert.ok(
+      driveStageReady({ OPSLY_DRIVE_ROOT_FOLDER_ID: 'x' }).missing.includes(
+        'GOOGLE_USER_CREDENTIALS_JSON|GOOGLE_SERVICE_ACCOUNT_JSON',
+      ),
+    );
+  });
+
+  it('rejects SA against My Drive root (no driveId)', async () => {
+    const drive = {
+      files: {
+        get: async () => ({ data: { id: 'root1', name: 'My folder', driveId: null } }),
+      },
+    };
+    await assert.rejects(
+      () => assertStagingRootWritable(drive, 'root1', 'sa'),
+      /Shared Drive|GOOGLE_USER_CREDENTIALS_JSON/,
     );
   });
 
@@ -24,6 +53,7 @@ describe('drive-stage', () => {
     const calls = [];
     const drive = {
       files: {
+        get: async () => ({ data: { id: 'root1', name: 'shared-root', driveId: 'driveShared1' } }),
         list: async () => ({ data: { files: [] } }),
         create: async (req) => {
           calls.push(['create', req.requestBody?.name || req.requestBody?.mimeType]);
@@ -51,16 +81,34 @@ describe('drive-stage', () => {
     });
     assert.equal(r.fileId, 'file1');
     assert.equal(r.publicUrl, 'https://drive.google.com/uc?export=download&id=file1');
+    assert.equal(r.authKind, 'sa');
     assert.ok(calls.some((c) => c[0] === 'perm' && c[1].type === 'anyone'));
   });
 });
 
 describe('sweepDriveStaging', () => {
-  const env = { GOOGLE_SERVICE_ACCOUNT_JSON: '{"type":"service_account"}', OPSLY_DRIVE_ROOT_FOLDER_ID: 'root1', MAKE_OPSAFTERDARK_DRIVE_FOLDER_ID: 'fold1' };
-  const mk = (files) => { const calls = []; return { calls, drive: { files: {
-    list: async (req) => { calls.push(['list', req.q]); return { data: { files } }; },
-    delete: async (req) => { calls.push(['delete', req.fileId]); },
-  } } }; };
+  const env = {
+    GOOGLE_SERVICE_ACCOUNT_JSON: '{"type":"service_account"}',
+    OPSLY_DRIVE_ROOT_FOLDER_ID: 'root1',
+    MAKE_OPSAFTERDARK_DRIVE_FOLDER_ID: 'fold1',
+  };
+  const mk = (files) => {
+    const calls = [];
+    return {
+      calls,
+      drive: {
+        files: {
+          list: async (req) => {
+            calls.push(['list', req.q]);
+            return { data: { files } };
+          },
+          delete: async (req) => {
+            calls.push(['delete', req.fileId]);
+          },
+        },
+      },
+    };
+  };
   it('deletes only expired files from the staging folder using a 48h cutoff', async () => {
     const { drive, calls } = mk([{ id: 'old1' }, { id: 'old2' }]);
     const nowMs = Date.parse('2026-10-20T12:00:00Z');
@@ -69,14 +117,24 @@ describe('sweepDriveStaging', () => {
     const q = calls.find((c) => c[0] === 'list')[1];
     assert.match(q, /'fold1' in parents/);
     assert.match(q, /createdTime < '2026-10-18T12:00:00.000Z'/);
-    assert.deepEqual(calls.filter((c) => c[0] === 'delete').map((c) => c[1]), ['old1', 'old2']);
+    assert.deepEqual(
+      calls.filter((c) => c[0] === 'delete').map((c) => c[1]),
+      ['old1', 'old2'],
+    );
   });
   it('dry run deletes nothing and a failed delete is reported without throwing', async () => {
     const a = mk([{ id: 'x' }]);
     const r = await sweepDriveStaging({ env, drive: a.drive, dry: true });
     assert.deepEqual(r.deleted, ['x']);
     assert.ok(!a.calls.some((c) => c[0] === 'delete'));
-    const b = { files: { list: async () => ({ data: { files: [{ id: 'y' }] } }), delete: async () => { throw new Error('403 nope'); } } };
+    const b = {
+      files: {
+        list: async () => ({ data: { files: [{ id: 'y' }] } }),
+        delete: async () => {
+          throw new Error('403 nope');
+        },
+      },
+    };
     const r2 = await sweepDriveStaging({ env, drive: b });
     assert.equal(r2.deleted.length, 0);
     assert.equal(r2.errors.length, 1);

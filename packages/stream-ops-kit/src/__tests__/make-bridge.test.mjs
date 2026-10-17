@@ -11,7 +11,7 @@ describe('make-bridge', () => {
     const r = a.ready();
     assert.equal(r.ok, false);
     assert.ok(r.missing.includes('MAKE_OPSAFTERDARK_WEBHOOK_URL'));
-    assert.ok(r.missing.includes('GOOGLE_SERVICE_ACCOUNT_JSON'));
+    assert.ok(r.missing.some((m) => /GOOGLE_/.test(m)));
   });
 
   it('publish stages to Drive then posts JSON without local paths', async () => {
