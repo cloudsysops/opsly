@@ -39,8 +39,9 @@ try {
   $wslRepo = '/home/opsly/opsly-wt-stream-ops-kit'
   $wslQueue = '/mnt/d/Content/PostStream/publish-queue.json'
   $secrets = 'YOUTUBE_CLIENT_ID,YOUTUBE_CLIENT_SECRET,YOUTUBE_OPSAFTERDARK_REFRESH_TOKEN,YOUTUBE_OPSAFTERDARK_PRIVACY'
-  $dry = if ($Dry) { '--dry' } else { '' }
-  $cmd = "cd $wslRepo && doppler run -p ops-intcloudsysops -c prd --only-secrets $secrets -- node_modules/.bin/tsx packages/stream-ops-kit/src/publisher.mjs --queue $wslQueue --adapters packages/stream-ops-kit/src/opsafterdark-adapters.mjs --no-obs-check $dry"
+  # $Dry is a [switch]; use another name (PS vars are case-insensitive).
+  $dryArg = if ($Dry.IsPresent) { '--dry' } else { '' }
+  $cmd = "cd $wslRepo && doppler run -p ops-intcloudsysops -c prd --only-secrets $secrets -- node_modules/.bin/tsx packages/stream-ops-kit/src/publisher.mjs --queue $wslQueue --adapters packages/stream-ops-kit/src/opsafterdark-adapters.mjs --no-obs-check $dryArg"
   & wsl.exe -e bash -lc $cmd 2>&1 | ForEach-Object { Log "$_" }
   $code = $LASTEXITCODE
 } finally { $mutex.ReleaseMutex() }
