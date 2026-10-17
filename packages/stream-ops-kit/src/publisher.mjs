@@ -26,7 +26,7 @@ export const isDue = (entry, nowMs) => dueAt(entry) <= nowMs;
 
 export function publishedToday(queue, nowMs, tz) {
   const today = dayKey(nowMs, tz);
-  return queue.filter((e) => e.publishedAt && dayKey(Date.parse(e.publishedAt), tz) === today).length;
+  return queue.filter((e) => { const t = e.publishedAt || e.handedOffAt; return t && dayKey(Date.parse(t), tz) === today; }).length;
 }
 
 // Motivos por los que un borrador NO se puede aprobar solo.
@@ -86,7 +86,7 @@ export async function runPublisher({ queueFile, adapters = {}, nowMs = Date.now(
 
   for (const platform of entry.platforms ?? []) {
     const cur = entry.platformStatus[platform];
-    if (cur && ['published', 'skipped'].includes(cur.state)) { results[platform] = cur.state; continue; }
+    if (cur && ['published', 'skipped', 'delivered_to_make'].includes(cur.state)) { results[platform] = cur.state; continue; }
     const adapter = adapters[platform];
     if (!adapter) { entry.platformStatus[platform] = { state: 'skipped', reason: 'sin adaptador', at: at() }; results[platform] = 'skipped'; log(`${entry.id} · ${platform}: sin adaptador, se omite.`); continue; }
     const ready = adapter.ready();
@@ -96,9 +96,12 @@ export async function runPublisher({ queueFile, adapters = {}, nowMs = Date.now(
     anyAttempt = true;
     try {
       const r = await adapter.publish(entry);
-      entry.platformStatus[platform] = { state: 'published', id: r.id, url: r.url ?? null, note: r.note ?? null, privacy: r.privacy ?? null, at: new Date(nowMs).toISOString() };
-      results[platform] = 'published';
-      log(`${entry.id} · ${platform}: publicado ${r.url ?? r.id}.`);
+      // Adapters may return state (e.g. Make handoff). Default remains published.
+      const state = r.state === 'delivered_to_make' ? 'delivered_to_make' : 'published';
+      entry.platformStatus[platform] = { state, id: r.id, url: r.url ?? null, note: r.note ?? null, privacy: r.privacy ?? null, at: new Date(nowMs).toISOString() };
+      results[platform] = state;
+      if (state === 'delivered_to_make') log(`${entry.id} · ${platform}: entregado a Make (${r.id}) — no publicado en la red.`);
+      else log(`${entry.id} · ${platform}: publicado ${r.url ?? r.id}.`);
     } catch (err) {
       entry.platformStatus[platform] = { state: 'error', error: redact(err.message), at: new Date(nowMs).toISOString() };
       results[platform] = 'error';
@@ -110,8 +113,14 @@ export async function runPublisher({ queueFile, adapters = {}, nowMs = Date.now(
   if (dry) return { action: 'dry', id: entry.id, results };
   if (anyAttempt) entry.attempts = (entry.attempts ?? 0) + 1;
   const states = (entry.platforms ?? []).map((p) => entry.platformStatus[p]?.state);
-  if (states.every((s) => s === 'published' || s === 'skipped') && states.includes('published')) { entry.status = 'published'; entry.publishedAt = new Date(nowMs).toISOString(); }
-  else if (states.includes('published') || states.includes('error')) entry.status = (entry.attempts ?? 0) >= policy.maxAttempts ? 'failed' : 'partial';
+  const terminalOk = (s) => s === 'published' || s === 'skipped' || s === 'delivered_to_make';
+  // Only mark entry published when at least one real publish and no Make-only handoffs pending as "done".
+  if (states.every(terminalOk) && states.includes('published') && !states.includes('delivered_to_make')) {
+    entry.status = 'published';
+    entry.publishedAt = new Date(nowMs).toISOString();
+  } else if (states.includes('published') || states.includes('delivered_to_make') || states.includes('error')) {
+    entry.status = (entry.attempts ?? 0) >= policy.maxAttempts ? 'failed' : 'partial';
+  }
   writeQueue(queueFile, queue);
   return { action: 'ran', id: entry.id, status: entry.status, results };
 }

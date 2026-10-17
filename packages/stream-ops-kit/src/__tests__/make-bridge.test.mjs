@@ -42,6 +42,7 @@ describe('make-bridge', () => {
     assert.equal(body.entry_id, 'e1');
     assert.equal(body.vertical.bytes, 16);
     assert.equal(r.id, 'ex1');
-    assert.equal(r.note, 'handed_off_to_make');
+    assert.equal(r.state, 'delivered_to_make');
+    assert.equal(r.note, 'delivered_to_make');
   });
 });

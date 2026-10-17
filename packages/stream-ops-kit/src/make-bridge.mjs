@@ -4,8 +4,8 @@
 //
 // Limitacion: Make cloud no lee D:\… — el payload incluye rutas locales + metadatos.
 // El escenario Make debe obtener el video por URL publica (Drive/CDN) o modulo de
-// fichero que configures. Mientras tanto marcamos la plataforma como publicada
-// en sentido "handed-off-to-make" cuando el webhook responde 2xx.
+// fichero que configures. Cuando el webhook responde 2xx la plataforma queda como
+// 'handed-off' (entregado a Make), NO como 'published': Make no confirma la publicacion.
 import fs from 'node:fs';
 import { toLocalPath } from './publisher-util.mjs';
 
@@ -81,9 +81,11 @@ export function createMakeSocialAdapter({
         parsed = null;
       }
       return {
+        // Not a network publish — publisher must store delivered_to_make, not published.
+        state: 'delivered_to_make',
         id: parsed?.executionId || parsed?.id || `make-${entry.id}-${platform}`,
         url: parsed?.url ?? null,
-        note: 'handed_off_to_make',
+        note: 'delivered_to_make',
         privacy: payload.privacy,
       };
     },
