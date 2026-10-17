@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  stampOf, pairRecordings, isFinished, scoreWindows, pickWindows, isVerticalBlank, hms, renderReport, scheduleQueue, readJson, loadSpectateTemplate, spectateScore, isSpectating, DEFAULTS, stampToSeconds, PAIR_TOLERANCE_SECONDS, parseFreezeSeconds, FROZEN_MAX_SHARE,
+  stampOf, pairRecordings, isFinished, scoreWindows, pickWindows, isVerticalBlank, hms, renderReport, scheduleQueue, readJson, loadSpectateTemplate, spectateScore, isSpectating, DEFAULTS, stampToSeconds, PAIR_TOLERANCE_SECONDS, parseFreezeSeconds, FROZEN_MAX_SHARE, dayInTimezone,
 } from '../post-stream-clips.mjs';
 
 test('pairs horizontal and vertical recordings by OBS timestamp', () => {
@@ -114,6 +114,14 @@ test('queue schedules 1 clip per day after today, best first, only clips with a 
   assert.deepEqual(entries.map((e) => e.scheduledAt), ['2026-10-16T19:00', '2026-10-17T19:00']);
   assert.ok(entries.every((e) => e.status === 'draft' && e.requiresApproval === true && e.publishedAt === null));
   assert.deepEqual(horizontalOnly, ['2026-10-11_17-49-34-03']);
+});
+
+test('"today" for the queue is the day in the channel timezone, not in UTC', () => {
+  // 2026-10-17 02:30 UTC = 2026-10-16 22:30 en Nueva York
+  const nowMs = Date.parse('2026-10-17T02:30:00Z');
+  assert.equal(dayInTimezone(nowMs, 'America/New_York'), '2026-10-16');
+  const r = { stamp: 's', warnings: [], clips: [{ id: '01', startHms: '00:10:00', score: 1, horizontal: 'h', vertical: 'v', flags: [] }] };
+  assert.equal(scheduleQueue([], r, { nowMs }).entries[0].scheduledAt, '2026-10-17T19:00', 'manana en ET, no pasado manana');
 });
 
 test('queue continues after the last scheduled day and never schedules in the past', () => {

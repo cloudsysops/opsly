@@ -369,9 +369,15 @@ const pad = (n) => String(n).padStart(2, '0');
 const ymd = (d) => `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
 const addDays = (isoDay, n) => { const d = new Date(`${isoDay}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return ymd(d); };
 
-export function scheduleQueue(existing, result, { todayIso, ...q } = {}) {
+// Fecha (YYYY-MM-DD) en la zona horaria del canal. Antes "hoy" se tomaba en UTC y por la noche (ET) caia en el dia siguiente.
+export function dayInTimezone(ms, timeZone) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(ms).map((x) => [x.type, x.value]));
+  return `${p.year}-${pad(p.month)}-${pad(p.day)}`;
+}
+
+export function scheduleQueue(existing, result, { todayIso, nowMs = Date.now(), ...q } = {}) {
   const cfg = { ...QUEUE_DEFAULTS, ...q };
-  const today = todayIso ?? ymd(new Date());
+  const today = todayIso ?? dayInTimezone(nowMs, cfg.timezone);
   const lastDay = existing.map((e) => e.scheduledAt.slice(0, 10)).sort().pop();
   let day = addDays(lastDay && lastDay >= today ? lastDay : today, 1);
   const ordered = result.clips.filter((c) => c.vertical && !c.flags.length).sort((a, b) => b.score - a.score);
