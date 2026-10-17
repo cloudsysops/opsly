@@ -84,3 +84,17 @@ Limitación: archivos muy grandes pueden chocar con la página intermedia de
 Drive (`uc?export=download`). Si Make falla al bajar, sube a un CDN o reduce tamaño.
 
 > **Drive auth (2026-10-17):** Prefer `GOOGLE_USER_CREDENTIALS_JSON` (My Drive user quota). With only `GOOGLE_SERVICE_ACCOUNT_JSON`, `OPSLY_DRIVE_ROOT_FOLDER_ID` must be a **Shared Drive** folder (SA storage quota is 0 on My Drive → `storageQuotaExceeded`). Sweep still deletes staged files older than 48h.
+
+## Auth Drive elegida (usuario OAuth)
+
+My Drive personal no admite Shared Drive. Staging usa **GOOGLE_USER_CREDENTIALS_JSON**.
+
+```bash
+# Una vez: autorizar Drive y subir refresh token a Doppler (no pegar el JSON en chat)
+doppler run --project ops-intcloudsysops --config prd -- \
+  node scripts/ops/setup-google-user-drive-oauth.mjs
+```
+
+Si el OAuth client es tipo Web, registra el redirect `http://127.0.0.1:8765/oauth2callback`
+en Google Cloud Console → Credentials. Luego prueba staging con el publicador.
+
