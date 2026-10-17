@@ -54,6 +54,19 @@ export async function applyOnce(req, cfg, program, { dry = false, log = () => {}
   return { action: after === target ? 'switched' : 'switch-not-confirmed', program, from: current, target, after };
 }
 
+// obs.mjs (withObs) no avisa cuando OBS cierra el websocket: sin esto el bucle se quedaba esperando para siempre tras
+// reiniciar OBS y el vertical dejaba de seguir al horizontal. El latido lanza un error si OBS deja de responder.
+export async function heartbeat(req, { intervalMs = 15000, timeoutMs = 5000, ping = () => req('GetVersion'), signal } = {}) {
+  while (!signal?.aborted) {
+    await sleep(intervalMs);
+    if (signal?.aborted) return;
+    let timer;
+    try {
+      await Promise.race([ping(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('OBS no responde')), timeoutMs); })]);
+    } finally { clearTimeout(timer); }
+  }
+}
+
 const stamp = () => new Date().toISOString().replace('T', ' ').slice(0, 19);
 
 export async function run(cfg, { once = false, dry = false, log = (m) => console.log(`[${stamp()}] ${m}`) } = {}) {
@@ -67,7 +80,7 @@ export async function run(cfg, { once = false, dry = false, log = (m) => console
         const program = (await req('GetCurrentProgramScene')).sceneName;
         await applyOnce(req, cfg, program, { dry, log });
         if (once) return;
-        await new Promise(() => {}); // seguir escuchando eventos hasta que la conexion se cierre
+        await heartbeat(req); // seguir escuchando eventos; lanza si OBS deja de responder y el bucle reconecta
       }, once ? 15000 : 2_000_000_000, {
         eventSubscriptions: SCENES_EVENT,
         onEvent: (e) => {

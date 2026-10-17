@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { targetVerticalScene, applyOnce } from '../vertical-sync.mjs';
+import { targetVerticalScene, applyOnce, heartbeat } from '../vertical-sync.mjs';
 
 const CFG = { canvas: 'Aitum Vertical', map: { 'Battlefield 6': 'V_GAMING', 'AI Factory — Hacker': 'V_FACTORY_FOCUS' } };
 
@@ -57,4 +57,22 @@ test('refuses to switch to a scene that does not exist in the vertical canvas', 
 test('reports when the switch is not confirmed', async () => {
   const o = fakeObs({ failSwitch: true });
   assert.equal((await applyOnce(o.req, CFG, 'AI Factory — Hacker', { confirmDelayMs: 0 })).action, 'switch-not-confirmed');
+});
+
+test('heartbeat rejects when OBS stops answering, so the loop can reconnect', async () => {
+  const dead = () => new Promise(() => {}); // websocket cerrado: la peticion nunca responde
+  await assert.rejects(heartbeat(null, { intervalMs: 5, timeoutMs: 30, ping: dead }), /OBS no responde/);
+});
+
+test('heartbeat keeps running while OBS answers and stops on abort', async () => {
+  let pings = 0;
+  const ctl = new AbortController();
+  let settled = null;
+  const run = heartbeat(null, { intervalMs: 5, timeoutMs: 100, ping: async () => { pings++; }, signal: ctl.signal }).then(() => { settled = 'ended'; }, () => { settled = 'rejected'; });
+  await new Promise((r) => setTimeout(r, 80));
+  assert.equal(settled, null, 'sigue corriendo mientras OBS responde');
+  assert.ok(pings >= 3, `pings=${pings}`);
+  ctl.abort();
+  await run;
+  assert.equal(settled, 'ended');
 });
